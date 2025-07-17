@@ -1,0 +1,273 @@
+#+TITLE: Narrative-Game Engine Architecture (Common Lisp ✚ Raylib)
+#+AUTHOR: Design agreed by “o3” (GPT-4) and “Tapio” (Claude Opus)
+#+DATE: 2025-07-16
+#+PROPERTY: header-args:lisp :results silent :exports code
+#+LANGUAGE: en
+
+* Table of Contents :toc:
+- [[#goals--non-functional-requirements][Goals & non-functional requirements]]
+  - [[#functional][Functional]]
+  - [[#non-functional][Non-functional]]
+- [[#runtime-layer-stack][Runtime layer stack]]
+- [[#core-data-model][Core data model]]
+  - [[#node--edge-classes][Node & edge classes]]
+- [[#persistent-graph-storage-hamt--lmdb][Persistent graph storage (HAMT + LMDB)]]
+  - [[#hamt][HAMT]]
+  - [[#lmdb-backend][LMDB backend]]
+- [[#patch-kernel--load-order][Patch kernel & load order]]
+  - [[#primitive-patch-classes][Primitive patch classes]]
+  - [[#selectors][Selectors]]
+  - [[#priority-encoding-u16][Priority encoding (u16)]]
+- [[#scene-dsl-for-mod-authors][Scene DSL for mod authors]]
+- [[#widget--screen-extensibility][Widget / screen extensibility]]
+- [[#state-layer-flags-entities-etc][State layer (flags, entities, etc.)]]
+- [[#save--load-format][Save / load format]]
+- [[#asset-pipeline-claylibraylib][Asset pipeline (Claylib/Raylib)]]
+- [[#security--sandboxing][Security & sandboxing]]
+- [[#developer-quality-of-life][Developer quality-of-life]]
+- [[#dependency-budget][Dependency budget]]
+- [[#examples][Examples]]
+  - [[#edge-selector-wildcards][Edge selector wildcards]]
+  - [[#priority-override][Priority override]]
+- [[#glossary][Glossary]]
+
+* Goals & non-functional requirements
+** Functional
+   - Handle ≳ 10⁵ story nodes while remaining responsive.
+   - Mods may *add*, *replace*, or *override* any part of the story graph.
+   - Mods can register entirely new UI widgets/node-kinds.
+   - Engine must hot-reload code, assets & patches without restart.
+** Non-functional
+   - Deterministic behaviour regardless of mod load order (when priorities equal).
+   - Cross-platform (desktop + Steam-Deck grade hardware).
+   - Memory footprint \< 30 MiB resident for base game; O(log n) graph ops.
+   - Sandboxed execution for untrusted mods; no filesystem or native FFI.
+
+* Runtime layer stack
+#+BEGIN_SRC text
+ ┌──────────────────────┐
+ │       UI layer       │  ← Raylib/Claylib; widget registry
+ ├──────────────────────┤
+ │     Core engine      │  ; traversal, event bus, save/load
+ ├──────────────────────┤
+ │   Data/Graph layer   │  ; HAMT + LMDB + patch application
+ ├──────────────────────┤
+ │     Mod runtime      │  ; ASDF per-mod, sandbox, trust levels
+ └──────────────────────┘
+#+END_SRC
+
+* Core data model
+** Node & edge classes
+#+BEGIN_SRC lisp
+(defclass story-node ()
+  ((id       :initarg :id   :reader node-id)
+   (type     :initarg :type :reader node-type)      ;; e.g. :dialog
+   (slots    :initarg :slots :reader node-slots)    ;; plist → UI
+   (edges    :initarg :edges :reader node-edges)))  ;; #(story-edge ...)
+
+(defclass story-edge ()
+  ((label     :initarg :label   :reader edge-label)
+   (target-id :initarg :target  :reader edge-target)
+   (guard-fn  :initarg :guard   :reader edge-guard)   ;; (ctx) → boolean
+   (effect-fn :initarg :effect  :reader edge-effect)  ;; (ctx) → ctx
+   (priority  :initarg :prio    :reader edge-priority))) ; 0–65535
+#+END_SRC
+Properties:
+- *Immutable*; created during patch application.
+- Equality = object identity; IDs are interned strings.
+
+* Persistent graph storage (HAMT + LMDB)
+** HAMT
+   - 16-way branching factor → shallow tree, good cache locality.
+   - API:
+
+     | Function            | Purpose                                            |
+     |----------------------+----------------------------------------------------|
+     | ~hamt:lookup~        | (hamt key) → value/⌀                               |
+     | ~hamt:insert~        | (hamt key value &key overwrite-p) → new-hamt      |
+     | ~hamt:fold~          | (fn acc hamt) → acc                                |
+     | ~hamt:diff~          | (old new) → added modified removed (for dev UI)    |
+
+** LMDB backend
+   - Final graph is marshalled at build time into LMDB pages (~512 B/node).
+   - Runtime: lazy fetch; 256-node LRU in RAM.
+   - Opt-in ~--snapshot~ flag writes platform-specific mmap blob.
+
+* Patch kernel & load order
+** Primitive patch classes
+#+BEGIN_SRC lisp
+;; 1) Graph shape
+(defclass add-node      () ((node-spec :initarg :node)))
+(defclass replace-node  () ((id :initarg :id) (node-spec :initarg :node)))
+(defclass augment-node  () ((selector :initarg :sel) (slots :initarg :slots)))
+;; 2) Edge ops
+(defclass add-edge      () ((selector :initarg :sel) (edge :initarg :edge)))
+(defclass remove-edge   () ((selector :initarg :sel) (target :initarg :tgt)))
+(defclass redirect-edge () ((selector :initarg :sel) (old :initarg :old)
+                                                  (new :initarg :new)))
+;; 3) Meta
+(defclass set-priority  () ((selector :initarg :sel)
+                            (phase :initarg :phase) (level :initarg :lvl)))
+#+END_SRC
+
+Each implements:
+#+BEGIN_SRC lisp
+(defgeneric apply-patch (patch graph) ; ⇒ new-graph
+#+END_SRC
+
+** Selectors
+   - *String* (exact id), *wildcard* (“chapter-*/*>>edge?label=Yes”), or
+   - *Function* (pure λ (node) …) → boolean, executed once inside sandbox (< 100 ms).
+
+** Priority encoding (u16)
+#+begin_src text
+bits 15–8  phase   0 base | 1 enhance | 2 override | 3 debug
+bits  7–0  level   0–255 inside phase
+#+end_src
+Higher value wins; tie → later mod in topological dependency order.
+
+* Scene DSL for mod authors
+#+BEGIN_SRC lisp
+(in-mod (:id "my-forest" :depends-on ("base"))
+
+  (after "intro/1"
+    (choice "Actually…"
+      (say  "Wait, pine trees?")
+      (flag :remembers-forest t)
+      (goto "my-forest/memory")))
+
+  (scene "my-forest/memory"
+    (say "Needles crunch underfoot.")
+    (menu
+      ("Look up"     (goto "my-forest/look-up"))
+      ("Wake up"     (goto "intro/2")))))
+#+END_SRC
+
+Expansion pipeline:
+
+Scene-DSL → canonical node/edge records → patch objects → ~apply-patch~.
+
+* Widget / screen extensibility
+#+BEGIN_SRC lisp
+(defclass widget ()
+  ((renderer :initarg :renderer)  ;; (widget ctx stream) → ()
+   (handler  :initarg :handler))) ;; (widget event ctx) → ctx
+
+(defgeneric render-widget (widget ctx stream))
+(defgeneric handle-widget-event (widget event ctx))
+
+(defun register-widget (key &key renderer handler assets sandbox)
+  "Adds entry to widget registry; `sandbox' hints (:gfx :audio …).")
+
+(define-node-kind :hacking-console
+  :widget 'console-ui
+  :executor #'run-console)
+#+END_SRC
+
+* State layer (flags, entities, etc.)
+#+BEGIN_SRC lisp
+(defstruct (game-ctx (:conc-name ctx-))
+  flags        ; HAMT keyword → value
+  entities     ; HAMT id → plist (light ECS)
+  rng-seed
+  call-stack)  ; list of node-ids
+#+END_SRC
+
+API surface:
+
+| Function        | Effect                                              |
+|-----------------+-----------------------------------------------------|
+| ~get-flag~      | (ctx :foo) → value/⌀                                |
+| ~set-flag~      | (ctx :foo val) → new-ctx                            |
+| ~push-event~    | (ctx '(:gain-xp 10)) → new-ctx                      |
+| ~current-node~  | (ctx) → node-id                                     |
+
+Only this structure is serialised into save files.
+
+* Save / load format
+1. Write ~game-ctx~ → MessagePack (50–200 B typical).
+2. Persist RNG seed & current graph version hash.
+3. On load: re-open LMDB, re-apply trusted patches (if any), *then* merge ctx.
+
+* Asset pipeline (Claylib/Raylib)
+Directory layout inside a mod:
+
+#+BEGIN_SRC text
+my-forest/
+  story/      *.lisp
+  textures/   *.png
+  sounds/     *.ogg
+  fonts/      *.ttf
+#+END_SRC
+
+Loader snippet:
+
+#+BEGIN_SRC lisp
+(defun load-mod-assets (mod)
+  (claylib:with-base-path (mod-resource-path mod)
+    (dolist (png (directory "textures/*.png"))
+      (setf (gethash png (assets mod))
+            (claylib:load-texture png)))))
+#+END_SRC
+
+Hot-reload frees GPU resources then reloads touched assets.
+
+* Security & sandboxing
+| Threat                     | Mitigation                                               |
+|----------------------------+----------------------------------------------------------|
+| Arbitrary code execution   | ~*read-eval* NIL during DSL read.                        |
+| Infinite loop in guard     | ~with-timeout~ (50 ms during runtime).                   |
+| Disk exfiltration          | Mod packages only ~:use~ *(cl story.api)*; no ~uiop~.    |
+| Excessive memory           | SBCL heap soft-limit per sandbox via ~sb-ext:limit-memory~. |
+
+All guard/effect calls wrapped by:
+
+#+BEGIN_SRC lisp
+(call-with-sandbox mod
+  (lambda () (funcall guard ctx)))
+#+END_SRC
+
+* Developer quality-of-life
+| Key | Action                                     |
+|-----+--------------------------------------------|
+| F5  | Reload file under cursor; re-apply patches |
+| F9  | Toggle graph/path visualiser overlay       |
+| F10 | Toggle perf overlay (FPS, cache hits)      |
+
+REPL helpers:
+
+#+BEGIN_SRC lisp
+(describe-node "intro/1" :mods t)
+(graphviz-diff "vanilla" "with-my-mod")
+(reload-mod "my-forest")
+(trace-guards "intro/*")
+#+END_SRC
+
+* Dependency budget
+- SBCL ≥ 2.4
+- ~cl-raylib~ / *claylib* (graphics & input)
+- ~trivia~ (pattern-matching guard compiler)
+- LMDB bindings
+- **No heavy collections libraries** – bespoke micro-HAMT.
+
+* Examples
+** Edge selector wildcards
+#+BEGIN_SRC lisp
+(after "chapter-*/*>>edge?label=Yes"
+  (choice "Why not?"
+    (goto "my-mod/branch")))
+#+END_SRC
+** Priority override
+#+BEGIN_SRC lisp
+(set-priority "intro/1>>edge?label=No" :phase +phase-override+ :level 10)
+#+END_SRC
+
+* Glossary
+| Term/abbr. | Meaning                                                            |
+|------------+--------------------------------------------------------------------|
+| HAMT       | Hash-array mapped trie (immutable key→value store).                |
+| LMDB       | Lightning Memory-Mapped DB; fast, read-optimised key/value store.  |
+| Patch      | Pure function transforming one immutable graph into another.       |
+| Phase      | Coarse priority bucket (base/enhance/override/debug).              |
+| Level      | Fine 0–255 priority inside a phase.                                |
+| Selector   | Path expression (string, wildcard, or λ) locating node/edge field. |
