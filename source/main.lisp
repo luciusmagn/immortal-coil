@@ -7,7 +7,7 @@
 
 (defconstant +virtual-width+ 800)
 (defconstant +virtual-height+ 600)
-(defconstant +particle-count+ 34)
+(defconstant +particle-count+ 8)
 (defconstant +particle-size+ 2)
 
 (defparameter *characters-per-second* 18.0)
