@@ -3,7 +3,7 @@
 (defun setup-game ()
   (setf *mode* :menu
         *menu-elapsed* 0.0)
-  (reset-title-particles)
+  (reset-title-particles :initial-p t)
   (load-audio))
 
 (defun update-world ()

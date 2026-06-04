@@ -7,28 +7,41 @@
   speed
   seed
   orbit-radius
+  orbit-turns
+  exit-angle
   branch-side
   branch-spread
   branch-curve
   alpha)
 
+(defun random-title-exit-angle ()
+  (let ((base (case (get-random-value 0 3)
+                (0 (* pi 1.16))
+                (1 (* pi 1.36))
+                (2 (* pi 1.64))
+                (t (* pi 1.84)))))
+    (+ base (random-float -0.06 0.06))))
+
 (defun current-title-particle-count ()
   (max 0 (round *title-particle-count*)))
 
 (defun reset-title-particle (particle &key initial-p)
-  (setf (title-particle-phase particle) (if initial-p
-                                            (random-float 0.0 1.0)
-                                            0.0)
-        (title-particle-speed particle) (random-float 0.035 0.055)
-        (title-particle-seed particle) (random-float 0.0 (* 2 pi))
-        (title-particle-orbit-radius particle) (+ +title-orbit-radius+
-                                                  (random-float -13.0 13.0))
-        (title-particle-branch-side particle) (if (zerop (get-random-value 0 1))
-                                                  -1.0
-                                                  1.0)
-        (title-particle-branch-spread particle) (random-float 70.0 330.0)
-        (title-particle-branch-curve particle) (random-float -70.0 70.0)
-        (title-particle-alpha particle) (get-random-value 110 230))
+  (let ((exit-angle (random-title-exit-angle)))
+    (setf (title-particle-phase particle) (if initial-p
+                                              (random-float -0.28 0.0)
+                                              (random-float -0.18 0.0))
+          (title-particle-speed particle) (random-float 0.026 0.040)
+          (title-particle-seed particle) (random-float 0.0 (* 2 pi))
+          (title-particle-orbit-radius particle) (+ +title-orbit-radius+
+                                                    (random-float -16.0 16.0))
+          (title-particle-orbit-turns particle) (get-random-value 1 3)
+          (title-particle-exit-angle particle) exit-angle
+          (title-particle-branch-side particle) (if (minusp (cos exit-angle))
+                                                    -1.0
+                                                    1.0)
+          (title-particle-branch-spread particle) (random-float 90.0 360.0)
+          (title-particle-branch-curve particle) (random-float -110.0 110.0)
+          (title-particle-alpha particle) (get-random-value 110 230)))
   particle)
 
 (defun resize-title-particles (count)
@@ -66,70 +79,89 @@
         do (update-title-particle particle dt)))
 
 (defun title-particle-trunk-position (particle phase)
-  (let* ((u (/ phase 0.34))
+  (let* ((u (/ phase 0.30))
          (eased (smoothstep u))
          (start-y 660.0)
          (end-y (+ +menu-start-y+ (title-particle-orbit-radius particle)))
          (trunk-offset (* 18.0 (sin (title-particle-seed particle))))
-         (wobble (+ (* 10.0
+         (wobble (+ (* 13.0
                        (sin (+ (title-particle-seed particle)
                                (* u 10.0)))
                        (sin (* pi u)))
                     (* (title-particle-branch-side particle)
-                       5.0
+                       8.0
                        (sin (* pi u))))))
     (values (+ +menu-start-x+
                (* trunk-offset (- 1.0 eased))
                wobble)
             (+ start-y (* (- end-y start-y) eased)))))
 
+(defun title-particle-orbit-delta (particle)
+  (+ (- (title-particle-exit-angle particle) (/ pi 2.0))
+     (* 2.0 pi (title-particle-orbit-turns particle))))
+
 (defun title-particle-orbit-position (particle phase)
-  (let* ((u (/ (- phase 0.34) 0.36))
+  (let* ((u (/ (- phase 0.30) 0.48))
          (endpoint-fade (sin (* pi u)))
          (angle (+ (/ pi 2.0)
-                   (* 3.0 pi (smoothstep u))
-                   (* 0.055
+                   (* (title-particle-orbit-delta particle)
+                      (smoothstep u))
+                   (* 0.13
                       endpoint-fade
                       (sin (+ (title-particle-seed particle)
-                              (* 6.0 pi u))))))
+                              (* 9.0 pi u))))))
          (radius (+ (title-particle-orbit-radius particle)
-                    (* 4.0
+                    (* 11.0
                        endpoint-fade
                        (sin (+ (title-particle-seed particle)
-                               (* 4.0 pi u)))))))
+                               (* 7.0 pi u))))
+                    (* 5.0
+                       endpoint-fade
+                       (sin (+ (* 1.7 (title-particle-seed particle))
+                               (* 15.0 pi u)))))))
     (values (+ +menu-start-x+
                (* (cos angle) radius))
             (+ +menu-start-y+
                (* (sin angle) radius)))))
 
+(defun title-particle-exit-position (particle)
+  (let ((angle (title-particle-exit-angle particle))
+        (radius (title-particle-orbit-radius particle)))
+    (values (+ +menu-start-x+ (* (cos angle) radius))
+            (+ +menu-start-y+ (* (sin angle) radius)))))
+
 (defun title-particle-branch-position (particle phase)
-  (let* ((u (/ (- phase 0.70) 0.30))
-         (eased (smoothstep u))
-         (start-y (- +menu-start-y+ (title-particle-orbit-radius particle)))
-         (side (title-particle-branch-side particle))
-         (spread (title-particle-branch-spread particle))
-         (curve (title-particle-branch-curve particle))
-         (x (+ +menu-start-x+
-               (* side spread (expt eased 1.25))
-               (* curve eased (- 1.0 eased))
-               (* 7.0 (sin (+ (title-particle-seed particle)
-                              (* u 9.0))))))
-         (y (- start-y (* 500.0 eased))))
-    (values x y)))
+  (multiple-value-bind (start-x start-y)
+      (title-particle-exit-position particle)
+    (let* ((u (/ (- phase 0.78) 0.22))
+           (eased (smoothstep u))
+           (side (title-particle-branch-side particle))
+           (spread (title-particle-branch-spread particle))
+           (curve (title-particle-branch-curve particle))
+           (x (+ start-x
+                 (* side spread (expt eased 1.18))
+                 (* curve eased (- 1.0 eased))
+                 (* 12.0
+                    (sin (+ (title-particle-seed particle)
+                            (* u 11.0))))))
+           (y (- start-y (* 470.0 eased))))
+      (values x y))))
 
 (defun title-particle-position (particle)
   (let ((phase (title-particle-phase particle)))
     (cond
-      ((< phase 0.34)
+      ((< phase 0.30)
        (title-particle-trunk-position particle phase))
-      ((< phase 0.70)
+      ((< phase 0.78)
        (title-particle-orbit-position particle phase))
       (t
        (title-particle-branch-position particle phase)))))
 
 (defun title-particle-visible-alpha (particle)
-  (round (* (title-particle-alpha particle)
-            (clamp01 (/ (title-particle-phase particle) 0.06)))))
+  (if (minusp (title-particle-phase particle))
+      0
+      (round (* (title-particle-alpha particle)
+                (clamp01 (/ (title-particle-phase particle) 0.06))))))
 
 (defun draw-title-particle (particle alpha-scale)
   (let ((alpha (round (* (title-particle-visible-alpha particle)
