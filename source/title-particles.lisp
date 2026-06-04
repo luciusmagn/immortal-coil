@@ -6,6 +6,8 @@
   phase
   speed
   seed
+  entry-angle
+  entry-offset
   orbit-radius
   orbit-turns
   exit-angle
@@ -22,16 +24,26 @@
                 (t (* pi 1.84)))))
     (+ base (random-float -0.06 0.06))))
 
+(defun random-title-entry-angle ()
+  (+ (/ pi 2.0)
+     (random-float -0.22 0.22)))
+
 (defun current-title-particle-count ()
   (max 0 (round *title-particle-count*)))
 
-(defun reset-title-particle (particle &key initial-p)
+(defun title-initial-phase (index count)
+  (let ((slot (/ (+ index (random-float -0.35 0.35))
+                 (max 1 count))))
+    (mod slot 1.0)))
+
+(defun reset-title-particle (particle &key phase)
   (let ((exit-angle (random-title-exit-angle)))
-    (setf (title-particle-phase particle) (if initial-p
-                                              (random-float -0.28 0.0)
-                                              (random-float -0.18 0.0))
+    (setf (title-particle-phase particle) (or phase
+                                              (random-float -0.08 0.0))
           (title-particle-speed particle) (random-float 0.026 0.040)
           (title-particle-seed particle) (random-float 0.0 (* 2 pi))
+          (title-particle-entry-angle particle) (random-title-entry-angle)
+          (title-particle-entry-offset particle) (random-float -56.0 56.0)
           (title-particle-orbit-radius particle) (+ +title-orbit-radius+
                                                     (random-float -16.0 16.0))
           (title-particle-orbit-turns particle) (get-random-value 1 3)
@@ -51,7 +63,9 @@
           do (setf (aref new-particles i)
                    (if (< i (length old-particles))
                        (aref old-particles i)
-                       (reset-title-particle (make-title-particle) :initial-p t))))
+                       (reset-title-particle
+                        (make-title-particle)
+                        :phase (title-initial-phase i count)))))
     (setf *title-particles* new-particles)))
 
 (defun reset-title-particles (&key initial-p)
@@ -60,7 +74,8 @@
     (loop for i below count
           do (setf (aref *title-particles* i)
                    (reset-title-particle (make-title-particle)
-                                         :initial-p initial-p)))))
+                                         :phase (when initial-p
+                                                  (title-initial-phase i count)))))))
 
 (defun ensure-title-particle-count ()
   (let ((count (current-title-particle-count)))
@@ -82,43 +97,52 @@
   (let* ((u (/ phase 0.30))
          (eased (smoothstep u))
          (start-y 660.0)
-         (end-y (+ +menu-start-y+ (title-particle-orbit-radius particle)))
-         (trunk-offset (* 18.0 (sin (title-particle-seed particle))))
-         (wobble (+ (* 13.0
+         (entry-angle (title-particle-entry-angle particle))
+         (radius (title-particle-orbit-radius particle))
+         (start-x (+ +menu-start-x+
+                     (title-particle-entry-offset particle)))
+         (end-x (+ +menu-start-x+ (* (cos entry-angle) radius)))
+         (end-y (+ +menu-start-y+ (* (sin entry-angle) radius)))
+         (wobble (+ (* 20.0
                        (sin (+ (title-particle-seed particle)
                                (* u 10.0)))
                        (sin (* pi u)))
                     (* (title-particle-branch-side particle)
-                       8.0
+                       13.0
                        (sin (* pi u))))))
-    (values (+ +menu-start-x+
-               (* trunk-offset (- 1.0 eased))
+    (values (+ start-x
+               (* (- end-x start-x) eased)
                wobble)
             (+ start-y (* (- end-y start-y) eased)))))
 
 (defun title-particle-orbit-delta (particle)
-  (+ (- (title-particle-exit-angle particle) (/ pi 2.0))
+  (+ (- (title-particle-exit-angle particle)
+        (title-particle-entry-angle particle))
      (* 2.0 pi (title-particle-orbit-turns particle))))
 
 (defun title-particle-orbit-position (particle phase)
   (let* ((u (/ (- phase 0.30) 0.48))
          (endpoint-fade (sin (* pi u)))
-         (angle (+ (/ pi 2.0)
+         (angle (+ (title-particle-entry-angle particle)
                    (* (title-particle-orbit-delta particle)
                       (smoothstep u))
-                   (* 0.13
+                   (* 0.26
                       endpoint-fade
                       (sin (+ (title-particle-seed particle)
-                              (* 9.0 pi u))))))
+                              (* 11.0 pi u))))
+                   (* 0.11
+                      endpoint-fade
+                      (sin (+ (* 1.4 (title-particle-seed particle))
+                              (* 21.0 pi u))))))
          (radius (+ (title-particle-orbit-radius particle)
-                    (* 11.0
+                    (* 24.0
                        endpoint-fade
                        (sin (+ (title-particle-seed particle)
-                               (* 7.0 pi u))))
-                    (* 5.0
+                               (* 9.0 pi u))))
+                    (* 13.0
                        endpoint-fade
                        (sin (+ (* 1.7 (title-particle-seed particle))
-                               (* 15.0 pi u)))))))
+                               (* 17.0 pi u)))))))
     (values (+ +menu-start-x+
                (* (cos angle) radius))
             (+ +menu-start-y+
