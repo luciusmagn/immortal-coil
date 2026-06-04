@@ -17,7 +17,18 @@
                #:trivia)
   :components ((:module "source"
                 :components
-                ((:file "main")))))
+                ((:file "package")
+                 (:file "config")
+                 (:file "util")
+                 (:file "graph")
+                 (:file "audio")
+                 (:file "particles")
+                 (:file "title-particles")
+                 (:file "fullscreen")
+                 (:file "gameplay")
+                 (:file "menu")
+                 (:file "renderer")
+                 (:file "main")))))
 
 
 ;; Github dependencies:
