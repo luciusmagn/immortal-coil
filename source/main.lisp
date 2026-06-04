@@ -7,7 +7,7 @@
 
 (defconstant +virtual-width+ 800)
 (defconstant +virtual-height+ 600)
-(defconstant +particle-count+ 70)
+(defconstant +particle-count+ 34)
 (defconstant +particle-size+ 2)
 
 (defparameter *characters-per-second* 18.0)
@@ -145,16 +145,16 @@
                                (claylib::c-ptr color))))
 
 (defun reset-particle (particle &key initial-p)
-  (let ((ttl (random-float 5.0 11.0)))
-    (setf (particle-x particle) (random-float 140.0 660.0)
+  (let ((ttl (random-float 80.0 120.0)))
+    (setf (particle-x particle) (random-float 20.0 780.0)
           (particle-y particle) (if initial-p
-                                    (random-float 120.0 620.0)
-                                    (random-float 610.0 700.0))
-          (particle-vx particle) (random-float -7.0 7.0)
-          (particle-vy particle) (random-float -34.0 -12.0)
+                                    (random-float -20.0 700.0)
+                                    (random-float 610.0 740.0))
+          (particle-vx particle) (random-float -3.0 3.0)
+          (particle-vy particle) (random-float -20.0 -12.0)
           (particle-wobble-phase particle) (random-float 0.0 (* 2 pi))
-          (particle-wobble-speed particle) (random-float 1.2 3.0)
-          (particle-wobble-strength particle) (random-float 7.0 18.0)
+          (particle-wobble-speed particle) (random-float 0.6 1.5)
+          (particle-wobble-strength particle) (random-float 8.0 20.0)
           (particle-age particle) (if initial-p
                                       (random-float 0.0 ttl)
                                       0.0)
@@ -170,10 +170,9 @@
 
 (defun update-particle (particle dt)
   (incf (particle-age particle) dt)
-  (if (or (> (particle-age particle) (particle-ttl particle))
-          (< (particle-y particle) -10)
-          (< (particle-x particle) -10)
-          (> (particle-x particle) (+ +virtual-width+ 10)))
+  (if (or (< (particle-y particle) -120)
+          (< (particle-x particle) -30)
+          (> (particle-x particle) (+ +virtual-width+ 30)))
       (reset-particle particle)
       (progn
         (incf (particle-wobble-phase particle)
@@ -183,19 +182,19 @@
                     (* (particle-wobble-strength particle)
                        (sin (particle-wobble-phase particle))))
                  dt))
-        (incf (particle-y particle) (* (particle-vy particle) dt))
-        (decf (particle-vy particle) (* 1.5 dt)))))
+        (incf (particle-y particle) (* (particle-vy particle) dt)))))
 
 (defun update-particles (dt)
   (loop for particle across *particles*
         do (update-particle particle dt)))
 
+(defun update-window-controls ()
+  (when (is-key-pressed-p +key-f+)
+    (toggle-fullscreen)))
+
 (defun particle-visible-alpha (particle)
   (round (* (particle-alpha particle)
-            (clamp01 (/ (particle-age particle) 0.8))
-            (clamp01 (/ (- (particle-ttl particle)
-                           (particle-age particle))
-                        1.8)))))
+            (clamp01 (/ (particle-age particle) 0.8)))))
 
 (defun draw-particle (particle)
   (let ((alpha (particle-visible-alpha particle)))
@@ -381,15 +380,23 @@
                        :y 0
                        :width (width (texture target))
                        :height (- (height (texture target))))
-        (dest (texture target))
-        (make-instance 'rl-rectangle
-                       :x 0
-                       :y 0
-                       :width +virtual-width+
-                       :height +virtual-height+)
         (origin (texture target)) (make-vector2 0 0)
         (rot (texture target)) 0.0
         (tint (texture target)) +white+))
+
+(defun configure-target-destination (target)
+  (let* ((screen-width (get-screen-width))
+         (screen-height (get-screen-height))
+         (scale (min (/ (float screen-width 1.0) +virtual-width+)
+                     (/ (float screen-height 1.0) +virtual-height+)))
+         (target-width (* +virtual-width+ scale))
+         (target-height (* +virtual-height+ scale)))
+    (setf (dest (texture target))
+          (make-instance 'rl-rectangle
+                         :x (/ (- screen-width target-width) 2)
+                         :y (/ (- screen-height target-height) 2)
+                         :width target-width
+                         :height target-height))))
 
 (defun draw-target (target shader)
   (with-drawing (:bgcolor +black+)
@@ -417,7 +424,9 @@
       (configure-target-texture target)
       (setup-game)
       (do-game-loop (:livesupport t)
+        (update-window-controls)
         (update-game)
         (with-texture-mode (target :clear +black+)
           (draw-game))
+        (configure-target-destination target)
         (draw-target target (asset shader-asset))))))
