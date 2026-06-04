@@ -42,8 +42,8 @@ void main()
     float grille = 0.92 + 0.08 * sin(uv.x * resolution.x * 2.094);
     float vignette = smoothstep(0.85, 0.24, distance(uv, vec2(0.5)));
 
-    vec3 phosphor = vec3(0.88, 1.0, 0.92);
-    vec3 color = (base + bloom) * phosphor * scanline * grille * vignette;
+    float luminance = dot(base + bloom, vec3(0.299, 0.587, 0.114));
+    vec3 color = vec3(luminance * scanline * grille * vignette);
 
     finalColor = vec4(color, 1.0) * fragColor;
 }
