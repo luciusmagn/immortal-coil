@@ -7,11 +7,11 @@
 
 (defconstant +virtual-width+ 800)
 (defconstant +virtual-height+ 600)
-(defconstant +particle-count+ 8)
 (defconstant +particle-size+ 2)
 
 (defparameter *characters-per-second* 18.0)
 (defparameter *fade-seconds* 0.5)
+(defparameter *particle-count* 8)
 
 (defvar *nodes* (make-hash-table :test #'equal))
 (defvar *state* nil)
@@ -162,11 +162,30 @@
           (particle-alpha particle) (get-random-value 100 220)))
   particle)
 
+(defun current-particle-count ()
+  (max 0 (round *particle-count*)))
+
+(defun resize-particles (count)
+  (let ((old-particles *particles*)
+        (new-particles (make-array count)))
+    (loop for i below count
+          do (setf (aref new-particles i)
+                   (if (< i (length old-particles))
+                       (aref old-particles i)
+                       (reset-particle (make-particle) :initial-p t))))
+    (setf *particles* new-particles)))
+
 (defun reset-particles ()
-  (setf *particles* (make-array +particle-count+))
-  (loop for i below +particle-count+
-        do (setf (aref *particles* i)
-                 (reset-particle (make-particle) :initial-p t))))
+  (let ((count (current-particle-count)))
+    (setf *particles* (make-array count))
+    (loop for i below count
+          do (setf (aref *particles* i)
+                   (reset-particle (make-particle) :initial-p t)))))
+
+(defun ensure-particle-count ()
+  (let ((count (current-particle-count)))
+    (unless (= (length *particles*) count)
+      (resize-particles count))))
 
 (defun update-particle (particle dt)
   (incf (particle-age particle) dt)
@@ -185,6 +204,7 @@
         (incf (particle-y particle) (* (particle-vy particle) dt)))))
 
 (defun update-particles (dt)
+  (ensure-particle-count)
   (loop for particle across *particles*
         do (update-particle particle dt)))
 
