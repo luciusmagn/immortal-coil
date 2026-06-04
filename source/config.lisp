@@ -6,7 +6,7 @@
 
 (defconstant +menu-start-x+ 400.0)
 (defconstant +menu-start-y+ 300.0)
-(defconstant +menu-start-text-size+ 24)
+(defconstant +menu-start-text-size+ 18)
 (defconstant +title-orbit-radius+ 145.0)
 
 (defparameter *characters-per-second* 18.0)
