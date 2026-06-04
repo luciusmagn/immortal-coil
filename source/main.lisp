@@ -1,7 +1,8 @@
 (in-package #:immortal-coil)
 
 (defun setup-game ()
-  (setf *mode* :menu)
+  (setf *mode* :menu
+        *menu-elapsed* 0.0)
   (reset-title-particles)
   (load-audio))
 

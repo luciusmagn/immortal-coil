@@ -40,14 +40,19 @@
            (is-mouse-button-pressed-p +mouse-button-left+))))
 
 (defun update-menu (dt)
+  (incf *menu-elapsed* dt)
   (update-title-particles dt)
   (when (start-game-pressed-p)
     (start-game)))
 
+(defun menu-alpha-scale ()
+  (smoothstep (/ *menu-elapsed* *menu-fade-seconds*)))
+
 (defun draw-start-button ()
-  (let ((color (if (mouse-on-start-button-p)
-                   (make-color 255 255 255 255)
-                   (make-color 235 235 235 245))))
+  (let* ((alpha-scale (menu-alpha-scale))
+         (color (if (mouse-on-start-button-p)
+                    (make-color 255 255 255 (round (* 255 alpha-scale)))
+                    (make-color 235 235 235 (round (* 245 alpha-scale))))))
     (multiple-value-bind (x y width)
         (draw-centered-text "START GAME"
                             +menu-start-x+
@@ -62,5 +67,5 @@
                                  (claylib::c-ptr color)))))
 
 (defun draw-menu ()
-  (draw-title-particles)
+  (draw-title-particles (menu-alpha-scale))
   (draw-start-button))
