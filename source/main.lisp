@@ -208,9 +208,29 @@
   (loop for particle across *particles*
         do (update-particle particle dt)))
 
+(defun current-monitor-size ()
+  (let ((monitor (get-current-monitor)))
+    (values (get-monitor-width monitor)
+            (get-monitor-height monitor))))
+
+(defun enter-fullscreen ()
+  (multiple-value-bind (width height)
+      (current-monitor-size)
+    (set-window-size width height)
+    (toggle-fullscreen)))
+
+(defun exit-fullscreen ()
+  (toggle-fullscreen)
+  (set-window-size +virtual-width+ +virtual-height+))
+
+(defun toggle-game-fullscreen ()
+  (if (is-window-fullscreen-p)
+      (exit-fullscreen)
+      (enter-fullscreen)))
+
 (defun update-window-controls ()
   (when (is-key-pressed-p +key-f+)
-    (toggle-fullscreen)))
+    (toggle-game-fullscreen)))
 
 (defun particle-visible-alpha (particle)
   (round (* (particle-alpha particle)
@@ -393,7 +413,7 @@
    :load-now t))
 
 (defun configure-target-texture (target)
-  (setf (filter (texture target)) +texture-filter-bilinear+
+  (setf (filter (texture target)) +texture-filter-point+
         (source (texture target))
         (make-instance 'rl-rectangle
                        :x 0
