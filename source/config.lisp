@@ -14,6 +14,7 @@
 (defparameter *menu-fade-seconds* 1.4)
 (defparameter *particle-count* 8)
 (defparameter *title-particle-count* 1000)
+(defparameter *title-particle-spawn-rate* 70.0)
 (defparameter *dialog-script-paths* '("game/opening.lisp"))
 
 (defvar *mode* :menu)

@@ -1,6 +1,7 @@
 (in-package #:immortal-coil)
 
-(defvar *title-particles* #())
+(defvar *title-particles* (make-array 0 :adjustable t :fill-pointer 0))
+(defvar *title-particle-spawn-debt* 0.0)
 
 (defstruct title-particle
   phase
@@ -31,16 +32,10 @@
 (defun current-title-particle-count ()
   (max 0 (round *title-particle-count*)))
 
-(defun title-initial-phase (index count)
-  (let ((slot (/ (+ index (random-float -0.35 0.35))
-                 (max 1 count))))
-    (mod slot 1.0)))
-
-(defun reset-title-particle (particle &key phase)
+(defun reset-title-particle (particle)
   (let ((exit-angle (random-title-exit-angle)))
-    (setf (title-particle-phase particle) (or phase
-                                              (random-float -0.08 0.0))
-          (title-particle-speed particle) (random-float 0.026 0.040)
+    (setf (title-particle-phase particle) 0.0
+          (title-particle-speed particle) (random-float 0.020 0.030)
           (title-particle-seed particle) (random-float 0.0 (* 2 pi))
           (title-particle-entry-angle particle) (random-title-entry-angle)
           (title-particle-entry-offset particle) (random-float -56.0 56.0)
@@ -56,42 +51,55 @@
           (title-particle-alpha particle) (get-random-value 110 230)))
   particle)
 
-(defun resize-title-particles (count)
-  (let ((old-particles *title-particles*)
-        (new-particles (make-array count)))
-    (loop for i below count
-          do (setf (aref new-particles i)
-                   (if (< i (length old-particles))
-                       (aref old-particles i)
-                       (reset-title-particle
-                        (make-title-particle)
-                        :phase (title-initial-phase i count)))))
-    (setf *title-particles* new-particles)))
-
-(defun reset-title-particles (&key initial-p)
-  (let ((count (current-title-particle-count)))
-    (setf *title-particles* (make-array count))
-    (loop for i below count
-          do (setf (aref *title-particles* i)
-                   (reset-title-particle (make-title-particle)
-                                         :phase (when initial-p
-                                                  (title-initial-phase i count)))))))
-
-(defun ensure-title-particle-count ()
-  (let ((count (current-title-particle-count)))
-    (unless (= (length *title-particles*) count)
-      (resize-title-particles count))))
+(defun reset-title-particles ()
+  (setf *title-particles* (make-array 0 :adjustable t :fill-pointer 0)
+        *title-particle-spawn-debt* 0.0))
 
 (defun update-title-particle (particle dt)
   (incf (title-particle-phase particle)
-        (* (title-particle-speed particle) dt))
-  (when (> (title-particle-phase particle) 1.0)
-    (reset-title-particle particle)))
+        (* (title-particle-speed particle) dt)))
+
+(defun title-particle-finished-p (particle)
+  (> (title-particle-phase particle) 1.0))
+
+(defun remove-finished-title-particles ()
+  (let ((write-index 0)
+        (count (length *title-particles*)))
+    (loop for read-index below count
+          for particle = (aref *title-particles* read-index)
+          unless (title-particle-finished-p particle)
+            do (setf (aref *title-particles* write-index) particle
+                     write-index (1+ write-index)))
+    (setf (fill-pointer *title-particles*) write-index)))
+
+(defun title-spawn-scale ()
+  (let ((cap (current-title-particle-count)))
+    (if (zerop cap)
+        0.0
+        (expt (clamp01 (- 1.0 (/ (length *title-particles*) cap)))
+              1.7))))
+
+(defun spawn-title-particle ()
+  (vector-push-extend
+   (reset-title-particle (make-title-particle))
+   *title-particles*))
+
+(defun spawn-title-particles (dt)
+  (let ((cap (current-title-particle-count)))
+    (incf *title-particle-spawn-debt*
+          (* *title-particle-spawn-rate*
+             (title-spawn-scale)
+             dt))
+    (loop while (and (>= *title-particle-spawn-debt* 1.0)
+                     (< (length *title-particles*) cap))
+          do (decf *title-particle-spawn-debt* 1.0)
+             (spawn-title-particle))))
 
 (defun update-title-particles (dt)
-  (ensure-title-particle-count)
+  (spawn-title-particles dt)
   (loop for particle across *title-particles*
-        do (update-title-particle particle dt)))
+        do (update-title-particle particle dt))
+  (remove-finished-title-particles))
 
 (defun title-particle-trunk-position (particle phase)
   (let* ((u (/ phase 0.30))
@@ -121,7 +129,7 @@
      (* 2.0 pi (title-particle-orbit-turns particle))))
 
 (defun title-particle-orbit-position (particle phase)
-  (let* ((u (/ (- phase 0.30) 0.48))
+  (let* ((u (/ (- phase 0.30) 0.56))
          (endpoint-fade (sin (* pi u)))
          (angle (+ (title-particle-entry-angle particle)
                    (* (title-particle-orbit-delta particle)
@@ -157,7 +165,7 @@
 (defun title-particle-branch-position (particle phase)
   (multiple-value-bind (start-x start-y)
       (title-particle-exit-position particle)
-    (let* ((u (/ (- phase 0.78) 0.22))
+    (let* ((u (/ (- phase 0.86) 0.14))
            (eased (smoothstep u))
            (side (title-particle-branch-side particle))
            (spread (title-particle-branch-spread particle))
@@ -176,7 +184,7 @@
     (cond
       ((< phase 0.30)
        (title-particle-trunk-position particle phase))
-      ((< phase 0.78)
+      ((< phase 0.86)
        (title-particle-orbit-position particle phase))
       (t
        (title-particle-branch-position particle phase)))))
