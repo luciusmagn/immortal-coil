@@ -386,7 +386,7 @@
          (color (make-color 255 255 255 (current-alpha)))
          (text (visible-node-text node)))
     (multiple-value-bind (x y width)
-        (draw-centered-text text 400 300 size color)
+        (draw-centered-text text 400 280 size color)
       (draw-cursor x y width size color))))
 
 (defun draw-choice-option (choice x y selected-p color)

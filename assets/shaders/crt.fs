@@ -12,7 +12,7 @@ const vec2 resolution = vec2(800.0, 600.0);
 vec2 curve(vec2 uv)
 {
     vec2 centered = uv * 2.0 - 1.0;
-    vec2 offset = abs(centered.yx) / vec2(4.8, 3.8);
+    vec2 offset = abs(centered.yx) / vec2(5.3, 4.2);
     centered += centered * offset * offset;
     return centered * 0.5 + 0.5;
 }
