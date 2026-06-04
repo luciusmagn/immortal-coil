@@ -21,6 +21,7 @@
 (defvar *choice-switch-asset* nil)
 (defvar *choice-switch-sound* nil)
 (defvar *particles* #())
+(defvar *borderless-fullscreen-p* nil)
 
 (defstruct choice
   label
@@ -208,23 +209,39 @@
   (loop for particle across *particles*
         do (update-particle particle dt)))
 
-(defun current-monitor-size ()
-  (let ((monitor (get-current-monitor)))
-    (values (get-monitor-width monitor)
+(defun current-monitor-geometry ()
+  (let* ((monitor (get-current-monitor))
+         (position (make-vector2 0 0)))
+    (claylib/ll:get-monitor-position (claylib::c-ptr position) monitor)
+    (values (truncate (x position))
+            (truncate (y position))
+            (get-monitor-width monitor)
             (get-monitor-height monitor))))
 
 (defun enter-fullscreen ()
-  (multiple-value-bind (width height)
-      (current-monitor-size)
+  (when (is-window-fullscreen-p)
+    (toggle-fullscreen))
+  (multiple-value-bind (x y width height)
+      (current-monitor-geometry)
+    (set-window-state +flag-window-undecorated+)
+    (set-window-position x y)
     (set-window-size width height)
-    (toggle-fullscreen)))
+    (setf *borderless-fullscreen-p* t)))
 
 (defun exit-fullscreen ()
-  (toggle-fullscreen)
-  (set-window-size +virtual-width+ +virtual-height+))
+  (when (is-window-fullscreen-p)
+    (toggle-fullscreen))
+  (multiple-value-bind (x y width height)
+      (current-monitor-geometry)
+    (clear-window-state +flag-window-undecorated+)
+    (set-window-size +virtual-width+ +virtual-height+)
+    (set-window-position (+ x (truncate (- width +virtual-width+) 2))
+                         (+ y (truncate (- height +virtual-height+) 2)))
+    (setf *borderless-fullscreen-p* nil)))
 
 (defun toggle-game-fullscreen ()
-  (if (is-window-fullscreen-p)
+  (if (or *borderless-fullscreen-p*
+          (is-window-fullscreen-p))
       (exit-fullscreen)
       (enter-fullscreen)))
 
