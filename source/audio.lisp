@@ -101,6 +101,13 @@
               (+ 0.92 (/ (get-random-value 0 16) 100.0)))
         (claylib/ll:play-sound (claylib::c-ptr sound))))))
 
+(defun play-input-click ()
+  (let ((sound (next-type-click)))
+    (when sound
+      (setf (pitch sound)
+            (+ 0.94 (/ (get-random-value 0 12) 100.0)))
+      (claylib/ll:play-sound (claylib::c-ptr sound)))))
+
 (defun play-choice-switch ()
   (when *choice-switch-sound*
     (setf (pitch *choice-switch-sound*)

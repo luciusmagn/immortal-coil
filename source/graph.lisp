@@ -12,7 +12,12 @@
   kind
   text
   next
-  choices)
+  choices
+  layout
+  target
+  response-key
+  min-value
+  max-value)
 
 (defun reset-nodes ()
   (clrhash *nodes*))
@@ -46,12 +51,38 @@
     (error "Expected a dialog option, got: ~s" value))
   value)
 
-(defun dialog-choice (id text &rest options)
+(defun ensure-dialog-options (options)
+  (unless options
+    (error "Dialog choice nodes need at least one option."))
+  (coerce (mapcar #'ensure-dialog-option options) 'vector))
+
+(defun make-dialog-choice-node (id text layout options)
   (add-node (make-node :id id
                        :kind :choice
                        :text text
-                       :choices (coerce (mapcar #'ensure-dialog-option options)
-                                        'vector)))
+                       :layout layout
+                       :choices (ensure-dialog-options options)))
+  id)
+
+(defun dialog-choice (id text &rest options)
+  (make-dialog-choice-node id text :horizontal options))
+
+(defun dialog-pick (id text &rest options)
+  (make-dialog-choice-node id text :vertical options))
+
+(defun dialog-list (id text &rest options)
+  (make-dialog-choice-node id text :list options))
+
+(defun dialog-number (id text &key target response-key min max)
+  (unless target
+    (error "Number node needs a target: ~a" id))
+  (add-node (make-node :id id
+                       :kind :number
+                       :text text
+                       :target target
+                       :response-key (or response-key id)
+                       :min-value min
+                       :max-value max))
   id)
 
 (defun dialog-add-choice (node-id label target)
