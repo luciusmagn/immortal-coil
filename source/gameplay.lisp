@@ -7,6 +7,7 @@
     (advance-typewriter node)
     (case (node-kind node)
       (:choice (update-choice-node node))
+      (:branch (update-branch-node node))
       (:number (update-number-node node))
       (t (update-text-node node)))))
 
@@ -14,5 +15,6 @@
   (draw-particles)
   (case (node-kind (current-node))
     (:choice (draw-choice-node (current-node)))
+    (:branch nil)
     (:number (draw-number-node (current-node)))
     (t (draw-opening-text-node (current-node)))))

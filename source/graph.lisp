@@ -5,6 +5,11 @@
 
 (defstruct choice
   label
+  target
+  condition)
+
+(defstruct branch
+  condition
   target)
 
 (defstruct node
@@ -13,6 +18,7 @@
   text
   next
   choices
+  branches
   layout
   target
   response-key
@@ -43,8 +49,23 @@
                        :next next))
   id)
 
-(defun dialog-option (label target)
-  (make-choice :label label :target target))
+(defun dialog-option (label target
+                      &key ((:when when-condition) t)
+                           ((:unless unless-condition) nil))
+  (make-choice :label label
+               :target target
+               :condition (if unless-condition
+                              #'(lambda ()
+                                  (and (dialog-condition-true-p when-condition)
+                                       (not (dialog-condition-true-p
+                                             unless-condition))))
+                              when-condition)))
+
+(defun choice-active-p (choice)
+  (dialog-condition-true-p (choice-condition choice)))
+
+(defun active-node-choices (node)
+  (remove-if-not #'choice-active-p (node-choices node)))
 
 (defun ensure-dialog-option (value)
   (unless (choice-p value)
@@ -85,14 +106,40 @@
                        :max-value max))
   id)
 
-(defun dialog-add-choice (node-id label target)
+(defun dialog-case (condition target)
+  (make-branch :condition condition :target target))
+
+(defun dialog-default (target)
+  (dialog-case t target))
+
+(defun ensure-dialog-case (value)
+  (unless (branch-p value)
+    (error "Expected a dialog case, got: ~s" value))
+  value)
+
+(defun dialog-branch (id &rest cases)
+  (unless cases
+    (error "Branch nodes need at least one case: ~a" id))
+  (add-node (make-node :id id
+                       :kind :branch
+                       :text ""
+                       :branches (coerce (mapcar #'ensure-dialog-case cases)
+                                         'vector)))
+  id)
+
+(defun dialog-add-choice (node-id label target
+                          &key ((:when when-condition) t)
+                               ((:unless unless-condition) nil))
   (let ((node (find-node node-id)))
     (unless (eq (node-kind node) :choice)
       (error "Cannot add a choice to non-choice node: ~a" node-id))
     (setf (node-choices node)
           (concatenate 'vector
                        (node-choices node)
-                       (vector (dialog-option label target)))))
+                       (vector (dialog-option label
+                                              target
+                                              :when when-condition
+                                              :unless unless-condition)))))
   node-id)
 
 (defun dialog-set-next (node-id next-id)

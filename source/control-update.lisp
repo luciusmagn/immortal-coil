@@ -23,7 +23,10 @@
     (t (vertical-selection-direction))))
 
 (defun move-selection (node direction)
-  (let ((choice-count (length (node-choices node))))
+  (let ((choice-count (length (active-node-choices node))))
+    (when (>= (play-state-selected-index *state*) choice-count)
+      (setf (play-state-selected-index *state*)
+            (max 0 (1- choice-count))))
     (when (and direction (> choice-count 1))
       (setf (play-state-selected-index *state*)
             (mod (+ (play-state-selected-index *state*) direction)
@@ -37,10 +40,22 @@
        (skip-typewriter node)))
     (t
      (move-selection node (selection-direction node))
-     (when (confirm-pressed-p)
+     (when (and (plusp (length (active-node-choices node)))
+                (confirm-pressed-p))
        (jump-to-node
-        (choice-target (aref (node-choices node)
+        (choice-target (aref (active-node-choices node)
                              (play-state-selected-index *state*))))))))
+
+(defun matching-branch-target (node)
+  (loop for branch across (node-branches node)
+        when (dialog-condition-true-p (branch-condition branch))
+          return (branch-target branch)))
+
+(defun update-branch-node (node)
+  (let ((target (matching-branch-target node)))
+    (unless target
+      (error "Branch node has no matching case: ~a" (node-id node)))
+    (jump-to-node target)))
 
 (defun negative-number-input-allowed-p (node)
   (or (null (node-min-value node))

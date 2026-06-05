@@ -1,7 +1,6 @@
 (in-package #:immortal-coil)
 
 (defvar *state* nil)
-(defvar *dialog-values* (make-hash-table :test #'equal))
 
 (defstruct play-state
   current-id
@@ -12,19 +11,13 @@
   input-buffer)
 
 (defun reset-play-state (&optional (id *story-start-node*))
-  (clrhash *dialog-values*)
+  (reset-dialog-store)
   (setf *state* (make-play-state :current-id id
                                  :elapsed 0.0
                                  :type-delay *game-start-type-delay-seconds*
                                  :visible-count 0
                                  :selected-index 0
                                  :input-buffer "")))
-
-(defun dialog-value (key)
-  (gethash key *dialog-values*))
-
-(defun (setf dialog-value) (value key)
-  (setf (gethash key *dialog-values*) value))
 
 (defun current-node ()
   (find-node (play-state-current-id *state*)))

@@ -20,6 +20,7 @@
                 ((:file "package")
                  (:file "config")
                  (:file "util")
+                 (:file "dialog-store")
                  (:file "graph")
                  (:file "audio")
                  (:file "play-state")

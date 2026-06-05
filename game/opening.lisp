@@ -22,7 +22,16 @@
                :response-key "door-count"
                :min 0
                :max 9
-               :target "base/choose-door")
+               :target "base/door-count-branch")
+
+(dialog-branch "base/door-count-branch"
+               (dialog-case '(>= (dialog-value "door-count" 0) 5)
+                            "base/too-many-doors")
+               (dialog-default "base/choose-door"))
+
+(dialog-text "base/too-many-doors"
+             "you decide the room is lying about the number."
+             :next "base/choose-door")
 
 (dialog-pick "base/choose-door"
              "which one feels least hostile?"
@@ -40,7 +49,10 @@
              (dialog-option "bells" "base/heard-bells")
              (dialog-option "steps" "base/heard-steps")
              (dialog-option "wood" "base/heard-wood")
-             (dialog-option "silence" "base/heard-silence"))
+             (dialog-option "silence" "base/heard-silence")
+             (dialog-option "hinges" "base/heard-hinges"
+                            :when #'(lambda ()
+                                      (>= (dialog-value "door-count" 0) 5))))
 
 (dialog-text "base/heard-breathing"
              "the breathing stops when you notice it.")
@@ -68,6 +80,9 @@
 
 (dialog-text "base/heard-silence"
              "the silence notices you first.")
+
+(dialog-text "base/heard-hinges"
+             "the hinges count themselves out loud.")
 
 (dialog-text "base/sleep"
              "you rolled over and went back to sleep, nothing of interest happened...")
