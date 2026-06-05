@@ -5,6 +5,11 @@
 (defvar *type-click-index* 0)
 (defvar *choice-switch-asset* nil)
 (defvar *choice-switch-sound* nil)
+(defvar *title-music-asset* nil)
+(defvar *title-music* nil)
+(defvar *title-music-playing-p* nil)
+
+(defparameter *title-music-volume* 0.38)
 
 (defun type-click-paths ()
   (loop for i from 1 to 8
@@ -35,6 +40,35 @@
             *choice-switch-sound* (asset *choice-switch-asset*))
       (setf (volume *choice-switch-sound*) 0.16))))
 
+(defun load-title-music ()
+  (let ((path (asdf:system-relative-pathname
+               :immortal-coil
+               "assets/audio/title-ambient-drone.mp3")))
+    (when (probe-file path)
+      (stop-title-music)
+      (setf *title-music-asset* (make-music-asset path :load-now t)
+            *title-music* (asset *title-music-asset*)
+            *title-music-playing-p* nil)
+      (setf (volume *title-music*) *title-music-volume*
+            (looping *title-music*) t))))
+
+(defun play-title-music ()
+  (when (and *title-music*
+             (not *title-music-playing-p*))
+    (claylib/ll:play-music-stream (claylib::c-ptr *title-music*))
+    (setf *title-music-playing-p* t)))
+
+(defun stop-title-music ()
+  (when (and *title-music*
+             *title-music-playing-p*)
+    (claylib/ll:stop-music-stream (claylib::c-ptr *title-music*))
+    (setf *title-music-playing-p* nil)))
+
+(defun update-title-music ()
+  (when (and *title-music*
+             *title-music-playing-p*)
+    (claylib/ll:update-music-stream (claylib::c-ptr *title-music*))))
+
 (defun next-type-click ()
   (unless (zerop (length *type-click-sounds*))
     (let ((sound (aref *type-click-sounds* *type-click-index*)))
@@ -63,4 +97,5 @@
 
 (defun load-audio ()
   (load-type-clicks)
-  (load-choice-switch))
+  (load-choice-switch)
+  (load-title-music))

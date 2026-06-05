@@ -7,7 +7,8 @@
         *menu-start-elapsed* 0.0
         *game-fade-elapsed* 0.0)
   (reset-title-particles)
-  (load-audio))
+  (load-audio)
+  (play-title-music))
 
 (defun update-world ()
   (let ((dt (get-frame-time)))

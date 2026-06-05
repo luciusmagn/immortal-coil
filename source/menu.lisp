@@ -28,6 +28,7 @@
                      height)))
 
 (defun start-game ()
+  (stop-title-music)
   (load-dialog-graph)
   (reset-play-state *story-start-node*)
   (reset-particles)
@@ -52,6 +53,7 @@
 
 (defun update-menu (dt)
   (incf *menu-elapsed* dt)
+  (update-title-music)
   (update-title-particles dt)
   (case *menu-start-state*
     (:idle
