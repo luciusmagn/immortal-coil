@@ -10,7 +10,10 @@
 
 (defparameter *characters-per-second* 18.0)
 (defparameter *fade-seconds* 0.5)
-(defparameter *menu-fade-seconds* 1.4)
+(defparameter *menu-fade-seconds* 3.0)
+(defparameter *start-confirm-seconds* 0.45)
+(defparameter *start-fade-out-seconds* 1.1)
+(defparameter *game-fade-in-seconds* 1.1)
 (defparameter *menu-start-text-size* 18)
 (defparameter *particle-count* 8)
 (defparameter *title-particle-count* 1000)
@@ -19,4 +22,7 @@
 
 (defvar *mode* :menu)
 (defvar *menu-elapsed* 0.0)
+(defvar *menu-start-state* :idle)
+(defvar *menu-start-elapsed* 0.0)
+(defvar *game-fade-elapsed* 0.0)
 (defvar *borderless-fullscreen-p* nil)

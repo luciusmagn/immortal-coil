@@ -33,12 +33,40 @@
                          :width target-width
                          :height target-height))))
 
+(defun menu-fade-out-alpha ()
+  (if (eq *menu-start-state* :starting)
+      (let ((progress (/ (- *menu-start-elapsed* *start-confirm-seconds*)
+                         *start-fade-out-seconds*)))
+        (round (* 255 (smoothstep progress))))
+      0))
+
+(defun game-fade-in-alpha ()
+  (if (eq *mode* :game)
+      (round (* 255 (- 1.0 (smoothstep (/ *game-fade-elapsed*
+                                           *game-fade-in-seconds*)))))
+      0))
+
+(defun screen-fade-alpha ()
+  (max (menu-fade-out-alpha)
+       (game-fade-in-alpha)))
+
+(defun draw-screen-fade ()
+  (let ((alpha (screen-fade-alpha)))
+    (when (plusp alpha)
+      (claylib/ll:draw-rectangle 0
+                                 0
+                                 +virtual-width+
+                                 +virtual-height+
+                                 (claylib::c-ptr
+                                  (make-color 0 0 0 alpha))))))
+
 (defun draw-world ()
   (clear-background :color +black+)
   (case *mode*
     (:menu (draw-menu))
     (:game (draw-gameplay))
-    (t (draw-menu))))
+    (t (draw-menu)))
+  (draw-screen-fade))
 
 (defun draw-target (target shader)
   (with-drawing (:bgcolor +black+)

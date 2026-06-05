@@ -2,7 +2,10 @@
 
 (defun setup-game ()
   (setf *mode* :menu
-        *menu-elapsed* 0.0)
+        *menu-elapsed* 0.0
+        *menu-start-state* :idle
+        *menu-start-elapsed* 0.0
+        *game-fade-elapsed* 0.0)
   (reset-title-particles)
   (load-audio))
 
@@ -10,7 +13,9 @@
   (let ((dt (get-frame-time)))
     (case *mode*
       (:menu (update-menu dt))
-      (:game (update-gameplay dt))
+      (:game
+       (incf *game-fade-elapsed* dt)
+       (update-gameplay dt))
       (t (update-menu dt)))))
 
 (defun main ()

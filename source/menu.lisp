@@ -31,28 +31,54 @@
   (load-dialog-graph)
   (reset-play-state *story-start-node*)
   (reset-particles)
-  (setf *mode* :game))
+  (setf *mode* :game
+        *game-fade-elapsed* 0.0
+        *menu-start-state* :idle
+        *menu-start-elapsed* 0.0))
+
+(defun begin-start-transition ()
+  (setf *menu-start-state* :starting
+        *menu-start-elapsed* 0.0))
+
+(defun start-transition-total-seconds ()
+  (+ *start-confirm-seconds* *start-fade-out-seconds*))
 
 (defun start-game-pressed-p ()
-  (or (is-key-pressed-p +key-enter+)
-      (is-key-pressed-p +key-space+)
-      (and (mouse-on-start-button-p)
-           (is-mouse-button-pressed-p +mouse-button-left+))))
+  (and (eq *menu-start-state* :idle)
+       (or (is-key-pressed-p +key-enter+)
+           (is-key-pressed-p +key-space+)
+           (and (mouse-on-start-button-p)
+                (is-mouse-button-pressed-p +mouse-button-left+)))))
 
 (defun update-menu (dt)
   (incf *menu-elapsed* dt)
   (update-title-particles dt)
-  (when (start-game-pressed-p)
-    (start-game)))
+  (case *menu-start-state*
+    (:idle
+     (when (start-game-pressed-p)
+       (begin-start-transition)))
+    (:starting
+     (incf *menu-start-elapsed* dt)
+     (when (>= *menu-start-elapsed* (start-transition-total-seconds))
+       (start-game)))))
 
 (defun menu-alpha-scale ()
   (smoothstep (/ *menu-elapsed* *menu-fade-seconds*)))
 
+(defun start-button-flash-scale ()
+  (if (eq *menu-start-state* :starting)
+      (+ 0.25 (* 0.75
+                 (if (< (mod (* *menu-start-elapsed* 10.0) 1.0) 0.5)
+                     1.0
+                     0.35)))
+      1.0))
+
 (defun draw-start-button ()
   (let* ((alpha-scale (menu-alpha-scale))
+         (button-scale (* alpha-scale (start-button-flash-scale)))
          (color (if (mouse-on-start-button-p)
-                    (make-color 255 255 255 (round (* 255 alpha-scale)))
-                    (make-color 235 235 235 (round (* 245 alpha-scale))))))
+                    (make-color 255 255 255 (round (* 255 button-scale)))
+                    (make-color 235 235 235 (round (* 245 button-scale))))))
     (multiple-value-bind (x y width)
         (draw-centered-text "START GAME"
                             +menu-start-x+
