@@ -6,12 +6,12 @@
 
 (defconstant +menu-start-x+ 400.0)
 (defconstant +menu-start-y+ 300.0)
-(defconstant +menu-start-text-size+ 18)
 (defconstant +title-orbit-radius+ 145.0)
 
 (defparameter *characters-per-second* 18.0)
 (defparameter *fade-seconds* 0.5)
 (defparameter *menu-fade-seconds* 1.4)
+(defparameter *menu-start-text-size* 18)
 (defparameter *particle-count* 8)
 (defparameter *title-particle-count* 1000)
 (defparameter *title-particle-spawn-rate* 70.0)

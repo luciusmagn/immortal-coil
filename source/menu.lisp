@@ -1,11 +1,11 @@
 (in-package #:immortal-coil)
 
 (defun start-button-text-width ()
-  (measure-text "START GAME" +menu-start-text-size+))
+  (measure-text "START GAME" *menu-start-text-size*))
 
 (defun start-button-bounds ()
   (let ((width (start-button-text-width))
-        (height +menu-start-text-size+))
+        (height *menu-start-text-size*))
     (values (- +menu-start-x+ (/ width 2) 18)
             (- +menu-start-y+ (/ height 2) 14)
             (+ width 36)
@@ -57,11 +57,11 @@
         (draw-centered-text "START GAME"
                             +menu-start-x+
                             +menu-start-y+
-                            +menu-start-text-size+
+                            *menu-start-text-size*
                             color)
       (declare (ignore x))
       (claylib/ll:draw-rectangle (round (- +menu-start-x+ (/ width 2)))
-                                 (round (+ y +menu-start-text-size+ 8))
+                                 (round (+ y *menu-start-text-size* 8))
                                  (round width)
                                  4
                                  (claylib::c-ptr color)))))
