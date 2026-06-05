@@ -104,7 +104,7 @@
 (defun title-particle-trunk-position (particle phase)
   (let* ((u (/ phase 0.30))
          (eased (smoothstep u))
-         (start-y 660.0)
+         (start-y (+ +virtual-height+ 60.0))
          (entry-angle (title-particle-entry-angle particle))
          (radius (title-particle-orbit-radius particle))
          (start-x (+ +menu-start-x+

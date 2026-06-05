@@ -16,10 +16,11 @@
 
 (defun reset-particle (particle &key initial-p)
   (let ((ttl (random-float 80.0 120.0)))
-    (setf (particle-x particle) (random-float 20.0 780.0)
+    (setf (particle-x particle) (random-float 20.0 (- +virtual-width+ 20.0))
           (particle-y particle) (if initial-p
-                                    (random-float -20.0 700.0)
-                                    (random-float 610.0 740.0))
+                                    (random-float -20.0 (+ +virtual-height+ 100.0))
+                                    (random-float (+ +virtual-height+ 10.0)
+                                                  (+ +virtual-height+ 140.0)))
           (particle-vx particle) (random-float -3.0 3.0)
           (particle-vy particle) (random-float -20.0 -12.0)
           (particle-wobble-phase particle) (random-float 0.0 (* 2 pi))

@@ -108,7 +108,11 @@
          (color (make-color 255 255 255 (current-alpha)))
          (text (visible-node-text node)))
     (multiple-value-bind (x y width)
-        (draw-centered-text text 400 280 size color)
+        (draw-centered-text text
+                            +virtual-center-x+
+                            (- +virtual-center-y+ 20)
+                            size
+                            color)
       (draw-cursor x y width size color))))
 
 (defun draw-choice-option (choice x y selected-p color)
@@ -126,14 +130,19 @@
          (color (make-color 255 255 255 (current-alpha)))
          (text (visible-node-text node)))
     (multiple-value-bind (x y width)
-        (draw-centered-text text 400 200 size color)
+        (draw-centered-text text
+                            +virtual-center-x+
+                            (- +virtual-center-y+ 150)
+                            size
+                            color)
       (draw-cursor x y width size color))
     (loop for choice across (node-choices node)
           for i from 0
-          for x in '(200 600)
+          for x in (list (- +virtual-center-x+ 280)
+                         (+ +virtual-center-x+ 280))
           do (draw-choice-option choice
                                  x
-                                 450
+                                 (- +virtual-height+ 170)
                                  (= i (play-state-selected-index *state*))
                                  color))))
 

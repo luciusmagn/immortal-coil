@@ -7,7 +7,7 @@ uniform sampler2D texture0;
 
 out vec4 finalColor;
 
-const vec2 resolution = vec2(800.0, 600.0);
+const vec2 resolution = vec2(1280.0, 720.0);
 
 vec2 curve(vec2 uv)
 {

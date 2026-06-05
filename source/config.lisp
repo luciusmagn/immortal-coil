@@ -1,11 +1,13 @@
 (in-package #:immortal-coil)
 
-(defconstant +virtual-width+ 800)
-(defconstant +virtual-height+ 600)
+(defconstant +virtual-width+ 1280)
+(defconstant +virtual-height+ 720)
+(defconstant +virtual-center-x+ (/ +virtual-width+ 2.0))
+(defconstant +virtual-center-y+ (/ +virtual-height+ 2.0))
 (defconstant +particle-size+ 2)
 
-(defconstant +menu-start-x+ 400.0)
-(defconstant +menu-start-y+ 300.0)
+(defconstant +menu-start-x+ +virtual-center-x+)
+(defconstant +menu-start-y+ 410.0)
 (defconstant +title-orbit-radius+ 145.0)
 
 (defparameter *characters-per-second* 11.0)
