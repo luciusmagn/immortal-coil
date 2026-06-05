@@ -23,6 +23,7 @@
                  (:file "graph")
                  (:file "audio")
                  (:file "particles")
+                 (:file "title-logo")
                  (:file "title-particles")
                  (:file "fullscreen")
                  (:file "gameplay")

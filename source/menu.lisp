@@ -95,5 +95,6 @@
                                  (claylib::c-ptr color)))))
 
 (defun draw-menu ()
+  (draw-title-logo (menu-alpha-scale))
   (draw-title-particles (menu-alpha-scale))
   (draw-start-button))

@@ -206,7 +206,7 @@
                                    +particle-size+
                                    +particle-size+
                                    (claylib::c-ptr
-                                    (make-color 255 255 255 alpha)))))))
+                                    (title-logo-particle-color x y alpha)))))))
 
 (defun draw-title-particles (&optional (alpha-scale 1.0))
   (loop for particle across *title-particles*

@@ -9,6 +9,8 @@
 (defconstant +menu-start-x+ +virtual-center-x+)
 (defconstant +menu-start-y+ 410.0)
 (defconstant +title-orbit-radius+ 145.0)
+(defconstant +title-logo-width+ 900.0)
+(defconstant +title-logo-y+ 34.0)
 
 (defparameter *characters-per-second* 11.0)
 (defparameter *fade-seconds* 1.2)
