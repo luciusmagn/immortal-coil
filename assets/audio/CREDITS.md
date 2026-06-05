@@ -22,3 +22,11 @@
 - Author: qubodup
 - License: CC0
 - Notes: Used when switching between visible choice options.
+
+## title-ambient-drone.mp3
+
+- Source: Generated with OpenRouter using `google/lyria-3-pro-preview`.
+- Provider: Google AI Studio via OpenRouter.
+- Date generated: 2026-06-05.
+- Prompt: Evolving dark ambient background music for a black-and-white text narrative, with long sustained tones, slow harmonic drift, low organ pad, soft analog hum, distant airy texture, subtle unease, and no drums/percussion/bells/beat.
+- Notes: Selected as the title/menu background ambience candidate. Review the applicable OpenRouter and Google terms before public release.
