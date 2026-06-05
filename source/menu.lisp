@@ -38,6 +38,7 @@
         *menu-start-elapsed* 0.0))
 
 (defun begin-start-transition ()
+  (play-start-confirm)
   (setf *menu-start-state* :starting
         *menu-start-elapsed* 0.0))
 

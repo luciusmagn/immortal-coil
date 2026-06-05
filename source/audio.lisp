@@ -5,6 +5,8 @@
 (defvar *type-click-index* 0)
 (defvar *choice-switch-asset* nil)
 (defvar *choice-switch-sound* nil)
+(defvar *start-confirm-asset* nil)
+(defvar *start-confirm-sound* nil)
 (defvar *title-music-asset* nil)
 (defvar *title-music* nil)
 (defvar *title-music-playing-p* nil)
@@ -39,6 +41,16 @@
       (setf *choice-switch-asset* (make-sound-asset path :load-now t)
             *choice-switch-sound* (asset *choice-switch-asset*))
       (setf (volume *choice-switch-sound*) 0.16))))
+
+(defun load-start-confirm ()
+  (let ((path (asdf:system-relative-pathname
+               :immortal-coil
+               "assets/audio/choice-switch.wav")))
+    (when (probe-file path)
+      (setf *start-confirm-asset* (make-sound-asset path :load-now t)
+            *start-confirm-sound* (asset *start-confirm-asset*))
+      (setf (volume *start-confirm-sound*) 0.24
+            (pitch *start-confirm-sound*) 0.82))))
 
 (defun load-title-music ()
   (let ((path (asdf:system-relative-pathname
@@ -95,7 +107,13 @@
           (+ 0.98 (/ (get-random-value 0 8) 100.0)))
     (claylib/ll:play-sound (claylib::c-ptr *choice-switch-sound*))))
 
+(defun play-start-confirm ()
+  (when *start-confirm-sound*
+    (setf (pitch *start-confirm-sound*) 0.82)
+    (claylib/ll:play-sound (claylib::c-ptr *start-confirm-sound*))))
+
 (defun load-audio ()
   (load-type-clicks)
   (load-choice-switch)
+  (load-start-confirm)
   (load-title-music))
