@@ -20,16 +20,16 @@
         (tint (texture target)) +white+))
 
 (defun configure-target-destination (target)
-  (let* ((screen-width (get-screen-width))
-         (screen-height (get-screen-height))
-         (scale (min (/ (float screen-width 1.0) +virtual-width+)
-                     (/ (float screen-height 1.0) +virtual-height+)))
+  (let* ((render-width (get-render-width))
+         (render-height (get-render-height))
+         (scale (min (/ (float render-width 1.0) +virtual-width+)
+                     (/ (float render-height 1.0) +virtual-height+)))
          (target-width (* +virtual-width+ scale))
          (target-height (* +virtual-height+ scale)))
     (setf (dest (texture target))
           (make-instance 'rl-rectangle
-                         :x (/ (- screen-width target-width) 2)
-                         :y (/ (- screen-height target-height) 2)
+                         :x (/ (- render-width target-width) 2)
+                         :y (/ (- render-height target-height) 2)
                          :width target-width
                          :height target-height))))
 

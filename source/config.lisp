@@ -30,4 +30,7 @@
 (defvar *menu-start-state* :idle)
 (defvar *menu-start-elapsed* 0.0)
 (defvar *game-fade-elapsed* 0.0)
-(defvar *borderless-fullscreen-p* nil)
+(defvar *window-mode* :windowed)
+(defvar *requested-window-mode* nil)
+(defvar *fullscreen-width* +virtual-width+)
+(defvar *fullscreen-height* +virtual-height+)

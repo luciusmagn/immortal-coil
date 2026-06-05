@@ -117,3 +117,16 @@
   (load-choice-switch)
   (load-start-confirm)
   (load-title-music))
+
+(defun clear-audio-resources ()
+  (stop-title-music)
+  (setf *type-click-assets* nil
+        *type-click-sounds* #()
+        *type-click-index* 0
+        *choice-switch-asset* nil
+        *choice-switch-sound* nil
+        *start-confirm-asset* nil
+        *start-confirm-sound* nil
+        *title-music-asset* nil
+        *title-music* nil
+        *title-music-playing-p* nil))

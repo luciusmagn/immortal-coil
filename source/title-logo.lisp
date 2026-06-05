@@ -41,6 +41,11 @@
                           :height (title-logo-height)
                           :tint (make-color 255 255 255 255))))))
 
+(defun clear-title-logo ()
+  (setf *title-logo-texture-asset* nil
+        *title-logo-image-asset* nil
+        *title-logo-texture* nil))
+
 (defun draw-title-logo (&optional (alpha-scale 1.0))
   (when *title-logo-texture*
     (setf (tint *title-logo-texture*)
