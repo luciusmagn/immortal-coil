@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Immortal Coil Dialog Editor</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img src="../../assets/logo/title-logo.png" alt="Immortal Coil">
+          <div>
+            <p class="eyebrow">dialog graph editor</p>
+            <h1>Immortal Coil</h1>
+          </div>
+        </div>
+        <div class="toolbar">
+          <button id="loadOpeningButton" type="button">Load Opening</button>
+          <label class="file-button">
+            Import
+            <input id="fileInput" type="file" accept=".lisp,.cl,.txt">
+          </label>
+          <button id="layoutButton" type="button">Layout</button>
+          <button id="exportButton" type="button">Export</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="graph-panel" aria-label="Dialog graph canvas">
+          <div class="graph-meta">
+            <div>
+              <p id="graphCount">0 nodes</p>
+              <strong id="startNodeLabel">no start node</strong>
+            </div>
+            <div class="zoom-controls">
+              <button id="zoomOutButton" type="button" aria-label="Zoom out">-</button>
+              <button id="zoomResetButton" type="button" aria-label="Reset zoom">1:1</button>
+              <button id="zoomInButton" type="button" aria-label="Zoom in">+</button>
+            </div>
+          </div>
+          <div id="graphStage" class="graph-stage" tabindex="0">
+            <div id="graphWorld" class="graph-world">
+              <svg id="edgeLayer" class="edge-layer" aria-hidden="true"></svg>
+              <div id="nodeLayer" class="node-layer"></div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="inspector" aria-label="Node inspector">
+          <div class="inspector-header">
+            <div>
+              <p class="eyebrow">selected node</p>
+              <h2 id="selectedTitle">None</h2>
+            </div>
+            <button id="addNodeButton" type="button">Add Node</button>
+          </div>
+
+          <form id="nodeForm" class="node-form">
+            <label>
+              <span>ID</span>
+              <input id="nodeIdInput" name="id" autocomplete="off">
+            </label>
+
+            <label>
+              <span>Kind</span>
+              <select id="nodeKindSelect" name="kind">
+                <option value="text">text</option>
+                <option value="choice">choice</option>
+                <option value="number">number</option>
+                <option value="branch">branch</option>
+              </select>
+            </label>
+
+            <label id="layoutField">
+              <span>Layout</span>
+              <select id="nodeLayoutSelect" name="layout">
+                <option value="horizontal">horizontal</option>
+                <option value="vertical">vertical</option>
+                <option value="list">list</option>
+              </select>
+            </label>
+
+            <label id="textField">
+              <span>Text</span>
+              <textarea id="nodeTextInput" name="text" rows="4"></textarea>
+            </label>
+
+            <label id="nextField">
+              <span>Next</span>
+              <input id="nodeNextInput" name="next" list="nodeIds" autocomplete="off">
+            </label>
+
+            <div id="numberFields" class="field-grid">
+              <label>
+                <span>Target</span>
+                <input id="nodeTargetInput" name="target" list="nodeIds" autocomplete="off">
+              </label>
+              <label>
+                <span>Store Key</span>
+                <input id="nodeResponseKeyInput" name="responseKey" autocomplete="off">
+              </label>
+              <label>
+                <span>Min</span>
+                <input id="nodeMinInput" name="min" inputmode="numeric">
+              </label>
+              <label>
+                <span>Max</span>
+                <input id="nodeMaxInput" name="max" inputmode="numeric">
+              </label>
+            </div>
+
+            <div id="choicesField" class="repeater">
+              <div class="repeater-title">
+                <span>Choices</span>
+                <button id="addChoiceButton" type="button">Add</button>
+              </div>
+              <div id="choicesList"></div>
+            </div>
+
+            <div id="branchesField" class="repeater">
+              <div class="repeater-title">
+                <span>Branches</span>
+                <button id="addBranchButton" type="button">Add</button>
+              </div>
+              <div id="branchesList"></div>
+            </div>
+
+            <div class="form-actions">
+              <button id="setStartButton" type="button">Set Start</button>
+              <button id="deleteNodeButton" class="danger" type="button">Delete</button>
+            </div>
+          </form>
+
+          <section class="source-panel">
+            <div class="source-head">
+              <span>Exported Lisp</span>
+              <button id="copyButton" type="button">Copy</button>
+            </div>
+            <textarea id="sourceOutput" spellcheck="false" wrap="off"></textarea>
+          </section>
+        </aside>
+      </main>
+
+      <datalist id="nodeIds"></datalist>
+    </div>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
