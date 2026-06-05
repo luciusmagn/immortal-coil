@@ -5,12 +5,14 @@
 (defstruct play-state
   current-id
   elapsed
+  type-delay
   visible-count
   selected-index)
 
 (defun reset-play-state (&optional (id *story-start-node*))
   (setf *state* (make-play-state :current-id id
                                  :elapsed 0.0
+                                 :type-delay *game-start-type-delay-seconds*
                                  :visible-count 0
                                  :selected-index 0)))
 
@@ -24,11 +26,16 @@
 (defun jump-to-node (id)
   (setf (play-state-current-id *state*) id
         (play-state-elapsed *state*) 0.0
+        (play-state-type-delay *state*) 0.0
         (play-state-visible-count *state*) 0
         (play-state-selected-index *state*) 0))
 
+(defun typewriter-elapsed ()
+  (max 0.0 (- (play-state-elapsed *state*)
+              (play-state-type-delay *state*))))
+
 (defun current-alpha ()
-  (round (* 255 (cubic-in (/ (play-state-elapsed *state*) *fade-seconds*)))))
+  (round (* 255 (cubic-in (/ (typewriter-elapsed) *fade-seconds*)))))
 
 (defun visible-node-text (node)
   (subseq (node-text node)
@@ -51,7 +58,7 @@
 (defun advance-typewriter (node)
   (let* ((old-count (play-state-visible-count *state*))
          (new-count (min (length (node-text node))
-                         (floor (* (play-state-elapsed *state*)
+                         (floor (* (typewriter-elapsed)
                                    *characters-per-second*)))))
     (when (> new-count old-count)
       (setf (play-state-visible-count *state*) new-count)
