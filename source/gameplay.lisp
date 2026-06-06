@@ -10,6 +10,7 @@
       (:branch (update-branch-node node))
       (:number (update-number-node node))
       (:string (update-string-node node))
+      (:minigame (update-minigame-node node dt))
       (t (update-text-node node)))))
 
 (defun draw-gameplay ()
@@ -19,4 +20,5 @@
     (:branch nil)
     (:number (draw-number-node (current-node)))
     (:string (draw-string-node (current-node)))
+    (:minigame (draw-minigame-node (current-node)))
     (t (draw-opening-text-node (current-node)))))

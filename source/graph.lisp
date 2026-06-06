@@ -25,7 +25,10 @@
   min-value
   max-value
   max-length
-  allow-empty-p)
+  allow-empty-p
+  minigame
+  success-target
+  failure-target)
 
 (defun reset-nodes ()
   (clrhash *nodes*))
@@ -118,6 +121,19 @@
                        :response-key (or response-key id)
                        :max-length max-length
                        :allow-empty-p allow-empty))
+  id)
+
+(defun dialog-minigame (id text &key (game :wire-flight) success failure)
+  (unless success
+    (error "Minigame node needs a success target: ~a" id))
+  (unless failure
+    (error "Minigame node needs a failure target: ~a" id))
+  (add-node (make-node :id id
+                       :kind :minigame
+                       :text text
+                       :minigame game
+                       :success-target success
+                       :failure-target failure))
   id)
 
 (defun dialog-case (condition target)

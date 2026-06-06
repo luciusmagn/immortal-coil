@@ -28,6 +28,7 @@
                  (:file "save")
                  (:file "control-update")
                  (:file "control-rendering")
+                 (:file "minigame")
                  (:file "particles")
                  (:file "title-logo")
                  (:file "title-particles")

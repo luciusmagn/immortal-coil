@@ -20,8 +20,40 @@
                (dialog-option "no" "base/sleep"))
 
 (dialog-text "base/exited-bed"
-             "you stand beside the bed. the wall has too many doors."
-             :next "base/count-doors")
+             "you stand beside the bed. a night stand waits under the wrong shadow."
+             :next "base/night-stand")
+
+(dialog-pick "base/night-stand"
+             "what do you take from the night stand?"
+             (dialog-option "glass of water" "ship/wake")
+             (dialog-option "matchbook" "base/count-doors")
+             (dialog-option "brass key" "base/count-doors")
+             (dialog-option "nothing" "base/count-doors"))
+
+(dialog-text "ship/wake"
+             "the glass is suddenly weightless. the room becomes a cockpit."
+             :next "ship/alarm")
+
+(dialog-text "ship/alarm"
+             "captain {player-name}, the wireframe lane is collapsing."
+             :next "ship/flight")
+
+(dialog-minigame "ship/flight"
+                 "keep the ship inside the open wireframe gates."
+                 :game :wire-flight
+                 :success "ship/threaded"
+                 :failure "ship/crash-loop")
+
+(dialog-text "ship/threaded"
+             "you thread the line. for one impossible second, the ship is quiet.")
+
+(dialog-text "ship/crash-loop"
+             "the ship breaks open. loop {ship-loop} begins before you finish dying."
+             :next "ship/wake-repeat")
+
+(dialog-text "ship/wake-repeat"
+             "captain {player-name}, the wireframe lane is collapsing again."
+             :next "ship/flight")
 
 (dialog-number "base/count-doors"
                "how many doors do you count?"
