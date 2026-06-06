@@ -1,10 +1,13 @@
 (in-package #:immortal-coil)
 
 (defvar *nodes* (make-hash-table :test #'equal))
+(defvar *node-sources* (make-hash-table :test #'equal))
 (defvar *pending-node-enter-effects* (make-hash-table :test #'equal))
 (defvar *story-start-node* nil)
 (defvar *last-dialog-node-id* nil)
 (defvar *dev-save-override* nil)
+(defvar *current-dialog-source* :repl)
+(defvar *dialog-conflicts* nil)
 (defparameter *runtime-fallback-node-id* "runtime/fallback")
 
 (defstruct choice
@@ -15,6 +18,12 @@
 (defstruct branch
   condition
   target)
+
+(defstruct dialog-conflict
+  node-id
+  previous-source
+  new-source
+  resolution)
 
 (defstruct node
   id
@@ -37,7 +46,35 @@
 
 (defun reset-nodes ()
   (clrhash *nodes*)
+  (clrhash *node-sources*)
   (clrhash *pending-node-enter-effects*))
+
+(defun dialog-source-name (source)
+  (typecase source
+    (pathname (namestring source))
+    (string source)
+    (symbol (string-downcase (symbol-name source)))
+    (t (princ-to-string source))))
+
+(defun current-dialog-source-name ()
+  (dialog-source-name *current-dialog-source*))
+
+(defun dialog-source-same-p (left right)
+  (string= (dialog-source-name left)
+           (dialog-source-name right)))
+
+(defun record-dialog-conflict (node-id previous-source new-source)
+  (let ((conflict (make-dialog-conflict
+                   :node-id node-id
+                   :previous-source previous-source
+                   :new-source new-source
+                   :resolution :latest-wins)))
+    (push conflict *dialog-conflicts*)
+    (runtime-warn "Dialog node conflict for ~a: ~a replaced by ~a."
+                  node-id
+                  (dialog-source-name previous-source)
+                  (dialog-source-name new-source))
+    conflict))
 
 (defun node-existing-enter-effects (id)
   (let ((node (gethash id *nodes*)))
@@ -54,6 +91,13 @@
             (node-enter-effects node))))
 
 (defun add-node (node)
+  (let* ((id (node-id node))
+         (previous-source (gethash id *node-sources*))
+         (new-source (current-dialog-source-name)))
+    (when (and previous-source
+               (not (dialog-source-same-p previous-source new-source)))
+      (record-dialog-conflict id previous-source new-source))
+    (setf (gethash id *node-sources*) new-source))
   (setf (node-enter-effects node)
         (combine-node-enter-effects node))
   (remhash (node-id node) *pending-node-enter-effects*)
@@ -88,7 +132,8 @@
   (reset-nodes)
   (setf *story-start-node* nil
         *last-dialog-node-id* nil
-        *dev-save-override* nil))
+        *dev-save-override* nil
+        *dialog-conflicts* nil))
 
 (defun dialog-start (id)
   (setf *story-start-node* id))
@@ -289,9 +334,11 @@
 
 (defun eval-dialog-script (path)
   (handler-case
-      (let ((eof (gensym "EOF")))
-        (with-open-file (stream (dialog-script-pathname path))
-          (let ((*package* (find-package "IMMORTAL-COIL")))
+      (let* ((script-path (dialog-script-pathname path))
+             (eof (gensym "EOF")))
+        (with-open-file (stream script-path)
+          (let ((*package* (find-package "IMMORTAL-COIL"))
+                (*current-dialog-source* script-path))
             (loop for form = (read stream nil eof)
                   until (eq form eof)
                   do (handler-case
@@ -300,16 +347,23 @@
                          (runtime-warn "Dialog form failed in ~a: ~s (~a)"
                                        path
                                        form
-                                       condition)))))))
+                                       condition))))))
+        t)
     (error (condition)
       (runtime-warn "Dialog script failed to load: ~a (~a)"
                     path
-                    condition))))
+                    condition)
+      nil)))
+
+(defun load-dialog-mods-maybe ()
+  (when (fboundp 'load-dialog-mods)
+    (funcall (symbol-function 'load-dialog-mods))))
 
 (defun load-dialog-graph (&optional (paths *dialog-script-paths*))
   (reset-dialog-graph)
   (dolist (path paths)
     (eval-dialog-script path))
+  (load-dialog-mods-maybe)
   (unless *story-start-node*
     (runtime-warn "No dialog start node was set by scripts: ~s" paths)
     (setf *story-start-node* *runtime-fallback-node-id*))

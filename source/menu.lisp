@@ -3,8 +3,15 @@
 (defparameter *menu-selection*
   (make-command-selection :new-game "NEW GAME"
                           :continue "CONTINUE"
-                          :options "OPTIONS"
+                          :mods "MODS"
                           :exit "EXIT"))
+
+(defvar *menu-status-message* nil)
+
+(defun current-mod-status-text ()
+  (if (fboundp 'dialog-mod-status-summary)
+      (funcall (symbol-function 'dialog-mod-status-summary))
+      "MODS: UNAVAILABLE"))
 
 (defun menu-option-count ()
   (selection-count *menu-selection*))
@@ -25,7 +32,8 @@
   (setf *menu-elapsed* 0.0
         *menu-start-action* nil
         *menu-start-state* :idle
-        *menu-start-elapsed* 0.0)
+        *menu-start-elapsed* 0.0
+        *menu-status-message* (current-mod-status-text))
   (selection-reset *menu-selection*))
 
 (defun menu-action-available-p (action)
@@ -140,6 +148,13 @@
         *menu-start-action* action
         *menu-start-elapsed* 0.0))
 
+(defun refresh-menu-mod-status ()
+  (setf *menu-status-message*
+        (if (fboundp 'refresh-dialog-mod-status)
+            (funcall (symbol-function 'refresh-dialog-mod-status))
+            "MODS: UNAVAILABLE"))
+  (play-choice-switch))
+
 (defun start-transition-total-seconds ()
   (+ *start-confirm-seconds* *start-fade-out-seconds*))
 
@@ -179,8 +194,8 @@
       (:exit
        (play-start-confirm)
        (setf *quit-requested-p* t))
-      (:options
-       (play-choice-switch))
+      (:mods
+       (refresh-menu-mod-status))
       (t
        (if (menu-action-available-p action)
            (begin-start-transition action)
@@ -227,6 +242,22 @@
                         +menu-start-y+
                         *menu-start-text-size*
                         color)))
+
+(defun menu-status-text ()
+  (when (eq (selected-menu-action) :mods)
+    *menu-status-message*))
+
+(defun draw-menu-status ()
+  (let ((text (menu-status-text)))
+    (when text
+      (draw-centered-text text
+                          +menu-start-x+
+                          (+ +menu-start-y+ 42)
+                          13
+                          (make-color 255
+                                      255
+                                      255
+                                      (round (* 180 (menu-alpha-scale))))))))
 
 (defun draw-menu-arrow-triangle (x1 y1 x2 y2 x3 y3 color)
   (draw-triangle-points x1 y1 x2 y2 x3 y3 color :filled-p t)
@@ -287,4 +318,5 @@
   (draw-title-logo (menu-alpha-scale))
   (draw-title-particles (menu-alpha-scale))
   (draw-menu-arrows)
-  (draw-menu-option))
+  (draw-menu-option)
+  (draw-menu-status))

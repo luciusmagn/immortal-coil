@@ -2,3 +2,5 @@
 assets/audio/generated/
 result
 save/
+mods/*
+!mods/README.md

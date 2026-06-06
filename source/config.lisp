@@ -27,6 +27,7 @@
 (defparameter *title-particle-count* 1000)
 (defparameter *title-particle-spawn-rate* 70.0)
 (defparameter *dialog-script-paths* '("game/opening.lisp"))
+(defparameter *mod-directory-paths* '("mods/"))
 
 (defvar *mode* :menu)
 (defvar *menu-elapsed* 0.0)

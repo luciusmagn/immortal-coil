@@ -17,6 +17,7 @@
                  (:file "graph")
                  (:file "graph-patterns")
                  (:file "dev-save")
+                 (:file "mods")
                  (:file "text-template")
                  (:file "audio")
                  (:file "particles")
