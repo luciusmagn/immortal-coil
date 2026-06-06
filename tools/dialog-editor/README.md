@@ -2,16 +2,22 @@
 
 Static browser editor for Immortal Coil dialog scripts.
 
-Run from the repository root when you want `Load Opening` to fetch `game/opening.lisp`:
+Run from the repository root:
 
 ```bash
-python3 -m http.server 8080
+nix run .#editor
 ```
 
 Then open:
 
 ```text
 http://localhost:8080/tools/dialog-editor/
+```
+
+To change the bind address or port:
+
+```bash
+nix run .#editor -- --host 0.0.0.0 --port 8081
 ```
 
 Use the local server instead of opening `index.html` directly. The editor uses browser module imports, and browsers also block local `fetch` calls from `file://`.

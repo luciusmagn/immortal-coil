@@ -98,6 +98,16 @@
           libraryPath = pkgs.lib.makeLibraryPath claylibLibraries;
         in
         rec {
+          dialog-editor = pkgs.writeShellApplication {
+            name = "immortal-coil-editor";
+
+            runtimeInputs = [
+              pkgs.python3
+            ];
+
+            text = builtins.readFile ./scripts/start-dialog-editor.sh;
+          };
+
           immortal-coil = pkgs.stdenv.mkDerivation {
             pname = "immortal-coil";
             version = "0.1.0";
@@ -149,12 +159,21 @@
           default = immortal-coil;
         });
 
-      apps = forAllSystems (pkgs: {
-        default = {
-          type = "app";
-          program = "${self.packages.${pkgs.system}.immortal-coil}/bin/immortal-coil";
-        };
-      });
+      apps = forAllSystems (pkgs:
+        let
+          system = pkgs.stdenv.hostPlatform.system;
+        in
+        {
+          default = {
+            type = "app";
+            program = "${self.packages.${system}.immortal-coil}/bin/immortal-coil";
+          };
+
+          editor = {
+            type = "app";
+            program = "${self.packages.${system}.dialog-editor}/bin/immortal-coil-editor";
+          };
+        });
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell {
@@ -173,6 +192,7 @@
               ps.trivial-features
               ps.trivial-garbage
             ]))
+            pkgs.python3
             pkgs.ripgrep
           ];
         };
