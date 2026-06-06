@@ -254,6 +254,10 @@ textarea:focus-visible,
   stroke-dasharray: 2 7;
 }
 
+.edge.minigame {
+  stroke-dasharray: 14 5 3 5;
+}
+
 .edge.conditional {
   stroke-width: 3;
   stroke: rgba(245, 247, 242, 0.78);
@@ -417,6 +421,10 @@ textarea {
 
 .field-grid label:first-child,
 .field-grid label:nth-child(2) {
+  grid-column: span 2;
+}
+
+#minigameFields label {
   grid-column: span 2;
 }
 

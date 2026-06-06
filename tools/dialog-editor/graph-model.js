@@ -49,6 +49,9 @@ export function defaultNode(id, x, y) {
     max: "",
     maxLength: "",
     allowEmpty: false,
+    minigame: "wire-flight",
+    successTarget: "",
+    failureTarget: "",
     choices: [],
     branches: [],
     x: x || 100,
@@ -75,6 +78,32 @@ export function outgoingEdges(node) {
       kind: node.kind,
       conditional: false
     }] : [];
+  }
+
+  if (node.kind === "minigame") {
+    const edges = [];
+
+    if (node.successTarget) {
+      edges.push({
+        from: node.id,
+        to: node.successTarget,
+        label: "success",
+        kind: "minigame",
+        conditional: false
+      });
+    }
+
+    if (node.failureTarget) {
+      edges.push({
+        from: node.id,
+        to: node.failureTarget,
+        label: "failure",
+        kind: "minigame",
+        conditional: false
+      });
+    }
+
+    return edges;
   }
 
   if (node.kind === "choice") {
@@ -179,6 +208,14 @@ export function replaceTargetReferences(oldId, newId) {
       node.target = newId;
     }
 
+    if (node.successTarget === oldId) {
+      node.successTarget = newId;
+    }
+
+    if (node.failureTarget === oldId) {
+      node.failureTarget = newId;
+    }
+
     node.choices.forEach((choice) => {
       if (choice.target === oldId) {
         choice.target = newId;
@@ -201,6 +238,14 @@ export function clearTargetReferences(id) {
 
     if (node.target === id) {
       node.target = "";
+    }
+
+    if (node.successTarget === id) {
+      node.successTarget = "";
+    }
+
+    if (node.failureTarget === id) {
+      node.failureTarget = "";
     }
 
     node.choices.forEach((choice) => {
@@ -246,6 +291,9 @@ export function seedGraph() {
         max: "",
         maxLength: "",
         allowEmpty: false,
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
         choices: [],
         branches: [],
         x: 0,
@@ -263,6 +311,9 @@ export function seedGraph() {
         max: "",
         maxLength: "",
         allowEmpty: false,
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
         choices: [
           { label: "yes", target: "base/yes", condition: "" },
           { label: "no", target: "base/no", condition: "" }
@@ -283,6 +334,9 @@ export function seedGraph() {
         max: "",
         maxLength: "",
         allowEmpty: false,
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
         choices: [],
         branches: [],
         x: 0,
@@ -300,6 +354,9 @@ export function seedGraph() {
         max: "",
         maxLength: "",
         allowEmpty: false,
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
         choices: [],
         branches: [],
         x: 0,

@@ -262,6 +262,21 @@ function readBooleanKey(keys, name) {
   return stringValue(value) !== "";
 }
 
+function readKeywordKey(keys, name, fallback) {
+  const value = readKey(keys, name);
+
+  if (!value) {
+    return fallback;
+  }
+
+  return value.replace(/^:/, "");
+}
+
+function keywordSource(value) {
+  const text = String(value || "wire-flight").trim().replace(/^:/, "");
+  return ":" + (text || "wire-flight");
+}
+
 function parseDialogOption(form) {
   const args = keyArguments(form, 3);
   const whenValue = args.keys.get(":when");
@@ -335,6 +350,9 @@ export function parseDialog(source) {
         max: "",
         maxLength: "",
         allowEmpty: false,
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
         choices: [],
         branches: [],
         x: 0,
@@ -365,6 +383,9 @@ export function parseDialog(source) {
         max: "",
         maxLength: "",
         allowEmpty: false,
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
         choices: choices,
         branches: [],
         x: 0,
@@ -388,6 +409,9 @@ export function parseDialog(source) {
         max: readNumberKey(args.keys, ":max", ""),
         maxLength: "",
         allowEmpty: false,
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
         choices: [],
         branches: [],
         x: 0,
@@ -411,6 +435,35 @@ export function parseDialog(source) {
         max: "",
         maxLength: readNumberKey(args.keys, ":max-length", ""),
         allowEmpty: readBooleanKey(args.keys, ":allow-empty"),
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
+        choices: [],
+        branches: [],
+        x: 0,
+        y: 0
+      });
+      return;
+    }
+
+    if (head === "dialog-minigame") {
+      const args = keyArguments(form, 3);
+
+      nodes.push({
+        id: stringValue(form[1]),
+        kind: "minigame",
+        text: stringValue(form[2]),
+        next: "",
+        layout: "horizontal",
+        target: "",
+        responseKey: "",
+        min: "",
+        max: "",
+        maxLength: "",
+        allowEmpty: false,
+        minigame: readKeywordKey(args.keys, ":game", "wire-flight"),
+        successTarget: readKey(args.keys, ":success"),
+        failureTarget: readKey(args.keys, ":failure"),
         choices: [],
         branches: [],
         x: 0,
@@ -436,6 +489,9 @@ export function parseDialog(source) {
         max: "",
         maxLength: "",
         allowEmpty: false,
+        minigame: "wire-flight",
+        successTarget: "",
+        failureTarget: "",
         choices: [],
         branches: branches,
         x: 0,
@@ -571,6 +627,26 @@ function nodeSource(node) {
     node.branches.forEach((branch) => {
       lines.push(branchSource(branch, indent));
     });
+
+    return lines.join("\n") + ")";
+  }
+
+  if (node.kind === "minigame") {
+    const command = "dialog-minigame";
+    const indent = commandIndent(command);
+    const lines = [
+      "(" + command + " " + lispString(node.id),
+      indent + lispString(node.text || ""),
+      indent + ":game " + keywordSource(node.minigame)
+    ];
+
+    if (node.successTarget) {
+      lines.push(indent + ":success " + lispString(node.successTarget));
+    }
+
+    if (node.failureTarget) {
+      lines.push(indent + ":failure " + lispString(node.failureTarget));
+    }
 
     return lines.join("\n") + ")";
   }

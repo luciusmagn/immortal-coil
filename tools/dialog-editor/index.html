@@ -70,6 +70,7 @@
                 <option value="choice">choice</option>
                 <option value="number">number</option>
                 <option value="string">string</option>
+                <option value="minigame">minigame</option>
                 <option value="branch">branch</option>
               </select>
             </label>
@@ -113,6 +114,21 @@
               <label id="allowEmptyField" class="checkbox-field">
                 <input id="nodeAllowEmptyInput" name="allowEmpty" type="checkbox">
                 <span>Allow Empty</span>
+              </label>
+            </div>
+
+            <div id="minigameFields" class="field-grid">
+              <label>
+                <span>Game</span>
+                <input id="nodeMinigameInput" name="minigame" autocomplete="off">
+              </label>
+              <label>
+                <span>Success</span>
+                <input id="nodeSuccessTargetInput" name="successTarget" list="nodeIds" autocomplete="off">
+              </label>
+              <label>
+                <span>Failure</span>
+                <input id="nodeFailureTargetInput" name="failureTarget" list="nodeIds" autocomplete="off">
               </label>
             </div>
 

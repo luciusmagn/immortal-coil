@@ -59,6 +59,10 @@ function collectElements() {
     "nodeMaxInput",
     "allowEmptyField",
     "nodeAllowEmptyInput",
+    "minigameFields",
+    "nodeMinigameInput",
+    "nodeSuccessTargetInput",
+    "nodeFailureTargetInput",
     "choicesField",
     "choicesList",
     "addChoiceButton",
@@ -200,6 +204,10 @@ function changeNodeKind(kind) {
 
     if (kind === "string" && !node.maxLength) {
       node.maxLength = "32";
+    }
+
+    if (kind === "minigame" && !node.minigame) {
+      node.minigame = "wire-flight";
     }
   }, true);
 }
@@ -403,6 +411,24 @@ function bindInspector() {
   elements.nodeAllowEmptyInput.addEventListener("change", () => {
     updateSelectedNode((node) => {
       node.allowEmpty = elements.nodeAllowEmptyInput.checked;
+    }, false);
+  });
+
+  elements.nodeMinigameInput.addEventListener("input", () => {
+    updateSelectedNode((node) => {
+      node.minigame = elements.nodeMinigameInput.value;
+    }, false);
+  });
+
+  elements.nodeSuccessTargetInput.addEventListener("input", () => {
+    updateSelectedNode((node) => {
+      node.successTarget = elements.nodeSuccessTargetInput.value;
+    }, false);
+  });
+
+  elements.nodeFailureTargetInput.addEventListener("input", () => {
+    updateSelectedNode((node) => {
+      node.failureTarget = elements.nodeFailureTargetInput.value;
     }, false);
   });
 }

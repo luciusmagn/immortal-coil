@@ -138,7 +138,9 @@ function renderNodes() {
     text.className = "node-text";
     text.textContent = node.kind === "branch"
       ? node.branches.length + " branch" + (node.branches.length === 1 ? "" : "es")
-      : node.text || "(empty)";
+      : node.kind === "minigame"
+        ? (node.minigame || "wire-flight")
+        : node.text || "(empty)";
     card.appendChild(text);
 
     appendNodeLinks(card, node);
@@ -288,6 +290,9 @@ function renderInspector() {
     setFormEnabled(false);
     elements.nodeIdInput.value = "";
     elements.nodeTextInput.value = "";
+    elements.nodeMinigameInput.value = "";
+    elements.nodeSuccessTargetInput.value = "";
+    elements.nodeFailureTargetInput.value = "";
     elements.choicesList.innerHTML = "";
     elements.branchesList.innerHTML = "";
     return;
@@ -308,6 +313,9 @@ function renderInspector() {
     ? node.maxLength || ""
     : node.max || "";
   elements.nodeAllowEmptyInput.checked = Boolean(node.allowEmpty);
+  elements.nodeMinigameInput.value = node.minigame || "wire-flight";
+  elements.nodeSuccessTargetInput.value = node.successTarget || "";
+  elements.nodeFailureTargetInput.value = node.failureTarget || "";
 
   setVisibility(elements.layoutField, node.kind === "choice");
   setVisibility(elements.textField, node.kind !== "branch");
@@ -315,6 +323,7 @@ function renderInspector() {
   setVisibility(elements.inputFields, node.kind === "number" || node.kind === "string");
   setVisibility(elements.nodeMinField, node.kind === "number");
   setVisibility(elements.allowEmptyField, node.kind === "string");
+  setVisibility(elements.minigameFields, node.kind === "minigame");
   setVisibility(elements.choicesField, node.kind === "choice");
   setVisibility(elements.branchesField, node.kind === "branch");
 
