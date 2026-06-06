@@ -79,6 +79,13 @@
                      width
                      height)))
 
+(defun menu-arrow-pressed-p (direction)
+  (or (and (mouse-on-menu-arrow-p direction)
+           (is-mouse-button-down-p +mouse-button-left+))
+      (if (minusp direction)
+          (is-key-down-p +key-left+)
+          (is-key-down-p +key-right+))))
+
 (defun start-new-game ()
   (stop-title-music)
   (load-dialog-graph)
@@ -215,27 +222,58 @@
                                  4
                                  (claylib::c-ptr color)))))
 
+(defun draw-menu-arrow-shape (direction x y width height color)
+  (if (minusp direction)
+      (draw-triangle-points (- x (/ width 2)) y
+                            (+ x (/ width 2)) (- y (/ height 2))
+                            (+ x (/ width 2)) (+ y (/ height 2))
+                            color
+                            :filled-p t)
+      (draw-triangle-points (+ x (/ width 2)) y
+                            (- x (/ width 2)) (+ y (/ height 2))
+                            (- x (/ width 2)) (- y (/ height 2))
+                            color
+                            :filled-p t)))
+
+(defun menu-arrow-scale (direction hovered-p pressed-p)
+  (let ((pulse (* 0.035
+                  (sin (+ (* *menu-elapsed* 2.7)
+                          (if (minusp direction) 0.0 pi))))))
+    (* (+ 1.0 pulse (if hovered-p 0.055 0.0))
+       (if pressed-p 0.86 1.0))))
+
+(defun draw-menu-arrow-bloom (direction x y width height alpha-scale pressed-p)
+  (let ((strength (if pressed-p 1.25 1.0)))
+    (dolist (layer '((1.95 36) (1.45 58)))
+      (destructuring-bind (scale alpha) layer
+        (draw-menu-arrow-shape
+         direction
+         x
+         y
+         (* width scale)
+         (* height scale)
+         (make-color 255
+                     255
+                     255
+                     (round (* alpha alpha-scale strength))))))))
+
 (defun draw-menu-arrow (direction)
   (let* ((alpha-scale (menu-alpha-scale))
          (hovered-p (mouse-on-menu-arrow-p direction))
-         (alpha (round (* alpha-scale
-                          (if hovered-p 255 190))))
-         (color (make-color 255 255 255 alpha))
-         (x (menu-arrow-center-x direction))
+         (pressed-p (menu-arrow-pressed-p direction))
+         (scale (menu-arrow-scale direction hovered-p pressed-p))
+         (base-alpha (cond
+                       (pressed-p 255)
+                       (hovered-p 245)
+                       (t 205)))
+         (color (make-color 255 255 255 (round (* alpha-scale base-alpha))))
+         (x (+ (menu-arrow-center-x direction)
+               (if pressed-p (* direction 2.0) 0.0)))
          (y +menu-start-y+)
-         (w 28.0)
-         (h 42.0))
-    (if (minusp direction)
-        (draw-triangle-points (- x (/ w 2)) y
-                              (+ x (/ w 2)) (- y (/ h 2))
-                              (+ x (/ w 2)) (+ y (/ h 2))
-                              color
-                              :filled-p hovered-p)
-        (draw-triangle-points (+ x (/ w 2)) y
-                              (- x (/ w 2)) (+ y (/ h 2))
-                              (- x (/ w 2)) (- y (/ h 2))
-                              color
-                              :filled-p hovered-p))))
+         (w (* 28.0 scale))
+         (h (* 42.0 scale)))
+    (draw-menu-arrow-bloom direction x y w h alpha-scale pressed-p)
+    (draw-menu-arrow-shape direction x y w h color)))
 
 (defun draw-menu-arrows ()
   (draw-menu-arrow -1)
