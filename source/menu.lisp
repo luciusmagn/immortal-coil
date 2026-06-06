@@ -82,8 +82,8 @@
 (defun start-new-game ()
   (stop-title-music)
   (load-dialog-graph)
-  (reset-play-state *story-start-node*)
   (reset-particles)
+  (reset-play-state *story-start-node*)
   (setf *save-current-game-p* t)
   (save-current-game)
   (setf *mode* :game
@@ -94,9 +94,9 @@
 
 (defun continue-game ()
   (load-dialog-graph)
+  (reset-particles)
   (when (load-current-game-save)
     (stop-title-music)
-    (reset-particles)
     (setf *save-current-game-p* t
           *mode* :game
           *game-fade-elapsed* 0.0

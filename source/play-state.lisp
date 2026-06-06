@@ -19,7 +19,8 @@
                                  :type-delay *game-start-type-delay-seconds*
                                  :visible-count 0
                                  :selected-index 0
-                                 :input-buffer "")))
+                                 :input-buffer ""))
+  (apply-node-enter-effects (current-node)))
 
 (defun save-current-game-maybe ()
   (when (and *save-current-game-p*
@@ -40,6 +41,7 @@
         (play-state-visible-count *state*) 0
         (play-state-selected-index *state*) 0
         (play-state-input-buffer *state*) "")
+  (apply-node-enter-effects (current-node))
   (save-current-game-maybe))
 
 (defun typewriter-elapsed ()

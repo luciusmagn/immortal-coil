@@ -19,7 +19,8 @@
         :visible-count (play-state-visible-count *state*)
         :selected-index (play-state-selected-index *state*)
         :input-buffer (play-state-input-buffer *state*)
-        :dialog-store (dialog-store-alist)))
+        :dialog-store (dialog-store-alist)
+        :particle-field (particle-field-state-data)))
 
 (defun write-save-data (data)
   (let ((path (save-file-pathname)))
@@ -62,7 +63,8 @@
                            :type-delay 0.0
                            :visible-count (or (getf data :visible-count) 0)
                            :selected-index (or (getf data :selected-index) 0)
-                           :input-buffer (or (getf data :input-buffer) "")))))
+                           :input-buffer (or (getf data :input-buffer) "")))
+    (restore-particle-field-state (getf data :particle-field))))
 
 (defun load-current-game-save ()
   (handler-case

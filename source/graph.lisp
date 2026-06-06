@@ -1,6 +1,7 @@
 (in-package #:immortal-coil)
 
 (defvar *nodes* (make-hash-table :test #'equal))
+(defvar *pending-node-enter-effects* (make-hash-table :test #'equal))
 (defvar *story-start-node* nil)
 
 (defstruct choice
@@ -28,12 +29,31 @@
   allow-empty-p
   minigame
   success-target
-  failure-target)
+  failure-target
+  enter-effects)
 
 (defun reset-nodes ()
-  (clrhash *nodes*))
+  (clrhash *nodes*)
+  (clrhash *pending-node-enter-effects*))
+
+(defun node-existing-enter-effects (id)
+  (let ((node (gethash id *nodes*)))
+    (when node
+      (node-enter-effects node))))
+
+(defun node-pending-enter-effects (id)
+  (gethash id *pending-node-enter-effects*))
+
+(defun combine-node-enter-effects (node)
+  (let ((id (node-id node)))
+    (append (node-existing-enter-effects id)
+            (node-pending-enter-effects id)
+            (node-enter-effects node))))
 
 (defun add-node (node)
+  (setf (node-enter-effects node)
+        (combine-node-enter-effects node))
+  (remhash (node-id node) *pending-node-enter-effects*)
   (setf (gethash (node-id node) *nodes*) node))
 
 (defun find-node (id)
@@ -175,6 +195,48 @@
 (defun dialog-set-next (node-id next-id)
   (setf (node-next (find-node node-id)) next-id)
   node-id)
+
+(defun add-node-enter-effects (node-id effects)
+  (let ((node (gethash node-id *nodes*)))
+    (if node
+        (setf (node-enter-effects node)
+              (append (node-enter-effects node) effects))
+        (setf (gethash node-id *pending-node-enter-effects*)
+              (append (node-pending-enter-effects node-id) effects)))))
+
+(defun dialog-on-enter (node-id &rest effects)
+  (unless effects
+    (error "dialog-on-enter needs at least one effect: ~a" node-id))
+  (add-node-enter-effects node-id effects)
+  node-id)
+
+(defun dialog-particles (node-id mode
+                         &key (fade-seconds *particle-field-fade-seconds*)
+                              immediate)
+  (dialog-on-enter
+   node-id
+   `(set-particle-field-mode ,mode
+                             :fade-seconds ,fade-seconds
+                             :immediate ,immediate)))
+
+(defun eval-dialog-effect (effect)
+  (cond
+    ((functionp effect)
+     (funcall effect))
+    ((lambda-expression-p effect)
+     (funcall (compile nil effect)))
+    ((function-expression-p effect)
+     (funcall (eval effect)))
+    ((consp effect)
+     (eval effect))
+    ((and (symbolp effect) (fboundp effect))
+     (funcall effect))
+    (t
+     (error "Unknown dialog enter effect: ~s" effect))))
+
+(defun apply-node-enter-effects (node)
+  (dolist (effect (node-enter-effects node))
+    (eval-dialog-effect effect)))
 
 (defun dialog-script-pathname (path)
   (project-pathname path))

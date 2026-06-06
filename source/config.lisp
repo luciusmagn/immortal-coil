@@ -5,6 +5,7 @@
 (defconstant +virtual-center-x+ (/ +virtual-width+ 2.0))
 (defconstant +virtual-center-y+ (/ +virtual-height+ 2.0))
 (defconstant +particle-size+ 2)
+(defconstant +star-particle-size+ 1)
 
 (defconstant +menu-start-x+ +virtual-center-x+)
 (defconstant +menu-start-y+ 410.0)
@@ -21,6 +22,8 @@
 (defparameter *game-start-type-delay-seconds* 1.1)
 (defparameter *menu-start-text-size* 18)
 (defparameter *particle-count* 8)
+(defparameter *star-particle-count* 120)
+(defparameter *particle-field-fade-seconds* 6.5)
 (defparameter *title-particle-count* 1000)
 (defparameter *title-particle-spawn-rate* 70.0)
 (defparameter *dialog-script-paths* '("game/opening.lisp"))
