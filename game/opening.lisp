@@ -34,6 +34,8 @@
              "the glass is suddenly weightless. the room becomes a cockpit."
              :next "ship/alarm")
 
+(dialog-particles "ship/wake" :stars :fade-seconds 6.5)
+
 (dialog-text "ship/alarm"
              "captain {player-name}, the wireframe lane is collapsing."
              :next "ship/flight")
