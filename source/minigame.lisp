@@ -6,6 +6,7 @@
 (defconstant +flight-view-height+ 390.0)
 (defconstant +flight-visible-depth+ 8.0)
 (defconstant +flight-success-distance+ 28.0)
+(defconstant +flight-safe-gate-count+ 3)
 
 (defvar *flight-minigame* nil)
 
@@ -52,16 +53,23 @@
      (flight-axis +key-w+ +key-s+)))
 
 (defun flight-speed (game)
-  (+ 1.08 (* 0.055 (flight-minigame-elapsed game))))
+  (+ 0.76 (* 0.038 (flight-minigame-elapsed game))))
 
 (defun flight-opening-half-size (gate-index)
-  (max 0.22 (- 0.43 (* gate-index 0.006))))
+  (max 0.31 (- 0.55 (* gate-index 0.008))))
+
+(defun flight-gate-drift-scale (gate-index)
+  (smoothstep (/ (max 0 (- gate-index +flight-safe-gate-count+))
+                 7.0)))
 
 (defun flight-gate-center (gate-index)
-  (values (+ (* 0.36 (sin (+ 0.7 (* gate-index 0.82))))
-             (* 0.14 (sin (* gate-index 1.71))))
-          (+ (* 0.30 (cos (+ 0.4 (* gate-index 0.73))))
-             (* 0.12 (sin (* gate-index 1.17))))))
+  (let ((drift (flight-gate-drift-scale gate-index)))
+    (values (* drift
+               (+ (* 0.36 (sin (+ 0.7 (* gate-index 0.82))))
+                  (* 0.14 (sin (* gate-index 1.71)))))
+            (* drift
+               (+ (* 0.30 (cos (+ 0.4 (* gate-index 0.73))))
+                  (* 0.12 (sin (* gate-index 1.17))))))))
 
 (defun flight-player-in-gate-p (game gate-index)
   (multiple-value-bind (gate-x gate-y)
@@ -109,7 +117,8 @@
 (defun check-flight-gates (node game)
   (let ((current-gate (floor (flight-minigame-distance game))))
     (loop for gate from (1+ (flight-minigame-last-gate game)) to current-gate
-          unless (flight-player-in-gate-p game gate)
+          unless (or (<= gate +flight-safe-gate-count+)
+                     (flight-player-in-gate-p game gate))
             do (fail-flight-minigame node)
                (return-from check-flight-gates nil)
           finally (setf (flight-minigame-last-gate game)
@@ -219,7 +228,12 @@
                         +virtual-center-x+
                         (- +virtual-height+ 72)
                         18
-                        color)))
+                        color)
+    (draw-centered-text "WASD / ARROWS"
+                        +virtual-center-x+
+                        (- +virtual-height+ 42)
+                        16
+                        (make-color 255 255 255 170))))
 
 (defun draw-flight-minigame (node color)
   (let ((game (ensure-flight-minigame node)))
