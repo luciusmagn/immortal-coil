@@ -274,8 +274,8 @@
          (x (+ (menu-arrow-center-x direction)
                (if pressed-p (* direction 2.0) 0.0)))
          (y +menu-start-y+)
-         (w (* 36.0 scale))
-         (h (* 52.0 scale)))
+         (w (* 18.0 scale))
+         (h (* 26.0 scale)))
     (draw-menu-arrow-bloom direction x y w h alpha-scale pressed-p)
     (draw-menu-arrow-shape direction x y w h color)))
 
