@@ -25,11 +25,10 @@
 
 ## start-confirm.wav
 
-- Source: Generated locally from a procedural low-frequency tone layered with `choice-switch.wav`.
-- Original file: `choice-switch.wav`
-- Author: qubodup for the reused click transient; procedural tone generated for Immortal Coil.
-- License: CC0 for reused click transient; procedural tone generated for this project.
-- Notes: Used as the heavier confirmation sound when committing to menu actions such as new game and continue.
+- Source: Generated locally as a procedural low-frequency confirmation sting.
+- Author: Procedural tone generated for Immortal Coil.
+- License: Procedural tone generated for this project.
+- Notes: Used as the longer, heavier confirmation sound when committing to menu actions such as new game and continue.
 
 ## title-ambient-drone.mp3
 
