@@ -1,26 +1,32 @@
 (in-package #:immortal-coil)
 
-(defparameter *menu-options*
-  #((:new-game "NEW GAME")
-    (:continue "CONTINUE")
-    (:options "OPTIONS")
-    (:exit "EXIT")))
+(defparameter *menu-selection*
+  (make-command-selection :new-game "NEW GAME"
+                          :continue "CONTINUE"
+                          :options "OPTIONS"
+                          :exit "EXIT"))
 
 (defun menu-option-count ()
-  (length *menu-options*))
+  (selection-count *menu-selection*))
 
 (defun menu-option (index)
-  (aref *menu-options*
-        (mod index (menu-option-count))))
+  (selection-item *menu-selection* index))
 
 (defun selected-menu-option ()
-  (menu-option *menu-selected-index*))
+  (selection-current *menu-selection*))
 
 (defun selected-menu-action ()
-  (first (selected-menu-option)))
+  (selection-current-action *menu-selection*))
 
 (defun selected-menu-label ()
-  (second (selected-menu-option)))
+  (selection-current-label *menu-selection*))
+
+(defun reset-menu-state ()
+  (setf *menu-elapsed* 0.0
+        *menu-start-action* nil
+        *menu-start-state* :idle
+        *menu-start-elapsed* 0.0)
+  (selection-reset *menu-selection*))
 
 (defun menu-action-available-p (action)
   (case action
@@ -148,10 +154,7 @@
      -1)))
 
 (defun move-menu-selection (direction)
-  (when direction
-    (setf *menu-selected-index*
-          (mod (+ *menu-selected-index* direction)
-               (menu-option-count)))
+  (when (selection-move *menu-selection* direction)
     (play-choice-switch)))
 
 (defun menu-option-pressed-p ()

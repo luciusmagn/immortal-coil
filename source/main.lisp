@@ -2,18 +2,13 @@
 
 (defun setup-game ()
   (setf *mode* :menu
-        *menu-elapsed* 0.0
-        *menu-selected-index* 0
-        *menu-start-action* nil
-        *menu-start-state* :idle
-        *menu-start-elapsed* 0.0
         *game-fade-elapsed* 0.0
         *quit-requested-p* nil
-        *paused-p* nil
-        *pause-selected-index* 0
         *save-current-game-p* nil
         *window-mode* :windowed
         *requested-window-mode* nil)
+  (reset-menu-state)
+  (reset-pause-menu-state)
   (reset-title-particles))
 
 (defun setup-window-resources ()

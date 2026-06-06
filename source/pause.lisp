@@ -1,42 +1,37 @@
 (in-package #:immortal-coil)
 
-(defparameter *pause-options*
-  #((:resume "RESUME")
-    (:menu "MAIN MENU")
-    (:quit "QUIT")))
+(defparameter *pause-selection*
+  (make-command-selection :resume "RESUME"
+                          :menu "MAIN MENU"
+                          :quit "QUIT"))
 
 (defun pause-option-count ()
-  (length *pause-options*))
+  (selection-count *pause-selection*))
 
 (defun pause-option (index)
-  (aref *pause-options*
-        (mod index (pause-option-count))))
+  (selection-item *pause-selection* index))
 
 (defun selected-pause-option ()
-  (pause-option *pause-selected-index*))
+  (selection-current *pause-selection*))
 
 (defun selected-pause-action ()
-  (first (selected-pause-option)))
+  (selection-current-action *pause-selection*))
 
 (defun selected-pause-label ()
-  (second (selected-pause-option)))
+  (selection-current-label *pause-selection*))
+
+(defun reset-pause-menu-state ()
+  (setf *paused-p* nil)
+  (selection-reset *pause-selection*))
 
 (defun open-pause-menu ()
-  (setf *paused-p* t
-        *pause-selected-index* 0)
+  (setf *paused-p* t)
+  (selection-reset *pause-selection*)
   (play-choice-switch))
 
 (defun close-pause-menu ()
-  (setf *paused-p* nil
-        *pause-selected-index* 0)
+  (reset-pause-menu-state)
   (play-choice-switch))
-
-(defun reset-menu-state ()
-  (setf *menu-elapsed* 0.0
-        *menu-selected-index* 0
-        *menu-start-action* nil
-        *menu-start-state* :idle
-        *menu-start-elapsed* 0.0))
 
 (defun return-to-title-menu ()
   (save-current-game)
@@ -71,10 +66,7 @@
      -1)))
 
 (defun move-pause-selection (direction)
-  (when direction
-    (setf *pause-selected-index*
-          (mod (+ *pause-selected-index* direction)
-               (pause-option-count)))
+  (when (selection-move *pause-selection* direction)
     (play-choice-switch)))
 
 (defun update-pause-menu ()
@@ -94,9 +86,9 @@
     t))
 
 (defun draw-pause-option (index y color)
-  (let ((label (second (pause-option index)))
+  (let ((label (command-option-label (pause-option index)))
         (size 22)
-        (selected-p (= index *pause-selected-index*)))
+        (selected-p (= index (selection-current-index *pause-selection*))))
     (multiple-value-bind (x text-y width)
         (draw-centered-text label
                             +virtual-center-x+
