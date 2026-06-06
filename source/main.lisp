@@ -9,6 +9,8 @@
         *menu-start-elapsed* 0.0
         *game-fade-elapsed* 0.0
         *quit-requested-p* nil
+        *paused-p* nil
+        *pause-selected-index* 0
         *save-current-game-p* nil
         *window-mode* :windowed
         *requested-window-mode* nil)
@@ -43,8 +45,14 @@
         (case *mode*
           (:menu (update-menu dt))
           (:game
-           (incf *game-fade-elapsed* dt)
-           (update-gameplay dt))
+           (cond
+             (*paused-p*
+              (update-pause-menu))
+             ((maybe-open-pause-menu)
+              nil)
+             (t
+              (incf *game-fade-elapsed* dt)
+              (update-gameplay dt))))
           (t (update-menu dt))))
     (error (condition)
       (runtime-warn "Frame update failed: ~a" condition))))
@@ -91,11 +99,13 @@
                       :height (fullscreen-window-height)
                       :title "mag's Game"
                       :fps 60
+                      :exit-key +key-null+
                       :flags (list +flag-fullscreen-mode+))
           (setf next-mode (run-window-contents)))
         (with-window (:width +virtual-width+
                       :height +virtual-height+
                       :title "mag's Game"
+                      :exit-key +key-null+
                       :fps 60)
           (setf next-mode (run-window-contents))))
     next-mode))

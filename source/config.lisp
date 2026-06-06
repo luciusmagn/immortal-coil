@@ -36,6 +36,8 @@
 (defvar *menu-start-elapsed* 0.0)
 (defvar *game-fade-elapsed* 0.0)
 (defvar *quit-requested-p* nil)
+(defvar *paused-p* nil)
+(defvar *pause-selected-index* 0)
 (defvar *window-mode* :windowed)
 (defvar *requested-window-mode* nil)
 (defvar *fullscreen-width* +virtual-width+)

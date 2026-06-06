@@ -22,6 +22,7 @@
                  (:file "control-update")
                  (:file "control-rendering")
                  (:file "minigame")
+                 (:file "pause")
                  (:file "title-logo")
                  (:file "title-particles")
                  (:file "fullscreen")
