@@ -3,6 +3,7 @@
 (defvar *nodes* (make-hash-table :test #'equal))
 (defvar *pending-node-enter-effects* (make-hash-table :test #'equal))
 (defvar *story-start-node* nil)
+(defparameter *runtime-fallback-node-id* "runtime/fallback")
 
 (defstruct choice
   label
@@ -56,9 +57,29 @@
   (remhash (node-id node) *pending-node-enter-effects*)
   (setf (gethash (node-id node) *nodes*) node))
 
+(defun ensure-runtime-fallback-node ()
+  (or (gethash *runtime-fallback-node-id* *nodes*)
+      (let ((node (make-node :id *runtime-fallback-node-id*
+                             :kind :text
+                             :text "the thread goes dark.")))
+        (add-node node)
+        node)))
+
+(defun node-exists-p (id)
+  (not (null (gethash id *nodes*))))
+
+(defun resolve-node-id (id)
+  (if (node-exists-p id)
+      id
+      (progn
+        (runtime-warn "Unknown story node: ~a" id)
+        (node-id (ensure-runtime-fallback-node)))))
+
 (defun find-node (id)
   (or (gethash id *nodes*)
-      (error "Unknown story node: ~a" id)))
+      (progn
+        (runtime-warn "Unknown story node: ~a" id)
+        (ensure-runtime-fallback-node))))
 
 (defun reset-dialog-graph ()
   (reset-nodes)
@@ -93,14 +114,22 @@
   (remove-if-not #'choice-active-p (node-choices node)))
 
 (defun ensure-dialog-option (value)
-  (unless (choice-p value)
-    (error "Expected a dialog option, got: ~s" value))
-  value)
+  (if (choice-p value)
+      value
+      (progn
+        (runtime-warn "Expected a dialog option, got: ~s" value)
+        (make-choice :label "continue"
+                     :target *runtime-fallback-node-id*
+                     :condition t))))
 
 (defun ensure-dialog-options (options)
-  (unless options
-    (error "Dialog choice nodes need at least one option."))
-  (coerce (mapcar #'ensure-dialog-option options) 'vector))
+  (if options
+      (coerce (mapcar #'ensure-dialog-option options) 'vector)
+      (progn
+        (runtime-warn "Dialog choice node has no options.")
+        (vector (make-choice :label "continue"
+                             :target *runtime-fallback-node-id*
+                             :condition t)))))
 
 (defun make-dialog-choice-node (id text layout options)
   (add-node (make-node :id id
@@ -121,7 +150,8 @@
 
 (defun dialog-number (id text &key target response-key min max)
   (unless target
-    (error "Number node needs a target: ~a" id))
+    (runtime-warn "Number node needs a target: ~a" id)
+    (setf target *runtime-fallback-node-id*))
   (add-node (make-node :id id
                        :kind :number
                        :text text
@@ -133,7 +163,8 @@
 
 (defun dialog-string (id text &key target response-key (max-length 32) allow-empty)
   (unless target
-    (error "String node needs a target: ~a" id))
+    (runtime-warn "String node needs a target: ~a" id)
+    (setf target *runtime-fallback-node-id*))
   (add-node (make-node :id id
                        :kind :string
                        :text text
@@ -145,9 +176,11 @@
 
 (defun dialog-minigame (id text &key (game :wire-flight) success failure)
   (unless success
-    (error "Minigame node needs a success target: ~a" id))
+    (runtime-warn "Minigame node needs a success target: ~a" id)
+    (setf success *runtime-fallback-node-id*))
   (unless failure
-    (error "Minigame node needs a failure target: ~a" id))
+    (runtime-warn "Minigame node needs a failure target: ~a" id)
+    (setf failure *runtime-fallback-node-id*))
   (add-node (make-node :id id
                        :kind :minigame
                        :text text
@@ -163,13 +196,16 @@
   (dialog-case t target))
 
 (defun ensure-dialog-case (value)
-  (unless (branch-p value)
-    (error "Expected a dialog case, got: ~s" value))
-  value)
+  (if (branch-p value)
+      value
+      (progn
+        (runtime-warn "Expected a dialog case, got: ~s" value)
+        (dialog-default *runtime-fallback-node-id*))))
 
 (defun dialog-branch (id &rest cases)
   (unless cases
-    (error "Branch nodes need at least one case: ~a" id))
+    (runtime-warn "Branch node needs at least one case: ~a" id)
+    (setf cases (list (dialog-default *runtime-fallback-node-id*))))
   (add-node (make-node :id id
                        :kind :branch
                        :text ""
@@ -181,15 +217,15 @@
                           &key ((:when when-condition) t)
                                ((:unless unless-condition) nil))
   (let ((node (find-node node-id)))
-    (unless (eq (node-kind node) :choice)
-      (error "Cannot add a choice to non-choice node: ~a" node-id))
-    (setf (node-choices node)
-          (concatenate 'vector
-                       (node-choices node)
-                       (vector (dialog-option label
-                                              target
-                                              :when when-condition
-                                              :unless unless-condition)))))
+    (if (eq (node-kind node) :choice)
+        (setf (node-choices node)
+              (concatenate 'vector
+                           (node-choices node)
+                           (vector (dialog-option label
+                                                  target
+                                                  :when when-condition
+                                                  :unless unless-condition))))
+        (runtime-warn "Cannot add a choice to non-choice node: ~a" node-id)))
   node-id)
 
 (defun dialog-set-next (node-id next-id)
@@ -205,9 +241,9 @@
               (append (node-pending-enter-effects node-id) effects)))))
 
 (defun dialog-on-enter (node-id &rest effects)
-  (unless effects
-    (error "dialog-on-enter needs at least one effect: ~a" node-id))
-  (add-node-enter-effects node-id effects)
+  (if effects
+      (add-node-enter-effects node-id effects)
+      (runtime-warn "dialog-on-enter needs at least one effect: ~a" node-id))
   node-id)
 
 (defun dialog-particles (node-id mode
@@ -220,19 +256,24 @@
                              :immediate ,immediate)))
 
 (defun eval-dialog-effect (effect)
-  (cond
-    ((functionp effect)
-     (funcall effect))
-    ((lambda-expression-p effect)
-     (funcall (compile nil effect)))
-    ((function-expression-p effect)
-     (funcall (eval effect)))
-    ((consp effect)
-     (eval effect))
-    ((and (symbolp effect) (fboundp effect))
-     (funcall effect))
-    (t
-     (error "Unknown dialog enter effect: ~s" effect))))
+  (handler-case
+      (cond
+        ((functionp effect)
+         (funcall effect))
+        ((lambda-expression-p effect)
+         (funcall (compile nil effect)))
+        ((function-expression-p effect)
+         (funcall (eval effect)))
+        ((consp effect)
+         (eval effect))
+        ((and (symbolp effect) (fboundp effect))
+         (funcall effect))
+        (t
+         (runtime-warn "Unknown dialog enter effect: ~s" effect)))
+    (error (condition)
+      (runtime-warn "Dialog enter effect failed: ~s (~a)"
+                    effect
+                    condition))))
 
 (defun apply-node-enter-effects (node)
   (dolist (effect (node-enter-effects node))
@@ -242,17 +283,31 @@
   (project-pathname path))
 
 (defun eval-dialog-script (path)
-  (let ((eof (gensym "EOF")))
-    (with-open-file (stream (dialog-script-pathname path))
-      (let ((*package* (find-package "IMMORTAL-COIL")))
-        (loop for form = (read stream nil eof)
-              until (eq form eof)
-              do (eval form))))))
+  (handler-case
+      (let ((eof (gensym "EOF")))
+        (with-open-file (stream (dialog-script-pathname path))
+          (let ((*package* (find-package "IMMORTAL-COIL")))
+            (loop for form = (read stream nil eof)
+                  until (eq form eof)
+                  do (handler-case
+                         (eval form)
+                       (error (condition)
+                         (runtime-warn "Dialog form failed in ~a: ~s (~a)"
+                                       path
+                                       form
+                                       condition)))))))
+    (error (condition)
+      (runtime-warn "Dialog script failed to load: ~a (~a)"
+                    path
+                    condition))))
 
 (defun load-dialog-graph (&optional (paths *dialog-script-paths*))
   (reset-dialog-graph)
   (dolist (path paths)
     (eval-dialog-script path))
   (unless *story-start-node*
-    (error "No dialog start node was set by scripts: ~s" paths))
+    (runtime-warn "No dialog start node was set by scripts: ~s" paths)
+    (setf *story-start-node* *runtime-fallback-node-id*))
+  (ensure-runtime-fallback-node)
+  (setf *story-start-node* (resolve-node-id *story-start-node*))
   *story-start-node*)

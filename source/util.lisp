@@ -22,10 +22,20 @@
         (uiop:ensure-directory-pathname root)
         (asdf:system-source-directory :immortal-coil))))
 
+(defun runtime-warn (control &rest arguments)
+  (format *error-output*
+          "~&[immortal-coil] ~?~%"
+          control
+          arguments))
+
 (defun project-pathname (path)
-  (etypecase path
+  (typecase path
     (pathname path)
-    (string (merge-pathnames path (project-root-pathname)))))
+    (string (merge-pathnames path (project-root-pathname)))
+    (t
+     (runtime-warn "Expected pathname designator, got: ~s" path)
+     (merge-pathnames (princ-to-string path)
+                      (project-root-pathname)))))
 
 (defun draw-text-at (text x y size color)
   (claylib/ll:draw-text text

@@ -54,7 +54,8 @@
 (defun update-branch-node (node)
   (let ((target (matching-branch-target node)))
     (unless target
-      (error "Branch node has no matching case: ~a" (node-id node)))
+      (runtime-warn "Branch node has no matching case: ~a" (node-id node))
+      (setf target *runtime-fallback-node-id*))
     (jump-to-node target)))
 
 (defun negative-number-input-allowed-p (node)

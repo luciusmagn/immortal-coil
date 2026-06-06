@@ -14,7 +14,10 @@
 
 (defun reset-play-state (&optional (id *story-start-node*))
   (reset-dialog-store)
-  (setf *state* (make-play-state :current-id id
+  (ensure-runtime-fallback-node)
+  (setf *state* (make-play-state :current-id (resolve-node-id
+                                              (or id
+                                                  *runtime-fallback-node-id*))
                                  :elapsed 0.0
                                  :type-delay *game-start-type-delay-seconds*
                                  :visible-count 0
@@ -25,17 +28,24 @@
 (defun save-current-game-maybe ()
   (when (and *save-current-game-p*
              *save-current-game-function*)
-    (funcall *save-current-game-function*)))
+    (handler-case
+        (funcall *save-current-game-function*)
+      (error (condition)
+        (runtime-warn "Could not save game: ~a" condition)))))
 
 (defun current-node ()
-  (find-node (play-state-current-id *state*)))
+  (let ((node (find-node (play-state-current-id *state*))))
+    (unless (equal (play-state-current-id *state*)
+                   (node-id node))
+      (setf (play-state-current-id *state*) (node-id node)))
+    node))
 
 (defun story-text-visible-p (node)
   (>= (play-state-visible-count *state*)
       (length (node-display-text node))))
 
 (defun jump-to-node (id)
-  (setf (play-state-current-id *state*) id
+  (setf (play-state-current-id *state*) (resolve-node-id id)
         (play-state-elapsed *state*) 0.0
         (play-state-type-delay *state*) 0.0
         (play-state-visible-count *state*) 0

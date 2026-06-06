@@ -26,7 +26,9 @@
 (defun restore-dialog-store (entries)
   (reset-dialog-store)
   (dolist (entry entries)
-    (setf (dialog-store-get (first entry)) (rest entry))))
+    (if (consp entry)
+        (setf (dialog-store-get (first entry)) (rest entry))
+        (runtime-warn "Ignoring malformed dialog store entry: ~s" entry))))
 
 (defun dialog-value (key &optional default)
   (dialog-store-get key default))
@@ -53,14 +55,20 @@
      (eval condition))))
 
 (defun dialog-condition-true-p (condition)
-  (cond
-    ((null condition) nil)
-    ((eq condition t) t)
-    ((functionp condition) (not (null (funcall condition))))
-    ((consp condition) (not (null (eval-dialog-condition-form condition))))
-    ((and (symbolp condition) (fboundp condition))
-     (not (null (funcall condition))))
-    ((and (symbolp condition) (boundp condition))
-     (not (null (symbol-value condition))))
-    (t
-     t)))
+  (handler-case
+      (cond
+        ((null condition) nil)
+        ((eq condition t) t)
+        ((functionp condition) (not (null (funcall condition))))
+        ((consp condition) (not (null (eval-dialog-condition-form condition))))
+        ((and (symbolp condition) (fboundp condition))
+         (not (null (funcall condition))))
+        ((and (symbolp condition) (boundp condition))
+         (not (null (symbol-value condition))))
+        (t
+         t))
+    (error (runtime-error)
+      (runtime-warn "Dialog condition failed: ~s (~a)"
+                    condition
+                    runtime-error)
+      nil)))

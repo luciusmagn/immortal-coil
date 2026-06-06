@@ -34,13 +34,16 @@
   (member mode '(:rising :stars)))
 
 (defun normalize-particle-field-mode (mode)
-  (let ((normalized (etypecase mode
+  (let ((normalized (typecase mode
                       (keyword mode)
                       (symbol (intern (symbol-name mode) "KEYWORD"))
                       (string (intern (string-upcase mode) "KEYWORD")))))
-    (unless (valid-particle-field-mode-p normalized)
-      (error "Unknown particle field mode: ~a" mode))
-    normalized))
+    (cond
+      ((valid-particle-field-mode-p normalized)
+       normalized)
+      (t
+       (runtime-warn "Unknown particle field mode: ~a" mode)
+       *particle-field-mode*))))
 
 (defun particle-field-transition-active-p ()
   (and (not (eq *particle-field-from-mode*
@@ -128,10 +131,18 @@
   particle)
 
 (defun current-particle-count ()
-  (max 0 (round *particle-count*)))
+  (if (realp *particle-count*)
+      (max 0 (round *particle-count*))
+      (progn
+        (runtime-warn "Invalid particle count: ~s" *particle-count*)
+        0)))
 
 (defun current-star-particle-count ()
-  (max 0 (round *star-particle-count*)))
+  (if (realp *star-particle-count*)
+      (max 0 (round *star-particle-count*))
+      (progn
+        (runtime-warn "Invalid star particle count: ~s" *star-particle-count*)
+        0)))
 
 (defun resize-particles (count)
   (let ((old-particles *particles*)
@@ -319,15 +330,22 @@
   (ensure-particle-count)
   (if (and (listp data)
            (valid-particle-field-mode-p (getf data :mode)))
-      (setf *particle-field-mode* (getf data :mode)
-            *particle-field-from-mode* (or (getf data :from-mode)
-                                           (getf data :mode))
-            *particle-field-to-mode* (or (getf data :to-mode)
-                                         (getf data :mode))
-            *particle-field-transition-elapsed* (or (getf data
-                                                          :transition-elapsed)
-                                                    0.0)
-            *particle-field-transition-seconds* (or (getf data
-                                                          :transition-seconds)
-                                                    0.0))
+      (let ((mode (getf data :mode)))
+        (setf *particle-field-mode* mode
+              *particle-field-from-mode*
+              (if (valid-particle-field-mode-p (getf data :from-mode))
+                  (getf data :from-mode)
+                  mode)
+              *particle-field-to-mode*
+              (if (valid-particle-field-mode-p (getf data :to-mode))
+                  (getf data :to-mode)
+                  mode)
+              *particle-field-transition-elapsed*
+              (if (realp (getf data :transition-elapsed))
+                  (max 0.0 (getf data :transition-elapsed))
+                  0.0)
+              *particle-field-transition-seconds*
+              (if (realp (getf data :transition-seconds))
+                  (max 0.0 (getf data :transition-seconds))
+                  0.0)))
       (reset-particle-field-mode :rising)))
