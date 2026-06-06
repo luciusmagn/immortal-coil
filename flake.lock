@@ -1,0 +1,45 @@
+{
+  "nodes": {
+    "claylib": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1684344837,
+        "narHash": "sha256-vooi47ggWIqNvxhS/Wkx6sr2vFX+sqDqPi95Wl46eog=",
+        "owner": "defun-games",
+        "repo": "claylib",
+        "rev": "3eb86bc5f6b88570e053e0eefed66384d2c28365",
+        "type": "github"
+      },
+      "original": {
+        "owner": "defun-games",
+        "repo": "claylib",
+        "rev": "3eb86bc5f6b88570e053e0eefed66384d2c28365",
+        "type": "github"
+      }
+    },
+    "nixpkgs": {
+      "locked": {
+        "lastModified": 1780365719,
+        "narHash": "sha256-QfWfccTN+70ZQ4m2qlU9PiKfz2Yppq94058iJyARNwc=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "ffa10e26ae11d676b2db836259889f1f571cb14f",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "root": {
+      "inputs": {
+        "claylib": "claylib",
+        "nixpkgs": "nixpkgs"
+      }
+    }
+  },
+  "root": "root",
+  "version": 7
+}
