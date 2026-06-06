@@ -92,14 +92,15 @@
                 (looping *title-music*) t))))))
 
 (defun play-title-music ()
-  (when (and *title-music*
-             (not *title-music-playing-p*))
-    (handler-case
-        (progn
-          (claylib/ll:play-music-stream (claylib::c-ptr *title-music*))
-          (setf *title-music-playing-p* t))
-      (error (condition)
-        (runtime-warn "Could not play title music: ~a" condition)))))
+  (when *title-music*
+    (setf (volume *title-music*) *title-music-volume*)
+    (when (not *title-music-playing-p*)
+      (handler-case
+          (progn
+            (claylib/ll:play-music-stream (claylib::c-ptr *title-music*))
+            (setf *title-music-playing-p* t))
+        (error (condition)
+          (runtime-warn "Could not play title music: ~a" condition))))))
 
 (defun stop-title-music ()
   (when (and *title-music*
@@ -110,11 +111,14 @@
         (runtime-warn "Could not stop title music: ~a" condition)))
     (setf *title-music-playing-p* nil)))
 
-(defun update-title-music ()
+(defun update-title-music (&optional (volume-scale 1.0))
   (when (and *title-music*
              *title-music-playing-p*)
     (handler-case
-        (claylib/ll:update-music-stream (claylib::c-ptr *title-music*))
+        (progn
+          (setf (volume *title-music*)
+                (* *title-music-volume* (clamp01 volume-scale)))
+          (claylib/ll:update-music-stream (claylib::c-ptr *title-music*)))
       (error (condition)
         (runtime-warn "Could not update title music: ~a" condition)
         (setf *title-music-playing-p* nil)))))

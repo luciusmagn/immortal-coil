@@ -143,6 +143,15 @@
 (defun start-transition-total-seconds ()
   (+ *start-confirm-seconds* *start-fade-out-seconds*))
 
+(defun menu-start-fade-progress ()
+  (if (eq *menu-start-state* :starting)
+      (smoothstep (/ (- *menu-start-elapsed* *start-confirm-seconds*)
+                     *start-fade-out-seconds*))
+      0.0))
+
+(defun menu-title-music-volume-scale ()
+  (- 1.0 (menu-start-fade-progress)))
+
 (defun menu-selection-direction ()
   (cond
     ((is-key-pressed-p +key-right+) 1)
@@ -179,7 +188,7 @@
 
 (defun update-menu (dt)
   (incf *menu-elapsed* dt)
-  (update-title-music)
+  (update-title-music (menu-title-music-volume-scale))
   (update-title-particles dt)
   (case *menu-start-state*
     (:idle
