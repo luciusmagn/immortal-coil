@@ -23,3 +23,9 @@ nix run .#editor -- --host 0.0.0.0 --port 8081
 Use the local server instead of opening `index.html` directly. The editor uses browser module imports, and browsers also block local `fetch` calls from `file://`.
 
 String substitutions use `{store-key}` placeholders in dialog text and choice labels. A `dialog-string` or `dialog-number` node can store values into the shared dialog store, and later nodes can refer to them.
+
+Node particle effects can be scripted with forms such as:
+
+```lisp
+(dialog-particles "ship/wake" :stars :fade-seconds 6.5)
+```

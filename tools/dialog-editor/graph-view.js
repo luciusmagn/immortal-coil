@@ -290,6 +290,8 @@ function renderInspector() {
     setFormEnabled(false);
     elements.nodeIdInput.value = "";
     elements.nodeTextInput.value = "";
+    elements.nodeParticlesSelect.value = "";
+    elements.nodeParticleFadeInput.value = "";
     elements.nodeMinigameInput.value = "";
     elements.nodeSuccessTargetInput.value = "";
     elements.nodeFailureTargetInput.value = "";
@@ -303,6 +305,8 @@ function renderInspector() {
   elements.selectedTitle.textContent = truncate(node.id, 28);
   elements.nodeIdInput.value = node.id;
   elements.nodeKindSelect.value = node.kind;
+  elements.nodeParticlesSelect.value = node.particleMode || "";
+  elements.nodeParticleFadeInput.value = node.particleFadeSeconds || "";
   elements.nodeLayoutSelect.value = node.layout || "horizontal";
   elements.nodeTextInput.value = node.text || "";
   elements.nodeNextInput.value = node.next || "";

@@ -42,6 +42,9 @@ function collectElements() {
     "nodeForm",
     "nodeIdInput",
     "nodeKindSelect",
+    "visualFields",
+    "nodeParticlesSelect",
+    "nodeParticleFadeInput",
     "layoutField",
     "nodeLayoutSelect",
     "textField",
@@ -365,6 +368,18 @@ function bindInspector() {
   elements.nodeLayoutSelect.addEventListener("change", () => {
     updateSelectedNode((node) => {
       node.layout = elements.nodeLayoutSelect.value;
+    }, false);
+  });
+
+  elements.nodeParticlesSelect.addEventListener("change", () => {
+    updateSelectedNode((node) => {
+      node.particleMode = elements.nodeParticlesSelect.value;
+    }, false);
+  });
+
+  elements.nodeParticleFadeInput.addEventListener("input", () => {
+    updateSelectedNode((node) => {
+      node.particleFadeSeconds = elements.nodeParticleFadeInput.value;
     }, false);
   });
 

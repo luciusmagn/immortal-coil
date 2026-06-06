@@ -272,9 +272,13 @@ function readKeywordKey(keys, name, fallback) {
   return value.replace(/^:/, "");
 }
 
-function keywordSource(value) {
-  const text = String(value || "wire-flight").trim().replace(/^:/, "");
-  return ":" + (text || "wire-flight");
+function keywordSource(value, fallback) {
+  const text = String(value || fallback || "").trim().replace(/^:/, "");
+  return ":" + (text || fallback || "");
+}
+
+function readParticleMode(value) {
+  return stringValue(value).trim().replace(/^:/, "").toLowerCase();
 }
 
 function parseDialogOption(form) {
@@ -321,6 +325,7 @@ function parseBranchEntry(form) {
 export function parseDialog(source) {
   const forms = parseLisp(source);
   const nodes = [];
+  const particleEffects = new Map();
   let startId = "";
 
   forms.forEach((form) => {
@@ -332,6 +337,15 @@ export function parseDialog(source) {
 
     if (head === "dialog-start") {
       startId = stringValue(form[1]);
+      return;
+    }
+
+    if (head === "dialog-particles") {
+      const args = keyArguments(form, 3);
+      particleEffects.set(stringValue(form[1]), {
+        mode: readParticleMode(form[2]),
+        fadeSeconds: readNumberKey(args.keys, ":fade-seconds", "")
+      });
       return;
     }
 
@@ -353,6 +367,8 @@ export function parseDialog(source) {
         minigame: "wire-flight",
         successTarget: "",
         failureTarget: "",
+        particleMode: "",
+        particleFadeSeconds: "",
         choices: [],
         branches: [],
         x: 0,
@@ -386,6 +402,8 @@ export function parseDialog(source) {
         minigame: "wire-flight",
         successTarget: "",
         failureTarget: "",
+        particleMode: "",
+        particleFadeSeconds: "",
         choices: choices,
         branches: [],
         x: 0,
@@ -412,6 +430,8 @@ export function parseDialog(source) {
         minigame: "wire-flight",
         successTarget: "",
         failureTarget: "",
+        particleMode: "",
+        particleFadeSeconds: "",
         choices: [],
         branches: [],
         x: 0,
@@ -438,6 +458,8 @@ export function parseDialog(source) {
         minigame: "wire-flight",
         successTarget: "",
         failureTarget: "",
+        particleMode: "",
+        particleFadeSeconds: "",
         choices: [],
         branches: [],
         x: 0,
@@ -464,6 +486,8 @@ export function parseDialog(source) {
         minigame: readKeywordKey(args.keys, ":game", "wire-flight"),
         successTarget: readKey(args.keys, ":success"),
         failureTarget: readKey(args.keys, ":failure"),
+        particleMode: "",
+        particleFadeSeconds: "",
         choices: [],
         branches: [],
         x: 0,
@@ -492,6 +516,8 @@ export function parseDialog(source) {
         minigame: "wire-flight",
         successTarget: "",
         failureTarget: "",
+        particleMode: "",
+        particleFadeSeconds: "",
         choices: [],
         branches: branches,
         x: 0,
@@ -503,6 +529,15 @@ export function parseDialog(source) {
   if (!startId && nodes.length) {
     startId = nodes[0].id;
   }
+
+  particleEffects.forEach((effect, id) => {
+    const node = nodes.find((candidate) => candidate.id === id);
+
+    if (node) {
+      node.particleMode = effect.mode;
+      node.particleFadeSeconds = effect.fadeSeconds;
+    }
+  });
 
   return {
     startId: startId,
@@ -637,7 +672,7 @@ function nodeSource(node) {
     const lines = [
       "(" + command + " " + lispString(node.id),
       indent + lispString(node.text || ""),
-      indent + ":game " + keywordSource(node.minigame)
+      indent + ":game " + keywordSource(node.minigame, "wire-flight")
     ];
 
     if (node.successTarget) {
@@ -665,6 +700,24 @@ function nodeSource(node) {
   return lines.join("\n") + ")";
 }
 
+function particleEffectSource(node) {
+  if (!node.particleMode) {
+    return "";
+  }
+
+  const lines = [
+    "(dialog-particles " + lispString(node.id) + " " +
+      keywordSource(node.particleMode, "stars")
+  ];
+  const fadeSeconds = node.particleFadeSeconds;
+
+  if (fadeSeconds !== "" && fadeSeconds != null) {
+    lines.push("                  :fade-seconds " + fadeSeconds);
+  }
+
+  return lines.join("\n") + ")";
+}
+
 export function exportGraph(graph) {
   const lines = [];
 
@@ -678,6 +731,12 @@ export function exportGraph(graph) {
       lines.push("");
     }
     lines.push(nodeSource(node));
+
+    const effectSource = particleEffectSource(node);
+    if (effectSource) {
+      lines.push("");
+      lines.push(effectSource);
+    }
   });
 
   return lines.join("\n").trimEnd() + "\n";
