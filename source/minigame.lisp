@@ -73,8 +73,7 @@
                half-size)))))
 
 (defun record-flight-crash ()
-  (setf (dialog-value "ship-loop")
-        (1+ (dialog-value "ship-loop" 0))))
+  (setf (dialog-value "ship-crashed") t))
 
 (defun finish-flight-minigame (target)
   (setf *flight-minigame* nil)
