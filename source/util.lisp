@@ -76,10 +76,16 @@
                         (round y2)
                         (claylib::c-ptr color)))
 
+(defun single-float-value (value)
+  (coerce value 'single-float))
+
 (defun draw-triangle-points (x1 y1 x2 y2 x3 y3 color &key filled-p)
-  (let ((v1 (make-vector2 x1 y1))
-        (v2 (make-vector2 x2 y2))
-        (v3 (make-vector2 x3 y3)))
+  (let ((v1 (make-vector2 (single-float-value x1)
+                          (single-float-value y1)))
+        (v2 (make-vector2 (single-float-value x2)
+                          (single-float-value y2)))
+        (v3 (make-vector2 (single-float-value x3)
+                          (single-float-value y3))))
     (if filled-p
         (claylib/ll:draw-triangle (claylib::c-ptr v1)
                                   (claylib::c-ptr v2)
