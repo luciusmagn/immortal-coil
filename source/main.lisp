@@ -3,9 +3,13 @@
 (defun setup-game ()
   (setf *mode* :menu
         *menu-elapsed* 0.0
+        *menu-selected-index* 0
+        *menu-start-action* nil
         *menu-start-state* :idle
         *menu-start-elapsed* 0.0
         *game-fade-elapsed* 0.0
+        *quit-requested-p* nil
+        *save-current-game-p* nil
         *window-mode* :windowed
         *requested-window-mode* nil)
   (reset-title-particles))
@@ -47,7 +51,8 @@
     (setup-window-resources)
     (let ((next-mode
             (do-game-loop (:livesupport t
-                           :end *requested-window-mode*
+                           :end (or *requested-window-mode*
+                                     *quit-requested-p*)
                            :result *requested-window-mode*)
               (update-window-controls)
               (update-world)
