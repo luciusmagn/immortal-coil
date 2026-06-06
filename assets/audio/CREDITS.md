@@ -23,6 +23,14 @@
 - License: CC0
 - Notes: Used when switching between visible choice options.
 
+## start-confirm.wav
+
+- Source: Generated locally from a procedural low-frequency tone layered with `choice-switch.wav`.
+- Original file: `choice-switch.wav`
+- Author: qubodup for the reused click transient; procedural tone generated for Immortal Coil.
+- License: CC0 for reused click transient; procedural tone generated for this project.
+- Notes: Used as the heavier confirmation sound when committing to menu actions such as new game and continue.
+
 ## title-ambient-drone.mp3
 
 - Source: Generated with OpenRouter using `google/lyria-3-pro-preview`.

@@ -40,12 +40,13 @@
       (setf (volume *choice-switch-sound*) 0.16))))
 
 (defun load-start-confirm ()
-  (let ((path (project-pathname "assets/audio/choice-switch.wav")))
-    (when (probe-file path)
+  (let ((path (or (probe-file (project-pathname "assets/audio/start-confirm.wav"))
+                  (probe-file (project-pathname "assets/audio/choice-switch.wav")))))
+    (when path
       (setf *start-confirm-asset* (make-sound-asset path :load-now t)
             *start-confirm-sound* (asset *start-confirm-asset*))
-      (setf (volume *start-confirm-sound*) 0.24
-            (pitch *start-confirm-sound*) 0.82))))
+      (setf (volume *start-confirm-sound*) 0.82
+            (pitch *start-confirm-sound*) 1.0))))
 
 (defun load-title-music ()
   (let ((path (project-pathname "assets/audio/title-ambient-drone.mp3")))
@@ -109,7 +110,7 @@
 
 (defun play-start-confirm ()
   (when *start-confirm-sound*
-    (setf (pitch *start-confirm-sound*) 0.82)
+    (setf (pitch *start-confirm-sound*) 1.0)
     (claylib/ll:play-sound (claylib::c-ptr *start-confirm-sound*))))
 
 (defun load-audio ()
