@@ -16,6 +16,7 @@
                  (:file "dialog-store")
                  (:file "graph")
                  (:file "graph-patterns")
+                 (:file "dev-save")
                  (:file "text-template")
                  (:file "audio")
                  (:file "particles")

@@ -11,11 +11,12 @@
             (project-pathname "save/current.lisp")))))
 
 (defun save-game-exists-p ()
-  (handler-case
-      (not (null (probe-file (save-file-pathname))))
-    (error (condition)
-      (runtime-warn "Could not check save file: ~a" condition)
-      nil)))
+  (or (dev-save-override-exists-p)
+      (handler-case
+          (not (null (probe-file (save-file-pathname))))
+        (error (condition)
+          (runtime-warn "Could not check save file: ~a" condition)
+          nil))))
 
 (defun save-play-state-data ()
   (list :version 1
@@ -52,6 +53,10 @@
             (read stream nil nil)))
       (error () nil))))
 
+(defun current-save-data ()
+  (or (dev-save-override-data)
+      (read-save-data)))
+
 (defun save-data-current-id (data)
   (getf data :current-id))
 
@@ -81,10 +86,20 @@
 
 (defun load-current-game-save ()
   (handler-case
-      (let ((data (read-save-data)))
+      (let ((data (current-save-data)))
         (when (valid-save-data-p data)
           (restore-play-state-from-save data)
           t))
     (error () nil)))
+
+(defun restore-dev-save-override ()
+  (handler-case
+      (let ((data (dev-save-override-data)))
+        (when (valid-save-data-p data)
+          (restore-play-state-from-save data)
+          t))
+    (error (condition)
+      (runtime-warn "Could not restore dev save override: ~a" condition)
+      nil)))
 
 (setf *save-current-game-function* #'save-current-game)

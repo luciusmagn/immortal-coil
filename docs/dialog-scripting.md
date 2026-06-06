@@ -67,3 +67,32 @@ Conditions work like normal choices:
 
 The visual editor expands these helpers into ordinary graph nodes when reading a
 script. Export still writes primitive `dialog-*` forms.
+
+## Dev Save Override
+
+For development, a script can contain one top-level save override. Move it near
+the node you want to test and use New Game. Continue also prefers the override
+after the graph has been loaded.
+
+```lisp
+(dialog-dev-save "ship/flight"
+                 :store '(("player-name" . "dev")
+                          ("door-count" . 5))
+                 :particle-mode :stars
+                 :visible :all)
+```
+
+When placed directly after a node, this shorter form targets the last node that
+was defined:
+
+```lisp
+(dialog-dev-save-here
+ :store '(("player-name" . "dev"))
+ :visible :all)
+```
+
+Disable active overrides without editing the script by setting:
+
+```bash
+IMMORTAL_COIL_DISABLE_DEV_SAVE=1
+```

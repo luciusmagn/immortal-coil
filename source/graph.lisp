@@ -3,6 +3,8 @@
 (defvar *nodes* (make-hash-table :test #'equal))
 (defvar *pending-node-enter-effects* (make-hash-table :test #'equal))
 (defvar *story-start-node* nil)
+(defvar *last-dialog-node-id* nil)
+(defvar *dev-save-override* nil)
 (defparameter *runtime-fallback-node-id* "runtime/fallback")
 
 (defstruct choice
@@ -55,6 +57,7 @@
   (setf (node-enter-effects node)
         (combine-node-enter-effects node))
   (remhash (node-id node) *pending-node-enter-effects*)
+  (setf *last-dialog-node-id* (node-id node))
   (setf (gethash (node-id node) *nodes*) node))
 
 (defun ensure-runtime-fallback-node ()
@@ -83,7 +86,9 @@
 
 (defun reset-dialog-graph ()
   (reset-nodes)
-  (setf *story-start-node* nil))
+  (setf *story-start-node* nil
+        *last-dialog-node-id* nil
+        *dev-save-override* nil))
 
 (defun dialog-start (id)
   (setf *story-start-node* id))

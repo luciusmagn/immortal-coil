@@ -4,6 +4,11 @@
              "you awake in a strange world..."
              :next "base/name")
 
+;; Move this below any node while developing, then use New Game.
+;; (dialog-dev-save-here
+;;  :store '(("player-name" . "dev"))
+;;  :visible :all)
+
 (dialog-string "base/name"
                "what does the room call you?"
                :response-key "player-name"

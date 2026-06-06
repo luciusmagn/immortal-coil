@@ -96,7 +96,8 @@
   (stop-title-music)
   (load-dialog-graph)
   (reset-particles)
-  (reset-play-state *story-start-node*)
+  (unless (restore-dev-save-override)
+    (reset-play-state *story-start-node*))
   (setf *save-current-game-p* t)
   (save-current-game)
   (setf *mode* :game
