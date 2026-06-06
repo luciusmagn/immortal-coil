@@ -76,7 +76,8 @@ function collectElements() {
     "deleteNodeButton",
     "sourceOutput",
     "copyButton",
-    "nodeIds"
+    "nodeIds",
+    "storeKeys"
   ].forEach((id) => {
     elements[id] = document.getElementById(id);
   });

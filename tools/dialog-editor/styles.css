@@ -458,13 +458,29 @@ textarea {
   margin-bottom: 8px;
 }
 
-.repeater-row .condition-field {
-  grid-column: 1 / 3;
-}
-
 .repeater-row button {
   width: 34px;
   padding: 0;
+}
+
+.condition-builder {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr 0.82fr;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid rgba(245, 247, 242, 0.18);
+  border-radius: var(--radius);
+  background: rgba(3, 3, 3, 0.42);
+}
+
+.condition-builder textarea {
+  min-height: 92px;
+  font-size: 12px;
+}
+
+.condition-custom-field {
+  grid-column: 1 / -1;
 }
 
 .danger {

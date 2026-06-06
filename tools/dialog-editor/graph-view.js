@@ -1,5 +1,11 @@
 import { exportGraph } from "./lisp.js";
 import {
+  conditionNeedsKey,
+  conditionNeedsValue,
+  conditionStateFromSource,
+  sourceFromConditionState
+} from "./conditions.js";
+import {
   NODE_HEIGHT,
   NODE_WIDTH,
   allEdges,
@@ -43,6 +49,44 @@ function renderNodeIds() {
     const option = document.createElement("option");
     option.value = node.id;
     elements.nodeIds.appendChild(option);
+  });
+}
+
+function conditionStoreKeys() {
+  const keys = new Set();
+
+  state.nodes.forEach((node) => {
+    if ((node.kind === "number" || node.kind === "string") && node.responseKey) {
+      keys.add(node.responseKey);
+    }
+
+    node.choices.forEach((choice) => {
+      const condition = conditionStateFromSource(choice.condition);
+
+      if (condition.key) {
+        keys.add(condition.key);
+      }
+    });
+
+    node.branches.forEach((branch) => {
+      const condition = conditionStateFromSource(branch.condition);
+
+      if (condition.key) {
+        keys.add(condition.key);
+      }
+    });
+  });
+
+  return Array.from(keys).sort();
+}
+
+function renderStoreKeys() {
+  elements.storeKeys.innerHTML = "";
+
+  conditionStoreKeys().forEach((key) => {
+    const option = document.createElement("option");
+    option.value = key;
+    elements.storeKeys.appendChild(option);
   });
 }
 
@@ -165,6 +209,113 @@ function setFormEnabled(enabled) {
   });
 }
 
+function conditionPresetOptions() {
+  return [
+    ["always", "Always"],
+    ["store-truthy", "Store truthy"],
+    ["store-missing", "Store missing"],
+    ["string-equals", "Text equals"],
+    ["number-equals", "Number equals"],
+    ["number-gte", "Number at least"],
+    ["number-lte", "Number at most"],
+    ["custom", "Custom Lisp"]
+  ];
+}
+
+function setConditionVisibility(state, keyField, valueField, customField) {
+  keyField.hidden = !conditionNeedsKey(state.preset);
+  valueField.hidden = !conditionNeedsValue(state.preset);
+  customField.hidden = state.preset !== "custom";
+}
+
+function createConditionEditor(source, onChange) {
+  let condition = conditionStateFromSource(source);
+  const wrapper = document.createElement("div");
+  const presetField = document.createElement("label");
+  const presetCaption = document.createElement("span");
+  const presetSelect = document.createElement("select");
+  const keyField = document.createElement("label");
+  const keyCaption = document.createElement("span");
+  const keyInput = document.createElement("input");
+  const valueField = document.createElement("label");
+  const valueCaption = document.createElement("span");
+  const valueInput = document.createElement("input");
+  const customField = document.createElement("label");
+  const customCaption = document.createElement("span");
+  const customInput = document.createElement("textarea");
+
+  wrapper.className = "condition-builder";
+  customField.className = "condition-custom-field";
+  presetCaption.textContent = "Condition";
+  keyCaption.textContent = "Store Key";
+  valueCaption.textContent = "Value";
+  customCaption.textContent = "Lisp";
+
+  conditionPresetOptions().forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    presetSelect.appendChild(option);
+  });
+
+  presetSelect.value = condition.preset;
+  keyInput.value = condition.key;
+  keyInput.autocomplete = "off";
+  keyInput.setAttribute("list", "storeKeys");
+  valueInput.value = condition.value;
+  valueInput.autocomplete = "off";
+  customInput.value = condition.custom;
+  customInput.rows = 3;
+  customInput.spellcheck = false;
+
+  function emit() {
+    onChange(sourceFromConditionState(condition));
+  }
+
+  presetSelect.addEventListener("change", () => {
+    condition = {
+      preset: presetSelect.value,
+      key: condition.key,
+      value: condition.value,
+      custom: condition.custom
+    };
+    setConditionVisibility(condition, keyField, valueField, customField);
+    emit();
+  });
+
+  keyInput.addEventListener("input", () => {
+    condition.key = keyInput.value;
+    emit();
+  });
+
+  valueInput.addEventListener("input", () => {
+    condition.value = valueInput.value;
+    emit();
+  });
+
+  customInput.addEventListener("input", () => {
+    condition.custom = customInput.value;
+    emit();
+  });
+
+  presetField.appendChild(presetCaption);
+  presetField.appendChild(presetSelect);
+  keyField.appendChild(keyCaption);
+  keyField.appendChild(keyInput);
+  valueField.appendChild(valueCaption);
+  valueField.appendChild(valueInput);
+  customField.appendChild(customCaption);
+  customField.appendChild(customInput);
+
+  wrapper.appendChild(presetField);
+  wrapper.appendChild(keyField);
+  wrapper.appendChild(valueField);
+  wrapper.appendChild(customField);
+  setConditionVisibility(condition, keyField, valueField, customField);
+
+  return wrapper;
+}
+
 function renderChoiceRows(node) {
   elements.choicesList.innerHTML = "";
 
@@ -208,25 +359,15 @@ function renderChoiceRows(node) {
       render();
     });
 
-    const conditionField = document.createElement("label");
-    conditionField.className = "condition-field";
-    const conditionCaption = document.createElement("span");
-    const conditionInput = document.createElement("input");
-    conditionCaption.textContent = "Condition";
-    conditionInput.value = choice.condition || "";
-    conditionInput.placeholder = "#'(lambda () ...)";
-    conditionInput.autocomplete = "off";
-    conditionInput.addEventListener("input", () => {
-      choice.condition = conditionInput.value;
+    const conditionEditor = createConditionEditor(choice.condition, (source) => {
+      choice.condition = source;
       renderGraphAndSource();
     });
-    conditionField.appendChild(conditionCaption);
-    conditionField.appendChild(conditionInput);
 
     row.appendChild(labelField);
     row.appendChild(targetField);
     row.appendChild(deleteButton);
-    row.appendChild(conditionField);
+    row.appendChild(conditionEditor);
     elements.choicesList.appendChild(row);
   });
 }
@@ -238,19 +379,10 @@ function renderBranchRows(node) {
     const row = document.createElement("div");
     row.className = "repeater-row";
 
-    const conditionField = document.createElement("label");
-    const conditionCaption = document.createElement("span");
-    const conditionInput = document.createElement("input");
-    conditionCaption.textContent = "Condition";
-    conditionInput.value = branch.condition || "";
-    conditionInput.placeholder = "t";
-    conditionInput.autocomplete = "off";
-    conditionInput.addEventListener("input", () => {
-      branch.condition = conditionInput.value;
+    const conditionEditor = createConditionEditor(branch.condition, (source) => {
+      branch.condition = source;
       renderGraphAndSource();
     });
-    conditionField.appendChild(conditionCaption);
-    conditionField.appendChild(conditionInput);
 
     const targetField = document.createElement("label");
     const targetCaption = document.createElement("span");
@@ -275,9 +407,9 @@ function renderBranchRows(node) {
       render();
     });
 
-    row.appendChild(conditionField);
     row.appendChild(targetField);
     row.appendChild(deleteButton);
+    row.appendChild(conditionEditor);
     elements.branchesList.appendChild(row);
   });
 }
@@ -341,6 +473,7 @@ function renderInspector() {
 export function renderGraphAndSource() {
   renderMeta();
   renderNodeIds();
+  renderStoreKeys();
   setWorldTransform();
   renderEdges();
   renderNodes();

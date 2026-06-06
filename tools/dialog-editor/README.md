@@ -24,6 +24,8 @@ Use the local server instead of opening `index.html` directly. The editor uses b
 
 String substitutions use `{store-key}` placeholders in dialog text and choice labels. A `dialog-string` or `dialog-number` node can store values into the shared dialog store, and later nodes can refer to them.
 
+Choice and branch conditions use presets for common dialog-store checks. Custom Lisp is still available for cases that need the full language.
+
 Node particle effects can be scripted with forms such as:
 
 ```lisp
