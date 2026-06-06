@@ -1,6 +1,8 @@
 (in-package #:immortal-coil)
 
 (defvar *state* nil)
+(defvar *save-current-game-function* nil)
+(defvar *save-current-game-p* nil)
 
 (defstruct play-state
   current-id
@@ -19,6 +21,11 @@
                                  :selected-index 0
                                  :input-buffer "")))
 
+(defun save-current-game-maybe ()
+  (when (and *save-current-game-p*
+             *save-current-game-function*)
+    (funcall *save-current-game-function*)))
+
 (defun current-node ()
   (find-node (play-state-current-id *state*)))
 
@@ -32,7 +39,8 @@
         (play-state-type-delay *state*) 0.0
         (play-state-visible-count *state*) 0
         (play-state-selected-index *state*) 0
-        (play-state-input-buffer *state*) ""))
+        (play-state-input-buffer *state*) "")
+  (save-current-game-maybe))
 
 (defun typewriter-elapsed ()
   (max 0.0 (- (play-state-elapsed *state*)

@@ -18,6 +18,16 @@
 (defun dialog-store-remove (key)
   (remhash key *dialog-store*))
 
+(defun dialog-store-alist ()
+  (loop for key being the hash-keys of *dialog-store*
+          using (hash-value value)
+        collect (cons key value)))
+
+(defun restore-dialog-store (entries)
+  (reset-dialog-store)
+  (dolist (entry entries)
+    (setf (dialog-store-get (first entry)) (rest entry))))
+
 (defun dialog-value (key &optional default)
   (dialog-store-get key default))
 
