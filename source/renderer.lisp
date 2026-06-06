@@ -2,9 +2,7 @@
 
 (defun load-crt-shader ()
   (make-shader-asset
-   :fspath (asdf:system-relative-pathname
-            :immortal-coil
-            "assets/shaders/crt.fs")
+   :fspath (project-pathname "assets/shaders/crt.fs")
    :load-now t))
 
 (defun configure-target-texture (target)

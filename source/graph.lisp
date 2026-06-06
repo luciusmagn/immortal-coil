@@ -177,9 +177,7 @@
   node-id)
 
 (defun dialog-script-pathname (path)
-  (etypecase path
-    (pathname path)
-    (string (asdf:system-relative-pathname :immortal-coil path))))
+  (project-pathname path))
 
 (defun eval-dialog-script (path)
   (let ((eof (gensym "EOF")))

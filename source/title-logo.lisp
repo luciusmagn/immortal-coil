@@ -6,9 +6,7 @@
 (defvar *title-logo-sample-color* (make-color 0 0 0 255))
 
 (defun title-logo-path ()
-  (asdf:system-relative-pathname
-   :immortal-coil
-   "assets/logo/title-logo.png"))
+  (project-pathname "assets/logo/title-logo.png"))
 
 (defun title-logo-loaded-p ()
   (and *title-logo-texture*

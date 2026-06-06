@@ -15,8 +15,7 @@
 
 (defun type-click-paths ()
   (loop for i from 1 to 8
-        for path = (asdf:system-relative-pathname
-                    :immortal-coil
+        for path = (project-pathname
                     (format nil "assets/audio/typewriter~d.wav" i))
         when (probe-file path)
           collect path))
@@ -34,18 +33,14 @@
         do (setf (volume sound) 0.18)))
 
 (defun load-choice-switch ()
-  (let ((path (asdf:system-relative-pathname
-               :immortal-coil
-               "assets/audio/choice-switch.wav")))
+  (let ((path (project-pathname "assets/audio/choice-switch.wav")))
     (when (probe-file path)
       (setf *choice-switch-asset* (make-sound-asset path :load-now t)
             *choice-switch-sound* (asset *choice-switch-asset*))
       (setf (volume *choice-switch-sound*) 0.16))))
 
 (defun load-start-confirm ()
-  (let ((path (asdf:system-relative-pathname
-               :immortal-coil
-               "assets/audio/choice-switch.wav")))
+  (let ((path (project-pathname "assets/audio/choice-switch.wav")))
     (when (probe-file path)
       (setf *start-confirm-asset* (make-sound-asset path :load-now t)
             *start-confirm-sound* (asset *start-confirm-asset*))
@@ -53,9 +48,7 @@
             (pitch *start-confirm-sound*) 0.82))))
 
 (defun load-title-music ()
-  (let ((path (asdf:system-relative-pathname
-               :immortal-coil
-               "assets/audio/title-ambient-drone.mp3")))
+  (let ((path (project-pathname "assets/audio/title-ambient-drone.mp3")))
     (when (probe-file path)
       (stop-title-music)
       (setf *title-music-asset* (make-music-asset path :load-now t)

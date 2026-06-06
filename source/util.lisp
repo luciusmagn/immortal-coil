@@ -16,6 +16,17 @@
      (* (- max min)
         (/ (get-random-value 0 10000) 10000.0))))
 
+(defun project-root-pathname ()
+  (let ((root (uiop:getenv "IMMORTAL_COIL_ROOT")))
+    (if root
+        (uiop:ensure-directory-pathname root)
+        (asdf:system-source-directory :immortal-coil))))
+
+(defun project-pathname (path)
+  (etypecase path
+    (pathname path)
+    (string (merge-pathnames path (project-root-pathname)))))
+
 (defun draw-text-at (text x y size color)
   (claylib/ll:draw-text text
                         (round x)

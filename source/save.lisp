@@ -1,10 +1,17 @@
 (in-package #:immortal-coil)
 
-(defparameter *save-file-path*
-  (asdf:system-relative-pathname :immortal-coil "save/current.lisp"))
+(defparameter *save-file-path* nil)
+
+(defun save-file-pathname ()
+  (or *save-file-path*
+      (let ((save-dir (uiop:getenv "IMMORTAL_COIL_SAVE_DIR")))
+        (if save-dir
+            (merge-pathnames "current.lisp"
+                             (uiop:ensure-directory-pathname save-dir))
+            (project-pathname "save/current.lisp")))))
 
 (defun save-game-exists-p ()
-  (not (null (probe-file *save-file-path*))))
+  (not (null (probe-file (save-file-pathname)))))
 
 (defun save-play-state-data ()
   (list :version 1
@@ -15,14 +22,15 @@
         :dialog-store (dialog-store-alist)))
 
 (defun write-save-data (data)
-  (ensure-directories-exist *save-file-path*)
-  (with-open-file (stream *save-file-path*
-                          :direction :output
-                          :if-exists :supersede
-                          :if-does-not-exist :create)
-    (with-standard-io-syntax
-      (let ((*print-readably* t))
-        (print data stream)))))
+  (let ((path (save-file-pathname)))
+    (ensure-directories-exist path)
+    (with-open-file (stream path
+                            :direction :output
+                            :if-exists :supersede
+                            :if-does-not-exist :create)
+      (with-standard-io-syntax
+        (let ((*print-readably* t))
+          (print data stream))))))
 
 (defun save-current-game ()
   (when *state*
@@ -31,7 +39,7 @@
 (defun read-save-data ()
   (when (save-game-exists-p)
     (handler-case
-        (with-open-file (stream *save-file-path*)
+        (with-open-file (stream (save-file-pathname))
           (with-standard-io-syntax
             (read stream nil nil)))
       (error () nil))))
