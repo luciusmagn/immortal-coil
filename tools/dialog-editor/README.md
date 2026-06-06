@@ -31,3 +31,8 @@ Node particle effects can be scripted with forms such as:
 ```lisp
 (dialog-particles "ship/wake" :stars :fade-seconds 6.5)
 ```
+
+The editor can read the shorthand forms documented in
+`docs/dialog-scripting.md`, such as `dialog-path` and `dialog-list-path`, by
+expanding them into ordinary graph nodes. Saving from the editor writes the
+primitive `dialog-*` forms.

@@ -281,6 +281,181 @@ function readParticleMode(value) {
   return stringValue(value).trim().replace(/^:/, "").toLowerCase();
 }
 
+function isKeywordAtom(value) {
+  return isSymbolAtom(value) && value.value.startsWith(":");
+}
+
+function dialogIdFragment(value) {
+  const fragment = String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return fragment || "node";
+}
+
+function dialogChildId(parent, child) {
+  const parentId = String(parent || "").replace(/\/+$/g, "");
+  const childId = dialogIdFragment(child);
+
+  return parentId ? parentId + "/" + childId : childId;
+}
+
+function dialogPathNodeId(parent, step) {
+  return step <= 1 ? String(parent || "") : dialogChildId(parent, String(step));
+}
+
+function readPatternBody(values, startIndex) {
+  const keys = new Map();
+  const texts = [];
+  let index = startIndex;
+
+  while (index < values.length) {
+    const value = values[index];
+
+    if (Array.isArray(value) && isKeywordAtom(value[0])) {
+      keys.set(symbolName(value[0]).toLowerCase(), value[1]);
+      index += 1;
+      continue;
+    }
+
+    if (isKeywordAtom(value)) {
+      keys.set(symbolName(value).toLowerCase(), values[index + 1]);
+      index += 2;
+      continue;
+    }
+
+    texts.push(value);
+    index += 1;
+  }
+
+  return { keys: keys, texts: texts };
+}
+
+function conditionFromPatternKeys(keys) {
+  const whenValue = keys.get(":when");
+  const unlessValue = keys.get(":unless");
+
+  if (whenValue) {
+    return sexpToSource(whenValue);
+  }
+
+  if (unlessValue) {
+    return "(not " + sexpToSource(unlessValue) + ")";
+  }
+
+  return "";
+}
+
+function textNode(id, text, next) {
+  return {
+    id: id,
+    kind: "text",
+    text: text,
+    next: next || "",
+    layout: "horizontal",
+    target: "",
+    responseKey: "",
+    min: "",
+    max: "",
+    maxLength: "",
+    allowEmpty: false,
+    minigame: "wire-flight",
+    successTarget: "",
+    failureTarget: "",
+    particleMode: "",
+    particleFadeSeconds: "",
+    choices: [],
+    branches: [],
+    x: 0,
+    y: 0
+  };
+}
+
+function choiceNode(id, text, layout, choices) {
+  return {
+    id: id,
+    kind: "choice",
+    text: text,
+    next: "",
+    layout: layout,
+    target: "",
+    responseKey: "",
+    min: "",
+    max: "",
+    maxLength: "",
+    allowEmpty: false,
+    minigame: "wire-flight",
+    successTarget: "",
+    failureTarget: "",
+    particleMode: "",
+    particleFadeSeconds: "",
+    choices: choices,
+    branches: [],
+    x: 0,
+    y: 0
+  };
+}
+
+function pathTextNodes(id, texts, next) {
+  const count = texts.length;
+
+  return texts.map((text, index) => {
+    const step = index + 1;
+    const nodeId = dialogPathNodeId(id, step);
+    const nextId = step < count
+      ? dialogPathNodeId(id, step + 1)
+      : next;
+
+    return textNode(nodeId, stringValue(text), nextId);
+  });
+}
+
+function parseDialogPathPattern(form) {
+  const id = stringValue(form[1]);
+  const body = readPatternBody(form, 2);
+
+  return pathTextNodes(id, body.texts, readKey(body.keys, ":next"));
+}
+
+function parseChoicePathBranch(parentId, form) {
+  const label = stringValue(form[0]);
+  const body = readPatternBody(form, 1);
+  const suffix = readKey(body.keys, ":id") || label;
+  const directTarget = readKey(body.keys, ":target");
+  const pathId = dialogChildId(parentId, suffix);
+  const next = readKey(body.keys, ":next") || directTarget;
+  const target = body.texts.length ? pathId : directTarget;
+
+  return {
+    choice: {
+      label: label,
+      target: target,
+      condition: conditionFromPatternKeys(body.keys)
+    },
+    nodes: pathTextNodes(pathId, body.texts, next)
+  };
+}
+
+function parseChoicePathPattern(form, layout) {
+  const id = stringValue(form[1]);
+  const branches = form.slice(3)
+    .filter((item) => Array.isArray(item))
+    .map((branch) => parseChoicePathBranch(id, branch));
+  const nodes = [
+    choiceNode(id,
+               stringValue(form[2]),
+               layout,
+               branches.map((branch) => branch.choice))
+  ];
+
+  branches.forEach((branch) => {
+    nodes.push(...branch.nodes);
+  });
+
+  return nodes;
+}
+
 function parseDialogOption(form) {
   const args = keyArguments(form, 3);
   const whenValue = args.keys.get(":when");
@@ -346,6 +521,24 @@ export function parseDialog(source) {
         mode: readParticleMode(form[2]),
         fadeSeconds: readNumberKey(args.keys, ":fade-seconds", "")
       });
+      return;
+    }
+
+    if (head === "dialog-path") {
+      nodes.push(...parseDialogPathPattern(form));
+      return;
+    }
+
+    if (head === "dialog-choice-path" ||
+        head === "dialog-pick-path" ||
+        head === "dialog-list-path") {
+      const layout = head === "dialog-pick-path"
+        ? "vertical"
+        : head === "dialog-list-path"
+          ? "list"
+          : "horizontal";
+
+      nodes.push(...parseChoicePathPattern(form, layout));
       return;
     }
 

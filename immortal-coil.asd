@@ -15,6 +15,7 @@
                  (:file "selection")
                  (:file "dialog-store")
                  (:file "graph")
+                 (:file "graph-patterns")
                  (:file "text-template")
                  (:file "audio")
                  (:file "particles")

@@ -75,50 +75,30 @@
              (dialog-option "center" "base/listen")
              (dialog-option "right" "base/listen"))
 
-(dialog-list "base/listen"
-             "select a sound from the hall."
-             (dialog-option "breathing" "base/heard-breathing")
-             (dialog-option "static" "base/heard-static")
-             (dialog-option "water" "base/heard-water")
-             (dialog-option "glass" "base/heard-glass")
-             (dialog-option "keys" "base/heard-keys")
-             (dialog-option "bells" "base/heard-bells")
-             (dialog-option "steps" "base/heard-steps")
-             (dialog-option "wood" "base/heard-wood")
-             (dialog-option "silence" "base/heard-silence")
-             (dialog-option "hinges" "base/heard-hinges"
-                            :when #'(lambda ()
-                                      (>= (dialog-value "door-count" 0) 5))))
-
-(dialog-text "base/heard-breathing"
-             "the breathing stops when you notice it.")
-
-(dialog-text "base/heard-static"
-             "under the static, a voice has been waiting.")
-
-(dialog-text "base/heard-water"
-             "the water runs uphill behind the door.")
-
-(dialog-text "base/heard-glass"
-             "glass shifts in the wall like teeth.")
-
-(dialog-text "base/heard-keys"
-             "the keys turn by themselves.")
-
-(dialog-text "base/heard-bells"
-             "the bells are too distant to be outside.")
-
-(dialog-text "base/heard-steps"
-             "the steps stop one pace from the threshold.")
-
-(dialog-text "base/heard-wood"
-             "wood creaks where no wood should be.")
-
-(dialog-text "base/heard-silence"
-             "the silence notices you first.")
-
-(dialog-text "base/heard-hinges"
-             "the hinges count themselves out loud.")
+(dialog-list-path "base/listen"
+                  "select a sound from the hall."
+                  ("breathing"
+                   "the breathing stops when you notice it.")
+                  ("static"
+                   "under the static, a voice has been waiting.")
+                  ("water"
+                   "the water runs uphill behind the door.")
+                  ("glass"
+                   "glass shifts in the wall like teeth.")
+                  ("keys"
+                   "the keys turn by themselves.")
+                  ("bells"
+                   "the bells are too distant to be outside.")
+                  ("steps"
+                   "the steps stop one pace from the threshold.")
+                  ("wood"
+                   "wood creaks where no wood should be.")
+                  ("silence"
+                   "the silence notices you first.")
+                  ("hinges"
+                   :when #'(lambda ()
+                             (>= (dialog-value "door-count" 0) 5))
+                   "the hinges count themselves out loud."))
 
 (dialog-text "base/sleep"
              "you rolled over and went back to sleep, nothing of interest happened...")
