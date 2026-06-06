@@ -1,18 +1,19 @@
 (in-package #:immortal-coil)
 
 (defun draw-choice-option (choice x y selected-p color)
-  (let ((size 20))
-    (draw-text-at (choice-label choice) x y size color)
+  (let ((size 20)
+        (label (choice-display-label choice)))
+    (draw-text-at label x y size color)
     (when selected-p
       (claylib/ll:draw-rectangle (round x)
                                  (round (+ y size 3))
-                                 (measure-text (choice-label choice) size)
+                                 (measure-text label size)
                                  4
                                  (claylib::c-ptr color)))))
 
 (defun draw-choice-option-centered (choice center-x y selected-p color)
   (let* ((size 20)
-         (width (measure-text (choice-label choice) size))
+         (width (measure-text (choice-display-label choice) size))
          (x (- center-x (/ width 2))))
     (draw-choice-option choice x y selected-p color)))
 
@@ -94,10 +95,9 @@
       (:list (draw-list-choice-node node color))
       (t (draw-horizontal-choice-node node color)))))
 
-(defun draw-number-input-field (color)
+(defun draw-input-field (color &key (field-width 220))
   (let* ((size 20)
          (buffer (play-state-input-buffer *state*))
-         (field-width 220)
          (field-x (- +virtual-center-x+ (/ field-width 2)))
          (field-y (+ +virtual-center-y+ 88)))
     (multiple-value-bind (x y width)
@@ -113,8 +113,20 @@
                                  (claylib::c-ptr color))
       (draw-cursor x y width size color))))
 
+(defun draw-number-input-field (color)
+  (draw-input-field color :field-width 220))
+
+(defun draw-string-input-field (color)
+  (draw-input-field color :field-width 460))
+
 (defun draw-number-node (node)
   (let ((color (make-color 255 255 255 (current-alpha))))
     (draw-choice-prompt node (- +virtual-center-y+ 80) color)
     (when (story-text-visible-p node)
       (draw-number-input-field color))))
+
+(defun draw-string-node (node)
+  (let ((color (make-color 255 255 255 (current-alpha))))
+    (draw-choice-prompt node (- +virtual-center-y+ 80) color)
+    (when (story-text-visible-p node)
+      (draw-string-input-field color))))

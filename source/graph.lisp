@@ -23,7 +23,9 @@
   target
   response-key
   min-value
-  max-value)
+  max-value
+  max-length
+  allow-empty-p)
 
 (defun reset-nodes ()
   (clrhash *nodes*))
@@ -104,6 +106,18 @@
                        :response-key (or response-key id)
                        :min-value min
                        :max-value max))
+  id)
+
+(defun dialog-string (id text &key target response-key (max-length 32) allow-empty)
+  (unless target
+    (error "String node needs a target: ~a" id))
+  (add-node (make-node :id id
+                       :kind :string
+                       :text text
+                       :target target
+                       :response-key (or response-key id)
+                       :max-length max-length
+                       :allow-empty-p allow-empty))
   id)
 
 (defun dialog-case (condition target)

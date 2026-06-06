@@ -24,7 +24,7 @@
 
 (defun story-text-visible-p (node)
   (>= (play-state-visible-count *state*)
-      (length (node-text node))))
+      (length (node-display-text node))))
 
 (defun jump-to-node (id)
   (setf (play-state-current-id *state*) id
@@ -42,10 +42,11 @@
   (round (* 255 (cubic-in (/ (typewriter-elapsed) *fade-seconds*)))))
 
 (defun visible-node-text (node)
-  (subseq (node-text node)
-          0
-          (min (play-state-visible-count *state*)
-               (length (node-text node)))))
+  (let ((text (node-display-text node)))
+    (subseq text
+            0
+            (min (play-state-visible-count *state*)
+                 (length text)))))
 
 (defun draw-cursor (x y width size color)
   (when (< (mod (floor (* 60 (get-time))) 70) 35)
@@ -62,15 +63,17 @@
 
 (defun advance-typewriter (node)
   (let* ((old-count (play-state-visible-count *state*))
-         (new-count (min (length (node-text node))
+         (text      (node-display-text node))
+         (new-count (min (length text)
                          (floor (* (typewriter-elapsed)
                                    *characters-per-second*)))))
     (when (> new-count old-count)
       (setf (play-state-visible-count *state*) new-count)
-      (play-type-click (node-text node) old-count new-count))))
+      (play-type-click text old-count new-count))))
 
 (defun skip-typewriter (node)
-  (setf (play-state-visible-count *state*) (length (node-text node))))
+  (setf (play-state-visible-count *state*)
+        (length (node-display-text node))))
 
 (defun update-text-node (node)
   (cond

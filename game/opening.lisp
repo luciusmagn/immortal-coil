@@ -2,10 +2,16 @@
 
 (dialog-text "base/awake"
              "you awake in a strange world..."
-             :next "base/feel")
+             :next "base/name")
+
+(dialog-string "base/name"
+               "what does the room call you?"
+               :response-key "player-name"
+               :max-length 24
+               :target "base/feel")
 
 (dialog-text "base/feel"
-             "or at least that's how you feel..."
+             "{player-name}. or at least that's how you feel..."
              :next "base/exit-bed")
 
 (dialog-choice "base/exit-bed"

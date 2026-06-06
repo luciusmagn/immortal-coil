@@ -22,6 +22,7 @@
                  (:file "util")
                  (:file "dialog-store")
                  (:file "graph")
+                 (:file "text-template")
                  (:file "audio")
                  (:file "play-state")
                  (:file "control-update")

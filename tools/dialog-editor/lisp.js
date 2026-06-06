@@ -248,6 +248,20 @@ function readNumberKey(keys, name, fallback) {
   return value === "" ? fallback : value;
 }
 
+function readBooleanKey(keys, name) {
+  const value = keys.get(name.toLowerCase());
+
+  if (!value) {
+    return false;
+  }
+
+  if (isSymbolAtom(value)) {
+    return value.value.toLowerCase() !== "nil";
+  }
+
+  return stringValue(value) !== "";
+}
+
 function parseDialogOption(form) {
   const args = keyArguments(form, 3);
   const whenValue = args.keys.get(":when");
@@ -319,6 +333,8 @@ export function parseDialog(source) {
         responseKey: "",
         min: "",
         max: "",
+        maxLength: "",
+        allowEmpty: false,
         choices: [],
         branches: [],
         x: 0,
@@ -347,6 +363,8 @@ export function parseDialog(source) {
         responseKey: "",
         min: "",
         max: "",
+        maxLength: "",
+        allowEmpty: false,
         choices: choices,
         branches: [],
         x: 0,
@@ -368,6 +386,31 @@ export function parseDialog(source) {
         responseKey: readKey(args.keys, ":response-key"),
         min: readNumberKey(args.keys, ":min", ""),
         max: readNumberKey(args.keys, ":max", ""),
+        maxLength: "",
+        allowEmpty: false,
+        choices: [],
+        branches: [],
+        x: 0,
+        y: 0
+      });
+      return;
+    }
+
+    if (head === "dialog-string") {
+      const args = keyArguments(form, 3);
+
+      nodes.push({
+        id: stringValue(form[1]),
+        kind: "string",
+        text: stringValue(form[2]),
+        next: "",
+        layout: "horizontal",
+        target: readKey(args.keys, ":target"),
+        responseKey: readKey(args.keys, ":response-key"),
+        min: "",
+        max: "",
+        maxLength: readNumberKey(args.keys, ":max-length", ""),
+        allowEmpty: readBooleanKey(args.keys, ":allow-empty"),
         choices: [],
         branches: [],
         x: 0,
@@ -391,6 +434,8 @@ export function parseDialog(source) {
         responseKey: "",
         min: "",
         max: "",
+        maxLength: "",
+        allowEmpty: false,
         choices: [],
         branches: branches,
         x: 0,
@@ -480,6 +525,33 @@ function nodeSource(node) {
 
     if (node.max !== "") {
       lines.push(indent + ":max " + node.max);
+    }
+
+    if (node.target) {
+      lines.push(indent + ":target " + lispString(node.target));
+    }
+
+    return lines.join("\n") + ")";
+  }
+
+  if (node.kind === "string") {
+    const command = "dialog-string";
+    const indent = commandIndent(command);
+    const lines = [
+      "(" + command + " " + lispString(node.id),
+      indent + lispString(node.text || "")
+    ];
+
+    if (node.responseKey) {
+      lines.push(indent + ":response-key " + lispString(node.responseKey));
+    }
+
+    if (node.maxLength !== "" && node.maxLength != null) {
+      lines.push(indent + ":max-length " + node.maxLength);
+    }
+
+    if (node.allowEmpty) {
+      lines.push(indent + ":allow-empty t");
     }
 
     if (node.target) {

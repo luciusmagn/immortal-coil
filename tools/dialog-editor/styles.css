@@ -420,6 +420,19 @@ textarea {
   grid-column: span 2;
 }
 
+.checkbox-field {
+  grid-column: span 2;
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkbox-field input {
+  width: 18px;
+  min-height: 18px;
+  accent-color: var(--ink);
+}
+
 .repeater {
   border-top: 1px solid rgba(245, 247, 242, 0.18);
   padding-top: 12px;

@@ -47,6 +47,8 @@ export function defaultNode(id, x, y) {
     responseKey: "",
     min: "",
     max: "",
+    maxLength: "",
+    allowEmpty: false,
     choices: [],
     branches: [],
     x: x || 100,
@@ -65,12 +67,12 @@ export function outgoingEdges(node) {
     }] : [];
   }
 
-  if (node.kind === "number") {
+  if (node.kind === "number" || node.kind === "string") {
     return node.target ? [{
       from: node.id,
       to: node.target,
-      label: "number",
-      kind: "number",
+      label: node.kind,
+      kind: node.kind,
       conditional: false
     }] : [];
   }
@@ -242,6 +244,8 @@ export function seedGraph() {
         responseKey: "",
         min: "",
         max: "",
+        maxLength: "",
+        allowEmpty: false,
         choices: [],
         branches: [],
         x: 0,
@@ -257,6 +261,8 @@ export function seedGraph() {
         responseKey: "",
         min: "",
         max: "",
+        maxLength: "",
+        allowEmpty: false,
         choices: [
           { label: "yes", target: "base/yes", condition: "" },
           { label: "no", target: "base/no", condition: "" }
@@ -275,6 +281,8 @@ export function seedGraph() {
         responseKey: "",
         min: "",
         max: "",
+        maxLength: "",
+        allowEmpty: false,
         choices: [],
         branches: [],
         x: 0,
@@ -290,6 +298,8 @@ export function seedGraph() {
         responseKey: "",
         min: "",
         max: "",
+        maxLength: "",
+        allowEmpty: false,
         choices: [],
         branches: [],
         x: 0,

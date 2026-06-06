@@ -48,11 +48,17 @@ function collectElements() {
     "nodeTextInput",
     "nextField",
     "nodeNextInput",
-    "numberFields",
+    "inputFields",
     "nodeTargetInput",
     "nodeResponseKeyInput",
+    "nodeMinField",
+    "nodeMinLabel",
     "nodeMinInput",
+    "nodeMaxField",
+    "nodeMaxLabel",
     "nodeMaxInput",
+    "allowEmptyField",
+    "nodeAllowEmptyInput",
     "choicesField",
     "choicesList",
     "addChoiceButton",
@@ -190,6 +196,10 @@ function changeNodeKind(kind) {
 
     if (kind === "branch" && !node.branches.length) {
       node.branches.push({ condition: "t", target: "" });
+    }
+
+    if (kind === "string" && !node.maxLength) {
+      node.maxLength = "32";
     }
   }, true);
 }
@@ -382,7 +392,17 @@ function bindInspector() {
 
   elements.nodeMaxInput.addEventListener("input", () => {
     updateSelectedNode((node) => {
-      node.max = elements.nodeMaxInput.value;
+      if (node.kind === "string") {
+        node.maxLength = elements.nodeMaxInput.value;
+      } else {
+        node.max = elements.nodeMaxInput.value;
+      }
+    }, false);
+  });
+
+  elements.nodeAllowEmptyInput.addEventListener("change", () => {
+    updateSelectedNode((node) => {
+      node.allowEmpty = elements.nodeAllowEmptyInput.checked;
     }, false);
   });
 }

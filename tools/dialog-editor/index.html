@@ -69,6 +69,7 @@
                 <option value="text">text</option>
                 <option value="choice">choice</option>
                 <option value="number">number</option>
+                <option value="string">string</option>
                 <option value="branch">branch</option>
               </select>
             </label>
@@ -92,7 +93,7 @@
               <input id="nodeNextInput" name="next" list="nodeIds" autocomplete="off">
             </label>
 
-            <div id="numberFields" class="field-grid">
+            <div id="inputFields" class="field-grid">
               <label>
                 <span>Target</span>
                 <input id="nodeTargetInput" name="target" list="nodeIds" autocomplete="off">
@@ -101,13 +102,17 @@
                 <span>Store Key</span>
                 <input id="nodeResponseKeyInput" name="responseKey" autocomplete="off">
               </label>
-              <label>
-                <span>Min</span>
+              <label id="nodeMinField">
+                <span id="nodeMinLabel">Min</span>
                 <input id="nodeMinInput" name="min" inputmode="numeric">
               </label>
-              <label>
-                <span>Max</span>
+              <label id="nodeMaxField">
+                <span id="nodeMaxLabel">Max</span>
                 <input id="nodeMaxInput" name="max" inputmode="numeric">
+              </label>
+              <label id="allowEmptyField" class="checkbox-field">
+                <input id="nodeAllowEmptyInput" name="allowEmpty" type="checkbox">
+                <span>Allow Empty</span>
               </label>
             </div>
 

@@ -304,14 +304,22 @@ function renderInspector() {
   elements.nodeTargetInput.value = node.target || "";
   elements.nodeResponseKeyInput.value = node.responseKey || "";
   elements.nodeMinInput.value = node.min || "";
-  elements.nodeMaxInput.value = node.max || "";
+  elements.nodeMaxInput.value = node.kind === "string"
+    ? node.maxLength || ""
+    : node.max || "";
+  elements.nodeAllowEmptyInput.checked = Boolean(node.allowEmpty);
 
   setVisibility(elements.layoutField, node.kind === "choice");
   setVisibility(elements.textField, node.kind !== "branch");
   setVisibility(elements.nextField, node.kind === "text");
-  setVisibility(elements.numberFields, node.kind === "number");
+  setVisibility(elements.inputFields, node.kind === "number" || node.kind === "string");
+  setVisibility(elements.nodeMinField, node.kind === "number");
+  setVisibility(elements.allowEmptyField, node.kind === "string");
   setVisibility(elements.choicesField, node.kind === "choice");
   setVisibility(elements.branchesField, node.kind === "branch");
+
+  elements.nodeMaxLabel.textContent = node.kind === "string" ? "Max Length" : "Max";
+  elements.nodeMaxInput.name = node.kind === "string" ? "maxLength" : "max";
 
   renderChoiceRows(node);
   renderBranchRows(node);

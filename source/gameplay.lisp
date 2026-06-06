@@ -9,6 +9,7 @@
       (:choice (update-choice-node node))
       (:branch (update-branch-node node))
       (:number (update-number-node node))
+      (:string (update-string-node node))
       (t (update-text-node node)))))
 
 (defun draw-gameplay ()
@@ -17,4 +18,5 @@
     (:choice (draw-choice-node (current-node)))
     (:branch nil)
     (:number (draw-number-node (current-node)))
+    (:string (draw-string-node (current-node)))
     (t (draw-opening-text-node (current-node)))))
