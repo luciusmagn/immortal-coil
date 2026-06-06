@@ -270,7 +270,7 @@
          (hovered-p (mouse-on-menu-arrow-p direction))
          (pressed-p (menu-arrow-pressed-p direction))
          (scale (menu-arrow-scale direction hovered-p pressed-p))
-         (color (make-color 255 255 255 255))
+         (color (make-color 255 255 255 (round (* 255 alpha-scale))))
          (x (+ (menu-arrow-center-x direction)
                (if pressed-p (* direction 2.0) 0.0)))
          (y +menu-start-y+)
