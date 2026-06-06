@@ -79,13 +79,22 @@
 (defun single-float-value (value)
   (coerce value 'single-float))
 
+(defun make-vector2f (x y)
+  (make-vector2 (single-float-value x)
+                (single-float-value y)))
+
+(defun draw-thick-line-between (x1 y1 x2 y2 color thickness)
+  (let ((start (make-vector2f x1 y1))
+        (end   (make-vector2f x2 y2)))
+    (claylib/ll:draw-line-ex (claylib::c-ptr start)
+                              (claylib::c-ptr end)
+                              (single-float-value thickness)
+                              (claylib::c-ptr color))))
+
 (defun draw-triangle-points (x1 y1 x2 y2 x3 y3 color &key filled-p)
-  (let ((v1 (make-vector2 (single-float-value x1)
-                          (single-float-value y1)))
-        (v2 (make-vector2 (single-float-value x2)
-                          (single-float-value y2)))
-        (v3 (make-vector2 (single-float-value x3)
-                          (single-float-value y3))))
+  (let ((v1 (make-vector2f x1 y1))
+        (v2 (make-vector2f x2 y2))
+        (v3 (make-vector2f x3 y3)))
     (if filled-p
         (claylib/ll:draw-triangle (claylib::c-ptr v1)
                                   (claylib::c-ptr v2)
