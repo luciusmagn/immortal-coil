@@ -13,6 +13,32 @@
 
 (defparameter *title-music-volume* 0.38)
 
+(defun make-sound-asset-maybe (path description)
+  (handler-case
+      (make-sound-asset path :load-now t)
+    (error (condition)
+      (runtime-warn "Could not load ~a: ~a (~a)"
+                    description
+                    path
+                    condition)
+      nil)))
+
+(defun make-music-asset-maybe (path description)
+  (handler-case
+      (make-music-asset path :load-now t)
+    (error (condition)
+      (runtime-warn "Could not load ~a: ~a (~a)"
+                    description
+                    path
+                    condition)
+      nil)))
+
+(defun play-sound-maybe (sound description)
+  (handler-case
+      (claylib/ll:play-sound (claylib::c-ptr sound))
+    (error (condition)
+      (runtime-warn "Could not play ~a: ~a" description condition))))
+
 (defun type-click-paths ()
   (loop for i from 1 to 8
         for path = (project-pathname
@@ -22,9 +48,10 @@
 
 (defun load-type-clicks ()
   (setf *type-click-assets*
-        (mapcar #'(lambda (path)
-                    (make-sound-asset path :load-now t))
-                (type-click-paths))
+        (remove nil
+                (mapcar #'(lambda (path)
+                            (make-sound-asset-maybe path "type click"))
+                        (type-click-paths)))
         *type-click-sounds*
         (coerce (mapcar #'asset *type-click-assets*) 'vector)
         *type-click-index*
@@ -35,45 +62,62 @@
 (defun load-choice-switch ()
   (let ((path (project-pathname "assets/audio/choice-switch.wav")))
     (when (probe-file path)
-      (setf *choice-switch-asset* (make-sound-asset path :load-now t)
-            *choice-switch-sound* (asset *choice-switch-asset*))
-      (setf (volume *choice-switch-sound*) 0.16))))
+      (let ((asset (make-sound-asset-maybe path "choice switch")))
+        (when asset
+          (setf *choice-switch-asset* asset
+                *choice-switch-sound* (asset *choice-switch-asset*))
+          (setf (volume *choice-switch-sound*) 0.16))))))
 
 (defun load-start-confirm ()
   (let ((path (or (probe-file (project-pathname "assets/audio/start-confirm.wav"))
                   (probe-file (project-pathname "assets/audio/choice-switch.wav")))))
     (when path
-      (setf *start-confirm-asset* (make-sound-asset path :load-now t)
-            *start-confirm-sound* (asset *start-confirm-asset*))
-      (setf (volume *start-confirm-sound*) 0.82
-            (pitch *start-confirm-sound*) 1.0))))
+      (let ((asset (make-sound-asset-maybe path "start confirm")))
+        (when asset
+          (setf *start-confirm-asset* asset
+                *start-confirm-sound* (asset *start-confirm-asset*))
+          (setf (volume *start-confirm-sound*) 0.82
+                (pitch *start-confirm-sound*) 1.0))))))
 
 (defun load-title-music ()
   (let ((path (project-pathname "assets/audio/title-ambient-drone.mp3")))
     (when (probe-file path)
       (stop-title-music)
-      (setf *title-music-asset* (make-music-asset path :load-now t)
-            *title-music* (asset *title-music-asset*)
-            *title-music-playing-p* nil)
-      (setf (volume *title-music*) *title-music-volume*
-            (looping *title-music*) t))))
+      (let ((asset (make-music-asset-maybe path "title music")))
+        (when asset
+          (setf *title-music-asset* asset
+                *title-music* (asset *title-music-asset*)
+                *title-music-playing-p* nil)
+          (setf (volume *title-music*) *title-music-volume*
+                (looping *title-music*) t))))))
 
 (defun play-title-music ()
   (when (and *title-music*
              (not *title-music-playing-p*))
-    (claylib/ll:play-music-stream (claylib::c-ptr *title-music*))
-    (setf *title-music-playing-p* t)))
+    (handler-case
+        (progn
+          (claylib/ll:play-music-stream (claylib::c-ptr *title-music*))
+          (setf *title-music-playing-p* t))
+      (error (condition)
+        (runtime-warn "Could not play title music: ~a" condition)))))
 
 (defun stop-title-music ()
   (when (and *title-music*
              *title-music-playing-p*)
-    (claylib/ll:stop-music-stream (claylib::c-ptr *title-music*))
+    (handler-case
+        (claylib/ll:stop-music-stream (claylib::c-ptr *title-music*))
+      (error (condition)
+        (runtime-warn "Could not stop title music: ~a" condition)))
     (setf *title-music-playing-p* nil)))
 
 (defun update-title-music ()
   (when (and *title-music*
              *title-music-playing-p*)
-    (claylib/ll:update-music-stream (claylib::c-ptr *title-music*))))
+    (handler-case
+        (claylib/ll:update-music-stream (claylib::c-ptr *title-music*))
+      (error (condition)
+        (runtime-warn "Could not update title music: ~a" condition)
+        (setf *title-music-playing-p* nil)))))
 
 (defun next-type-click ()
   (unless (zerop (length *type-click-sounds*))
@@ -93,25 +137,25 @@
       (when sound
         (setf (pitch sound)
               (+ 0.92 (/ (get-random-value 0 16) 100.0)))
-        (claylib/ll:play-sound (claylib::c-ptr sound))))))
+        (play-sound-maybe sound "type click")))))
 
 (defun play-input-click ()
   (let ((sound (next-type-click)))
     (when sound
       (setf (pitch sound)
             (+ 0.94 (/ (get-random-value 0 12) 100.0)))
-      (claylib/ll:play-sound (claylib::c-ptr sound)))))
+      (play-sound-maybe sound "input click"))))
 
 (defun play-choice-switch ()
   (when *choice-switch-sound*
     (setf (pitch *choice-switch-sound*)
           (+ 0.98 (/ (get-random-value 0 8) 100.0)))
-    (claylib/ll:play-sound (claylib::c-ptr *choice-switch-sound*))))
+    (play-sound-maybe *choice-switch-sound* "choice switch")))
 
 (defun play-start-confirm ()
   (when *start-confirm-sound*
     (setf (pitch *start-confirm-sound*) 1.0)
-    (claylib/ll:play-sound (claylib::c-ptr *start-confirm-sound*))))
+    (play-sound-maybe *start-confirm-sound* "start confirm")))
 
 (defun load-audio ()
   (load-type-clicks)

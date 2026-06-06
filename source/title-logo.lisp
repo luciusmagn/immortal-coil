@@ -13,7 +13,8 @@
        *title-logo-image-asset*))
 
 (defun title-logo-height ()
-  (if *title-logo-texture-asset*
+  (if (and *title-logo-texture-asset*
+           (plusp (width *title-logo-texture-asset*)))
       (* +title-logo-width+
          (/ (height *title-logo-texture-asset*)
             (float (width *title-logo-texture-asset*) 1.0)))
@@ -28,16 +29,21 @@
 (defun load-title-logo ()
   (let ((path (title-logo-path)))
     (when (probe-file path)
-      (setf *title-logo-texture-asset* (make-texture-asset path :load-now t)
-            *title-logo-image-asset* (make-image-asset path :load-now t)
-            *title-logo-texture* nil)
-      (setf *title-logo-texture*
-            (make-texture *title-logo-texture-asset*
-                          (title-logo-left)
-                          (title-logo-top)
-                          :width +title-logo-width+
-                          :height (title-logo-height)
-                          :tint (make-color 255 255 255 255))))))
+      (handler-case
+          (progn
+            (setf *title-logo-texture-asset* (make-texture-asset path :load-now t)
+                  *title-logo-image-asset* (make-image-asset path :load-now t)
+                  *title-logo-texture* nil)
+            (setf *title-logo-texture*
+                  (make-texture *title-logo-texture-asset*
+                                (title-logo-left)
+                                (title-logo-top)
+                                :width +title-logo-width+
+                                :height (title-logo-height)
+                                :tint (make-color 255 255 255 255))))
+        (error (condition)
+          (runtime-warn "Could not load title logo: ~a" condition)
+          (clear-title-logo))))))
 
 (defun clear-title-logo ()
   (setf *title-logo-texture-asset* nil
@@ -65,18 +71,22 @@
                      (max 0 (floor (* local-y (height *title-logo-image-asset*))))))))))
 
 (defun title-logo-white-at-p (x y)
-  (multiple-value-bind (image-x image-y)
-      (title-logo-point-image-coordinates x y)
-    (when image-x
-      (claylib/ll:get-image-color
-       (claylib::c-ptr *title-logo-sample-color*)
-       (claylib::c-ptr (asset *title-logo-image-asset*))
-       image-x
-       image-y)
-      (> (+ (r *title-logo-sample-color*)
-            (g *title-logo-sample-color*)
-            (b *title-logo-sample-color*))
-         520))))
+  (handler-case
+      (multiple-value-bind (image-x image-y)
+          (title-logo-point-image-coordinates x y)
+        (when image-x
+          (claylib/ll:get-image-color
+           (claylib::c-ptr *title-logo-sample-color*)
+           (claylib::c-ptr (asset *title-logo-image-asset*))
+           image-x
+           image-y)
+          (> (+ (r *title-logo-sample-color*)
+                (g *title-logo-sample-color*)
+                (b *title-logo-sample-color*))
+             520)))
+    (error (condition)
+      (runtime-warn "Could not sample title logo: ~a" condition)
+      nil)))
 
 (defun title-logo-particle-color (x y alpha)
   (if (title-logo-white-at-p x y)

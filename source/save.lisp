@@ -11,7 +11,11 @@
             (project-pathname "save/current.lisp")))))
 
 (defun save-game-exists-p ()
-  (not (null (probe-file (save-file-pathname)))))
+  (handler-case
+      (not (null (probe-file (save-file-pathname))))
+    (error (condition)
+      (runtime-warn "Could not check save file: ~a" condition)
+      nil)))
 
 (defun save-play-state-data ()
   (list :version 1
@@ -35,7 +39,10 @@
 
 (defun save-current-game ()
   (when *state*
-    (write-save-data (save-play-state-data))))
+    (handler-case
+        (write-save-data (save-play-state-data))
+      (error (condition)
+        (runtime-warn "Could not save game: ~a" condition)))))
 
 (defun read-save-data ()
   (when (save-game-exists-p)
@@ -55,15 +62,21 @@
 
 (defun restore-play-state-from-save (data)
   (let ((current-id (save-data-current-id data)))
-    (find-node current-id)
+    (setf current-id (resolve-node-id current-id))
     (restore-dialog-store (getf data :dialog-store))
     (setf *state*
           (make-play-state :current-id current-id
                            :elapsed 0.0
                            :type-delay 0.0
-                           :visible-count (or (getf data :visible-count) 0)
-                           :selected-index (or (getf data :selected-index) 0)
-                           :input-buffer (or (getf data :input-buffer) "")))
+                           :visible-count (if (integerp (getf data :visible-count))
+                                              (max 0 (getf data :visible-count))
+                                              0)
+                           :selected-index (if (integerp (getf data :selected-index))
+                                               (max 0 (getf data :selected-index))
+                                               0)
+                           :input-buffer (if (stringp (getf data :input-buffer))
+                                             (getf data :input-buffer)
+                                             "")))
     (restore-particle-field-state (getf data :particle-field))))
 
 (defun load-current-game-save ()

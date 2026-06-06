@@ -1,9 +1,13 @@
 (in-package #:immortal-coil)
 
 (defun load-crt-shader ()
-  (make-shader-asset
-   :fspath (project-pathname "assets/shaders/crt.fs")
-   :load-now t))
+  (handler-case
+      (make-shader-asset
+       :fspath (project-pathname "assets/shaders/crt.fs")
+       :load-now t)
+    (error (condition)
+      (runtime-warn "Could not load CRT shader: ~a" condition)
+      nil)))
 
 (defun configure-target-texture (target)
   (setf (filter (texture target)) +texture-filter-point+
@@ -59,12 +63,17 @@
                                   (make-color 0 0 0 alpha))))))
 
 (defun draw-world ()
-  (clear-background :color +black+)
-  (case *mode*
-    (:menu (draw-menu))
-    (:game (draw-gameplay))
-    (t (draw-menu)))
-  (draw-screen-fade))
+  (handler-case
+      (progn
+        (clear-background :color +black+)
+        (case *mode*
+          (:menu (draw-menu))
+          (:game (draw-gameplay))
+          (t (draw-menu)))
+        (draw-screen-fade))
+    (error (condition)
+      (runtime-warn "Frame draw failed: ~a" condition)
+      (clear-background :color +black+))))
 
 (defun draw-target (target shader)
   (with-drawing (:bgcolor +black+)
