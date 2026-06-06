@@ -18,6 +18,18 @@
       (:fullscreen (request-windowed))
       (t (request-fullscreen)))))
 
+(defun current-dialog-input-active-p ()
+  (when (and (eq *mode* :game)
+             (not *paused-p*)
+             *state*)
+    (let ((node (current-node)))
+      (and (member (node-kind node) '(:number :string))
+           (story-text-visible-p node)))))
+
+(defun fullscreen-shortcut-available-p ()
+  (not (current-dialog-input-active-p)))
+
 (defun update-window-controls ()
-  (when (is-key-pressed-p +key-f+)
+  (when (and (fullscreen-shortcut-available-p)
+             (is-key-pressed-p +key-f+))
     (toggle-game-fullscreen)))
