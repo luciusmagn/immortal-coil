@@ -213,31 +213,26 @@
          (hovered-p (mouse-on-menu-option-p))
          (base-alpha (if hovered-p 255 (menu-option-alpha)))
          (color (make-color 255 255 255 (round (* base-alpha button-scale)))))
-    (multiple-value-bind (x y width)
-        (draw-centered-text (selected-menu-label)
-                            +menu-start-x+
-                            +menu-start-y+
-                            *menu-start-text-size*
-                            color)
-      (declare (ignore x))
-      (claylib/ll:draw-rectangle (round (- +menu-start-x+ (/ width 2)))
-                                 (round (+ y *menu-start-text-size* 8))
-                                 (round width)
-                                 4
-                                 (claylib::c-ptr color)))))
+    (draw-centered-text (selected-menu-label)
+                        +menu-start-x+
+                        +menu-start-y+
+                        *menu-start-text-size*
+                        color)))
+
+(defun draw-menu-arrow-triangle (x1 y1 x2 y2 x3 y3 color)
+  (draw-triangle-points x1 y1 x2 y2 x3 y3 color :filled-p t)
+  (draw-triangle-points x1 y1 x3 y3 x2 y2 color :filled-p t))
 
 (defun draw-menu-arrow-shape (direction x y width height color)
   (if (minusp direction)
-      (draw-triangle-points (- x (/ width 2)) y
-                            (+ x (/ width 2)) (- y (/ height 2))
-                            (+ x (/ width 2)) (+ y (/ height 2))
-                            color
-                            :filled-p t)
-      (draw-triangle-points (+ x (/ width 2)) y
-                            (- x (/ width 2)) (+ y (/ height 2))
-                            (- x (/ width 2)) (- y (/ height 2))
-                            color
-                            :filled-p t)))
+      (draw-menu-arrow-triangle (- x (/ width 2)) y
+                                (+ x (/ width 2)) (- y (/ height 2))
+                                (+ x (/ width 2)) (+ y (/ height 2))
+                                color)
+      (draw-menu-arrow-triangle (+ x (/ width 2)) y
+                                (- x (/ width 2)) (+ y (/ height 2))
+                                (- x (/ width 2)) (- y (/ height 2))
+                                color)))
 
 (defun menu-arrow-scale (direction hovered-p pressed-p)
   (let ((pulse (* 0.035
@@ -248,7 +243,7 @@
 
 (defun draw-menu-arrow-bloom (direction x y width height alpha-scale pressed-p)
   (let ((strength (if pressed-p 1.25 1.0)))
-    (dolist (layer '((1.95 36) (1.45 58)))
+    (dolist (layer '((2.20 34) (1.62 62)))
       (destructuring-bind (scale alpha) layer
         (draw-menu-arrow-shape
          direction
@@ -266,16 +261,12 @@
          (hovered-p (mouse-on-menu-arrow-p direction))
          (pressed-p (menu-arrow-pressed-p direction))
          (scale (menu-arrow-scale direction hovered-p pressed-p))
-         (base-alpha (cond
-                       (pressed-p 255)
-                       (hovered-p 245)
-                       (t 205)))
-         (color (make-color 255 255 255 (round (* alpha-scale base-alpha))))
+         (color (make-color 255 255 255 255))
          (x (+ (menu-arrow-center-x direction)
                (if pressed-p (* direction 2.0) 0.0)))
          (y +menu-start-y+)
-         (w (* 28.0 scale))
-         (h (* 42.0 scale)))
+         (w (* 36.0 scale))
+         (h (* 52.0 scale)))
     (draw-menu-arrow-bloom direction x y w h alpha-scale pressed-p)
     (draw-menu-arrow-shape direction x y w h color)))
 
