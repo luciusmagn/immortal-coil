@@ -6,8 +6,10 @@
 (defvar *particle-field-transition-elapsed* 0.0)
 (defvar *particle-field-transition-seconds* 0.0)
 
+(defparameter *particle-field-modes* '(:rising :stars :title-menu))
+
 (defun valid-particle-field-mode-p (mode)
-  (member mode '(:rising :stars)))
+  (not (null (member mode *particle-field-modes*))))
 
 (defun normalize-particle-field-mode (mode)
   (let ((normalized (typecase mode
@@ -74,14 +76,29 @@
 (defun reset-particle-field-mode (&optional (mode :rising))
   (set-particle-field-mode mode :immediate t))
 
-(defun reset-particles ()
+(defun reset-particles (&optional (mode :rising))
   (reset-rising-particles)
   (reset-star-particles)
-  (reset-particle-field-mode :rising))
+  (reset-title-particles)
+  (reset-particle-field-mode mode))
 
 (defun ensure-particle-count ()
   (ensure-rising-particle-count)
   (ensure-star-particle-count))
+
+(defun update-particle-mode (mode dt)
+  (case mode
+    (:rising (update-rising-particles dt))
+    (:stars (update-star-particles dt))
+    (:title-menu (update-title-particles dt))
+    (t (runtime-warn "Cannot update unknown particle mode: ~a" mode))))
+
+(defun draw-particle-mode (mode alpha-scale)
+  (case mode
+    (:rising (draw-rising-particles alpha-scale))
+    (:stars (draw-star-particles alpha-scale))
+    (:title-menu (draw-title-particles alpha-scale))
+    (t (runtime-warn "Cannot draw unknown particle mode: ~a" mode))))
 
 (defun update-particle-field-transition (dt)
   (when (particle-field-transition-active-p)
@@ -105,18 +122,15 @@
 (defun update-particles (dt)
   (ensure-particle-count)
   (update-particle-field-transition dt)
-  (when (plusp (particle-mode-alpha :rising))
-    (update-rising-particles dt))
-  (when (plusp (particle-mode-alpha :stars))
-    (update-star-particles dt)))
+  (loop for mode in *particle-field-modes*
+        when (plusp (particle-mode-alpha mode))
+          do (update-particle-mode mode dt)))
 
-(defun draw-particles ()
-  (let ((rising-alpha (particle-mode-alpha :rising))
-        (star-alpha (particle-mode-alpha :stars)))
-    (when (plusp rising-alpha)
-      (draw-rising-particles rising-alpha))
-    (when (plusp star-alpha)
-      (draw-star-particles star-alpha))))
+(defun draw-particles (&optional (alpha-scale 1.0))
+  (loop for mode in *particle-field-modes*
+        for mode-alpha = (* alpha-scale (particle-mode-alpha mode))
+        when (plusp mode-alpha)
+          do (draw-particle-mode mode mode-alpha)))
 
 (defun particle-field-state-data ()
   (list :mode *particle-field-mode*

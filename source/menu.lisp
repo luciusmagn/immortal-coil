@@ -204,7 +204,7 @@
 (defun update-menu (dt)
   (incf *menu-elapsed* dt)
   (update-title-music (menu-title-music-volume-scale))
-  (update-title-particles dt)
+  (update-particles dt)
   (case *menu-start-state*
     (:idle
      (move-menu-selection (menu-selection-direction))
@@ -316,7 +316,7 @@
 
 (defun draw-menu ()
   (draw-title-logo (menu-alpha-scale))
-  (draw-title-particles (menu-alpha-scale))
+  (draw-particles (menu-alpha-scale))
   (draw-menu-arrows)
   (draw-menu-option)
   (draw-menu-status))

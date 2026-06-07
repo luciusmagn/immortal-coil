@@ -39,7 +39,7 @@
         *save-current-game-p* nil
         *mode* :menu)
   (reset-menu-state)
-  (reset-title-particles)
+  (reset-particles :title-menu)
   (play-title-music))
 
 (defun execute-selected-pause-option ()

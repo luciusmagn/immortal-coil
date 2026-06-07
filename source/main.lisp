@@ -9,7 +9,7 @@
         *requested-window-mode* nil)
   (reset-menu-state)
   (reset-pause-menu-state)
-  (reset-title-particles))
+  (reset-particles :title-menu))
 
 (defun setup-window-resources ()
   (handler-case
