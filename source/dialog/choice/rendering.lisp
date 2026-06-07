@@ -19,7 +19,7 @@
          (x (- center-x (/ width 2))))
     (draw-choice-option choice x y selected-p color)))
 
-(defun draw-choice-prompt (node y color)
+(defun draw-choice-prompt (node y color &key (cursor-p t))
   (let* ((size 20)
          (text (visible-node-text node)))
     (multiple-value-bind (x text-y width)
@@ -28,7 +28,8 @@
                             y
                             size
                             color)
-      (draw-cursor x text-y width size color))))
+      (when cursor-p
+        (draw-cursor x text-y width size color)))))
 
 (defun choice-visible-range (choices
                              &optional (selected (play-state-selected-index *state*))

@@ -26,12 +26,18 @@
 
 (defun draw-number-node (node)
   (let ((color (make-color 255 255 255 (current-alpha))))
-    (draw-choice-prompt node (- +virtual-center-y+ 80) color)
+    (draw-choice-prompt node
+                        (- +virtual-center-y+ 80)
+                        color
+                        :cursor-p nil)
     (when (story-text-visible-p node)
       (draw-number-input-field color))))
 
 (defun draw-string-node (node)
   (let ((color (make-color 255 255 255 (current-alpha))))
-    (draw-choice-prompt node (- +virtual-center-y+ 80) color)
+    (draw-choice-prompt node
+                        (- +virtual-center-y+ 80)
+                        color
+                        :cursor-p nil)
     (when (story-text-visible-p node)
       (draw-string-input-field color))))

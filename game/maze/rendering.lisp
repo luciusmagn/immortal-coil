@@ -48,6 +48,15 @@
                              (claylib::c-ptr
                               (make-color 255 255 255 alpha))))
 
+(-> draw-dream-maze-black-rect (scalar scalar scalar scalar alpha-channel) t)
+(defun draw-dream-maze-black-rect (x y width height alpha)
+  (claylib/ll:draw-rectangle (round x)
+                             (round y)
+                             (max 1 (round width))
+                             (max 1 (round height))
+                             (claylib::c-ptr
+                              (make-color 0 0 0 alpha))))
+
 (-> draw-dream-maze-depth-field () t)
 (defun draw-dream-maze-depth-field ()
   (let ((center (dream-maze-view-center-y))
@@ -134,6 +143,118 @@
                                  (make-color 255 255 255 190)
                                  1.0)))))
 
+(-> dream-maze-exit-cells () list)
+(defun dream-maze-exit-cells ()
+  (loop for y from 0 below +dream-maze-height+
+        append
+        (loop for x from 0 below +dream-maze-width+
+              for cell = (dream-maze-cell x y)
+              when (dream-maze-exit-cell-p cell)
+                collect (list x y cell))))
+
+(-> dream-maze-visible-exit-p (dream-maze-minigame integer integer) boolean)
+(defun dream-maze-visible-exit-p (game cell-x cell-y)
+  (let* ((exit-x (+ cell-x 0.5))
+         (exit-y (+ cell-y 0.5))
+         (dx (- exit-x (dream-maze-minigame-x game)))
+         (dy (- exit-y (dream-maze-minigame-y game)))
+         (forward (+ (* dx (cos (dream-maze-minigame-angle game)))
+                     (* dy (sin (dream-maze-minigame-angle game)))))
+         (side (+ (* (- dx) (sin (dream-maze-minigame-angle game)))
+                  (* dy (cos (dream-maze-minigame-angle game)))))
+         (fov-side (* forward (tan (/ +dream-maze-fov+ 2.0)))))
+    (and (> forward 0.12)
+         (<= (abs side) fov-side)
+         (dream-maze-exit-cell-p
+          (dream-maze-ray-hit-cell
+           (dream-maze-cast-ray game (atan dy dx)))))))
+
+(-> dream-maze-exit-screen-position
+    (dream-maze-minigame integer integer)
+    (values scalar scalar scalar))
+(defun dream-maze-exit-screen-position (game cell-x cell-y)
+  (let* ((exit-x (+ cell-x 0.5))
+         (exit-y (+ cell-y 0.5))
+         (dx (- exit-x (dream-maze-minigame-x game)))
+         (dy (- exit-y (dream-maze-minigame-y game)))
+         (forward (+ (* dx (cos (dream-maze-minigame-angle game)))
+                     (* dy (sin (dream-maze-minigame-angle game)))))
+         (side (+ (* (- dx) (sin (dream-maze-minigame-angle game)))
+                  (* dy (cos (dream-maze-minigame-angle game)))))
+         (projection (/ side
+                        (max 0.001
+                             (* forward
+                                (tan (/ +dream-maze-fov+ 2.0))))))
+         (screen-x (+ +dream-maze-view-left+
+                      (/ +dream-maze-view-width+ 2.0)
+                      (* projection (/ +dream-maze-view-width+ 2.0)))))
+    (values screen-x
+            (dream-maze-view-center-y)
+            (max 0.05 forward))))
+
+(-> draw-dream-maze-exit-frame (scalar scalar scalar character) t)
+(defun draw-dream-maze-exit-frame (screen-x center-y distance cell)
+  (declare (ignore cell))
+  (let* ((height (max 58.0
+                      (min +dream-maze-view-height+
+                           (* (dream-maze-wall-height distance) 0.9))))
+         (width (max 58.0 (* height 0.42)))
+         (left (- screen-x (/ width 2.0)))
+         (right (+ screen-x (/ width 2.0)))
+         (top (max +dream-maze-view-top+ (- center-y (/ height 2.0))))
+         (bottom (min (dream-maze-view-bottom) (+ center-y (/ height 2.0))))
+         (label-size (round (max 12.0 (min 22.0 (/ width 3.4)))))
+         (label-y (+ top (* (- bottom top) 0.23))))
+    (draw-dream-maze-black-rect (+ left 5)
+                                (+ top 5)
+                                (max 1 (- width 10))
+                                (max 1 (- (- bottom top) 10))
+                                232)
+    (draw-thick-line-between left
+                             top
+                             right
+                             top
+                             (make-color 255 255 255 245)
+                             3.0)
+    (draw-thick-line-between left
+                             bottom
+                             right
+                             bottom
+                             (make-color 255 255 255 245)
+                             3.0)
+    (draw-thick-line-between left
+                             top
+                             left
+                             bottom
+                             (make-color 255 255 255 245)
+                             3.0)
+    (draw-thick-line-between right
+                             top
+                             right
+                             bottom
+                             (make-color 255 255 255 245)
+                             3.0)
+    (draw-centered-text "EXIT"
+                        screen-x
+                        label-y
+                        label-size
+                        (make-color 255 255 255 245))
+    (draw-thick-line-between (- screen-x 12)
+                             (+ label-y label-size 10)
+                             (+ screen-x 12)
+                             (+ label-y label-size 10)
+                             (make-color 255 255 255 210)
+                             2.0)))
+
+(-> draw-dream-maze-visible-exits (dream-maze-minigame) t)
+(defun draw-dream-maze-visible-exits (game)
+  (dolist (exit (dream-maze-exit-cells))
+    (destructuring-bind (cell-x cell-y cell) exit
+      (when (dream-maze-visible-exit-p game cell-x cell-y)
+        (multiple-value-bind (screen-x center-y distance)
+            (dream-maze-exit-screen-position game cell-x cell-y)
+          (draw-dream-maze-exit-frame screen-x center-y distance cell))))))
+
 (-> draw-dream-maze-ray-column (dream-maze-minigame nonnegative-integer) t)
 (defun draw-dream-maze-ray-column (game column)
   (let* ((angle (dream-maze-ray-angle game column))
@@ -161,6 +282,7 @@
   (draw-dream-maze-depth-field)
   (loop for column from 0 below +dream-maze-ray-count+
         do (draw-dream-maze-ray-column game column))
+  (draw-dream-maze-visible-exits game)
   (draw-thick-line-between +dream-maze-view-left+
                            +dream-maze-view-top+
                            (+ +dream-maze-view-left+ +dream-maze-view-width+)
