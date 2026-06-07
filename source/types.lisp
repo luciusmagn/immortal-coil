@@ -41,6 +41,14 @@
     "A keyword command selected by a small engine UI model."
     'keyword)
 
+  (deftype menu-action ()
+    "Top-level title menu command."
+    '(member :new-game :continue :mods :exit))
+
+  (deftype menu-direction ()
+    "Horizontal menu movement direction."
+    '(member -1 1))
+
   (deftype dialog-id ()
     "Canonical node and response-key identifier used by dialog scripts."
     'string)
