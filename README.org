@@ -58,7 +58,18 @@ ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fas
 
 ** Mods
 
-Bundled dialogue lives under =game/=.
+Bundled dialogue is loaded from:
+
+#+begin_src sh
+game/manifest.lisp
+#+end_src
+
+Player mods should use:
+
+#+begin_src text
+mods/<mod-id>/manifest.lisp
+mods/<mod-id>/assets/
+#+end_src
 
 Player mods are loaded from:
 

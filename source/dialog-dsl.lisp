@@ -142,11 +142,13 @@
 (-> dialog-minigame (dialog-id
                      string
                      &key
-                     (:game keyword)
+                     (:game (option minigame-id))
                      (:success (option dialog-id))
                      (:failure (option dialog-id)))
     dialog-id)
-(defun dialog-minigame (id text &key (game :wire-flight) success failure)
+(defun dialog-minigame (id text &key game success failure)
+  (unless game
+    (runtime-warn "Minigame node needs a game: ~a" id))
   (add-node (make-node
              :id id
              :kind :minigame

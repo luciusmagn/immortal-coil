@@ -96,3 +96,35 @@ Disable active overrides without editing the script by setting:
 ```bash
 IMMORTAL_COIL_DISABLE_DEV_SAVE=1
 ```
+
+## Bundle Assets
+
+Each script runs inside a dialog bundle. The bundled game and player mods use
+the same manifest format, so scripts should resolve local files through the
+current bundle:
+
+```lisp
+(dialog-asset-pathname "audio/click.wav")
+```
+
+The path is resolved under the bundle's manifest `:assets` directory.
+
+## Minigames
+
+Minigames are registered by scripts too:
+
+```lisp
+(dialog-minigame-kind :wire-flight
+                      :update #'update-flight-minigame-node
+                      :draw #'draw-flight-minigame)
+```
+
+Nodes then reference the registered kind:
+
+```lisp
+(dialog-minigame "ship/flight"
+                 "keep the ship inside the gates."
+                 :game :wire-flight
+                 :success "ship/threaded"
+                 :failure "ship/crash-return")
+```

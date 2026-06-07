@@ -47,64 +47,61 @@
                     condition)
       nil)))
 
-(-> root-mod-scripts (pathname) list)
-(defun root-mod-scripts (directory)
+(-> root-mod-sources (pathname) list)
+(defun root-mod-sources (directory)
   (safe-directory-files directory "*.lisp"))
 
-(-> subdirectory-mod-scripts (pathname) list)
-(defun subdirectory-mod-scripts (directory)
+(-> subdirectory-mod-source (pathname) (option pathname))
+(defun subdirectory-mod-source (directory)
+  (let ((manifest (merge-pathnames "manifest.lisp" directory))
+        (legacy-script (merge-pathnames "mod.lisp" directory)))
+    (cond
+      ((probe-file manifest)
+       manifest)
+      ((probe-file legacy-script)
+       legacy-script)
+      (t nil))))
+
+(-> subdirectory-mod-sources (pathname) list)
+(defun subdirectory-mod-sources (directory)
   (loop for subdirectory in (safe-subdirectories directory)
-        for script = (merge-pathnames "mod.lisp" subdirectory)
-        when (probe-file script)
-          collect script))
+        for source = (subdirectory-mod-source subdirectory)
+        when source
+          collect source))
 
 (-> sort-pathnames (list) list)
 (defun sort-pathnames (pathnames)
   (sort (copy-list pathnames) #'string< :key #'namestring))
 
-(-> mod-script-identity (pathname) string)
-(defun mod-script-identity (path)
+(-> mod-source-identity (pathname) string)
+(defun mod-source-identity (path)
   (handler-case
       (namestring (truename path))
     (error (condition)
-      (runtime-warn "Could not resolve mod script path ~a: ~a"
+      (runtime-warn "Could not resolve mod source path ~a: ~a"
                     path
                     condition)
       (namestring path))))
 
-(-> mod-script-pathnames () list)
-(defun mod-script-pathnames ()
+(-> mod-source-pathnames () list)
+(defun mod-source-pathnames ()
   (sort-pathnames
    (remove-duplicates
     (loop for directory in (mod-directory-pathnames)
-          append (root-mod-scripts directory)
-          append (subdirectory-mod-scripts directory))
+          append (root-mod-sources directory)
+          append (subdirectory-mod-sources directory))
     :test #'equal
-    :key #'mod-script-identity)))
+    :key #'mod-source-identity)))
 
-(-> pathname-parent-name (pathname) (option string))
-(defun pathname-parent-name (path)
-  (let ((directory (pathname-directory path)))
-    (when (consp directory)
-      (first (last directory)))))
+(-> make-mod-dialog-bundle (pathname) dialog-bundle)
+(defun make-mod-dialog-bundle (path)
+  (make-dialog-bundle-source path :mod))
 
-(-> mod-script-id (pathname) string)
-(defun mod-script-id (path)
-  (or (and (string= (or (pathname-name path) "") "mod")
-           (pathname-parent-name path))
-      (pathname-name path)
-      (namestring path)))
-
-(-> make-mod-dialog-script (pathname) dialog-script)
-(defun make-mod-dialog-script (path)
-  (make-dialog-script :path path
-                      :origin :mod
-                      :id (mod-script-id path)))
-
-(-> mod-dialog-scripts () list)
-(defun mod-dialog-scripts ()
+(-> mod-dialog-bundles () list)
+(defun mod-dialog-bundles ()
   (if (mods-enabled-p)
-      (mapcar #'make-mod-dialog-script (mod-script-pathnames))
+      (sort-dialog-bundles
+       (mapcar #'make-mod-dialog-bundle (mod-source-pathnames)))
       nil))
 
 (-> loaded-mod-scripts () list)
@@ -113,6 +110,12 @@
                    (eq (dialog-script-origin script) :mod))
                  *loaded-dialog-scripts*))
 
+(-> loaded-mod-bundles () list)
+(defun loaded-mod-bundles ()
+  (remove-if-not (lambda (bundle)
+                   (eq (dialog-bundle-origin bundle) :mod))
+                 *loaded-dialog-bundles*))
+
 (-> dialog-mod-conflict-count () nonnegative-integer)
 (defun dialog-mod-conflict-count ()
   (length *dialog-conflicts*))
@@ -120,12 +123,12 @@
 (-> discovered-mod-count () nonnegative-integer)
 (defun discovered-mod-count ()
   (if (mods-enabled-p)
-      (length (mod-script-pathnames))
+      (length (mod-source-pathnames))
       0))
 
 (-> loaded-mod-count () nonnegative-integer)
 (defun loaded-mod-count ()
-  (length (loaded-mod-scripts)))
+  (length (loaded-mod-bundles)))
 
 (-> plural-s (integer) string)
 (defun plural-s (count)

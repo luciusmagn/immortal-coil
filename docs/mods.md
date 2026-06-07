@@ -1,10 +1,31 @@
 # Mod Support
 
-Immortal Coil now has a small official mod loading surface.
+Immortal Coil now has a small official mod loading surface. The bundled game
+uses the same manifest shape as player mods.
 
 ## Layout
 
-Mods are read from:
+Preferred mod layout:
+
+```text
+mods/<mod-id>/manifest.lisp
+mods/<mod-id>/story.lisp
+mods/<mod-id>/assets/
+```
+
+`manifest.lisp` is data, not code:
+
+```lisp
+(:id "example-mod"
+ :name "Example Mod"
+ :version "0.1.0"
+ :scripts ("story.lisp")
+ :assets "assets/")
+```
+
+Script paths and asset paths are relative to the manifest directory.
+
+Legacy single-file mods are still read from:
 
 ```text
 mods/*.lisp
@@ -23,10 +44,25 @@ Disable mod loading with:
 IMMORTAL_COIL_DISABLE_MODS=1
 ```
 
+## Assets
+
+Inside a script, use `dialog-asset-pathname` for files bundled with that mod:
+
+```lisp
+(dialog-asset-pathname "audio/click.wav")
+```
+
+For the example layout above, this resolves to:
+
+```text
+mods/example-mod/assets/audio/click.wav
+```
+
 ## Loading
 
-The base story scripts load first. Mod scripts load after them, sorted by path.
-That means mods can append to base nodes and to nodes from earlier mods:
+The base story manifest loads first. Mod manifests and legacy mod scripts load
+after it, sorted by path. That means mods can append to base nodes and to nodes
+from earlier mods:
 
 ```lisp
 (dialog-add-choice "base/exit-bed"

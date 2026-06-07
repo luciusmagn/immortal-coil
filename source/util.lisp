@@ -28,6 +28,14 @@
           control
           arguments))
 
+(-> source-designator-name (t) string)
+(defun source-designator-name (source)
+  (typecase source
+    (pathname (namestring source))
+    (string source)
+    (symbol (string-downcase (symbol-name source)))
+    (t (princ-to-string source))))
+
 (defun project-pathname (path)
   (typecase path
     (pathname path)

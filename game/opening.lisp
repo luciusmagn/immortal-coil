@@ -2,3 +2,7 @@
 
 (dialog-particles "base/awake" :rising :immediate t)
 (dialog-particles "ship/wake" :stars :fade-seconds 6.5)
+
+(dialog-minigame-kind :wire-flight
+                      :update #'update-flight-minigame-node
+                      :draw #'draw-flight-minigame)

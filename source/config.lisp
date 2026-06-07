@@ -26,6 +26,7 @@
 (defparameter *particle-field-fade-seconds* 6.5)
 (defparameter *title-particle-count* 1000)
 (defparameter *title-particle-spawn-rate* 70.0)
+(defparameter *dialog-manifest-paths* '("game/manifest.lisp"))
 (defparameter *dialog-script-paths*
   '("game/opening.lisp"
     "game/opening/base.lisp"

@@ -112,6 +112,10 @@ Example:
 - Keep asset provenance next to assets in a credits or license file.
 - Prefer CC0/public-domain assets for early prototypes to avoid attribution friction.
 - Do not embed unlicensed or unclear assets.
+- Dialogue bundles, including the bundled game, should have a manifest that
+  declares script files and an asset root. Resolve bundle-local files through
+  `dialog-asset-pathname` instead of hardcoding project-global paths in scripts
+  or mods.
 - Generated music and sound assets should be documented with model/provider/source details where possible. Do not commit secrets such as OpenRouter keys; keep them in `.env`.
 
 ## Release And Packaging

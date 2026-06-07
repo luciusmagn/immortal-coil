@@ -73,6 +73,10 @@
     "Dialog node behavior handled by the runtime."
     '(member :text :choice :number :string :minigame :branch))
 
+  (deftype minigame-id ()
+    "A named minigame implementation selected by dialog nodes."
+    'keyword)
+
   (deftype choice-layout ()
     "Choice presentation style."
     '(member :horizontal :vertical :list))

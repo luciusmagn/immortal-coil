@@ -39,7 +39,7 @@
   (max-value      nil :type (option number))
   (max-length     0 :type nonnegative-integer)
   (allow-empty-p  nil :type boolean)
-  (minigame       nil :type (option keyword))
+  (minigame       nil :type (option minigame-id))
   (success-target nil :type (option dialog-id))
   (failure-target nil :type (option dialog-id))
   (enter-effects  nil :type (list-of dialog-effect)))
@@ -52,11 +52,7 @@
 
 (-> dialog-source-name (t) string)
 (defun dialog-source-name (source)
-  (typecase source
-    (pathname (namestring source))
-    (string source)
-    (symbol (string-downcase (symbol-name source)))
-    (t (princ-to-string source))))
+  (source-designator-name source))
 
 (-> current-dialog-source-name () string)
 (defun current-dialog-source-name ()
