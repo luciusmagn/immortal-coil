@@ -6,13 +6,6 @@
  :scripts ("maze/minigame.lisp"
            "maze/rendering.lisp"
            "flight/minigame.lisp"
-           "flight/geometry.lisp"
-           "flight/tunnel-rendering.lisp"
-           "flight/gate-rendering.lisp"
-           "flight/player-rendering.lisp"
            "flight/rendering.lisp"
-           "opening.lisp"
-           "opening/base.lisp"
-           "opening/ship.lisp"
-           "opening/dream.lisp")
+           "opening.lisp")
  :assets "../assets/")

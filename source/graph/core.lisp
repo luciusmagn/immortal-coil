@@ -1,5 +1,140 @@
 (in-package #:immortal-coil)
 
+;;; State
+
+(defvar *nodes* (make-hash-table :test #'equal))
+(defvar *node-sources* (make-hash-table :test #'equal))
+(defvar *pending-node-enter-effects* (make-hash-table :test #'equal))
+(defvar *story-start-node* nil)
+(defvar *last-dialog-node-id* nil)
+(defvar *dev-save-override* nil)
+(defvar *current-dialog-source* :repl)
+(defvar *dialog-conflicts* nil)
+(defparameter *runtime-fallback-node-id* "runtime/fallback")
+
+(-> reset-nodes () t)
+(defun reset-nodes ()
+  (clrhash *nodes*)
+  (clrhash *node-sources*)
+  (clrhash *pending-node-enter-effects*))
+
+
+;;; Models
+
+(defstruct choice
+  (label     "" :type string)
+  (target    *runtime-fallback-node-id* :type dialog-id)
+  (condition t :type dialog-condition))
+
+(defstruct branch
+  (condition t :type dialog-condition)
+  (target    *runtime-fallback-node-id* :type dialog-id))
+
+(defstruct dialog-conflict
+  (node-id         *runtime-fallback-node-id* :type dialog-id)
+  (previous-source :unknown :type dialog-source)
+  (new-source      :unknown :type dialog-source)
+  (resolution      :latest-wins :type dialog-conflict-resolution))
+
+(defstruct node
+  (id             *runtime-fallback-node-id* :type dialog-id)
+  (kind           :text :type node-kind)
+  (speaker        nil :type (option string))
+  (text           "" :type string)
+  (next           nil :type (option dialog-id))
+  (choices        #() :type vector)
+  (branches       #() :type vector)
+  (layout         nil :type (option choice-layout))
+  (target         nil :type (option dialog-id))
+  (response-key   nil :type (option dialog-id))
+  (min-value      nil :type (option number))
+  (max-value      nil :type (option number))
+  (max-length     0 :type nonnegative-integer)
+  (allow-empty-p  nil :type boolean)
+  (minigame       nil :type (option minigame-id))
+  (success-target nil :type (option dialog-id))
+  (failure-target nil :type (option dialog-id))
+  (enter-effects  nil :type (list-of dialog-effect)))
+
+
+;;; Conflict tracking
+
+(-> dialog-source-name (t) string)
+(defun dialog-source-name (source)
+  (source-designator-name source))
+
+(-> current-dialog-source-name () string)
+(defun current-dialog-source-name ()
+  (dialog-source-name *current-dialog-source*))
+
+(-> dialog-source-same-p (t t) boolean)
+(defun dialog-source-same-p (left right)
+  (string= (dialog-source-name left)
+           (dialog-source-name right)))
+
+(-> record-dialog-conflict (dialog-id t t) dialog-conflict)
+(defun record-dialog-conflict (node-id previous-source new-source)
+  (let ((conflict (make-dialog-conflict
+                   :node-id node-id
+                   :previous-source previous-source
+                   :new-source new-source
+                   :resolution :latest-wins)))
+    (push conflict *dialog-conflicts*)
+    (runtime-warn "Dialog node conflict for ~a: ~a replaced by ~a."
+                  node-id
+                  (dialog-source-name previous-source)
+                  (dialog-source-name new-source))
+    conflict))
+
+
+;;; Enter effects
+
+(-> node-existing-enter-effects (dialog-id) list)
+(defun node-existing-enter-effects (id)
+  (let ((node (gethash id *nodes*)))
+    (when node
+      (node-enter-effects node))))
+
+(-> node-pending-enter-effects (dialog-id) list)
+(defun node-pending-enter-effects (id)
+  (gethash id *pending-node-enter-effects*))
+
+(-> combine-node-enter-effects (node) list)
+(defun combine-node-enter-effects (node)
+  (let ((id (node-id node)))
+    (append (node-existing-enter-effects id)
+            (node-pending-enter-effects id)
+            (node-enter-effects node))))
+
+(-> eval-dialog-effect (dialog-effect) t)
+(defun eval-dialog-effect (effect)
+  (handler-case
+      (cond
+        ((functionp effect)
+         (funcall effect))
+        ((lambda-expression-p effect)
+         (funcall (compile nil effect)))
+        ((function-expression-p effect)
+         (funcall (eval effect)))
+        ((consp effect)
+         (eval effect))
+        ((and (symbolp effect) (fboundp effect))
+         (funcall effect))
+        (t
+         (runtime-warn "Unknown dialog enter effect: ~s" effect)))
+    (error (condition)
+      (runtime-warn "Dialog enter effect failed: ~s (~a)"
+                    effect
+                    condition))))
+
+(-> apply-node-enter-effects (node) t)
+(defun apply-node-enter-effects (node)
+  (dolist (effect (node-enter-effects node))
+    (eval-dialog-effect effect)))
+
+
+;;; Node store
+
 (-> add-node (node) node)
 (defun add-node (node)
   (let* ((id (node-id node))

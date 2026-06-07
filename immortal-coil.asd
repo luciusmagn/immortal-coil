@@ -28,19 +28,13 @@
                    (:module "manifest"
                     :serial t
                     :components
-                    ((:file "normalization")
-                     (:file "reader")
-                     (:file "core")))
+                    ((:file "core")))
                    (:file "store")))
 
                  (:module "graph"
                   :serial t
                   :components
-                  ((:file "state")
-                   (:file "models")
-                   (:file "conflicts")
-                   (:file "effects")
-                   (:file "core")))
+                  ((:file "core")))
 
                  (:module "dialog-authoring"
                   :pathname "dialog"
@@ -49,19 +43,13 @@
                   ((:module "dsl"
                     :serial t
                     :components
-                    ((:file "core")
-                     (:file "choice")
-                     (:file "branch")
-                     (:file "input")
-                     (:file "minigame")
-                     (:file "effect")))
-                   (:file "effects")))
+                    ((:file "core")))
+                   (:file "patterns")))
 
                  (:module "minigame"
                   :serial t
                   :components
-                  ((:file "registry")
-                   (:file "runtime")))
+                  ((:file "core")))
 
                  (:module "dialog-loading"
                   :pathname "dialog"
@@ -70,25 +58,7 @@
                   ((:module "script"
                     :serial t
                     :components
-                    ((:file "model")
-                     (:file "store")
-                     (:file "sources")
-                     (:file "eval")))
-                   (:file "loader")
-                   (:module "path"
-                    :serial t
-                    :components
-                    ((:file "patterns")))
-                   (:module "choice"
-                    :serial t
-                    :components
-                    ((:file "patterns")))))
-
-                 (:module "graph-patterns"
-                  :pathname "graph"
-                  :serial t
-                  :components
-                  ((:file "patterns")))
+                    ((:file "core")))))
 
                  (:module "save-dev"
                   :pathname "save/dev"
@@ -99,9 +69,7 @@
                  (:module "mod"
                   :serial t
                   :components
-                  ((:file "config")
-                   (:file "discovery")
-                   (:file "core")))
+                  ((:file "core")))
 
                  (:module "text"
                   :serial t
@@ -111,8 +79,7 @@
                  (:module "audio"
                   :serial t
                   :components
-                  ((:file "assets")
-                   (:file "short-sounds")))
+                  ((:file "resources")))
 
                  (:module "title"
                   :serial t
@@ -122,9 +89,7 @@
                    (:module "particles"
                     :serial t
                     :components
-                    ((:file "system")
-                     (:file "motion")
-                     (:file "core")))))
+                    ((:file "core")))))
 
                  (:module "audio-core"
                   :pathname "audio"
@@ -140,8 +105,7 @@
                    (:module "field"
                     :serial t
                     :components
-                    ((:file "core")))
-                   (:file "core")))
+                    ((:file "core")))))
 
                  (:module "play-state"
                   :serial t
@@ -152,8 +116,7 @@
                   :pathname "text"
                   :serial t
                   :components
-                  ((:file "typewriter")
-                   (:file "rendering")))
+                  ((:file "runtime")))
 
                  (:module "save"
                   :serial t
@@ -167,23 +130,11 @@
                   ((:module "choice"
                     :serial t
                     :components
-                    ((:file "update")))
+                    ((:file "core")))
                    (:module "input"
                     :serial t
                     :components
-                    ((:file "buffer")
-                     (:file "number-update")
-                     (:file "string-update")))
-                   (:module "choice-rendering"
-                    :pathname "choice"
-                    :serial t
-                    :components
-                    ((:file "rendering")))
-                   (:module "input-rendering"
-                    :pathname "input"
-                    :serial t
-                    :components
-                    ((:file "rendering")))))
+                    ((:file "core")))))
 
                  (:module "minigame-runtime"
                   :pathname "minigame"
@@ -197,19 +148,12 @@
                  (:module "menu"
                   :serial t
                   :components
-                  ((:file "state")
-                   (:file "geometry")
-                   (:file "actions")
-                   (:file "rendering")
-                   (:file "core")))
+                  ((:file "core")))
 
                  (:module "pause"
                   :serial t
                   :components
-                  ((:file "state")
-                   (:file "actions")
-                   (:file "rendering")
-                   (:file "core")))
+                  ((:file "core")))
 
                  (:file "renderer")
                  (:file "main")))))

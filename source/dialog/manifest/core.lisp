@@ -1,5 +1,128 @@
 (in-package #:immortal-coil)
 
+;;; Normalization
+
+(-> normalize-bundle-id (t t) dialog-bundle-id)
+(defun normalize-bundle-id (id fallback)
+  (typecase id
+    (string id)
+    (symbol (string-downcase (symbol-name id)))
+    (t (source-designator-name fallback))))
+
+(-> normalize-bundle-name (t string) string)
+(defun normalize-bundle-name (name fallback)
+  (typecase name
+    (string name)
+    (symbol (string-capitalize (string-downcase (symbol-name name))))
+    (t fallback)))
+
+(-> normalize-bundle-version (t) (option string))
+(defun normalize-bundle-version (version)
+  (typecase version
+    (null nil)
+    (string version)
+    (symbol (string-downcase (symbol-name version)))
+    (t (princ-to-string version))))
+
+(-> normalize-manifest-string (t) (option string))
+(defun normalize-manifest-string (value)
+  (typecase value
+    (null nil)
+    (string value)
+    (symbol (string-downcase (symbol-name value)))
+    (t nil)))
+
+(-> manifest-list-value (t) list)
+(defun manifest-list-value (value)
+  (cond
+    ((null value)
+     nil)
+    ((listp value)
+     value)
+    (t
+     (list value))))
+
+(-> manifest-path-designator-p (t) boolean)
+(defun manifest-path-designator-p (value)
+  (typep value '(or pathname string)))
+
+
+;;; Reader
+
+(-> read-dialog-manifest-form (pathname) (option plist))
+(defun read-dialog-manifest-form (path)
+  (handler-case
+      (with-open-file (stream path)
+        (let ((form (read stream nil :eof)))
+          (cond
+            ((eq form :eof)
+             (runtime-warn "Dialog manifest is empty: ~a" path)
+             nil)
+            ((plistp form)
+             form)
+            (t
+             (runtime-warn "Dialog manifest is not a keyword plist: ~a"
+                           path)
+             nil))))
+    (error (condition)
+      (runtime-warn "Could not read dialog manifest ~a: ~a"
+                    path
+                    condition)
+      nil)))
+
+(-> manifest-relative-paths (pathname pathname t string) list)
+(defun manifest-relative-paths (root manifest-path values label)
+  (loop for value in (manifest-list-value values)
+        if (manifest-path-designator-p value)
+          collect (resolve-relative-pathname root value)
+        else
+          do (runtime-warn "Ignoring invalid ~a in ~a: ~s"
+                           label
+                           manifest-path
+                           value)))
+
+(-> manifest-script-paths (pathname pathname t) list)
+(defun manifest-script-paths (root manifest-path scripts)
+  (manifest-relative-paths root manifest-path scripts "script path"))
+
+(-> manifest-asset-root (pathname pathname plist) pathname)
+(defun manifest-asset-root (root manifest-path form)
+  (let ((asset-root (or (getf form :assets)
+                        (getf form :asset-root)
+                        "assets/")))
+    (if (manifest-path-designator-p asset-root)
+        (uiop:ensure-directory-pathname
+         (resolve-relative-pathname root asset-root))
+        (progn
+          (runtime-warn "Invalid asset root in dialog manifest ~a: ~s"
+                        manifest-path
+                        asset-root)
+          (merge-pathnames "assets/" root)))))
+
+(-> manifest-dependency-ids (pathname t) list)
+(defun manifest-dependency-ids (manifest-path dependencies)
+  (remove-duplicates
+   (loop for dependency in (manifest-list-value dependencies)
+         for id = (normalize-manifest-string dependency)
+         if id
+           collect id
+         else
+           do (runtime-warn "Ignoring invalid dependency in ~a: ~s"
+                            manifest-path
+                            dependency))
+   :test #'string=))
+
+(-> manifest-description (plist) (option string))
+(defun manifest-description (form)
+  (normalize-manifest-string (getf form :description)))
+
+(-> manifest-author (plist) (option string))
+(defun manifest-author (form)
+  (normalize-manifest-string (getf form :author)))
+
+
+;;; Bundle creation
+
 (-> make-dialog-bundle-from-manifest (t dialog-script-origin)
     (option dialog-bundle))
 (defun make-dialog-bundle-from-manifest (manifest-path origin)
