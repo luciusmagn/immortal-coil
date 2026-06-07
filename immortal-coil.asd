@@ -15,6 +15,8 @@
                  (:file "util")
                  (:file "dialog-bundle-paths")
                  (:file "dialog-bundles")
+                 (:file "dialog-manifest-normalization")
+                 (:file "dialog-manifest-reader")
                  (:file "dialog-manifest")
                  (:file "selection")
                  (:file "dialog-store")
