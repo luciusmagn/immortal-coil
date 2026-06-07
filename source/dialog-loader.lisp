@@ -1,0 +1,17 @@
+(in-package #:immortal-coil)
+
+(-> load-dialog-graph (&optional list) dialog-id)
+(defun load-dialog-graph (&optional (sources *dialog-manifest-paths*))
+  (reset-dialog-graph)
+  (reset-minigames)
+  (reset-loaded-dialog-scripts)
+  (reset-loaded-dialog-bundles)
+  (let ((bundles (configured-dialog-bundles sources)))
+    (dolist (bundle bundles)
+      (eval-dialog-bundle-source bundle)))
+  (unless *story-start-node*
+    (runtime-warn "No dialog start node was set by sources: ~s" sources)
+    (setf *story-start-node* *runtime-fallback-node-id*))
+  (ensure-runtime-fallback-node)
+  (setf *story-start-node* (resolve-node-id *story-start-node*))
+  *story-start-node*)
