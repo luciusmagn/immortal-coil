@@ -2,6 +2,7 @@
 
 (defparameter *save-file-path* nil)
 
+(-> save-file-pathname () pathname)
 (defun save-file-pathname ()
   (or *save-file-path*
       (let ((save-dir (uiop:getenv "IMMORTAL_COIL_SAVE_DIR")))
@@ -10,6 +11,7 @@
                              (uiop:ensure-directory-pathname save-dir))
             (project-pathname "save/current.lisp")))))
 
+(-> save-game-exists-p () boolean)
 (defun save-game-exists-p ()
   (or (dev-save-override-exists-p)
       (handler-case
@@ -18,6 +20,7 @@
           (runtime-warn "Could not check save file: ~a" condition)
           nil))))
 
+(-> save-play-state-data () save-data)
 (defun save-play-state-data ()
   (list :version 1
         :current-id (play-state-current-id *state*)
@@ -27,6 +30,7 @@
         :dialog-store (dialog-store-alist)
         :particle-field (particle-field-state-data)))
 
+(-> write-save-data (save-data) t)
 (defun write-save-data (data)
   (let ((path (save-file-pathname)))
     (ensure-directories-exist path)
@@ -38,6 +42,7 @@
         (let ((*print-readably* t))
           (print data stream))))))
 
+(-> save-current-game () t)
 (defun save-current-game ()
   (when *state*
     (handler-case
@@ -45,6 +50,7 @@
       (error (condition)
         (runtime-warn "Could not save game: ~a" condition)))))
 
+(-> read-save-data () t)
 (defun read-save-data ()
   (when (save-game-exists-p)
     (handler-case
@@ -53,18 +59,22 @@
             (read stream nil nil)))
       (error () nil))))
 
+(-> current-save-data () t)
 (defun current-save-data ()
   (or (dev-save-override-data)
       (read-save-data)))
 
+(-> save-data-current-id (save-data) t)
 (defun save-data-current-id (data)
   (getf data :current-id))
 
+(-> valid-save-data-p (t) boolean)
 (defun valid-save-data-p (data)
   (and (listp data)
        (= (or (getf data :version) 0) 1)
        (stringp (save-data-current-id data))))
 
+(-> restore-play-state-from-save (save-data) t)
 (defun restore-play-state-from-save (data)
   (let ((current-id (save-data-current-id data)))
     (setf current-id (resolve-node-id current-id))
@@ -84,6 +94,7 @@
                                              "")))
     (restore-particle-field-state (getf data :particle-field))))
 
+(-> load-current-game-save () boolean)
 (defun load-current-game-save ()
   (handler-case
       (let ((data (current-save-data)))
@@ -92,6 +103,7 @@
           t))
     (error () nil)))
 
+(-> restore-dev-save-override () boolean)
 (defun restore-dev-save-override ()
   (handler-case
       (let ((data (dev-save-override-data)))

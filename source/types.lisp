@@ -85,6 +85,10 @@
     "A key in the shared dialog/mod state store."
     '(or string symbol))
 
+  (deftype save-data ()
+    "Versioned save plist used by disk saves and dev-save overrides."
+    'plist)
+
   (deftype dialog-script-origin ()
     "Where a dialog script source came from."
     '(member :bundled :mod))
