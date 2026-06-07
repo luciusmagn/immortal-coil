@@ -16,6 +16,10 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 - Prefer revelation over transformation: when a scene changes meaning, it should feel like it was always that thing, not like the game visibly morphed it for the player's benefit.
 - Avoid prose that says reality changes because the player acted: no doors becoming other objects, corridors folding shut, or things waiting to transform on cue. Use newly revealed context instead.
 - Keep prose and interface sparse. The game can become strange, but it should not explain its own cleverness.
+- In the ship-captain path, the player is a stressed captain on a large hard-sci-fi ship, near a breaking point and caught in time loops. From the crew's perspective, the captain is impeccable and almost mythic because every visible decision is correct and the crew is saved from every crisis.
+- The truth of the ship-captain path is private: the captain keeps failing, dying, looping, and carrying the pain forward. The loop should feel like hidden labor and trauma, not a power fantasy.
+- Crew praise should become painful through context. The crew sees the final polished result; the player remembers the failed attempts that made it possible.
+- Hallucinations in the ship path should read as memory intrusions from previous loops, such as seeing a living crew member as they died before. Do not frame these as ghosts, prophecies, or reality changing in front of the player.
 - The shared dialog store exists so scripts and mods can remember facts such as names, choices, inventory, age, or hidden flags. Conditions may read this store or evaluate explicit lambdas.
 - Text substitution is part of the authoring model. Later nodes should be able to refer to values collected earlier.
 
