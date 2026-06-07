@@ -1,15 +1,16 @@
 (in-package #:immortal-coil)
 
 (defparameter *company-label-text* "lambda symbolics ou")
-(defconstant +company-label-size+ 12)
-(defconstant +company-label-padding+ 18.0)
+(defconstant +company-label-size+ 14)
+(defconstant +company-label-right-padding+ 34.0)
+(defconstant +company-label-bottom-padding+ 18.0)
 
 (-> company-label-position () (values scalar scalar))
 (defun company-label-position ()
   (let* ((width (measure-text *company-label-text* +company-label-size+))
-         (x (- +virtual-width+ +company-label-padding+ width))
+         (x (- +virtual-width+ +company-label-right-padding+ width))
          (y (- +virtual-height+
-               +company-label-padding+
+               +company-label-bottom-padding+
                +company-label-size+)))
     (values x y)))
 
