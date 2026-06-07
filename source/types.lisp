@@ -93,6 +93,10 @@
     "Script effect evaluated when a node is entered."
     '(or symbol runtime-function cons))
 
+  (deftype dialog-pattern-branch-data ()
+    "A parsed choice-branch pattern used by graph authoring macros."
+    'plist)
+
   (deftype dialog-conflict-resolution ()
     "Recorded policy for one dialog graph conflict."
     '(member :latest-wins))

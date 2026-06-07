@@ -26,6 +26,8 @@
                  (:file "dialog-effects")
                  (:file "minigame-registry")
                  (:file "dialog-scripts")
+                 (:file "dialog-path-patterns")
+                 (:file "dialog-choice-patterns")
                  (:file "graph-patterns")
                  (:file "dev-save")
                  (:file "mods")
