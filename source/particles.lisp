@@ -272,6 +272,18 @@
     (round (* (star-particle-alpha particle)
               (clamp01 brightness)))))
 
+(defun star-particle-core-size (alpha)
+  (if (> alpha 210)
+      2
+      +star-particle-size+))
+
+(defun draw-star-particle-core (x y size color)
+  (claylib/ll:draw-rectangle (- x (floor size 2))
+                             (- y (floor size 2))
+                             size
+                             size
+                             (claylib::c-ptr color)))
+
 (defun draw-particle (particle alpha-scale)
   (let ((alpha (round (* (particle-visible-alpha particle)
                          alpha-scale))))
@@ -289,12 +301,9 @@
     (when (plusp alpha)
       (let* ((x (round (star-particle-x particle)))
              (y (round (star-particle-y particle)))
+             (size (star-particle-core-size alpha))
              (color (make-color 255 255 255 alpha)))
-        (claylib/ll:draw-rectangle x
-                                   y
-                                   +star-particle-size+
-                                   +star-particle-size+
-                                   (claylib::c-ptr color))
+        (draw-star-particle-core x y size color)
         (when (> alpha 165)
           (let ((glint-color (make-color 255 255 255
                                          (round (* alpha 0.42)))))
