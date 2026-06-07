@@ -1,5 +1,6 @@
 (in-package #:immortal-coil)
 
+(-> flight-project (scalar scalar scalar) (values scalar scalar))
 (defun flight-project (x y z)
   (let* ((depth (+ z 0.75))
          (scale (/ 1.0 depth)))
@@ -8,20 +9,31 @@
             (+ +flight-center-y+
                (* y +flight-view-height+ 0.5 scale)))))
 
+(-> flight-cockpit-position (scalar scalar) (values scalar scalar))
 (defun flight-cockpit-position (x y)
   (values (+ +flight-center-x+
              (* x +flight-view-width+ +flight-cockpit-scale+))
           (+ +flight-center-y+
              (* y +flight-view-height+ +flight-cockpit-scale+))))
 
+(-> flight-depth-alpha (scalar alpha-channel alpha-channel) alpha-channel)
 (defun flight-depth-alpha (z min-alpha max-alpha)
   (let ((progress (clamp01 (/ (- +flight-visible-depth+ z)
                               +flight-visible-depth+))))
     (round (+ min-alpha (* (- max-alpha min-alpha) progress)))))
 
+(-> flight-target-gate-index (flight-minigame) flight-gate-index)
 (defun flight-target-gate-index (game)
   (max 1 (ceiling (+ (flight-minigame-distance game) 0.25))))
 
+(-> draw-flight-rectangle (scalar
+                           scalar
+                           scalar
+                           scalar
+                           scalar
+                           t
+                           &optional scalar)
+    t)
 (defun draw-flight-rectangle (left top right bottom z color
                               &optional (thickness 1.0))
   (multiple-value-bind (x1 y1)
@@ -37,6 +49,7 @@
           (draw-thick-line-between x3 y3 x4 y4 color thickness)
           (draw-thick-line-between x4 y4 x1 y1 color thickness))))))
 
+(-> draw-flight-tunnel-rails () t)
 (defun draw-flight-tunnel-rails ()
   (dolist (corner '((-1.0 -1.0)
                     (1.0 -1.0)
@@ -53,6 +66,7 @@
                                  (make-color 255 255 255 46)
                                  1.0)))))
 
+(-> draw-flight-tunnel-frames () t)
 (defun draw-flight-tunnel-frames ()
   (loop for z from 0.7 to +flight-visible-depth+ by 0.7
         for alpha = (flight-depth-alpha z 18 70)
@@ -64,6 +78,7 @@
                                   (make-color 255 255 255 alpha)))
   (draw-flight-tunnel-rails))
 
+(-> draw-flight-gate (flight-minigame flight-gate-index boolean) t)
 (defun draw-flight-gate (game gate-index active-p)
   (let ((z (- gate-index (flight-minigame-distance game))))
     (when (and (> z 0.25)
@@ -102,6 +117,7 @@
                                  opening-color
                                  (if active-p 3.0 1.4)))))))
 
+(-> draw-flight-gates (flight-minigame) t)
 (defun draw-flight-gates (game)
   (let ((first-gate (max 1 (floor (flight-minigame-distance game))))
         (target-gate (flight-target-gate-index game)))
@@ -110,6 +126,7 @@
             do (draw-flight-gate game gate nil))
     (draw-flight-gate game target-gate t)))
 
+(-> draw-flight-target-brackets (scalar scalar t) t)
 (defun draw-flight-target-brackets (x y color)
   (let ((half-size 24.0)
         (mark-size 10.0)
@@ -135,6 +152,7 @@
                                  color
                                  thickness)))))
 
+(-> draw-flight-guidance (flight-minigame) t)
 (defun draw-flight-guidance (game)
   (let ((target-gate (flight-target-gate-index game)))
     (multiple-value-bind (target-x target-y)
@@ -160,6 +178,7 @@
                                      (claylib::c-ptr
                                       (make-color 255 255 255 220))))))))
 
+(-> draw-flight-player (flight-minigame t) t)
 (defun draw-flight-player (game color)
   (multiple-value-bind (x y)
       (flight-cockpit-position (flight-minigame-player-x game)
@@ -175,6 +194,7 @@
                             color
                             :filled-p t))))
 
+(-> draw-flight-hud (flight-minigame t) t)
 (defun draw-flight-hud (game color)
   (let ((distance-label (format nil "~2,'0d/~2,'0d"
                                 (min (floor (flight-minigame-distance game))
@@ -191,6 +211,7 @@
                         16
                         (make-color 255 255 255 170))))
 
+(-> draw-flight-minigame (node t) t)
 (defun draw-flight-minigame (node color)
   (let ((game (ensure-flight-minigame node)))
     (draw-flight-tunnel-frames)
