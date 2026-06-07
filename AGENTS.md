@@ -4,6 +4,55 @@
 
 Immortal Coil is a Common Lisp / Claylib narrative-game prototype. The current goal is to keep the first playable loop small: story nodes, typewriter text, choices, sound, shaders, and hot-reload-friendly code. Avoid turning this into a storage or engine architecture project before the narrative loop is proven.
 
+The core idea is an always-branching narrative game. "Dialogue tree" is useful industry shorthand, but the implementation may be a graph when it needs shared nodes, conditions, or mod extension points. Player choice should create the narrative rather than reveal one fixed plot. The tree can diverge into other genres, including minigames or alternate presentation modes, but those shifts should be authored through the same dialogue/mod surface where possible.
+
+Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage structures until a concrete proven need appears. Plain Lisp data, script reloads, and focused save data are the right default for now.
+
+## Narrative Direction
+
+- Preserve player blindness. Do not announce time loops, count loops, or explain genre pivots before the player has earned them.
+- Prefer revelation over transformation: when a scene changes meaning, it should feel like it was always that thing, not like the game visibly morphed it for the player's benefit.
+- Keep prose and interface sparse. The game can become strange, but it should not explain its own cleverness.
+- The shared dialog store exists so scripts and mods can remember facts such as names, choices, inventory, age, or hidden flags. Conditions may read this store or evaluate explicit lambdas.
+- Text substitution is part of the authoring model. Later nodes should be able to refer to values collected earlier.
+
+## Visual Identity
+
+- The game should read as pure black and white. Phosphor tint from CRT/bloom shaders is acceptable, but do not introduce normal color palettes without an explicit reason.
+- The visual baseline is the original `mags_game` beginning: stark text, CRT treatment, bloom, typewriter pacing, and a haunted terminal-like feel.
+- CRT effects should be strong enough to be felt but should not distort central text into unreadability. Curvature, bloom, and antialiasing need manual visual checks after changes.
+- Rising particles are small, identical white squares that drift upward slowly and wobble side to side like sparks or gas in a falling-sand simulation. They should usually cross beyond the viewport instead of fading out halfway.
+- Star particles represent the spaceship path. They should be tiny white glints, mostly 1px, with occasional brighter/bigger shimmer. Keep them subtle and slow.
+- The title screen menu is part of the fiction: particles rise from below like a trunk, orbit the current menu option, and leave upward like branches. Menu arrows are filled white triangles outside the orbit circle, with bloom, press response, and small oscillation.
+
+## Audio Direction
+
+- Dialogue text should type with alternating typewriter or Model M-like key sounds. Avoid one repeated click sample.
+- Menu confirmation sounds should feel substantial, especially starting or continuing a game.
+- The title music should be a long, drawn-out, beatless drone. Avoid obvious drums, snare, jingle-bell rhythm, or loop stitching that calls attention to itself.
+- Raylib music streams are fed from the main loop with `update-music-stream`. Avoid expensive frame work during music playback, because stalls can cause small skips.
+- Prefer loaded WAV sound effects for short UI sounds. For music, test whether MP3 streaming is stable enough before assuming skips are acceptable.
+
+## Dialogue And Mods
+
+- Dialogue scripts under `game/` should use the same public surface that mods will use. Do not hide special core-only powers unless there is a real engine boundary reason.
+- Mods are expected to append choices and nodes to base story nodes and to nodes from other mods.
+- Namespaced node IDs such as `some-mod/opening` are preferred. Intentional replacement should be rare.
+- Current conflict policy is deterministic latest-wins with conflicts recorded and surfaced in the menu. Future "negotiation" should build on that record rather than making conflicts silent.
+- A mod manager screen can grow later, but keep the first official mod support simple and visible from the menu.
+- No sandboxing is currently required. Treat that as a conscious prototype tradeoff, not as a forgotten security design.
+- Helper macros for common patterns are welcome when they make authoring dialogue easier: linear paths, choices with generated child IDs, common branches, and test-only dev save overrides.
+- The visual editor should avoid forcing authors to write full Common Lisp into tiny fields. Prefer predefined condition/effect templates with focused fill-in fields, while still allowing escape hatches for Lisp.
+
+## Gameplay And UI
+
+- `Escape` should open a pause menu, not close the game.
+- Fullscreen controls should not fire while a text or number input is active.
+- Start-game transitions should be deliberate: confirmation feedback, slow fade out, slow fade in, and delayed typing. Avoid abrupt cuts into the first dialogue node.
+- Main-menu navigation uses left/right arrows to cycle a single central option. Do not add redundant underlines or extra chrome unless it improves usability.
+- When there are too many vertical choices, show a scrollbar or equivalent overflow indicator.
+- Minigames need clear controls and enough readability that failure feels like play, not confusion.
+
 ## Common Lisp Style
 
 - Prefer clear, boring, established Common Lisp over clever low-level tricks.
@@ -40,12 +89,15 @@ Example:
 - Split by coherent workflow or domain concept, not generic `misc` or `helpers` files.
 - Preserve public entry points when splitting files so hot reload and REPL workflows stay simple.
 - Keep rendering code separate from story/domain data once the renderer becomes more than the initial prototype.
+- The project owner dislikes large source files. Split when a file starts mixing domains or becomes hard to reason about, but keep each split tied to an actual workflow.
 
 ## Runtime And Hot Reload
 
 - Use Common Lisp reloadability as a development advantage: prefer rebuilding in-memory story state from data over mutating complicated global structures in place.
 - For incompatible class/struct changes, expect that a clean restart may be needed even if normal function reloads work.
 - GPU/audio resources are external resources; reload paths must explicitly unload or replace them when needed.
+- Prefer robust runtime warnings and safe fallbacks over dropping into the debugger during normal play. Narrative scripts, mods, saves, audio, and rendering paths should be defensive.
+- Graph and mod reloads should be explicit enough that developers can test a node quickly, including with a top-level dev save override form that can be moved around during development.
 
 ## Claylib Notes
 
@@ -58,6 +110,13 @@ Example:
 - Keep asset provenance next to assets in a credits or license file.
 - Prefer CC0/public-domain assets for early prototypes to avoid attribution friction.
 - Do not embed unlicensed or unclear assets.
+- Generated music and sound assets should be documented with model/provider/source details where possible. Do not commit secrets such as OpenRouter keys; keep them in `.env`.
+
+## Release And Packaging
+
+- Nix is the preferred path for reproducible builds.
+- Linux binaries should eventually target Steam distribution constraints, not only the local dev machine.
+- Windows builds are a future requirement for Steam. Treat cross-platform packaging as important, but do not let it derail the current playable loop.
 
 ## Verification
 
@@ -79,3 +138,4 @@ ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fas
 - Use primitive title-only commit messages under 72 characters.
 - Prefer rebase over merge; avoid merge commits.
 - Do not bundle unrelated refactors with feature work just because the files are nearby.
+- Push after every commit unless the user explicitly says not to.
