@@ -30,6 +30,8 @@
                  (:file "dialog-choice-patterns")
                  (:file "graph-patterns")
                  (:file "dev-save")
+                 (:file "mod-config")
+                 (:file "mod-discovery")
                  (:file "mods")
                  (:file "text-template")
                  (:file "audio-assets")
