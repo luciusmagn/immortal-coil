@@ -1,9 +1,9 @@
 (in-package #:immortal-coil)
 
 (defparameter *company-label-text* "lambda symbolics ou")
-(defconstant +company-label-size+ 14)
-(defconstant +company-label-right-padding+ 34.0)
-(defconstant +company-label-bottom-padding+ 18.0)
+(defconstant +company-label-size+ 24)
+(defconstant +company-label-right-padding+ 120.0)
+(defconstant +company-label-bottom-padding+ 25.0)
 
 (-> company-label-position () (values scalar scalar))
 (defun company-label-position ()
