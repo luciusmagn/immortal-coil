@@ -32,6 +32,8 @@
                  (:file "dialog-input-update")
                  (:file "dialog-choice-rendering")
                  (:file "dialog-input-rendering")
+                 (:file "flight-minigame")
+                 (:file "flight-minigame-rendering")
                  (:file "minigame")
                  (:file "title-logo")
                  (:file "title-particles")
