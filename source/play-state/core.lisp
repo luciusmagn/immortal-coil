@@ -1,5 +1,34 @@
 (in-package #:immortal-coil)
 
+;;; Model
+
+(defvar *state* nil)
+(defvar *save-current-game-function* nil)
+(defvar *save-current-game-p* nil)
+
+(defstruct play-state
+  (current-id     *runtime-fallback-node-id* :type dialog-id)
+  (elapsed        0.0 :type seconds)
+  (type-delay     0.0 :type seconds)
+  (visible-count  0 :type nonnegative-integer)
+  (selected-index 0 :type nonnegative-integer)
+  (input-buffer   "" :type string))
+
+
+;;; Save hook
+
+(-> save-current-game-maybe () t)
+(defun save-current-game-maybe ()
+  (when (and *save-current-game-p*
+             *save-current-game-function*)
+    (handler-case
+        (funcall *save-current-game-function*)
+      (error (condition)
+        (runtime-warn "Could not save game: ~a" condition)))))
+
+
+;;; Navigation
+
 (-> current-node () node)
 (defun current-node ()
   (let ((node (find-node (play-state-current-id *state*))))

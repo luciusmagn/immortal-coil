@@ -88,10 +88,13 @@ Example:
 
 - Keep boot code as boot code. `source/main.lisp` may wire startup and the tiny prototype, but split story data, rendering, audio, and graph/mod logic into focused files as they grow.
 - Prefer module trees over monoliths once a file mixes unrelated concerns.
+- Repeated filename prefixes under `source/` should become directories instead of remaining flat files. For example, use module directories such as `audio/`, `dialog/`, `graph/`, `minigame/`, `mod/`, `menu/`, `particles/`, `pause/`, `play-state/`, `save/`, and `title/`. Nested prefixes should become nested directories, such as `dialog/bundle/` or `particles/field/`.
 - Split by coherent workflow or domain concept, not generic `misc` or `helpers` files.
+- Do not split so mechanically that every tiny model, store, or hook gets its own file. If a group is tightly coupled and small, prefer one sectioned file inside the right module directory.
 - Preserve public entry points when splitting files so hot reload and REPL workflows stay simple.
 - Keep rendering code separate from story/domain data once the renderer becomes more than the initial prototype.
 - The project owner dislikes large source files. Split when a file starts mixing domains or becomes hard to reason about, but keep each split tied to an actual workflow.
+- Concrete main-game content, including main-game minigames such as wire-flight, belongs under `game/` and should load through the bundled game manifest instead of living as special engine code under `source/`.
 
 ## Runtime And Hot Reload
 

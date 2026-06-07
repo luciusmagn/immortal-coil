@@ -87,12 +87,15 @@
             src = ./.;
             filter = path: type:
               let
+                root = toString ./.;
+                relativePath = pkgs.lib.removePrefix "${root}/" (toString path);
                 name = baseNameOf path;
               in
               !(name == ".git"
                 || name == "result"
-                || name == "save"
-                || name == ".env");
+                || name == ".env"
+                || relativePath == "save"
+                || pkgs.lib.hasPrefix "save/" relativePath);
           };
 
           libraryPath = pkgs.lib.makeLibraryPath claylibLibraries;

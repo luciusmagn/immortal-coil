@@ -8,111 +8,209 @@
                #:claylib
                #:trivia)
   :components ((:module "source"
+                :serial t
                 :components
                 ((:file "package")
                  (:file "types")
                  (:file "config")
                  (:file "util")
                  (:file "company-label")
-                 (:file "dialog-bundle-paths")
-                 (:file "dialog-bundle-model")
-                 (:file "dialog-bundle-store")
-                 (:file "dialog-bundle-assets")
-                 (:file "dialog-bundle-ordering")
-                 (:file "dialog-bundles")
-                 (:file "dialog-manifest-normalization")
-                 (:file "dialog-manifest-reader")
-                 (:file "dialog-manifest")
                  (:file "selection")
-                 (:file "dialog-store")
-                 (:file "graph-state")
-                 (:file "graph-models")
-                 (:file "graph-conflicts")
-                 (:file "graph-effects")
-                 (:file "graph")
-                 (:file "dialog-core-dsl")
-                 (:file "dialog-choice-dsl")
-                 (:file "dialog-branch-dsl")
-                 (:file "dialog-input-dsl")
-                 (:file "dialog-minigame-dsl")
-                 (:file "dialog-effect-dsl")
-                 (:file "dialog-effects")
-                 (:file "minigame-model")
-                 (:file "minigame-store")
-                 (:file "minigame-normalization")
-                 (:file "minigame-handlers")
-                 (:file "minigame-registration")
-                 (:file "minigame-runtime")
-                 (:file "minigame-registry")
-                 (:file "dialog-script-model")
-                 (:file "dialog-script-store")
-                 (:file "dialog-script-sources")
-                 (:file "dialog-script-eval")
-                 (:file "dialog-loader")
-                 (:file "dialog-scripts")
-                 (:file "dialog-path-patterns")
-                 (:file "dialog-choice-patterns")
-                 (:file "graph-patterns")
-                 (:file "dev-save-config")
-                 (:file "dev-save-store")
-                 (:file "dev-save-data")
-                 (:file "dev-save")
-                 (:file "mod-config")
-                 (:file "mod-discovery")
-                 (:file "mods")
-                 (:file "text-template")
-                 (:file "audio-assets")
-                 (:file "short-sounds")
-                 (:file "title-music")
-                 (:file "audio")
-                 (:file "rising-particles")
-                 (:file "star-particles")
-                 (:file "title-particle-system")
-                 (:file "title-particle-motion")
-                 (:file "title-logo")
-                 (:file "title-particles")
-                 (:file "particle-field-mode-state")
-                 (:file "particle-field-transition")
-                 (:file "particle-field-alpha")
-                 (:file "particle-field-save")
-                 (:file "particle-field-state")
-                 (:file "particle-field-dispatch")
-                 (:file "particles")
-                 (:file "play-state-model")
-                 (:file "play-state-save-hook")
-                 (:file "play-state-navigation")
-                 (:file "typewriter")
-                 (:file "text-rendering")
-                 (:file "play-state")
-                 (:file "save-paths")
-                 (:file "save-data")
-                 (:file "save-io")
-                 (:file "save-restore")
-                 (:file "save")
-                 (:file "dialog-choice-update")
-                 (:file "dialog-input-buffer")
-                 (:file "dialog-number-update")
-                 (:file "dialog-string-update")
-                 (:file "dialog-choice-rendering")
-                 (:file "dialog-input-rendering")
-                 (:file "flight-minigame")
-                 (:file "flight-rendering-geometry")
-                 (:file "flight-tunnel-rendering")
-                 (:file "flight-gate-rendering")
-                 (:file "flight-player-rendering")
-                 (:file "flight-minigame-rendering")
-                 (:file "minigame")
+
+                 (:module "dialog-base"
+                  :pathname "dialog"
+                  :serial t
+                  :components
+                  ((:module "bundle"
+                    :serial t
+                    :components
+                    ((:file "core")))
+                   (:module "manifest"
+                    :serial t
+                    :components
+                    ((:file "normalization")
+                     (:file "reader")
+                     (:file "core")))
+                   (:file "store")))
+
+                 (:module "graph"
+                  :serial t
+                  :components
+                  ((:file "state")
+                   (:file "models")
+                   (:file "conflicts")
+                   (:file "effects")
+                   (:file "core")))
+
+                 (:module "dialog-authoring"
+                  :pathname "dialog"
+                  :serial t
+                  :components
+                  ((:module "dsl"
+                    :serial t
+                    :components
+                    ((:file "core")
+                     (:file "choice")
+                     (:file "branch")
+                     (:file "input")
+                     (:file "minigame")
+                     (:file "effect")))
+                   (:file "effects")))
+
+                 (:module "minigame"
+                  :serial t
+                  :components
+                  ((:file "registry")
+                   (:file "runtime")))
+
+                 (:module "dialog-loading"
+                  :pathname "dialog"
+                  :serial t
+                  :components
+                  ((:module "script"
+                    :serial t
+                    :components
+                    ((:file "model")
+                     (:file "store")
+                     (:file "sources")
+                     (:file "eval")))
+                   (:file "loader")
+                   (:module "path"
+                    :serial t
+                    :components
+                    ((:file "patterns")))
+                   (:module "choice"
+                    :serial t
+                    :components
+                    ((:file "patterns")))))
+
+                 (:module "graph-patterns"
+                  :pathname "graph"
+                  :serial t
+                  :components
+                  ((:file "patterns")))
+
+                 (:module "save-dev"
+                  :pathname "save/dev"
+                  :serial t
+                  :components
+                  ((:file "core")))
+
+                 (:module "mod"
+                  :serial t
+                  :components
+                  ((:file "config")
+                   (:file "discovery")
+                   (:file "core")))
+
+                 (:module "text"
+                  :serial t
+                  :components
+                  ((:file "template")))
+
+                 (:module "audio"
+                  :serial t
+                  :components
+                  ((:file "assets")
+                   (:file "short-sounds")))
+
+                 (:module "title"
+                  :serial t
+                  :components
+                  ((:file "music")
+                   (:file "logo")
+                   (:module "particles"
+                    :serial t
+                    :components
+                    ((:file "system")
+                     (:file "motion")
+                     (:file "core")))))
+
+                 (:module "audio-core"
+                  :pathname "audio"
+                  :serial t
+                  :components
+                  ((:file "core")))
+
+                 (:module "particles"
+                  :serial t
+                  :components
+                  ((:file "rising")
+                   (:file "star")
+                   (:module "field"
+                    :serial t
+                    :components
+                    ((:file "core")))
+                   (:file "core")))
+
+                 (:module "play-state"
+                  :serial t
+                  :components
+                  ((:file "core")))
+
+                 (:module "text-runtime"
+                  :pathname "text"
+                  :serial t
+                  :components
+                  ((:file "typewriter")
+                   (:file "rendering")))
+
+                 (:module "save"
+                  :serial t
+                  :components
+                  ((:file "core")))
+
+                 (:module "dialog-runtime"
+                  :pathname "dialog"
+                  :serial t
+                  :components
+                  ((:module "choice"
+                    :serial t
+                    :components
+                    ((:file "update")))
+                   (:module "input"
+                    :serial t
+                    :components
+                    ((:file "buffer")
+                     (:file "number-update")
+                     (:file "string-update")))
+                   (:module "choice-rendering"
+                    :pathname "choice"
+                    :serial t
+                    :components
+                    ((:file "rendering")))
+                   (:module "input-rendering"
+                    :pathname "input"
+                    :serial t
+                    :components
+                    ((:file "rendering")))))
+
+                 (:module "minigame-runtime"
+                  :pathname "minigame"
+                  :serial t
+                  :components
+                  ((:file "node")))
+
                  (:file "fullscreen")
                  (:file "gameplay")
-                 (:file "menu-state")
-                 (:file "menu-geometry")
-                 (:file "menu-actions")
-                 (:file "menu-rendering")
-                 (:file "menu")
-                 (:file "pause-state")
-                 (:file "pause-actions")
-                 (:file "pause-rendering")
-                 (:file "pause")
+
+                 (:module "menu"
+                  :serial t
+                  :components
+                  ((:file "state")
+                   (:file "geometry")
+                   (:file "actions")
+                   (:file "rendering")
+                   (:file "core")))
+
+                 (:module "pause"
+                  :serial t
+                  :components
+                  ((:file "state")
+                   (:file "actions")
+                   (:file "rendering")
+                   (:file "core")))
+
                  (:file "renderer")
                  (:file "main")))))
 

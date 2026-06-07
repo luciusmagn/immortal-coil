@@ -1,5 +1,75 @@
 (in-package #:immortal-coil)
 
+;;; Paths
+
+(-> pathname-parent-directory (pathname) pathname)
+(defun pathname-parent-directory (path)
+  (uiop:ensure-directory-pathname
+   (uiop:pathname-directory-pathname path)))
+
+(-> resolve-relative-pathname (pathname t) pathname)
+(defun resolve-relative-pathname (root path)
+  (let ((pathname (etypecase path
+                    (pathname path)
+                    (string (parse-namestring path)))))
+    (if (uiop:absolute-pathname-p pathname)
+        pathname
+        (merge-pathnames pathname root))))
+
+
+;;; Model
+
+(defstruct dialog-bundle
+  (id            "unknown" :type dialog-bundle-id)
+  (name          "Unknown" :type string)
+  (version       nil :type (option string))
+  (description   nil :type (option string))
+  (author        nil :type (option string))
+  (origin        :bundled :type dialog-script-origin)
+  (root          #P"" :type pathname)
+  (asset-root    #P"" :type pathname)
+  (script-paths  nil :type list)
+  (dependencies  nil :type list)
+  (manifest-path nil :type (option pathname)))
+
+
+;;; Loaded bundle state
+
+(defvar *loaded-dialog-bundles* nil)
+(defvar *current-dialog-bundle* nil)
+
+(-> reset-loaded-dialog-bundles () t)
+(defun reset-loaded-dialog-bundles ()
+  (setf *loaded-dialog-bundles* nil))
+
+(-> record-loaded-dialog-bundle (dialog-bundle) dialog-bundle)
+(defun record-loaded-dialog-bundle (bundle)
+  (setf *loaded-dialog-bundles*
+        (append *loaded-dialog-bundles* (list bundle)))
+  bundle)
+
+(-> loaded-dialog-bundle-count () nonnegative-integer)
+(defun loaded-dialog-bundle-count ()
+  (length *loaded-dialog-bundles*))
+
+(-> current-dialog-bundle-id () dialog-bundle-id)
+(defun current-dialog-bundle-id ()
+  (if *current-dialog-bundle*
+      (dialog-bundle-id *current-dialog-bundle*)
+      "repl"))
+
+
+;;; Assets
+
+(-> dialog-asset-pathname (t &key (:bundle (option dialog-bundle))) pathname)
+(defun dialog-asset-pathname (path &key (bundle *current-dialog-bundle*))
+  (if bundle
+      (resolve-relative-pathname (dialog-bundle-asset-root bundle) path)
+      (project-pathname path)))
+
+
+;;; Dependency ordering
+
 (-> dialog-bundle-origin-rank (dialog-bundle) nonnegative-integer)
 (defun dialog-bundle-origin-rank (bundle)
   (case (dialog-bundle-origin bundle)
