@@ -13,29 +13,9 @@
                         (zerop (length buffer))
                         (negative-number-input-allowed-p node)))))))
 
-(-> append-input-character (character nonnegative-integer) boolean)
-(defun append-input-character (char max-length)
-  (and (< (length (play-state-input-buffer *state*)) max-length)
-       (progn
-         (setf (play-state-input-buffer *state*)
-               (concatenate 'string
-                            (play-state-input-buffer *state*)
-                            (string char)))
-         (play-input-click)
-         t)))
-
 (-> append-number-input (character) boolean)
 (defun append-number-input (char)
   (append-input-character char 12))
-
-(-> delete-input-character () boolean)
-(defun delete-input-character ()
-  (let ((buffer (play-state-input-buffer *state*)))
-    (when (plusp (length buffer))
-      (setf (play-state-input-buffer *state*)
-            (subseq buffer 0 (1- (length buffer))))
-      (play-choice-switch)
-      t)))
 
 (-> delete-number-input-character () boolean)
 (defun delete-number-input-character ()
@@ -128,54 +108,6 @@
           (jump-to-node (node-target node)))
         (play-choice-switch))))
 
-(-> string-input-max-length (node) nonnegative-integer)
-(defun string-input-max-length (node)
-  (or (node-max-length node) 32))
-
-(-> string-input-character-p (character) boolean)
-(defun string-input-character-p (char)
-  (and (or (graphic-char-p char)
-           (char= char #\Space))
-       (not (char= char #\Rubout))))
-
-(-> append-string-input (node character) boolean)
-(defun append-string-input (node char)
-  (append-input-character char (string-input-max-length node)))
-
-(-> drain-string-input (node) t)
-(defun drain-string-input (node)
-  (loop for code = (get-char-pressed)
-        until (zerop code)
-        for char = (code-char code)
-        when (and char (string-input-character-p char))
-          do (append-string-input node char))
-  (when (is-key-pressed-p +key-backspace+)
-    (delete-input-character)))
-
-(-> string-submit-pressed-p () boolean)
-(defun string-submit-pressed-p ()
-  (or (is-key-pressed-p +key-enter+)
-      (is-key-pressed-p +key-kp-enter+)))
-
-(-> string-input-value () string)
-(defun string-input-value ()
-  (string-trim '(#\Space #\Tab #\Newline #\Return)
-               (play-state-input-buffer *state*)))
-
-(-> string-input-valid-p (node string) boolean)
-(defun string-input-valid-p (node value)
-  (or (node-allow-empty-p node)
-      (plusp (length value))))
-
-(-> submit-string-node (node) t)
-(defun submit-string-node (node)
-  (let ((value (string-input-value)))
-    (if (string-input-valid-p node value)
-        (progn
-          (setf (dialog-value (node-response-key node)) value)
-          (jump-to-node (node-target node)))
-        (play-choice-switch))))
-
 (-> update-number-node (node) t)
 (defun update-number-node (node)
   (cond
@@ -186,14 +118,3 @@
      (drain-number-input node)
      (when (confirm-pressed-p)
        (submit-number-node node)))))
-
-(-> update-string-node (node) t)
-(defun update-string-node (node)
-  (cond
-    ((not (story-text-visible-p node))
-     (when (confirm-pressed-p)
-       (skip-typewriter node)))
-    (t
-     (drain-string-input node)
-     (when (string-submit-pressed-p)
-       (submit-string-node node)))))
