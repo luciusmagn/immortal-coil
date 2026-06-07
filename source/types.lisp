@@ -65,6 +65,18 @@
     "Choice presentation style."
     '(member :horizontal :vertical :list))
 
+  (deftype runtime-function ()
+    "A live function object."
+    '(satisfies functionp))
+
+  (deftype dialog-condition ()
+    "Permissive script condition accepted by the dialog runtime."
+    '(or null symbol runtime-function cons))
+
+  (deftype dialog-effect ()
+    "Script effect evaluated when a node is entered."
+    '(or symbol runtime-function cons))
+
   (deftype dialog-conflict-resolution ()
     "Recorded policy for one dialog graph conflict."
     '(member :latest-wins))

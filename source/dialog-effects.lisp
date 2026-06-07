@@ -1,5 +1,6 @@
 (in-package #:immortal-coil)
 
+(-> eval-dialog-effect (dialog-effect) t)
 (defun eval-dialog-effect (effect)
   (handler-case
       (cond
@@ -20,6 +21,7 @@
                     effect
                     condition))))
 
+(-> apply-node-enter-effects (node) t)
 (defun apply-node-enter-effects (node)
   (dolist (effect (node-enter-effects node))
     (eval-dialog-effect effect)))

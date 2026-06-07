@@ -13,10 +13,10 @@
 (defstruct choice
   (label     "" :type string)
   (target    *runtime-fallback-node-id* :type dialog-id)
-  (condition t :type t))
+  (condition t :type dialog-condition))
 
 (defstruct branch
-  (condition t :type t)
+  (condition t :type dialog-condition)
   (target    *runtime-fallback-node-id* :type dialog-id))
 
 (defstruct dialog-conflict
@@ -42,7 +42,7 @@
   (minigame       nil :type (option keyword))
   (success-target nil :type (option dialog-id))
   (failure-target nil :type (option dialog-id))
-  (enter-effects  nil :type list))
+  (enter-effects  nil :type (list-of dialog-effect)))
 
 (-> reset-nodes () t)
 (defun reset-nodes ()
