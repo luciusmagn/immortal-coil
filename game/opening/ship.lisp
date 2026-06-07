@@ -1,5 +1,5 @@
 (dialog-text "ship/wake"
-             "the glass is cold in your hand. in its reflection, the bed is a crash couch and the night stand is a console."
+             "the glass is cold in your hand. in its reflection, you notice restraint straps beside the bed and indicator lights under the night stand."
              :next "ship/name")
 
 (dialog-string "ship/name"

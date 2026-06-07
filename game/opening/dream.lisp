@@ -28,19 +28,19 @@
 
 (dialog-say "dream/left-exit"
             "the hall"
-            "the left exit opens into the same room, but the bed is empty."
+            "past the left exit, you recognize the empty bed from the room you thought you left."
             :next "base/awake")
 
 (dialog-say "dream/upper-exit"
             "the hall"
-            "the upper exit leads to a ceiling that remembers being a floor."
+            "past the upper exit, the ceiling has the same cracks you ignored above the bed."
             :next "base/awake")
 
 (dialog-say "dream/right-exit"
             "the hall"
-            "the right exit waits until you cross it, then becomes a door behind you."
+            "past the right exit, the handle matches the door that was behind you."
             :next "base/awake")
 
 (dialog-text "dream/maze-lost"
-             "the corridors fold shut."
+             "you lose the thread of which corridor came first."
              :next "base/awake")

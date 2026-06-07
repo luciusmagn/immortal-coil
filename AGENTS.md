@@ -11,7 +11,10 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 ## Narrative Direction
 
 - Preserve player blindness. Do not announce time loops, count loops, or explain genre pivots before the player has earned them.
+- The core narrative tool is that the future shapes the past by supplying context, details, surroundings, names, roles, or relationships that make earlier scenes mean different things on different paths.
+- Narrate as if the earlier scene was always what the later path reveals; the player only lacked the perspective or context to understand it.
 - Prefer revelation over transformation: when a scene changes meaning, it should feel like it was always that thing, not like the game visibly morphed it for the player's benefit.
+- Avoid prose that says reality changes because the player acted: no doors becoming other objects, corridors folding shut, or things waiting to transform on cue. Use newly revealed context instead.
 - Keep prose and interface sparse. The game can become strange, but it should not explain its own cleverness.
 - The shared dialog store exists so scripts and mods can remember facts such as names, choices, inventory, age, or hidden flags. Conditions may read this store or evaluate explicit lambdas.
 - Text substitution is part of the authoring model. Later nodes should be able to refer to values collected earlier.
