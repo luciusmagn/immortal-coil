@@ -10,6 +10,7 @@
   :components ((:module "source"
                 :components
                 ((:file "package")
+                 (:file "types")
                  (:file "config")
                  (:file "util")
                  (:file "selection")

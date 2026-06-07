@@ -64,6 +64,7 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 - For functions with four or more parameters, prefer keyword arguments over long positional lambda lists.
 - In `format` strings, literal percent signs are plain `%`; do not write `%%`.
 - Prefer specific `:import-from` package imports as files mature. It is fine for the small initial prototype to `:use` `#:cl` and `#:claylib`, but tighten package imports once the code starts splitting into modules.
+- Use Serapeum `->` signatures and concrete `deftype` vocabulary for engine/domain code where it clarifies contracts. Keep dialogue graph scripts under `game/` lightweight and do not pollute author-facing story data with type ceremony.
 
 ## Formatting
 
