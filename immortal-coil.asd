@@ -23,6 +23,8 @@
                  (:file "mods")
                  (:file "text-template")
                  (:file "audio")
+                 (:file "rising-particles")
+                 (:file "star-particles")
                  (:file "particles")
                  (:file "play-state")
                  (:file "save")
