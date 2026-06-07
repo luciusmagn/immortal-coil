@@ -13,6 +13,7 @@
                  (:file "types")
                  (:file "config")
                  (:file "util")
+                 (:file "company-label")
                  (:file "dialog-bundle-paths")
                  (:file "dialog-bundles")
                  (:file "dialog-manifest-normalization")

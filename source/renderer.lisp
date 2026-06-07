@@ -70,6 +70,7 @@
           (:menu (draw-menu))
           (:game (draw-gameplay))
           (t (draw-menu)))
+        (draw-company-label)
         (draw-screen-fade)
         (when (and (eq *mode* :game)
                    *paused-p*)
