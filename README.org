@@ -71,6 +71,16 @@ mods/<mod-id>/manifest.lisp
 mods/<mod-id>/assets/
 #+end_src
 
+Minimal manifest:
+
+#+begin_src lisp
+(:id "example-mod"
+ :name "Example Mod"
+ :depends-on ("immortal-coil/base")
+ :scripts ("story.lisp")
+ :assets "assets/")
+#+end_src
+
 Player mods are loaded from:
 
 #+begin_src sh

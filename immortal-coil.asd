@@ -13,6 +13,8 @@
                  (:file "types")
                  (:file "config")
                  (:file "util")
+                 (:file "dialog-bundle-paths")
+                 (:file "dialog-bundles")
                  (:file "dialog-manifest")
                  (:file "selection")
                  (:file "dialog-store")

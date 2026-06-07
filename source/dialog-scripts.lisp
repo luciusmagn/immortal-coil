@@ -21,9 +21,10 @@
 
 (-> bundled-dialog-bundles (list) list)
 (defun bundled-dialog-bundles (sources)
-  (mapcar (lambda (source)
-            (make-dialog-bundle-source source :bundled))
-          sources))
+  (loop for source in sources
+        for bundle = (make-dialog-bundle-source source :bundled)
+        when bundle
+          collect bundle))
 
 (-> mod-dialog-bundles-maybe () list)
 (defun mod-dialog-bundles-maybe ()
@@ -33,8 +34,9 @@
 
 (-> configured-dialog-bundles (&optional list) list)
 (defun configured-dialog-bundles (&optional (sources *dialog-manifest-paths*))
-  (append (bundled-dialog-bundles sources)
-          (mod-dialog-bundles-maybe)))
+  (sort-dialog-bundles
+   (append (bundled-dialog-bundles sources)
+           (mod-dialog-bundles-maybe))))
 
 (-> dialog-bundle-scripts (dialog-bundle) list)
 (defun dialog-bundle-scripts (bundle)

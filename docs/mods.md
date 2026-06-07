@@ -19,11 +19,14 @@ mods/<mod-id>/assets/
 (:id "example-mod"
  :name "Example Mod"
  :version "0.1.0"
+ :depends-on ("immortal-coil/base")
  :scripts ("story.lisp")
  :assets "assets/")
 ```
 
 Script paths and asset paths are relative to the manifest directory.
+`:depends-on` names bundle IDs that should load first. The bundled game is a
+bundle too, with ID `immortal-coil/base`.
 
 Legacy single-file mods are still read from:
 
@@ -61,8 +64,9 @@ mods/example-mod/assets/audio/click.wav
 ## Loading
 
 The base story manifest loads first. Mod manifests and legacy mod scripts load
-after it, sorted by path. That means mods can append to base nodes and to nodes
-from earlier mods:
+after it. Manifests with dependency IDs are ordered so dependencies load before
+dependents; ties use deterministic path order. That means mods can append to
+base nodes and to nodes from earlier mods:
 
 ```lisp
 (dialog-add-choice "base/exit-bed"

@@ -70,13 +70,15 @@
     :test #'equal
     :key #'mod-source-identity)))
 
-(-> make-mod-dialog-bundle (pathname) dialog-bundle)
+(-> make-mod-dialog-bundle (pathname) (option dialog-bundle))
 (defun make-mod-dialog-bundle (path)
   (make-dialog-bundle-source path :mod))
 
 (-> mod-dialog-bundles () list)
 (defun mod-dialog-bundles ()
   (if (mods-enabled-p)
-      (sort-dialog-bundles
-       (mapcar #'make-mod-dialog-bundle (mod-source-pathnames)))
+      (loop for path in (mod-source-pathnames)
+            for bundle = (make-mod-dialog-bundle path)
+            when bundle
+              collect bundle)
       nil))

@@ -113,6 +113,14 @@
     "Where a dialog script source came from."
     '(member :bundled :mod))
 
+  (deftype dialog-bundle-id ()
+    "A stable ID for a bundled game script set or player mod."
+    'string)
+
+  (deftype dialog-bundle-dependencies ()
+    "Stable bundle IDs that should load before a dialog bundle."
+    '(list-of dialog-bundle-id))
+
   (deftype particle-field-mode ()
     "A named full-screen particle field managed by the engine."
     '(member :rising :stars :title-menu))
