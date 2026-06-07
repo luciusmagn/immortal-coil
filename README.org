@@ -1,0 +1,54 @@
+* Immortal Coil
+
+Common Lisp / Claylib narrative-game prototype.
+
+** Run
+
+#+begin_src sh
+sbcl --eval '(require :asdf)' \
+     --eval '(asdf:load-system :immortal-coil)' \
+     --eval '(immortal-coil:main)'
+#+end_src
+
+** Build
+
+#+begin_src sh
+nix build .#immortal-coil
+#+end_src
+
+The binary is in:
+
+#+begin_src sh
+./result/bin/immortal-coil
+#+end_src
+
+** Load Check
+
+#+begin_src sh
+ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fasl/ \
+  sbcl --noinform --non-interactive \
+    --eval '(require :asdf)' \
+    --eval '(asdf:load-system :immortal-coil)'
+#+end_src
+
+** Mods
+
+Bundled dialogue lives under =game/=.
+
+Player mods are loaded from:
+
+#+begin_src sh
+mods/
+#+end_src
+
+Extra mod directories:
+
+#+begin_src sh
+IMMORTAL_COIL_MOD_DIR=/path/to/mods sbcl ...
+#+end_src
+
+Disable mods:
+
+#+begin_src sh
+IMMORTAL_COIL_DISABLE_MODS=1 sbcl ...
+#+end_src
