@@ -37,6 +37,34 @@
     "A keyword command selected by a small engine UI model."
     'keyword)
 
+  (deftype dialog-id ()
+    "Canonical node and response-key identifier used by dialog scripts."
+    'string)
+
+  (deftype dialog-source ()
+    "A script/mod source marker for conflict reports."
+    '(or pathname string symbol))
+
+  (deftype node-kind ()
+    "Dialog node behavior handled by the runtime."
+    '(member :text :choice :number :string :minigame :branch))
+
+  (deftype choice-layout ()
+    "Choice presentation style."
+    '(member :horizontal :vertical :list))
+
+  (deftype dialog-conflict-resolution ()
+    "Recorded policy for one dialog graph conflict."
+    '(member :latest-wins))
+
+  (deftype dialog-store-key ()
+    "A key in the shared dialog/mod state store."
+    '(or string symbol))
+
+  (deftype dialog-script-origin ()
+    "Where a dialog script source came from."
+    '(member :bundled :mod))
+
   (deftype particle-field-mode ()
     "A named full-screen particle field managed by the engine."
     '(member :rising :stars :title-menu)))

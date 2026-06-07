@@ -36,6 +36,7 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 ## Dialogue And Mods
 
 - Dialogue scripts under `game/` should use the same public surface that mods will use. Do not hide special core-only powers unless there is a real engine boundary reason.
+- The bundled game dialogue is just the built-in dialog script set. It should load through the same script source/eval path as player mods; only provenance and deterministic load order should differ.
 - Mods are expected to append choices and nodes to base story nodes and to nodes from other mods.
 - Namespaced node IDs such as `some-mod/opening` are preferred. Intentional replacement should be rare.
 - Current conflict policy is deterministic latest-wins with conflicts recorded and surfaced in the menu. Future "negotiation" should build on that record rather than making conflicts silent.
