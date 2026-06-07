@@ -26,7 +26,11 @@
 (defparameter *particle-field-fade-seconds* 6.5)
 (defparameter *title-particle-count* 1000)
 (defparameter *title-particle-spawn-rate* 70.0)
-(defparameter *dialog-script-paths* '("game/opening.lisp"))
+(defparameter *dialog-script-paths*
+  '("game/opening.lisp"
+    "game/opening/base.lisp"
+    "game/opening/ship.lisp"
+    "game/opening/dream.lisp"))
 (defparameter *mod-directory-paths* '("mods/"))
 
 (defvar *mode* :menu)
