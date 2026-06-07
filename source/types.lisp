@@ -71,7 +71,7 @@
 
   (deftype node-kind ()
     "Dialog node behavior handled by the runtime."
-    '(member :text :choice :number :string :minigame :branch))
+    '(member :text :say :choice :number :string :minigame :branch))
 
   (deftype minigame-id ()
     "A named minigame implementation selected by dialog nodes."

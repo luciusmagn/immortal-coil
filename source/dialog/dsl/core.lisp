@@ -12,6 +12,16 @@
                        :next next))
   id)
 
+(-> dialog-say (dialog-id string string &key (:next (option dialog-id)))
+    dialog-id)
+(defun dialog-say (id speaker text &key next)
+  (add-node (make-node :id id
+                       :kind :say
+                       :speaker speaker
+                       :text text
+                       :next next))
+  id)
+
 (-> dialog-required-link ((option dialog-id) dialog-id string) dialog-id)
 (defun dialog-required-link (target id warning-text)
   (or target

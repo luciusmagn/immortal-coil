@@ -18,6 +18,7 @@
 (defstruct node
   (id             *runtime-fallback-node-id* :type dialog-id)
   (kind           :text :type node-kind)
+  (speaker        nil :type (option string))
   (text           "" :type string)
   (next           nil :type (option dialog-id))
   (choices        #() :type vector)
