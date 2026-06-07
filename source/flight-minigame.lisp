@@ -12,18 +12,20 @@
 (defvar *flight-minigame* nil)
 
 (defstruct flight-minigame
-  node-id
-  elapsed
-  distance
-  player-x
-  player-y
-  velocity-x
-  velocity-y
-  last-gate)
+  (node-id    *runtime-fallback-node-id* :type dialog-id)
+  (elapsed    0.0 :type seconds)
+  (distance   0.0 :type scalar)
+  (player-x   0.0 :type scalar)
+  (player-y   0.0 :type scalar)
+  (velocity-x 0.0 :type scalar)
+  (velocity-y 0.0 :type scalar)
+  (last-gate  0 :type flight-gate-index))
 
+(-> clamp-value (scalar scalar scalar) scalar)
 (defun clamp-value (value min max)
   (min max (max min value)))
 
+(-> make-fresh-flight-minigame (node) flight-minigame)
 (defun make-fresh-flight-minigame (node)
   (make-flight-minigame :node-id (node-id node)
                         :elapsed 0.0
@@ -34,6 +36,7 @@
                         :velocity-y 0.0
                         :last-gate 0))
 
+(-> ensure-flight-minigame (node) flight-minigame)
 (defun ensure-flight-minigame (node)
   (unless (and *flight-minigame*
                (equal (flight-minigame-node-id *flight-minigame*)
@@ -41,28 +44,35 @@
     (setf *flight-minigame* (make-fresh-flight-minigame node)))
   *flight-minigame*)
 
+(-> flight-axis (t t) scalar)
 (defun flight-axis (negative-key positive-key)
   (- (if (is-key-down-p positive-key) 1.0 0.0)
      (if (is-key-down-p negative-key) 1.0 0.0)))
 
+(-> flight-input-x () scalar)
 (defun flight-input-x ()
   (+ (flight-axis +key-left+ +key-right+)
      (flight-axis +key-a+ +key-d+)))
 
+(-> flight-input-y () scalar)
 (defun flight-input-y ()
   (+ (flight-axis +key-up+ +key-down+)
      (flight-axis +key-w+ +key-s+)))
 
+(-> flight-speed (flight-minigame) scalar)
 (defun flight-speed (game)
   (+ 0.76 (* 0.038 (flight-minigame-elapsed game))))
 
+(-> flight-opening-half-size (flight-gate-index) scalar)
 (defun flight-opening-half-size (gate-index)
   (max 0.31 (- 0.55 (* gate-index 0.008))))
 
+(-> flight-gate-drift-scale (flight-gate-index) scalar)
 (defun flight-gate-drift-scale (gate-index)
   (smoothstep (/ (max 0 (- gate-index +flight-safe-gate-count+))
                  7.0)))
 
+(-> flight-gate-center (flight-gate-index) (values scalar scalar))
 (defun flight-gate-center (gate-index)
   (let ((drift (flight-gate-drift-scale gate-index)))
     (values (* drift
@@ -72,6 +82,7 @@
                (+ (* 0.30 (cos (+ 0.4 (* gate-index 0.73))))
                   (* 0.12 (sin (* gate-index 1.17))))))))
 
+(-> flight-player-in-gate-p (flight-minigame flight-gate-index) boolean)
 (defun flight-player-in-gate-p (game gate-index)
   (multiple-value-bind (gate-x gate-y)
       (flight-gate-center gate-index)
@@ -81,21 +92,26 @@
            (<= (abs (- (flight-minigame-player-y game) gate-y))
                half-size)))))
 
+(-> record-flight-crash () t)
 (defun record-flight-crash ()
   (setf (dialog-value "ship-crashed") t))
 
+(-> finish-flight-minigame ((option dialog-id)) t)
 (defun finish-flight-minigame (target)
   (setf *flight-minigame* nil)
   (jump-to-node target))
 
+(-> fail-flight-minigame (node) t)
 (defun fail-flight-minigame (node)
   (record-flight-crash)
   (finish-flight-minigame (node-failure-target node)))
 
+(-> succeed-flight-minigame (node) t)
 (defun succeed-flight-minigame (node)
   (setf (dialog-value "ship-survived") t)
   (finish-flight-minigame (node-success-target node)))
 
+(-> update-flight-physics (flight-minigame seconds) t)
 (defun update-flight-physics (game dt)
   (let* ((input-x (clamp-value (flight-input-x) -1.0 1.0))
          (input-y (clamp-value (flight-input-y) -1.0 1.0))
@@ -115,6 +131,7 @@
           (flight-minigame-player-y game)
           (clamp-value (flight-minigame-player-y game) -1.05 1.05))))
 
+(-> check-flight-gates (node flight-minigame) t)
 (defun check-flight-gates (node game)
   (let ((current-gate (floor (flight-minigame-distance game))))
     (loop for gate from (1+ (flight-minigame-last-gate game)) to current-gate
@@ -127,6 +144,7 @@
   (when (>= (flight-minigame-distance game) +flight-success-distance+)
     (succeed-flight-minigame node)))
 
+(-> update-flight-minigame-node (node seconds) t)
 (defun update-flight-minigame-node (node dt)
   (let ((game (ensure-flight-minigame node)))
     (incf (flight-minigame-elapsed game) dt)

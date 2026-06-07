@@ -107,4 +107,8 @@
 
   (deftype particle-field-mode ()
     "A named full-screen particle field managed by the engine."
-    '(member :rising :stars :title-menu)))
+    '(member :rising :stars :title-menu))
+
+  (deftype flight-gate-index ()
+    "A nonnegative wire-flight gate index."
+    'nonnegative-integer))
