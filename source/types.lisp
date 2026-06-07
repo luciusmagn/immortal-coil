@@ -117,6 +117,10 @@
     "A named full-screen particle field managed by the engine."
     '(member :rising :stars :title-menu))
 
+  (deftype particle-field-save-data ()
+    "A save plist for the active particle field and transition."
+    'plist)
+
   (deftype flight-gate-index ()
     "A nonnegative wire-flight gate index."
     'nonnegative-integer))

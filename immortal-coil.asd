@@ -42,6 +42,8 @@
                  (:file "title-particle-motion")
                  (:file "title-logo")
                  (:file "title-particles")
+                 (:file "particle-field-state")
+                 (:file "particle-field-dispatch")
                  (:file "particles")
                  (:file "play-state")
                  (:file "save")
