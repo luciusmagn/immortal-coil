@@ -25,6 +25,10 @@
     "An integer greater than or equal to zero."
     '(integer 0 *))
 
+  (deftype alpha-channel ()
+    "An 8-bit opacity value."
+    '(integer 0 255))
+
   (deftype seconds ()
     "A duration in seconds."
     'real)
