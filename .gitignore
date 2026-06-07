@@ -2,5 +2,10 @@
 assets/audio/generated/
 result
 save/
+tools/dialog-editor/config.nims
+tools/dialog-editor/immortal_coil_editor
+tools/dialog-editor/nimble.develop
+tools/dialog-editor/nimble.paths
+tools/dialog-editor/nimbledeps/
 mods/*
 !mods/README.md

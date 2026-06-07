@@ -22,6 +22,31 @@ The binary is in:
 ./result/bin/immortal-coil
 #+end_src
 
+** Level Editor
+
+#+begin_src sh
+nix run .#editor
+#+end_src
+
+Open:
+
+#+begin_src text
+http://127.0.0.1:8080/tools/dialog-editor/
+#+end_src
+
+Direct Nimble run:
+
+#+begin_src sh
+cd tools/dialog-editor
+nimble run immortal_coil_editor --root ../..
+#+end_src
+
+Port or bind address:
+
+#+begin_src sh
+nix run .#editor -- --host 0.0.0.0 --port 8081
+#+end_src
+
 ** Load Check
 
 #+begin_src sh

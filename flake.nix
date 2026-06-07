@@ -98,14 +98,46 @@
           libraryPath = pkgs.lib.makeLibraryPath claylibLibraries;
         in
         rec {
-          dialog-editor = pkgs.writeShellApplication {
-            name = "immortal-coil-editor";
+          dialog-editor = pkgs.stdenv.mkDerivation {
+            pname = "immortal-coil-editor";
+            version = "0.1.0";
+            src = source;
 
-            runtimeInputs = [
-              pkgs.python3
+            nativeBuildInputs = [
+              pkgs.makeWrapper
+              pkgs.nim
+              pkgs.nimble
             ];
 
-            text = builtins.readFile ./scripts/start-dialog-editor.sh;
+            dontConfigure = true;
+
+            buildPhase = ''
+              runHook preBuild
+
+              export HOME="$TMPDIR/home"
+              export NIMBLE_DIR="$TMPDIR/nimble"
+              mkdir -p "$HOME" "$NIMBLE_DIR"
+
+              pushd tools/dialog-editor
+              nimble --legacy --offline --nimbleDir:"$NIMBLE_DIR" build -y
+              popd
+
+              runHook postBuild
+            '';
+
+            installPhase = ''
+              runHook preInstall
+
+              mkdir -p "$out/bin" "$out/libexec/immortal-coil-editor" "$out/share/immortal-coil"
+
+              cp tools/dialog-editor/immortal_coil_editor "$out/libexec/immortal-coil-editor/"
+              cp -R assets game tools "$out/share/immortal-coil/"
+
+              makeWrapper "$out/libexec/immortal-coil-editor/immortal_coil_editor" "$out/bin/immortal-coil-editor" \
+                --run 'if [ -z "''${IMMORTAL_COIL_EDITOR_ROOT:-}" ] && [ ! -f "./tools/dialog-editor/index.html" ]; then export IMMORTAL_COIL_EDITOR_ROOT="'"$out"'/share/immortal-coil"; fi'
+
+              runHook postInstall
+            '';
           };
 
           immortal-coil = pkgs.stdenv.mkDerivation {
@@ -192,7 +224,8 @@
               ps.trivial-features
               ps.trivial-garbage
             ]))
-            pkgs.python3
+            pkgs.nim
+            pkgs.nimble
             pkgs.ripgrep
           ];
         };

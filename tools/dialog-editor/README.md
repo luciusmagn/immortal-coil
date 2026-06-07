@@ -20,6 +20,13 @@ To change the bind address or port:
 nix run .#editor -- --host 0.0.0.0 --port 8081
 ```
 
+Direct Nimble run:
+
+```bash
+cd tools/dialog-editor
+nimble run immortal_coil_editor --root ../..
+```
+
 Use the local server instead of opening `index.html` directly. The editor uses browser module imports, and browsers also block local `fetch` calls from `file://`.
 
 String substitutions use `{store-key}` placeholders in dialog text and choice labels. A `dialog-string` or `dialog-number` node can store values into the shared dialog store, and later nodes can refer to them.
