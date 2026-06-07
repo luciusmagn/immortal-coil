@@ -3,7 +3,9 @@
  :version "0.0.1"
  :description "Bundled story graph."
  :depends-on ()
- :scripts ("flight/minigame.lisp"
+ :scripts ("maze/minigame.lisp"
+           "maze/rendering.lisp"
+           "flight/minigame.lisp"
            "flight/geometry.lisp"
            "flight/tunnel-rendering.lisp"
            "flight/gate-rendering.lisp"

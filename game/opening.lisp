@@ -6,3 +6,7 @@
 (dialog-minigame-kind :wire-flight
                       :update #'update-flight-minigame-node
                       :draw #'draw-flight-minigame)
+
+(dialog-minigame-kind :dream-maze
+                      :update #'update-dream-maze-minigame-node
+                      :draw #'draw-dream-maze-minigame)
