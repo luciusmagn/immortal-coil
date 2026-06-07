@@ -1,0 +1,17 @@
+(in-package #:immortal-coil)
+
+(defvar *nodes* (make-hash-table :test #'equal))
+(defvar *node-sources* (make-hash-table :test #'equal))
+(defvar *pending-node-enter-effects* (make-hash-table :test #'equal))
+(defvar *story-start-node* nil)
+(defvar *last-dialog-node-id* nil)
+(defvar *dev-save-override* nil)
+(defvar *current-dialog-source* :repl)
+(defvar *dialog-conflicts* nil)
+(defparameter *runtime-fallback-node-id* "runtime/fallback")
+
+(-> reset-nodes () t)
+(defun reset-nodes ()
+  (clrhash *nodes*)
+  (clrhash *node-sources*)
+  (clrhash *pending-node-enter-effects*))
