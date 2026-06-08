@@ -231,10 +231,40 @@
       (push frame *editor-history*)
       frame)))
 
-(-> editor-before-jump (t) t)
+(-> editor-active-panel-save-function () (option symbol))
+(defun editor-active-panel-save-function ()
+  (case *editor-mode*
+    (:edit-text 'editor-save-text-edit)
+    (:edit-store 'editor-save-store-edit)
+    (:edit-choice-option 'editor-save-choice-option-edit)
+    (:edit-conversation-entry 'editor-save-conversation-entry-edit)
+    (:edit-node-target 'editor-save-node-target-edit)
+    (:edit-node-fields 'editor-save-node-fields-edit)
+    (t nil)))
+
+(-> editor-autosave-active-panel () boolean)
+(defun editor-autosave-active-panel ()
+  (let ((save-function (editor-active-panel-save-function)))
+    (cond
+      ((null save-function)
+       t)
+      ((not (fboundp save-function))
+       (runtime-warn "Editor autosave function is missing: ~s"
+                     save-function)
+       (setf *editor-status-message* "EDITOR: AUTOSAVE MISSING")
+       nil)
+      ((funcall (symbol-function save-function))
+       t)
+      (t
+       (setf *editor-status-message* "EDITOR: AUTOSAVE FAILED")
+       nil))))
+
+(-> editor-before-jump (t) boolean)
 (defun editor-before-jump (target-id)
   (declare (ignore target-id))
-  (editor-record-navigation-frame))
+  (when (editor-autosave-active-panel)
+    (editor-record-navigation-frame)
+    t))
 
 (-> restore-editor-history-frame (editor-history-frame) t)
 (defun restore-editor-history-frame (frame)
@@ -249,17 +279,19 @@
 
 (-> editor-return-to-previous-node () boolean)
 (defun editor-return-to-previous-node ()
-  (let ((frame (pop *editor-history*)))
-    (if frame
-        (let ((*editor-suppress-history-p* t))
-          (restore-editor-history-frame frame)
-          (setf *editor-status-message* "EDITOR: REWOUND")
-          (play-choice-switch)
-          t)
-        (progn
-          (setf *editor-status-message* "EDITOR: NO PREVIOUS NODE")
-          (play-choice-switch)
-          nil))))
+  (if (not (editor-autosave-active-panel))
+      nil
+      (let ((frame (pop *editor-history*)))
+        (if frame
+            (let ((*editor-suppress-history-p* t))
+              (restore-editor-history-frame frame)
+              (setf *editor-status-message* "EDITOR: REWOUND")
+              (play-choice-switch)
+              t)
+            (progn
+              (setf *editor-status-message* "EDITOR: NO PREVIOUS NODE")
+              (play-choice-switch)
+              nil)))))
 
 
 ;;; Overlay data

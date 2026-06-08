@@ -53,23 +53,32 @@
                  :input-buffer ""))
   (apply-node-enter-effects (current-node)))
 
-(-> jump-to-node (t) t)
-(defun jump-to-node (id)
-  (let ((resolved-id (resolve-node-id id)))
-    (when (and *state*
-               (not (equal (play-state-current-id *state*) resolved-id))
-               (fboundp 'editor-before-jump))
-      (funcall (symbol-function 'editor-before-jump) resolved-id))
-    (setf (play-state-current-id *state*) resolved-id
-          (play-state-elapsed *state*) 0.0
-          (play-state-type-delay *state*) 0.0
-          (play-state-visible-count *state*) 0
-          (play-state-selected-index *state*) 0
-          (play-state-conversation-index *state*) 0
-          (play-state-input-buffer *state*) "")
-    (apply-node-enter-effects (current-node))
-    (save-current-game-maybe)))
+(-> editor-before-jump-maybe (dialog-id) boolean)
+(defun editor-before-jump-maybe (resolved-id)
+  (or (not (fboundp 'editor-before-jump))
+      (not (null (funcall (symbol-function 'editor-before-jump)
+                          resolved-id)))))
 
-(-> jump-to-dialog-target (t) t)
+(-> jump-to-node (t) boolean)
+(defun jump-to-node (id)
+  (if (null *state*)
+      (progn
+        (runtime-warn "Cannot jump to ~s without a play state." id)
+        nil)
+      (let ((resolved-id (resolve-node-id id)))
+        (when (or (equal (play-state-current-id *state*) resolved-id)
+                  (editor-before-jump-maybe resolved-id))
+          (setf (play-state-current-id *state*) resolved-id
+                (play-state-elapsed *state*) 0.0
+                (play-state-type-delay *state*) 0.0
+                (play-state-visible-count *state*) 0
+                (play-state-selected-index *state*) 0
+                (play-state-conversation-index *state*) 0
+                (play-state-input-buffer *state*) "")
+          (apply-node-enter-effects (current-node))
+          (save-current-game-maybe)
+          t))))
+
+(-> jump-to-dialog-target (t) boolean)
 (defun jump-to-dialog-target (target)
   (jump-to-node (resolve-dialog-target target)))
