@@ -160,6 +160,12 @@
             (append *particle-field-modes* (list mode))))
     definition))
 
+(-> registered-particle-field-modes () list)
+(defun registered-particle-field-modes ()
+  (sort (copy-list *particle-field-modes*)
+        #'string<
+        :key #'symbol-name))
+
 (-> dialog-particle-field-kind
     (t &key (:reset t) (:ensure t) (:update t) (:draw t) (:builtin-p boolean))
     particle-field-mode)

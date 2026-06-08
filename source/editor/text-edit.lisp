@@ -259,6 +259,8 @@
           (editor-add-choice-option-to-current))
          ((editor-control-key-pressed-p +key-p+)
           (editor-cycle-current-minigame))
+         ((editor-control-key-pressed-p +key-f+)
+          (editor-cycle-current-particles))
          ((or (is-key-pressed-p +key-f3+)
               (editor-control-key-pressed-p +key-s+))
           (editor-toggle-store-overlay))

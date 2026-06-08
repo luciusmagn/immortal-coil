@@ -91,6 +91,12 @@
           node-id
           game-id))
 
+(-> editor-write-set-particles-form (t dialog-id particle-field-mode) t)
+(defun editor-write-set-particles-form (stream node-id mode)
+  (format stream "~&(dialog-set-particles ~s ~s)~2%"
+          node-id
+          mode))
+
 (-> editor-write-set-choice-visible-predicate-form
     (t dialog-id nonnegative-integer dialog-condition)
     t)
@@ -359,6 +365,22 @@
         t)
     (error (condition)
       (runtime-warn "Could not append editor minigame edit: ~a" condition)
+      nil)))
+
+(-> editor-append-particles-edit (dialog-id particle-field-mode) boolean)
+(defun editor-append-particles-edit (node-id mode)
+  (handler-case
+      (let ((path (editor-draft-script-pathname)))
+        (ensure-directories-exist path)
+        (with-open-file (stream path
+                                :direction :output
+                                :if-exists :append
+                                :if-does-not-exist :create)
+          (format stream "~&;;; particle edit for ~s~%" node-id)
+          (editor-write-set-particles-form stream node-id mode))
+        t)
+    (error (condition)
+      (runtime-warn "Could not append editor particle edit: ~a" condition)
       nil)))
 
 (-> editor-append-text-rewrite (dialog-id string) boolean)
@@ -677,6 +699,50 @@
                  (progn
                    (setf *editor-status-message*
                          "EDITOR: MINIGAME WRITE FAILED")
+                   (play-choice-switch)
+                   nil))))))
+      nil))
+
+(-> editor-current-particle-field-mode (node) particle-field-mode)
+(defun editor-current-particle-field-mode (node)
+  (particle-field-mode-keyword
+   (or (node-particle-field-mode node)
+       *particle-field-mode*
+       :rising)))
+
+(-> editor-next-particle-field-mode (particle-field-mode list)
+    particle-field-mode)
+(defun editor-next-particle-field-mode (current-mode modes)
+  (let* ((position (position current-mode modes))
+         (next-position (if position
+                            (mod (1+ position) (length modes))
+                            0)))
+    (nth next-position modes)))
+
+(-> editor-cycle-current-particles () boolean)
+(defun editor-cycle-current-particles ()
+  (if (and *editor-active-p* *state*)
+      (let ((node (current-node)))
+        (cond
+          ((null (registered-particle-field-modes))
+           (setf *editor-status-message* "EDITOR: NO PARTICLE FIELDS")
+           (play-choice-switch)
+           nil)
+          (t
+           (let ((mode (editor-next-particle-field-mode
+                        (editor-current-particle-field-mode node)
+                        (registered-particle-field-modes))))
+             (if (editor-append-particles-edit (node-id node) mode)
+                 (progn
+                   (dialog-set-particles (node-id node) mode)
+                   (set-particle-field-mode mode :immediate t)
+                   (setf *editor-status-message*
+                         (format nil "EDITOR: PARTICLES ~a" mode))
+                   (play-start-confirm)
+                   t)
+                 (progn
+                   (setf *editor-status-message*
+                         "EDITOR: PARTICLE WRITE FAILED")
                    (play-choice-switch)
                    nil))))))
       nil))

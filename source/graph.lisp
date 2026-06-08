@@ -106,6 +106,28 @@
 (defun node-pending-enter-effects (id)
   (gethash id *pending-node-enter-effects*))
 
+(-> dialog-particle-effect-p (t) boolean)
+(defun dialog-particle-effect-p (effect)
+  (and (consp effect)
+       (eq (first effect) 'set-particle-field-mode)))
+
+(-> dialog-particle-effect-mode (t) (option t))
+(defun dialog-particle-effect-mode (effect)
+  (when (and (dialog-particle-effect-p effect)
+             (second effect))
+    (second effect)))
+
+(-> dialog-without-particle-effects (list) list)
+(defun dialog-without-particle-effects (effects)
+  (remove-if #'dialog-particle-effect-p effects))
+
+(-> node-particle-field-mode (node) (option t))
+(defun node-particle-field-mode (node)
+  (loop for effect in (reverse (node-enter-effects node))
+        for mode = (dialog-particle-effect-mode effect)
+        when mode
+          return mode))
+
 (-> combine-node-enter-effects (node) list)
 (defun combine-node-enter-effects (node)
   (let ((id (node-id node)))

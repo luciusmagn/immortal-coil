@@ -440,6 +440,30 @@
                              :fade-seconds ,fade-seconds
                              :immediate ,immediate)))
 
+(-> dialog-set-particles (dialog-id
+                          t
+                          &key
+                          (:fade-seconds seconds)
+                          (:immediate t))
+    dialog-id)
+(defun dialog-set-particles (node-id mode
+                             &key (fade-seconds *particle-field-fade-seconds*)
+                                  immediate)
+  (let ((effect `(set-particle-field-mode ,mode
+                                           :fade-seconds ,fade-seconds
+                                           :immediate ,immediate))
+        (node (gethash node-id *nodes*)))
+    (if node
+        (setf (node-enter-effects node)
+              (append (dialog-without-particle-effects
+                       (node-enter-effects node))
+                      (list effect)))
+        (setf (gethash node-id *pending-node-enter-effects*)
+              (append (dialog-without-particle-effects
+                       (node-pending-enter-effects node-id))
+                      (list effect)))))
+  node-id)
+
 (-> dialog-music (dialog-id t &key (:volume scalar)) dialog-id)
 (defun dialog-music (node-id path &key (volume 0.28))
   (dialog-on-enter
