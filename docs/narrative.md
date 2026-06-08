@@ -44,6 +44,32 @@ Current anchors:
 - Door counting and sound selection are secondary hook points for future paths.
 - The room should remain sparse enough that mods can reinterpret it.
 
+## War Leader
+
+The refuse-all route through door counting and hall sounds should lead to a
+nation-leader-in-war story.
+
+Author truth:
+
+- The player is a head of state or equivalent national leader during a war.
+- The opening room can later read as a bunker, command residence, cabinet room,
+  or emergency office.
+- The path should focus on abstract command, distance, propaganda, incomplete
+  information, and decisions whose costs are paid by unseen people.
+- The leader should not feel like a battlefield hero. Their horror is deciding
+  from behind doors, reports, maps, and voices.
+- Do not announce the role abruptly. Let the room acquire political and wartime
+  context through staff, briefings, blackout windows, radios, maps, and titles.
+
+Planned surface:
+
+- Door counting can become fronts, ministries, shelters, or briefings waiting
+  behind numbered rooms.
+- Hall sounds can become radio static, boots, sirens, water pipes in a bunker,
+  glass in blackout windows, keys to sealed archives, or distant artillery.
+- The first clear address should be restrained, such as a title spoken by an
+  aide, not a blunt declaration of identity.
+
 ## Ship Captain
 
 The glass of water path leads to the hard-sci-fi ship captain story.
@@ -122,8 +148,9 @@ Current surface:
 - `dream/maze` runs the Doom-like maze minigame.
 - A left exit leads to Alice.
 - An upper exit leads to Rogue.
-- A right exit returns to the base room.
-- Failure returns to the base room through loss of corridor continuity.
+- A right exit should lead toward the containment-researcher path.
+- Failure/lost results should also lead into authored content, not a literal
+  loop back to the opening.
 
 ## Alice Branch
 
@@ -161,6 +188,31 @@ Current surface:
 - `rogue/inventory` gives a ration, ring, and stair memory.
 - `rogue/door` chooses a door by list.
 - `rogue/loot` chooses scroll, ring, or ration.
+
+## Containment Researcher
+
+The dream right-exit and maze-lost route should lead to a containment-research
+story in the spirit of anomalous-institution horror.
+
+Author truth:
+
+- The player is a researcher, observer, or facility staff member connected to
+  containment protocols.
+- The dream maze can later read as a facility corridor, test route,
+  observation protocol, or decontamination memory.
+- The branch should use procedures, logs, classifications, access levels,
+  observation rooms, and institutional language to make earlier weirdness feel
+  catalogued rather than transformed.
+- Avoid importing a full external canon in prose. The story can evoke that mode
+  while remaining Immortal Coil's own institution.
+- Transitions must be gradual. The player should first notice forms, symbols,
+  protocols, and repeated room details before understanding the role.
+
+Visual note:
+
+- A black-and-white demake-style flash of an SCP-Foundation-like circular logo
+  could be a strong beat if used sparingly. Treat it as a brief visual memory or
+  institutional mark, not as an explanatory title card.
 
 ## Hook Direction
 
