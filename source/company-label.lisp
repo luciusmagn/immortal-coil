@@ -1,6 +1,6 @@
 (in-package #:immortal-coil)
 
-(defparameter *company-label-text* "lambda symbolics ou")
+(defparameter *company-label-text* "copyright 2026 lambda symbolics ou")
 (defconstant +company-label-size+ 24)
 (defconstant +company-label-right-padding+ 120.0)
 (defconstant +company-label-bottom-padding+ 25.0)
