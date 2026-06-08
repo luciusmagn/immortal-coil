@@ -113,8 +113,13 @@
 
 (-> load-start-confirm () t)
 (defun load-start-confirm ()
-  (let ((path (or (probe-file (project-pathname "assets/audio/start-confirm.wav"))
-                  (probe-file (project-pathname "assets/audio/choice-switch.wav")))))
+  (let* ((confirm-path (project-pathname "assets/audio/start-confirm.wav"))
+         (fallback-path (project-pathname "assets/audio/choice-switch.wav"))
+         (path (cond
+                 ((probe-file confirm-path)
+                  confirm-path)
+                 ((probe-file fallback-path)
+                  fallback-path))))
     (when path
       (let ((asset (make-sound-asset-maybe path "start confirm")))
         (when asset
