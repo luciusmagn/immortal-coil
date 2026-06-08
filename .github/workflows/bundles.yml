@@ -21,6 +21,7 @@ jobs:
             git \
             libgl1 \
             libglu1-mesa \
+            libglfw3 \
             libx11-6 \
             libxcursor1 \
             libxext6 \

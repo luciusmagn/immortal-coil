@@ -24,6 +24,7 @@ build_raylib() {
   cmake -S "$src" -B "$build" -G Ninja \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_EXAMPLES=OFF \
+    -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX="$RAYLIB_INSTALL"
   cmake --build "$build" --target install
