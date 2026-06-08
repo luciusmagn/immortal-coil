@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: immortal-coil-linux-x86_64
-          path: dist/immortal-coil-linux-x86_64.zip
+          path: build/release/linux-x86_64/immortal-coil-linux-x86_64
           if-no-files-found: error
 
   windows:
@@ -102,5 +102,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: immortal-coil-windows-x86_64
-          path: dist/immortal-coil-windows-x86_64.zip
+          path: build/release/windows-x86_64/immortal-coil-windows-x86_64
           if-no-files-found: error
