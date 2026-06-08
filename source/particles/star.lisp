@@ -101,12 +101,12 @@
       2
       +star-particle-size+))
 
-(defun draw-star-particle-core (x y size color)
+(defun draw-star-particle-core (x y size color-ptr)
   (claylib/ll:draw-rectangle (- x (floor size 2))
                              (- y (floor size 2))
                              size
                              size
-                             (claylib::c-ptr color)))
+                             color-ptr))
 
 (defun draw-star-particle (particle alpha-scale)
   (let ((alpha (round (* (star-particle-visible-alpha particle)
@@ -114,22 +114,25 @@
     (when (plusp alpha)
       (let* ((x (round (star-particle-x particle)))
              (y (round (star-particle-y particle)))
-             (size (star-particle-core-size alpha))
-             (color (make-color 255 255 255 alpha)))
-        (draw-star-particle-core x y size color)
+             (size (star-particle-core-size alpha)))
+        (draw-star-particle-core x
+                                 y
+                                 size
+                                 (draw-color-ptr 255 255 255 alpha))
         (when (> alpha 165)
-          (let ((glint-color (make-color 255 255 255
-                                         (round (* alpha 0.42)))))
-            (claylib/ll:draw-rectangle (- x 1)
-                                       y
-                                       3
-                                       1
-                                       (claylib::c-ptr glint-color))
-            (claylib/ll:draw-rectangle x
-                                       (- y 1)
-                                       1
-                                       3
-                                       (claylib::c-ptr glint-color))))))))
+          (let ((glint-alpha (round (* alpha 0.42))))
+            (claylib/ll:draw-rectangle
+             (- x 1)
+             y
+             3
+             1
+             (draw-color-ptr 255 255 255 glint-alpha))
+            (claylib/ll:draw-rectangle
+             x
+             (- y 1)
+             1
+             3
+             (draw-color-ptr 255 255 255 glint-alpha))))))))
 
 (defun draw-star-particles (alpha-scale)
   (loop for particle across *star-particles*

@@ -65,6 +65,16 @@
                         size
                         (claylib::c-ptr color)))
 
+(defvar *draw-color* (make-color 255 255 255 255))
+
+(-> draw-color-ptr (integer integer integer &optional integer) t)
+(defun draw-color-ptr (red green blue &optional (alpha 255))
+  (setf (r *draw-color*) red
+        (g *draw-color*) green
+        (b *draw-color*) blue
+        (a *draw-color*) alpha)
+  (claylib::c-ptr *draw-color*))
+
 (defun draw-centered-text (text center-x center-y size color)
   (let* ((width (text-width text size))
          (x (- center-x (/ width 2)))

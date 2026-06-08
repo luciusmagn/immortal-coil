@@ -97,8 +97,7 @@
                                  (round (rising-particle-y particle))
                                  +particle-size+
                                  +particle-size+
-                                 (claylib::c-ptr
-                                  (make-color 255 255 255 alpha))))))
+                                 (draw-color-ptr 255 255 255 alpha)))))
 
 (defun draw-rising-particles (alpha-scale)
   (loop for particle across *rising-particles*

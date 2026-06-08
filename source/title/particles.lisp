@@ -217,8 +217,7 @@
                                    (round y)
                                    +particle-size+
                                    +particle-size+
-                                   (claylib::c-ptr
-                                    (title-logo-particle-color x y alpha)))))))
+                                   (title-logo-particle-color-ptr x y alpha))))))
 
 (defun draw-title-particles (&optional (alpha-scale 1.0))
   (loop for particle across *title-particles*
