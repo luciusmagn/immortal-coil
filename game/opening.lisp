@@ -49,20 +49,32 @@
 
 (dialog-text "base/exited-bed"
              "you stand beside the bed. a night stand waits under the wrong shadow."
-             :next "base/night-stand")
+             :next "base/room-breath")
 
-(dialog-choice "base/night-stand"
-               "there is a glass of water on the night stand. pick it up?"
+(dialog-text "base/room-breath"
+             "standing makes the room feel less like a room. the carpet remembers weight in the wrong places."
+             :next "base/thirst")
+
+(dialog-choice "base/thirst"
+               "your throat is dry. drink from the glass?"
                (dialog-option "yes" "ship/wake")
-               (dialog-option "no"  "base/night-stand-matchbook"))
+               (dialog-option "no"  "base/drawer"))
 
-(dialog-choice "base/night-stand-matchbook"
-               "there is a matchbook under the glass. take it?"
+(dialog-text "base/drawer"
+             "the night stand drawer sticks, then gives. inside, a photograph lies face down beneath a paper matchbook."
+             :next "base/match")
+
+(dialog-choice "base/match"
+               "strike a match?"
                (dialog-option "yes" "jrpg/inn")
-               (dialog-option "no"  "base/night-stand-key"))
+               (dialog-option "no"  "base/door-shadow"))
 
-(dialog-choice "base/night-stand-key"
-               "there is a brass key at the back of the drawer. take it?"
+(dialog-text "base/door-shadow"
+             "close to the door, you can make out a lock plate. something small has been warming in your palm."
+             :next "base/unlock-door")
+
+(dialog-choice "base/unlock-door"
+               "try it in the lock?"
                (dialog-option "yes" "forest/threshold")
                (dialog-option "no"  "base/count-doors"))
 

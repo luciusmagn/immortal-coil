@@ -15,11 +15,12 @@ create new context, not announce new genres.
 
 ## Current Branch Shape
 
-The current branch events are still prototype hooks, but the base-room object
-split should avoid looking like a genre picker:
+The current branch events are still prototype hooks, but the base-room split
+should avoid looking like a genre picker or a symbolic object menu:
 
 - `base/exit-bed`: starts the ordinary room interaction.
-- `base/night-stand`: starts a sequence of small yes/no object prompts.
+- `base/thirst`, `base/match`, and `base/unlock-door`: route through actions
+  discovered while exploring the room.
 - `base/sleep`: enters the dream maze.
 - `dream/maze-exit`: routes by maze exit value.
 
@@ -38,7 +39,8 @@ Current anchors:
 
 - The bed can later read as a crash couch, prison bed, inn bed, dream bed, or
   dungeon memory without saying it changed.
-- The night stand is a branch surface for objects whose meanings are path-local.
+- The night stand and door area are branch surfaces for ordinary actions whose
+  meanings become path-local.
 - Door counting and sound selection are secondary hook points for future paths.
 - The room should remain sparse enough that mods can reinterpret it.
 
