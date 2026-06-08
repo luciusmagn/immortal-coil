@@ -214,129 +214,111 @@
                                        (make-color 255 255 255 184))
           (draw-flight-guidance-dot guide-x guide-y))))))
 
-(-> flight-ship-steering-vector (flight-minigame) (values scalar scalar))
-(defun flight-ship-steering-vector (game)
-  (let* ((input-x (clamp-value (flight-input-x) -1.0 1.0))
-         (input-y (clamp-value (flight-input-y) -1.0 1.0))
-         (velocity-x (clamp-value (* (flight-minigame-velocity-x game) 0.58)
-                                  -1.0
-                                  1.0))
-         (velocity-y (clamp-value (* (flight-minigame-velocity-y game) 0.58)
-                                  -1.0
-                                  1.0))
-         (steer-x (+ (* input-x 0.58) velocity-x))
-         (steer-y (+ (* input-y 0.58) velocity-y)))
-    (if (> (+ (abs steer-x) (abs steer-y)) 0.04)
-        (values steer-x steer-y)
-        (values 0.0 -1.0))))
-
-(-> flight-ship-forward (flight-minigame) (values scalar scalar))
-(defun flight-ship-forward (game)
-  (multiple-value-bind (steer-x steer-y)
-      (flight-ship-steering-vector game)
-    (let ((length (sqrt (+ (* steer-x steer-x)
-                           (* steer-y steer-y)))))
-      (if (plusp length)
-          (values (/ steer-x length)
-                  (/ steer-y length))
-          (values 0.0 -1.0)))))
-
-(-> flight-ship-point (scalar
-                       scalar
-                       scalar
-                       scalar
-                       scalar
-                       scalar
-                       scalar)
+(-> flight-ship-point (scalar scalar scalar scalar list)
     (values scalar scalar))
-(defun flight-ship-point (center-x center-y forward-x forward-y along side depth)
-  (let ((right-x (- forward-y))
-        (right-y forward-x))
-    (values (+ center-x
-               (* forward-x along)
-               (* right-x side))
-            (+ center-y
-               (* forward-y along)
-               (* right-y side)
-               (* depth 9.0)))))
+(defun flight-ship-point (center-x center-y aim-x aim-y point)
+  (destructuring-bind (local-x local-y depth) point
+    (values (+ center-x local-x (* aim-x depth 0.82))
+            (+ center-y local-y (* aim-y depth 0.58)))))
 
-(-> draw-flight-ship-edge (scalar
-                           scalar
-                           scalar
-                           scalar
-                           scalar
-                           scalar
-                           scalar
-                           scalar
-                           scalar
-                           scalar
-                           t
-                           scalar)
+(-> draw-flight-ship-surface (scalar scalar scalar scalar list list list t) t)
+(defun draw-flight-ship-surface (center-x center-y aim-x aim-y
+                                 point-a point-b point-c color)
+  (multiple-value-bind (x1 y1)
+      (flight-ship-point center-x center-y aim-x aim-y point-a)
+    (multiple-value-bind (x2 y2)
+        (flight-ship-point center-x center-y aim-x aim-y point-b)
+      (multiple-value-bind (x3 y3)
+          (flight-ship-point center-x center-y aim-x aim-y point-c)
+        (draw-triangle-points x1
+                              y1
+                              x2
+                              y2
+                              x3
+                              y3
+                              color
+                              :filled-p t)))))
+
+(-> draw-flight-ship-edge (scalar scalar scalar scalar list list t scalar)
     t)
-(defun draw-flight-ship-edge (center-x center-y forward-x forward-y
-                              along-a side-a depth-a
-                              along-b side-b depth-b
-                              color thickness)
+(defun draw-flight-ship-edge (center-x center-y aim-x aim-y
+                              point-a point-b color thickness)
   (multiple-value-bind (x1 y1)
       (flight-ship-point center-x
                          center-y
-                         forward-x
-                         forward-y
-                         along-a
-                         side-a
-                         depth-a)
+                         aim-x
+                         aim-y
+                         point-a)
     (multiple-value-bind (x2 y2)
         (flight-ship-point center-x
                            center-y
-                           forward-x
-                           forward-y
-                           along-b
-                           side-b
-                           depth-b)
+                           aim-x
+                           aim-y
+                           point-b)
       (draw-thick-line-between x1 y1 x2 y2 color thickness))))
 
-(-> draw-flight-ship-wireframe (scalar scalar scalar scalar t) t)
-(defun draw-flight-ship-wireframe (center-x center-y forward-x forward-y color)
-  (let ((soft-color (make-color 255 255 255 126)))
-    (dolist (edge '((38.0   0.0 -0.5   -6.0 -34.0  0.4 2.0)
-                    (38.0   0.0 -0.5   -6.0  34.0  0.4 2.0)
-                    (-6.0 -34.0  0.4  -30.0   0.0  1.0 1.5)
-                    (-6.0  34.0  0.4  -30.0   0.0  1.0 1.5)
-                    (38.0   0.0 -0.5  -14.0   0.0  1.6 1.2)
-                    (-6.0 -34.0  0.4  -14.0   0.0  1.6 1.0)
-                    (-6.0  34.0  0.4  -14.0   0.0  1.6 1.0)
-                    (-30.0  0.0  1.0  -42.0 -12.0  1.2 1.0)
-                    (-30.0  0.0  1.0  -42.0  12.0  1.2 1.0)))
-      (destructuring-bind (along-a side-a depth-a
-                           along-b side-b depth-b thickness) edge
+(-> flight-ship-side-shade (scalar scalar scalar) alpha-channel)
+(defun flight-ship-side-shade (base steering bias)
+  (round (clamp-value (+ base (* steering bias)) 42.0 235.0)))
+
+(-> draw-flight-ship-body (scalar scalar scalar scalar t) t)
+(defun draw-flight-ship-body (center-x center-y aim-x aim-y outline-color)
+  (let* ((nose           '(0.0 -4.0 54.0))
+         (left-shoulder  '(-15.0 15.0 28.0))
+         (right-shoulder '(15.0 15.0 28.0))
+         (left-wing      '(-50.0 32.0 10.0))
+         (right-wing     '(50.0 32.0 10.0))
+         (left-tail      '(-18.0 48.0 0.0))
+         (right-tail     '(18.0 48.0 0.0))
+         (tail           '(0.0 58.0 0.0))
+         (left-shade     (flight-ship-side-shade 154.0 aim-x 38.0))
+         (right-shade    (flight-ship-side-shade 118.0 aim-x -38.0))
+         (left-color     (make-color left-shade left-shade left-shade 224))
+         (right-color    (make-color right-shade right-shade right-shade 224))
+         (center-color   (make-color 224 224 224 232))
+         (rear-color     (make-color 76 76 76 206))
+         (soft-outline   (make-color 255 255 255 142)))
+    (draw-flight-ship-surface center-x center-y aim-x aim-y
+                              left-wing left-tail tail rear-color)
+    (draw-flight-ship-surface center-x center-y aim-x aim-y
+                              right-wing tail right-tail rear-color)
+    (draw-flight-ship-surface center-x center-y aim-x aim-y
+                              nose left-wing tail left-color)
+    (draw-flight-ship-surface center-x center-y aim-x aim-y
+                              nose tail right-wing right-color)
+    (draw-flight-ship-surface center-x center-y aim-x aim-y
+                              nose left-shoulder right-shoulder center-color)
+    (dolist (edge `((,nose ,left-wing 2.0)
+                    (,nose ,right-wing 2.0)
+                    (,nose ,tail 1.4)
+                    (,left-wing ,left-tail 1.2)
+                    (,left-tail ,tail 1.2)
+                    (,tail ,right-tail 1.2)
+                    (,right-tail ,right-wing 1.2)
+                    (,left-shoulder ,nose 1.0)
+                    (,right-shoulder ,nose 1.0)))
+      (destructuring-bind (point-a point-b thickness) edge
         (draw-flight-ship-edge center-x
                                center-y
-                               forward-x
-                               forward-y
-                               along-a
-                               side-a
-                               depth-a
-                               along-b
-                               side-b
-                               depth-b
-                               (if (< thickness 1.2) soft-color color)
-                               thickness)))
-    (multiple-value-bind (nose-x nose-y)
-        (flight-ship-point center-x center-y forward-x forward-y 38.0 0.0 -0.5)
-      (claylib/ll:draw-rectangle (round (- nose-x 2))
-                                 (round (- nose-y 2))
-                                 4
-                                 4
-                                 (claylib::c-ptr color)))))
+                               aim-x
+                               aim-y
+                               point-a
+                               point-b
+                               (if (< thickness 1.2)
+                                   soft-outline
+                                   outline-color)
+                               thickness)))))
 
 (-> draw-flight-player (flight-minigame t) t)
 (defun draw-flight-player (game color)
   (multiple-value-bind (x y)
       (flight-cockpit-position (flight-minigame-player-x game)
                                (flight-minigame-player-y game))
-    (multiple-value-bind (forward-x forward-y)
-        (flight-ship-forward game)
-      (draw-flight-ship-wireframe x y forward-x forward-y color))))
+    (draw-flight-ship-body x
+                           y
+                           (flight-minigame-ship-aim-x game)
+                           (flight-minigame-ship-aim-y game)
+                           color)))
 
 (-> draw-flight-hud (flight-minigame t) t)
 (defun draw-flight-hud (game color)

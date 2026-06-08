@@ -19,6 +19,8 @@
   (player-y   0.0 :type scalar)
   (velocity-x 0.0 :type scalar)
   (velocity-y 0.0 :type scalar)
+  (ship-aim-x 0.0 :type scalar)
+  (ship-aim-y 0.0 :type scalar)
   (last-gate  0 :type flight-gate-index))
 
 (-> clamp-value (scalar scalar scalar) scalar)
@@ -34,6 +36,8 @@
                         :player-y 0.0
                         :velocity-x 0.0
                         :velocity-y 0.0
+                        :ship-aim-x 0.0
+                        :ship-aim-y 0.0
                         :last-gate 0))
 
 (-> ensure-flight-minigame (node) flight-minigame)
@@ -131,6 +135,46 @@
           (flight-minigame-player-y game)
           (clamp-value (flight-minigame-player-y game) -1.05 1.05))))
 
+(-> flight-ship-target-aim (flight-minigame) (values scalar scalar))
+(defun flight-ship-target-aim (game)
+  (let* ((input-x (clamp-value (flight-input-x) -1.0 1.0))
+         (input-y (clamp-value (flight-input-y) -1.0 1.0))
+         (velocity-x (clamp-value (* (flight-minigame-velocity-x game) 0.34)
+                                  -0.55
+                                  0.55))
+         (velocity-y (clamp-value (* (flight-minigame-velocity-y game) 0.34)
+                                  -0.55
+                                  0.55)))
+    (values (clamp-value (+ (* input-x 0.68) velocity-x)
+                         -1.0
+                         1.0)
+            (clamp-value (+ (* input-y 0.68) velocity-y)
+                         -1.0
+                         1.0))))
+
+(-> flight-aim-smoothing-factor (seconds) scalar)
+(defun flight-aim-smoothing-factor (dt)
+  (clamp01 (- 1.0 (exp (* -5.6 dt)))))
+
+(-> smooth-flight-aim (scalar scalar seconds) scalar)
+(defun smooth-flight-aim (current target dt)
+  (+ current
+     (* (- target current)
+        (flight-aim-smoothing-factor dt))))
+
+(-> update-flight-ship-aim (flight-minigame seconds) t)
+(defun update-flight-ship-aim (game dt)
+  (multiple-value-bind (target-x target-y)
+      (flight-ship-target-aim game)
+    (setf (flight-minigame-ship-aim-x game)
+          (smooth-flight-aim (flight-minigame-ship-aim-x game)
+                             target-x
+                             dt)
+          (flight-minigame-ship-aim-y game)
+          (smooth-flight-aim (flight-minigame-ship-aim-y game)
+                             target-y
+                             dt))))
+
 (-> check-flight-gates (node flight-minigame) t)
 (defun check-flight-gates (node game)
   (let ((current-gate (floor (flight-minigame-distance game))))
@@ -151,4 +195,5 @@
     (incf (flight-minigame-distance game)
           (* (flight-speed game) dt))
     (update-flight-physics game dt)
+    (update-flight-ship-aim game dt)
     (check-flight-gates node game)))
