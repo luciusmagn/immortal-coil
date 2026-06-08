@@ -11,6 +11,8 @@ LIB_DIR="${BUNDLE}/lib"
 rm -rf "$BUILD_DIR"
 mkdir -p "$LIB_DIR" "$DIST"
 
+"${ROOT}/release/check-rayshim-exports.sh"
+
 copy-linux-library-maybe() {
   local soname="$1"
   local path=""
