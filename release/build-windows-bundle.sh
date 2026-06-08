@@ -113,6 +113,24 @@ mkdir -p "$BUNDLE/mods"
 cp "${ROOT}/mods/README.md" "$BUNDLE/mods/"
 cp "${ROOT}/README.org" "$BUNDLE/"
 
+cat > "${BUNDLE}/bundle-manifest.txt" <<EOF
+Immortal Coil bundle
+platform: windows-x86_64
+git: $(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)
+built: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+raylib: ${RAYLIB_VERSION}
+EOF
+
+{
+  echo "immortal-coil.exe"
+  ldd "${BUNDLE}/immortal-coil.exe" || true
+  for library in "${LIB_DIR}"/*.dll; do
+    echo
+    echo "$(basename "$library")"
+    ldd "$library" || true
+  done
+} > "${BUNDLE}/dependencies-windows.txt"
+
 cat > "${BUNDLE}/run-immortal-coil.bat" <<'EOF'
 @echo off
 setlocal

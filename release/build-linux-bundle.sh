@@ -38,6 +38,24 @@ mkdir -p "$BUNDLE/mods"
 cp "${ROOT}/mods/README.md" "$BUNDLE/mods/"
 cp "${ROOT}/README.org" "$BUNDLE/"
 
+cat > "${BUNDLE}/bundle-manifest.txt" <<EOF
+Immortal Coil bundle
+platform: linux-x86_64
+git: $(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || echo unknown)
+built: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+raylib: claylib bundled library
+EOF
+
+{
+  echo "immortal-coil"
+  ldd "${BUNDLE}/immortal-coil" || true
+  for library in "${LIB_DIR}"/*.so*; do
+    echo
+    echo "$(basename "$library")"
+    ldd "$library" || true
+  done
+} > "${BUNDLE}/dependencies-linux.txt"
+
 cat > "${BUNDLE}/run-immortal-coil.sh" <<'EOF'
 #!/usr/bin/env bash
 set -euo pipefail
