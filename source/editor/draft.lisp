@@ -296,6 +296,24 @@
       (runtime-warn "Could not append editor choice add: ~a" condition)
       nil)))
 
+(-> editor-append-node-replace
+    (dialog-id editor-insert-kind (option dialog-target))
+    boolean)
+(defun editor-append-node-replace (node-id kind next-id)
+  (handler-case
+      (let ((path (editor-draft-script-pathname)))
+        (ensure-directories-exist path)
+        (with-open-file (stream path
+                                :direction :output
+                                :if-exists :append
+                                :if-does-not-exist :create)
+          (format stream "~&;;; replace node ~s~%" node-id)
+          (editor-write-insert-node-form stream kind node-id next-id))
+        t)
+    (error (condition)
+      (runtime-warn "Could not append editor node replace: ~a" condition)
+      nil)))
+
 (-> editor-append-text-rewrite (dialog-id string) boolean)
 (defun editor-append-text-rewrite (node-id text)
   (handler-case
@@ -378,6 +396,24 @@
       (when choice
         (values choice
                 (position choice (node-choices node) :test #'eq))))))
+
+(-> editor-node-primary-target (node) (option dialog-target))
+(defun editor-node-primary-target (node)
+  (case (node-kind node)
+    ((:text :say :conversation)
+     (node-next node))
+    ((:number :string)
+     (node-target node))
+    (:choice
+     (multiple-value-bind (choice choice-index)
+         (editor-selected-choice-link node)
+       (declare (ignore choice-index))
+       (when choice
+         (choice-target choice))))
+    (:minigame
+     (or (node-success-target node)
+         (node-failure-target node)))
+    (t nil)))
 
 (-> editor-choice-insert-target-label (choice) string)
 (defun editor-choice-insert-target-label (choice)
@@ -512,6 +548,43 @@
                     "EDITOR: ADD OPTION NEEDS CHOICE NODE")
               (play-choice-switch)
               nil)))
+      nil))
+
+(-> editor-reset-current-node-display (dialog-id) t)
+(defun editor-reset-current-node-display (node-id)
+  (when (and *state*
+             (equal (play-state-current-id *state*) node-id))
+    (setf (play-state-elapsed *state*) 0.0
+          (play-state-type-delay *state*) 0.0
+          (play-state-visible-count *state*) 0
+          (play-state-selected-index *state*) 0
+          (play-state-conversation-index *state*) 0
+          (play-state-input-buffer *state*) ""))
+  t)
+
+(-> editor-replace-current-node (editor-insert-kind) boolean)
+(defun editor-replace-current-node (kind)
+  (if (and *editor-active-p* *state*)
+      (let* ((node (current-node))
+             (node-id (node-id node))
+             (next-id (editor-node-primary-target node)))
+        (cond
+          ((equal node-id *runtime-fallback-node-id*)
+           (setf *editor-status-message* "EDITOR: CANNOT REPLACE FALLBACK")
+           (play-choice-switch)
+           nil)
+          ((editor-append-node-replace node-id kind next-id)
+           (editor-add-insert-node kind node-id next-id)
+           (editor-reset-current-node-display node-id)
+           (setf *editor-status-message*
+                 (format nil "EDITOR: REPLACED ~a" node-id))
+           (play-start-confirm)
+           t)
+          (t
+           (setf *editor-status-message*
+                 "EDITOR: REPLACE WRITE FAILED")
+           (play-choice-switch)
+           nil)))
       nil))
 
 (-> editor-current-delete-parent () (option node))

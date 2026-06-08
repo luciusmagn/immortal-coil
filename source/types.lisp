@@ -105,6 +105,10 @@
     "Dialog node skeleton types created by the in-game editor."
     '(member :text :say :choice :conversation :number :string))
 
+  (deftype editor-insert-action ()
+    "What the insert-kind menu will do when confirmed."
+    '(member :insert :replace))
+
   (deftype editor-choice-target-kind ()
     "How the editor should interpret a choice destination field."
     '(member :id :function))

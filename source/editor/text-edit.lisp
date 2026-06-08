@@ -209,7 +209,12 @@
   (let ((kind (editor-current-insert-kind)))
     (editor-select-insert-kind kind)
     (setf *editor-mode* :play)
-    (editor-insert-node-at-current-link kind)))
+    (case *editor-insert-action*
+      (:replace
+       (setf *editor-insert-action* :insert)
+       (editor-replace-current-node kind))
+      (t
+       (editor-insert-node-at-current-link kind)))))
 
 (-> update-editor-insert-menu () boolean)
 (defun update-editor-insert-menu ()
@@ -248,6 +253,8 @@
          ((or (is-key-pressed-p +key-insert+)
               (editor-control-key-pressed-p +key-i+))
           (editor-open-insert-menu))
+         ((editor-control-key-pressed-p +key-r+)
+          (editor-open-replace-menu))
          ((editor-control-key-pressed-p +key-a+)
           (editor-add-choice-option-to-current))
          ((or (is-key-pressed-p +key-f3+)

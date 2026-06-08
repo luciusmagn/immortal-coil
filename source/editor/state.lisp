@@ -19,6 +19,7 @@
 (defvar *editor-store-overlay-p* nil)
 (defvar *editor-help-overlay-p* nil)
 (defvar *editor-insert-kind* :text)
+(defvar *editor-insert-action* :insert)
 (defvar *editor-insert-menu-selected-index* 0)
 (defvar *editor-choice-option-node-id* nil)
 (defvar *editor-choice-option-index* 0)
@@ -66,6 +67,7 @@
         *editor-store-overlay-p* nil
         *editor-help-overlay-p* nil
         *editor-insert-kind* :text
+        *editor-insert-action* :insert
         *editor-insert-menu-selected-index* 0
         *editor-choice-option-node-id* nil
         *editor-choice-option-index* 0
@@ -125,6 +127,7 @@
         *editor-store-overlay-p* nil
         *editor-help-overlay-p* nil
         *editor-insert-kind* :text
+        *editor-insert-action* :insert
         *editor-insert-menu-selected-index* 0
         *editor-choice-option-node-id* nil
         *editor-choice-option-index* 0
@@ -261,19 +264,28 @@
         (min (max 0 *editor-insert-menu-selected-index*)
              (1- (length *editor-insert-kinds*)))))
 
-(-> editor-open-insert-menu () boolean)
-(defun editor-open-insert-menu ()
+(-> editor-open-insert-menu (&optional editor-insert-action) boolean)
+(defun editor-open-insert-menu (&optional (action :insert))
   (let ((position (or (position *editor-insert-kind* *editor-insert-kinds*)
                       0)))
     (setf *editor-mode* :insert
+          *editor-insert-action* action
           *editor-insert-menu-selected-index* position
-          *editor-status-message* "EDITOR: INSERT TYPE")
+          *editor-status-message*
+          (if (eq action :replace)
+              "EDITOR: REPLACE TYPE"
+              "EDITOR: INSERT TYPE"))
     (play-choice-switch)
     t))
+
+(-> editor-open-replace-menu () boolean)
+(defun editor-open-replace-menu ()
+  (editor-open-insert-menu :replace))
 
 (-> editor-close-insert-menu (string) boolean)
 (defun editor-close-insert-menu (message)
   (setf *editor-mode* :play
+        *editor-insert-action* :insert
         *editor-status-message* message)
   (play-choice-switch)
   t)

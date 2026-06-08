@@ -292,7 +292,11 @@
          (panel-height 284)
          (left (round (- +virtual-center-x+ (/ panel-width 2))))
          (top 248)
-         (target (editor-insert-target-label)))
+         (replace-p (eq *editor-insert-action* :replace))
+         (title (if replace-p "REPLACE" "INSERT"))
+         (target (if replace-p
+                     "CURRENT NODE"
+                     (editor-insert-target-label))))
     (claylib/ll:draw-rectangle left
                                top
                                panel-width
@@ -304,7 +308,7 @@
                                       panel-width
                                       panel-height
                                       (claylib::c-ptr color))
-    (draw-text-at "INSERT"
+    (draw-text-at title
                   (+ left 24)
                   (+ top 20)
                   14
@@ -321,7 +325,9 @@
                                           (+ left 64)
                                           (+ top 78 (* index 28))
                                           color))
-    (draw-editor-right-text "RET INSERT  C-g CANCEL"
+    (draw-editor-right-text (if replace-p
+                                "RET REPLACE  C-g CANCEL"
+                                "RET INSERT  C-g CANCEL")
                             (+ top panel-height 14)
                             12
                             color)))
@@ -451,6 +457,7 @@
          (rows '(("C-h" "close this help overlay")
                  ("C-b" "rewind to previous editor step")
                  ("C-i" "insert a node at the current link")
+                 ("C-r" "replace the current node")
                  ("C-a" "add an option to a choice node")
                  ("C-o" "edit the highlighted choice option")
                  ("C-e" "edit the current node text")
