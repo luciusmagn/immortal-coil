@@ -6,7 +6,8 @@
         *game-fade-elapsed* 0.0
         *quit-requested-p* nil
         *save-current-game-p* nil
-        *requested-window-mode* nil)
+        *requested-window-mode* nil
+        *fullscreen-size-ready-p* nil)
   (reset-menu-state)
   (reset-pause-menu-state)
   (reset-options-menu-state)
@@ -60,13 +61,9 @@
     (error (condition)
       (runtime-warn "Window control update failed: ~a" condition))))
 
-(defun fullscreen-window-width ()
-  (max +virtual-width+ *fullscreen-width*))
-
-(defun fullscreen-window-height ()
-  (max +virtual-height+ *fullscreen-height*))
-
 (defun run-window-contents ()
+  (when (eq *window-mode* :fullscreen)
+    (sync-active-fullscreen-window-size))
   (let ((target (load-render-texture +virtual-width+ +virtual-height+))
         (shader-asset (load-crt-shader)))
     (configure-target-texture target)
@@ -92,13 +89,15 @@
         *requested-window-mode* nil)
   (let ((next-mode nil))
     (if (eq mode :fullscreen)
-        (with-window (:width (fullscreen-window-width)
-                      :height (fullscreen-window-height)
-                      :title "mag's Game"
-                      :fps 60
-                      :exit-key +key-null+
-                      :flags (list +flag-fullscreen-mode+))
-          (setf next-mode (run-window-contents)))
+        (progn
+          (prime-fullscreen-window-size)
+          (with-window (:width (fullscreen-window-width)
+                        :height (fullscreen-window-height)
+                        :title "mag's Game"
+                        :fps 60
+                        :exit-key +key-null+
+                        :flags (list +flag-fullscreen-mode+))
+            (setf next-mode (run-window-contents))))
         (with-window (:width +virtual-width+
                       :height +virtual-height+
                       :title "mag's Game"
