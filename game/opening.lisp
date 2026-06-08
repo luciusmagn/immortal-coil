@@ -114,7 +114,7 @@
              :next "ship/flight")
 
 (dialog-minigame "ship/flight"
-                 "use wasd or arrow keys. keep the ship inside the open wireframe gates."
+                 "use w/a/s/d or arrow keys to steer. keep the ship inside the open wireframe gates."
                  :game :wire-flight
                  :success "ship/threaded"
                  :failure "ship/crash-return")

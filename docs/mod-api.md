@@ -363,7 +363,7 @@ Reference it from a node:
 
 ```lisp
 (dialog-minigame "my-mod/flight"
-                 "use wasd or arrow keys. keep the ship inside the gates."
+                 "use w/a/s/d or arrow keys to steer. keep the ship inside the gates."
                  :game :my-mod/flight
                  :success "my-mod/success"
                  :failure "my-mod/failure")
