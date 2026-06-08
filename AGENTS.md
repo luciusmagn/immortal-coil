@@ -144,6 +144,7 @@ Example:
 - Nix is the preferred path for reproducible builds.
 - Linux binaries should eventually target Steam distribution constraints, not only the local dev machine.
 - Windows builds are a future requirement for Steam. Treat cross-platform packaging as important, but do not let it derail the current playable loop.
+- TODO: replace Perl-based release shim scanners with Common Lisp tooling. The current checks work, but release verification should eventually be written in the project's own language instead of ad hoc Perl scripts and one-liners.
 
 ## Verification
 
