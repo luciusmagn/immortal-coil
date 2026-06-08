@@ -9,6 +9,7 @@
 
 (-> clear-audio-resources () t)
 (defun clear-audio-resources ()
+  (clear-story-sound-resources)
   (clear-story-music-resources)
   (clear-title-music-resources)
   (clear-short-sound-resources))

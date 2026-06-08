@@ -66,6 +66,7 @@
                   :serial t
                   :components
                   ((:file "resources")
+                   (:file "story-sound")
                    (:file "story-music")))
 
                  (:module "title"

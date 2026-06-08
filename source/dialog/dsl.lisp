@@ -609,3 +609,36 @@
                        (node-pending-enter-effects node-id))
                       (list effect)))))
   node-id)
+
+(-> dialog-sound (dialog-id t &key (:volume scalar)) dialog-id)
+(defun dialog-sound (node-id path &key (volume 0.50))
+  (dialog-on-enter
+   node-id
+   `(play-story-sound ,(namestring (dialog-asset-pathname path))
+                      :volume ,volume)))
+
+(-> dialog-story-sound-effect (t scalar) (option dialog-effect))
+(defun dialog-story-sound-effect (path volume)
+  (unless (or (null path)
+              (eq path :none))
+    `(play-story-sound ,(namestring (dialog-asset-pathname path))
+                       :volume ,volume)))
+
+(-> dialog-set-sound (dialog-id t &key (:volume scalar)) dialog-id)
+(defun dialog-set-sound (node-id path &key (volume 0.50))
+  (let ((effect (dialog-story-sound-effect path volume))
+        (node (gethash node-id *nodes*)))
+    (if node
+        (setf (node-enter-effects node)
+              (append (dialog-without-story-sound-effects
+                       (node-enter-effects node))
+                      (when effect (list effect))))
+        (setf (gethash node-id *pending-node-enter-effects*)
+              (append (dialog-without-story-sound-effects
+                       (node-pending-enter-effects node-id))
+                      (when effect (list effect))))))
+  node-id)
+
+(-> dialog-clear-sound (dialog-id) dialog-id)
+(defun dialog-clear-sound (node-id)
+  (dialog-set-sound node-id :none))

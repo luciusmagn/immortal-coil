@@ -384,6 +384,21 @@ Stop story music on node entry:
 (dialog-stop-music "base/awake")
 ```
 
+Play a bundle-local one-shot sound on node entry:
+
+```lisp
+(dialog-sound "forest/threshold"
+              "audio/choice-switch.wav"
+              :volume 0.50)
+```
+
+The in-game editor writes the equivalent patch forms:
+
+```lisp
+(dialog-set-sound "forest/threshold" "audio/choice-switch.wav")
+(dialog-clear-sound "forest/threshold")
+```
+
 Keep asset provenance next to committed assets. Do not commit API keys or other
 secrets.
 

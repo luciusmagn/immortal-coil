@@ -267,6 +267,8 @@
           (editor-cycle-current-minigame))
          ((editor-control-key-pressed-p +key-f+)
           (editor-cycle-current-particles))
+         ((editor-control-key-pressed-p +key-k+)
+          (editor-cycle-current-sound))
          ((editor-control-key-pressed-p +key-m+)
           (editor-cycle-current-music))
          ((editor-control-key-pressed-p +key-l+)

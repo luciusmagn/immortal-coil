@@ -150,6 +150,28 @@
         when selection
           return selection))
 
+(-> dialog-story-sound-effect-p (t) boolean)
+(defun dialog-story-sound-effect-p (effect)
+  (and (consp effect)
+       (eq (first effect) 'play-story-sound)))
+
+(-> dialog-story-sound-effect-selection (t) (option t))
+(defun dialog-story-sound-effect-selection (effect)
+  (when (and (dialog-story-sound-effect-p effect)
+             (second effect))
+    (second effect)))
+
+(-> dialog-without-story-sound-effects (list) list)
+(defun dialog-without-story-sound-effects (effects)
+  (remove-if #'dialog-story-sound-effect-p effects))
+
+(-> node-story-sound-selection (node) (option t))
+(defun node-story-sound-selection (node)
+  (loop for effect in (reverse (node-enter-effects node))
+        for selection = (dialog-story-sound-effect-selection effect)
+        when selection
+          return selection))
+
 (-> combine-node-enter-effects (node) list)
 (defun combine-node-enter-effects (node)
   (let ((id (node-id node)))
