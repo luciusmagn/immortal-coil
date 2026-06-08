@@ -1,6 +1,6 @@
 (in-package #:immortal-coil)
 
-;;; Fallback handlers
+;;; Models
 
 (-> minigame-update-fallback (node seconds) t)
 (defun minigame-update-fallback (node dt)
@@ -12,11 +12,38 @@
   (declare (ignore node color))
   nil)
 
-(defstruct minigame-definition
-  (id              :unknown :type minigame-id)
-  (update-function #'minigame-update-fallback :type runtime-function)
-  (draw-function   #'minigame-draw-fallback :type runtime-function)
-  (source          :unknown :type dialog-source))
+(defclass minigame-definition ()
+  ((id
+    :initarg :id
+    :initform :unknown
+    :accessor minigame-definition-id
+    :type minigame-id)
+   (source
+    :initarg :source
+    :initform :unknown
+    :accessor minigame-definition-source
+    :type dialog-source)))
+
+(defclass function-minigame-definition (minigame-definition)
+  ((update-function
+    :initarg :update-function
+    :initform #'minigame-update-fallback
+    :accessor minigame-definition-update-function
+    :type runtime-function)
+   (draw-function
+    :initarg :draw-function
+    :initform #'minigame-draw-fallback
+    :accessor minigame-definition-draw-function
+    :type runtime-function)))
+
+(defgeneric minigame-update (definition node dt))
+(defgeneric minigame-draw (definition node color))
+
+(defmethod minigame-update ((definition function-minigame-definition) node dt)
+  (funcall (minigame-definition-update-function definition) node dt))
+
+(defmethod minigame-draw ((definition function-minigame-definition) node color)
+  (funcall (minigame-definition-draw-function definition) node color))
 
 
 ;;; Definition store
@@ -76,15 +103,28 @@
 
 ;;; Registration
 
-(-> register-minigame-definition (minigame-id runtime-function runtime-function)
-    minigame-definition)
-(defun register-minigame-definition (id update-function draw-function)
-  (let ((definition (make-minigame-definition
-                     :id id
-                     :update-function update-function
-                     :draw-function draw-function
-                     :source (current-dialog-source-name))))
-    (setf (gethash id *minigame-definitions*) definition)))
+(-> make-function-minigame-definition
+    (minigame-id runtime-function runtime-function)
+    function-minigame-definition)
+(defun make-function-minigame-definition (id update-function draw-function)
+  (make-instance 'function-minigame-definition
+                 :id id
+                 :update-function update-function
+                 :draw-function draw-function
+                 :source (current-dialog-source-name)))
+
+(-> register-minigame-definition (t &optional t t) minigame-definition)
+(defun register-minigame-definition (definition-or-id
+                                     &optional update-function draw-function)
+  (let ((definition
+          (if (typep definition-or-id 'minigame-definition)
+              definition-or-id
+              (make-function-minigame-definition definition-or-id
+                                                 update-function
+                                                 draw-function))))
+    (setf (gethash (minigame-definition-id definition)
+                   *minigame-definitions*)
+          definition)))
 
 (-> dialog-minigame-kind (t &key (:update t) (:draw t)) minigame-id)
 (defun dialog-minigame-kind (id &key update draw)
@@ -92,9 +132,10 @@
         (update-function (minigame-handler-function update "update handler"))
         (draw-function (minigame-handler-function draw "draw handler")))
     (if (and update-function draw-function)
-        (register-minigame-definition minigame-id
-                                      update-function
-                                      draw-function)
+        (register-minigame-definition
+         (make-function-minigame-definition minigame-id
+                                            update-function
+                                            draw-function))
         (runtime-warn "Could not register minigame: ~a" minigame-id))
     minigame-id))
 
@@ -124,7 +165,7 @@
 (-> update-minigame-definition (minigame-definition node seconds) t)
 (defun update-minigame-definition (definition node dt)
   (handler-case
-      (funcall (minigame-definition-update-function definition) node dt)
+      (minigame-update definition node dt)
     (error (condition)
       (runtime-warn "Minigame update failed for ~a: ~a"
                     (minigame-definition-id definition)
@@ -134,7 +175,7 @@
 (-> draw-minigame-definition (minigame-definition node t) t)
 (defun draw-minigame-definition (definition node color)
   (handler-case
-      (funcall (minigame-definition-draw-function definition) node color)
+      (minigame-draw definition node color)
     (error (condition)
       (runtime-warn "Minigame draw failed for ~a: ~a"
                     (minigame-definition-id definition)

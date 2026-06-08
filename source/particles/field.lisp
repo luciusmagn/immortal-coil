@@ -20,13 +20,57 @@
   (declare (ignore alpha-scale))
   nil)
 
-(defstruct particle-field-definition
-  (id              :rising :type particle-field-mode)
-  (reset-function  #'particle-field-reset-fallback :type runtime-function)
-  (ensure-function #'particle-field-ensure-fallback :type runtime-function)
-  (update-function #'particle-field-update-fallback :type runtime-function)
-  (draw-function   #'particle-field-draw-fallback :type runtime-function)
-  (builtin-p       nil :type boolean))
+(defclass particle-field-definition ()
+  ((id
+    :initarg :id
+    :initform :rising
+    :accessor particle-field-definition-id
+    :type particle-field-mode)
+   (builtin-p
+    :initarg :builtin-p
+    :initform nil
+    :accessor particle-field-definition-builtin-p
+    :type boolean)))
+
+(defclass function-particle-field-definition (particle-field-definition)
+  ((reset-function
+    :initarg :reset-function
+    :initform #'particle-field-reset-fallback
+    :accessor particle-field-definition-reset-function
+    :type runtime-function)
+   (ensure-function
+    :initarg :ensure-function
+    :initform #'particle-field-ensure-fallback
+    :accessor particle-field-definition-ensure-function
+    :type runtime-function)
+   (update-function
+    :initarg :update-function
+    :initform #'particle-field-update-fallback
+    :accessor particle-field-definition-update-function
+    :type runtime-function)
+   (draw-function
+    :initarg :draw-function
+    :initform #'particle-field-draw-fallback
+    :accessor particle-field-definition-draw-function
+    :type runtime-function)))
+
+(defgeneric particle-field-reset (definition))
+(defgeneric particle-field-ensure (definition))
+(defgeneric particle-field-update (definition dt))
+(defgeneric particle-field-draw (definition alpha-scale))
+
+(defmethod particle-field-reset ((definition function-particle-field-definition))
+  (funcall (particle-field-definition-reset-function definition)))
+
+(defmethod particle-field-ensure ((definition function-particle-field-definition))
+  (funcall (particle-field-definition-ensure-function definition)))
+
+(defmethod particle-field-update ((definition function-particle-field-definition) dt)
+  (funcall (particle-field-definition-update-function definition) dt))
+
+(defmethod particle-field-draw ((definition function-particle-field-definition)
+                                alpha-scale)
+  (funcall (particle-field-definition-draw-function definition) alpha-scale))
 
 (defvar *particle-field-definitions* (make-hash-table :test #'eq))
 (defvar *particle-field-modes* nil)
@@ -76,19 +120,40 @@
                     condition)
       fallback-function)))
 
-(-> register-particle-field-definition
+(-> make-function-particle-field-definition
     (particle-field-mode runtime-function runtime-function runtime-function runtime-function boolean)
     particle-field-definition)
-(defun register-particle-field-definition (mode reset-function ensure-function
-                                           update-function draw-function
-                                           builtin-p)
-  (let ((definition (make-particle-field-definition
-                     :id mode
-                     :reset-function reset-function
-                     :ensure-function ensure-function
-                     :update-function update-function
-                     :draw-function draw-function
-                     :builtin-p builtin-p)))
+(defun make-function-particle-field-definition (mode reset-function
+                                                ensure-function update-function
+                                                draw-function builtin-p)
+  (make-instance 'function-particle-field-definition
+                 :id mode
+                 :reset-function reset-function
+                 :ensure-function ensure-function
+                 :update-function update-function
+                 :draw-function draw-function
+                 :builtin-p builtin-p))
+
+(-> register-particle-field-definition (t &optional t t t t t)
+    particle-field-definition)
+(defun register-particle-field-definition (definition-or-mode
+                                           &optional
+                                             reset-function
+                                             ensure-function
+                                             update-function
+                                             draw-function
+                                             builtin-p)
+  (let* ((definition
+           (if (typep definition-or-mode 'particle-field-definition)
+               definition-or-mode
+               (make-function-particle-field-definition
+                definition-or-mode
+                reset-function
+                ensure-function
+                update-function
+                draw-function
+                builtin-p)))
+         (mode (particle-field-definition-id definition)))
     (setf (gethash mode *particle-field-definitions*) definition)
     (unless (member mode *particle-field-modes* :test #'eq)
       (setf *particle-field-modes*
@@ -101,28 +166,29 @@
 (defun dialog-particle-field-kind (mode &key reset ensure update draw builtin-p)
   (let ((field-mode (particle-field-mode-keyword mode)))
     (register-particle-field-definition
-     field-mode
-     (if reset
-         (particle-field-handler-function reset
-                                          "reset handler"
-                                          #'particle-field-reset-fallback)
-         #'particle-field-reset-fallback)
-     (if ensure
-         (particle-field-handler-function ensure
-                                          "ensure handler"
-                                          #'particle-field-ensure-fallback)
-         #'particle-field-ensure-fallback)
-     (if update
-         (particle-field-handler-function update
-                                          "update handler"
-                                          #'particle-field-update-fallback)
-         #'particle-field-update-fallback)
-     (if draw
-         (particle-field-handler-function draw
-                                          "draw handler"
-                                          #'particle-field-draw-fallback)
-         #'particle-field-draw-fallback)
-     builtin-p)
+     (make-function-particle-field-definition
+      field-mode
+      (if reset
+          (particle-field-handler-function reset
+                                           "reset handler"
+                                           #'particle-field-reset-fallback)
+          #'particle-field-reset-fallback)
+      (if ensure
+          (particle-field-handler-function ensure
+                                           "ensure handler"
+                                           #'particle-field-ensure-fallback)
+          #'particle-field-ensure-fallback)
+      (if update
+          (particle-field-handler-function update
+                                           "update handler"
+                                           #'particle-field-update-fallback)
+          #'particle-field-update-fallback)
+      (if draw
+          (particle-field-handler-function draw
+                                           "draw handler"
+                                           #'particle-field-draw-fallback)
+          #'particle-field-draw-fallback)
+      builtin-p))
     field-mode))
 
 (-> reset-script-particle-field-modes () t)
@@ -310,7 +376,7 @@
     (let ((definition (gethash mode *particle-field-definitions*)))
       (when definition
         (handler-case
-            (funcall (particle-field-definition-reset-function definition))
+            (particle-field-reset definition)
           (error (condition)
             (runtime-warn "Could not reset particle mode ~a: ~a"
                           mode
@@ -322,7 +388,7 @@
     (let ((definition (gethash mode *particle-field-definitions*)))
       (when definition
         (handler-case
-            (funcall (particle-field-definition-ensure-function definition))
+            (particle-field-ensure definition)
           (error (condition)
             (runtime-warn "Could not ensure particle mode ~a: ~a"
                           mode
@@ -333,8 +399,7 @@
   (let ((definition (gethash mode *particle-field-definitions*)))
     (if definition
         (handler-case
-            (funcall (particle-field-definition-update-function definition)
-                     dt)
+            (particle-field-update definition dt)
           (error (condition)
             (runtime-warn "Could not update particle mode ~a: ~a"
                           mode
@@ -346,8 +411,7 @@
   (let ((definition (gethash mode *particle-field-definitions*)))
     (if definition
         (handler-case
-            (funcall (particle-field-definition-draw-function definition)
-                     alpha-scale)
+            (particle-field-draw definition alpha-scale)
           (error (condition)
             (runtime-warn "Could not draw particle mode ~a: ~a"
                           mode
