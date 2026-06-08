@@ -6,13 +6,11 @@ CLAYLIB_DIR="${IMMORTAL_COIL_CLAYLIB_DIR:-${HOME}/quicklisp/local-projects/clayl
 SOURCE="${1:-${ROOT}/release/rayshim.c}"
 
 EXPECTED="$(mktemp)"
-WINDOWS_EXPECTED="$(mktemp)"
 ACTUAL="$(mktemp)"
-trap 'rm -f "$EXPECTED" "$WINDOWS_EXPECTED" "$ACTUAL"' EXIT
+trap 'rm -f "$EXPECTED" "$ACTUAL"' EXIT
 
 extract_binding_shims() {
-  local binding="$1"
-  perl -ne 'while (/\("([^"]*__claw[^"]*)"/g) { print "$1\n" }' "$binding" \
+  perl -ne 'while (/\("([^"]*__claw[^"]*)"/g) { print "$1\n" }' "$@" \
     | sort -u
 }
 
@@ -22,15 +20,8 @@ extract_source_exports() {
     | sort -u
 }
 
-extract_binding_shims "${CLAYLIB_DIR}/wrap/bindings/x86_64-pc-linux-gnu.lisp" > "$EXPECTED"
-extract_binding_shims "${CLAYLIB_DIR}/wrap/bindings/x86_64-pc-windows-msvc.lisp" > "$WINDOWS_EXPECTED"
+extract_binding_shims "${CLAYLIB_DIR}/wrap/bindings/"*.lisp > "$EXPECTED"
 extract_source_exports "$SOURCE" > "$ACTUAL"
-
-if ! cmp -s "$EXPECTED" "$WINDOWS_EXPECTED"; then
-  echo "Linux and Windows x86-64 Claylib shim binding sets differ." >&2
-  comm -3 "$EXPECTED" "$WINDOWS_EXPECTED" >&2
-  exit 1
-fi
 
 if ! cmp -s "$EXPECTED" "$ACTUAL"; then
   echo "release/rayshim.c does not match Claylib's expected shim exports." >&2
@@ -43,4 +34,4 @@ if ! cmp -s "$EXPECTED" "$ACTUAL"; then
   exit 1
 fi
 
-echo "rayshim exports match Claylib x86-64 bindings ($(wc -l < "$EXPECTED") symbols)."
+echo "rayshim exports match all Claylib bindings ($(wc -l < "$EXPECTED") symbols)."
