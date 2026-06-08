@@ -11,11 +11,14 @@ RAYLIB_API="$(mktemp)"
 RAYGUI_API="$(mktemp)"
 RAYLIB_EXPECTED="$(mktemp)"
 RAYGUI_EXPECTED="$(mktemp)"
+RAYGUI_HELPERS="$(mktemp)"
+CLASSIFIED="$(mktemp)"
+UNCLASSIFIED="$(mktemp)"
 ACTUAL="$(mktemp)"
 MISSING="$(mktemp)"
 RAW_NM="$(mktemp)"
 CANDIDATE="$(mktemp)"
-trap 'rm -f "$DIRECT_CFFI" "$RAYLIB_API" "$RAYGUI_API" "$RAYLIB_EXPECTED" "$RAYGUI_EXPECTED" "$ACTUAL" "$MISSING" "$RAW_NM" "$CANDIDATE"' EXIT
+trap 'rm -f "$DIRECT_CFFI" "$RAYLIB_API" "$RAYGUI_API" "$RAYLIB_EXPECTED" "$RAYGUI_EXPECTED" "$RAYGUI_HELPERS" "$CLASSIFIED" "$UNCLASSIFIED" "$ACTUAL" "$MISSING" "$RAW_NM" "$CANDIDATE"' EXIT
 
 extract_direct_cffi_symbols() {
   perl -ne 'while (/\(cffi:defcfun\s+\("([^"]+)"/g) { print "$1\n" }' "$@" \
@@ -25,9 +28,9 @@ extract_direct_cffi_symbols() {
 
 extract_header_api_symbols() {
   local api_macro="$1"
-  local header="$2"
+  shift
 
-  perl -ne 'while (/\b'"$api_macro"'\b[^;()]*?\b([A-Za-z_][A-Za-z0-9_]*)\s*\(/g) { print "$1\n" }' "$header" \
+  perl -ne 'while (/\b'"$api_macro"'\b[^;()]*?\b([A-Za-z_][A-Za-z0-9_]*)\s*\(/g) { print "$1\n" }' "$@" \
     | sort -u
 }
 
@@ -87,12 +90,48 @@ check_library_exports() {
   exit 1
 }
 
+write_checked_raygui_helpers() {
+  {
+    echo "GetTextLines"
+  } | sort -u
+}
+
+write_runtime_direct_symbols() {
+  awk '/^_Exit$/ || /^[a-z_][A-Za-z0-9_]*$/ { print }' "$DIRECT_CFFI" \
+    | sort -u
+}
+
+check_direct_symbol_classification() {
+  {
+    cat "$RAYLIB_EXPECTED"
+    cat "$RAYGUI_EXPECTED"
+    cat "$RAYGUI_HELPERS"
+    write_runtime_direct_symbols
+  } | sort -u > "$CLASSIFIED"
+
+  comm -23 "$DIRECT_CFFI" "$CLASSIFIED" > "$UNCLASSIFIED"
+
+  if [ -s "$UNCLASSIFIED" ]; then
+    echo "Claylib has direct CFFI symbols with no checked library/runtime classification." >&2
+    echo
+    cat "$UNCLASSIFIED" >&2
+    exit 1
+  fi
+}
+
 extract_direct_cffi_symbols "${CLAYLIB_DIR}/wrap/bindings/"*.lisp > "$DIRECT_CFFI"
-extract_header_api_symbols RLAPI "${CLAYLIB_DIR}/wrap/lib/raylib.h" > "$RAYLIB_API"
+extract_header_api_symbols RLAPI \
+  "${CLAYLIB_DIR}/wrap/lib/raylib.h" \
+  "${CLAYLIB_DIR}/wrap/lib/rcamera.h" > "$RAYLIB_API"
 extract_header_api_symbols RAYGUIAPI "${CLAYLIB_DIR}/wrap/lib/raygui.h" > "$RAYGUI_API"
+write_checked_raygui_helpers > "$RAYGUI_HELPERS"
 
 comm -12 "$DIRECT_CFFI" "$RAYLIB_API" > "$RAYLIB_EXPECTED"
-comm -12 "$DIRECT_CFFI" "$RAYGUI_API" > "$RAYGUI_EXPECTED"
+{
+  comm -12 "$DIRECT_CFFI" "$RAYGUI_API"
+  comm -12 "$DIRECT_CFFI" "$RAYGUI_HELPERS"
+} | sort -u > "$RAYGUI_EXPECTED"
 
+check_direct_symbol_classification
 check_library_exports raylib "$RAYLIB_LIBRARY" "$RAYLIB_EXPECTED"
 check_library_exports raygui "$RAYGUI_LIBRARY" "$RAYGUI_EXPECTED"
