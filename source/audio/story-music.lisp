@@ -11,6 +11,11 @@
   (* *story-music-volume*
      (clamp01 *music-volume-scale*)))
 
+(-> sync-story-music-volume () t)
+(defun sync-story-music-volume ()
+  (when *story-music*
+    (setf (volume *story-music*) (story-music-effective-volume))))
+
 (-> story-music-pathname (t) pathname)
 (defun story-music-pathname (path)
   (etypecase path
@@ -66,7 +71,7 @@
   (when *story-music*
     (handler-case
         (progn
-          (setf (volume *story-music*) (story-music-effective-volume))
+          (sync-story-music-volume)
           (unless *story-music-playing-p*
             (claylib/ll:play-music-stream (claylib::c-ptr *story-music*))
             (setf *story-music-playing-p* t)))
@@ -85,14 +90,17 @@
       (runtime-warn "Story music skipped; audio device is not ready: ~a"
                     path)))
 
-(-> update-story-music () t)
-(defun update-story-music ()
+(-> update-story-music-stream () t)
+(defun update-story-music-stream ()
   (when (and *story-music*
              *story-music-playing-p*)
     (handler-case
-        (progn
-          (setf (volume *story-music*) (story-music-effective-volume))
-          (claylib/ll:update-music-stream (claylib::c-ptr *story-music*)))
+        (claylib/ll:update-music-stream (claylib::c-ptr *story-music*))
       (error (condition)
         (runtime-warn "Could not update story music: ~a" condition)
         (setf *story-music-playing-p* nil)))))
+
+(-> update-story-music () t)
+(defun update-story-music ()
+  (sync-story-music-volume)
+  (update-story-music-stream))

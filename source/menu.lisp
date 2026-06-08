@@ -544,7 +544,7 @@
 (-> update-menu (seconds) t)
 (defun update-menu (dt)
   (incf *menu-elapsed* dt)
-  (update-title-music (menu-title-music-volume-scale))
+  (set-title-music-volume-scale (menu-title-music-volume-scale))
   (update-particles dt)
   (case *menu-start-state*
     (:idle

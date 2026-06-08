@@ -8,6 +8,12 @@
   (load-start-confirm)
   (load-title-music))
 
+(-> update-bgm-streams () t)
+(defun update-bgm-streams ()
+  (sync-story-music-volume)
+  (update-story-music-stream)
+  (update-title-music-stream))
+
 (-> clear-audio-resources () t)
 (defun clear-audio-resources ()
   (clear-story-sound-resources)

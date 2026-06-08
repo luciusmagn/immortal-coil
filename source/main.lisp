@@ -40,7 +40,6 @@
 (defun update-world ()
   (handler-case
       (let ((dt (get-frame-time)))
-        (update-story-music)
         (case *mode*
           (:menu (update-menu dt))
           (:game
@@ -64,6 +63,12 @@
     (error (condition)
       (runtime-warn "Window control update failed: ~a" condition))))
 
+(defun update-bgm-streams-maybe ()
+  (handler-case
+      (update-bgm-streams)
+    (error (condition)
+      (runtime-warn "BGM stream update failed: ~a" condition))))
+
 (defun run-window-contents ()
   (when (eq *window-mode* :fullscreen)
     (sync-active-fullscreen-window-size))
@@ -76,13 +81,15 @@
                            :end (or *requested-window-mode*
                                      *quit-requested-p*)
                            :result *requested-window-mode*)
+              (update-bgm-streams-maybe)
               (update-window-controls-maybe)
               (update-world)
               (with-texture-mode (target :clear +black+)
                 (draw-world))
               (configure-target-destination target)
               (draw-target target (when shader-asset
-                                    (asset shader-asset))))))
+                                    (asset shader-asset)))
+              (update-bgm-streams-maybe))))
       (normalize-window-state-before-close)
       (teardown-window-resources)
       next-mode)))
