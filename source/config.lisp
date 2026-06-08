@@ -20,6 +20,8 @@
 (defparameter *start-fade-out-seconds* 2.1)
 (defparameter *game-fade-in-seconds* 2.8)
 (defparameter *game-start-type-delay-seconds* 1.1)
+(defparameter *dialog-text-max-width* 900.0)
+(defparameter *dialog-text-line-height* 30.0)
 (defparameter *menu-start-text-size* 18)
 (defparameter *particle-count* 8)
 (defparameter *star-particle-count* 120)

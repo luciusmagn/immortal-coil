@@ -56,7 +56,8 @@
                  (:module "text"
                   :serial t
                   :components
-                  ((:file "template")))
+                  ((:file "template")
+                   (:file "layout")))
 
                  (:module "audio"
                   :serial t

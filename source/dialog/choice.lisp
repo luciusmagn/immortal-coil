@@ -84,13 +84,13 @@
 
 (defun draw-choice-prompt (node y color &key (cursor-p t))
   (let* ((size 20)
-         (text (visible-node-text node)))
+         (lines (visible-node-text-lines node size *dialog-text-max-width*)))
     (multiple-value-bind (x text-y width)
-        (draw-centered-text text
-                            +virtual-center-x+
-                            y
-                            size
-                            color)
+        (draw-centered-text-lines lines
+                                  +virtual-center-x+
+                                  y
+                                  size
+                                  color)
       (when cursor-p
         (draw-cursor x text-y width size color)))))
 

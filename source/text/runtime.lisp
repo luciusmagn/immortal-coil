@@ -25,6 +25,13 @@
             (min (play-state-visible-count *state*)
                  (length text)))))
 
+(-> visible-node-text-lines (node nonnegative-integer scalar) (list-of string))
+(defun visible-node-text-lines (node size max-width)
+  (visible-text-lines (wrap-text-lines (node-display-text node)
+                                       size
+                                       max-width)
+                      (play-state-visible-count *state*)))
+
 (-> confirm-pressed-p () boolean)
 (defun confirm-pressed-p ()
   (or (is-key-pressed-p +key-space+)
@@ -93,12 +100,12 @@
 (defun draw-opening-text-node (node)
   (let* ((size 20)
          (color (make-color 255 255 255 (current-alpha)))
-         (text (visible-node-text node)))
+         (lines (visible-node-text-lines node size *dialog-text-max-width*)))
     (draw-node-speaker node color)
     (multiple-value-bind (x y width)
-        (draw-centered-text text
-                            +virtual-center-x+
-                            (node-text-center-y node)
-                            size
-                            color)
+        (draw-centered-text-lines lines
+                                  +virtual-center-x+
+                                  (node-text-center-y node)
+                                  size
+                                  color)
       (draw-cursor x y width size color))))
