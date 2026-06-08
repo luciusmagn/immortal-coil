@@ -111,6 +111,13 @@
                   ((:file "node")))
 
                  (:file "fullscreen")
+
+                 (:module "options"
+                  :serial t
+                  :components
+                  ((:file "core")
+                   (:file "menu")))
+
                  (:file "gameplay")
 
                  (:file "menu")

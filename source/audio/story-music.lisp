@@ -6,6 +6,11 @@
 (defvar *story-music-playing-p* nil)
 (defvar *story-music-volume* 0.28)
 
+(-> story-music-effective-volume () scalar)
+(defun story-music-effective-volume ()
+  (* *story-music-volume*
+     (clamp01 *music-volume-scale*)))
+
 (-> story-music-pathname (t) pathname)
 (defun story-music-pathname (path)
   (etypecase path
@@ -51,7 +56,7 @@
                 *story-music-path* path
                 *story-music-volume* volume
                 *story-music-playing-p* nil)
-          (setf (volume *story-music*) *story-music-volume*
+          (setf (volume *story-music*) (story-music-effective-volume)
                 (looping *story-music*) t)))
       (runtime-warn "Story music does not exist: ~a" path)))
 
@@ -60,7 +65,7 @@
   (when *story-music*
     (handler-case
         (progn
-          (setf (volume *story-music*) *story-music-volume*)
+          (setf (volume *story-music*) (story-music-effective-volume))
           (unless *story-music-playing-p*
             (claylib/ll:play-music-stream (claylib::c-ptr *story-music*))
             (setf *story-music-playing-p* t)))
@@ -82,7 +87,7 @@
              *story-music-playing-p*)
     (handler-case
         (progn
-          (setf (volume *story-music*) *story-music-volume*)
+          (setf (volume *story-music*) (story-music-effective-volume))
           (claylib/ll:update-music-stream (claylib::c-ptr *story-music*)))
       (error (condition)
         (runtime-warn "Could not update story music: ~a" condition)

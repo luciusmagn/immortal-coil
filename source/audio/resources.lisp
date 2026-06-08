@@ -42,6 +42,14 @@
 (defvar *start-confirm-asset* nil)
 (defvar *start-confirm-sound* nil)
 
+(defparameter *type-click-volume* 0.18)
+(defparameter *choice-switch-volume* 0.16)
+(defparameter *start-confirm-volume* 0.82)
+
+(-> scaled-sound-volume (scalar) scalar)
+(defun scaled-sound-volume (base-volume)
+  (* base-volume (clamp01 *sound-volume-scale*)))
+
 (-> type-click-paths () list)
 (defun type-click-paths ()
   (loop for i from 1 to 8
@@ -62,7 +70,8 @@
         *type-click-index*
         0)
   (loop for sound across *type-click-sounds*
-        do (setf (volume sound) 0.18)))
+        do (setf (volume sound)
+                 (scaled-sound-volume *type-click-volume*))))
 
 (-> load-choice-switch () t)
 (defun load-choice-switch ()
@@ -72,7 +81,8 @@
         (when asset
           (setf *choice-switch-asset* asset
                 *choice-switch-sound* (asset *choice-switch-asset*))
-          (setf (volume *choice-switch-sound*) 0.16))))))
+          (setf (volume *choice-switch-sound*)
+                (scaled-sound-volume *choice-switch-volume*)))))))
 
 (-> load-start-confirm () t)
 (defun load-start-confirm ()
@@ -83,7 +93,8 @@
         (when asset
           (setf *start-confirm-asset* asset
                 *start-confirm-sound* (asset *start-confirm-asset*))
-          (setf (volume *start-confirm-sound*) 0.82
+          (setf (volume *start-confirm-sound*)
+                (scaled-sound-volume *start-confirm-volume*)
                 (pitch *start-confirm-sound*) 1.0))))))
 
 (-> next-type-click () t)
@@ -93,6 +104,8 @@
       (setf *type-click-index*
             (mod (1+ *type-click-index*)
                  (length *type-click-sounds*)))
+      (setf (volume sound)
+            (scaled-sound-volume *type-click-volume*))
       sound)))
 
 (-> non-blank-text-range-p (string nonnegative-integer nonnegative-integer)
@@ -126,6 +139,8 @@
 (-> play-choice-switch () t)
 (defun play-choice-switch ()
   (when *choice-switch-sound*
+    (setf (volume *choice-switch-sound*)
+          (scaled-sound-volume *choice-switch-volume*))
     (setf (pitch *choice-switch-sound*)
           (+ 0.98 (/ (get-random-value 0 8) 100.0)))
     (play-sound-maybe *choice-switch-sound* "choice switch")))
@@ -133,7 +148,9 @@
 (-> play-start-confirm () t)
 (defun play-start-confirm ()
   (when *start-confirm-sound*
-    (setf (pitch *start-confirm-sound*) 1.0)
+    (setf (volume *start-confirm-sound*)
+          (scaled-sound-volume *start-confirm-volume*)
+          (pitch *start-confirm-sound*) 1.0)
     (play-sound-maybe *start-confirm-sound* "start confirm")))
 
 (-> clear-short-sound-resources () t)

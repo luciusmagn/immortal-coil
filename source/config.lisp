@@ -29,6 +29,8 @@
 (defparameter *dialog-manifest-paths* '("game/manifest.lisp"))
 (defparameter *dialog-script-paths* '("game/opening.lisp"))
 (defparameter *mod-directory-paths* '("mods/"))
+(defparameter *music-volume-scale* 1.0)
+(defparameter *sound-volume-scale* 1.0)
 
 (defvar *mode* :menu)
 (defvar *menu-elapsed* 0.0)

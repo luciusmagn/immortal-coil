@@ -1,14 +1,15 @@
 (in-package #:immortal-coil)
 
 (defun setup-game ()
+  (load-options)
   (setf *mode* :menu
         *game-fade-elapsed* 0.0
         *quit-requested-p* nil
         *save-current-game-p* nil
-        *window-mode* :windowed
         *requested-window-mode* nil)
   (reset-menu-state)
   (reset-pause-menu-state)
+  (reset-options-menu-state)
   (reset-particles :title-menu))
 
 (defun setup-window-resources ()

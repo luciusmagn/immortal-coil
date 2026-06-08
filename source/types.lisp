@@ -47,7 +47,7 @@
 
   (deftype menu-action ()
     "Top-level title menu command."
-    '(member :new-game :continue :mods :exit))
+    '(member :new-game :continue :options :mods :exit))
 
   (deftype menu-direction ()
     "Horizontal menu movement direction."
@@ -55,7 +55,7 @@
 
   (deftype pause-action ()
     "Pause menu command."
-    '(member :resume :menu :quit))
+    '(member :resume :options :menu :quit))
 
   (deftype pause-direction ()
     "Pause menu movement direction."

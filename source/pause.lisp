@@ -4,6 +4,7 @@
 
 (defparameter *pause-selection*
   (make-command-selection :resume "RESUME"
+                          :options "OPTIONS"
                           :menu "MAIN MENU"
                           :quit "QUIT"))
 
@@ -68,6 +69,8 @@
   (case (selected-pause-action)
     (:resume
      (close-pause-menu))
+    (:options
+     (open-options-menu))
     (:menu
      (play-start-confirm)
      (return-to-title-menu))
@@ -115,12 +118,15 @@
                                +virtual-height+
                                (claylib::c-ptr
                                 (make-color 0 0 0 176)))
-    (draw-centered-text "PAUSED"
-                        +virtual-center-x+
-                        (- +virtual-center-y+ 108)
-                        28
-                        color)
-    (draw-pause-options color)))
+    (if (options-menu-active-p)
+        (draw-options-menu)
+        (progn
+          (draw-centered-text "PAUSED"
+                              +virtual-center-x+
+                              (- +virtual-center-y+ 108)
+                              28
+                              color)
+          (draw-pause-options color)))))
 
 
 ;;; Updating
@@ -142,13 +148,15 @@
 
 (-> update-pause-menu () t)
 (defun update-pause-menu ()
-  (cond
-    ((is-key-pressed-p +key-escape+)
-     (close-pause-menu))
-    (t
-     (move-pause-selection (pause-selection-direction))
-     (when (confirm-pressed-p)
-       (execute-selected-pause-option)))))
+  (if (options-menu-active-p)
+      (update-options-menu)
+      (cond
+        ((is-key-pressed-p +key-escape+)
+         (close-pause-menu))
+        (t
+         (move-pause-selection (pause-selection-direction))
+         (when (confirm-pressed-p)
+           (execute-selected-pause-option))))))
 
 (-> maybe-open-pause-menu () boolean)
 (defun maybe-open-pause-menu ()

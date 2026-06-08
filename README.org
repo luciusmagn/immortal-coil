@@ -56,6 +56,22 @@ ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fas
     --eval '(asdf:load-system :immortal-coil)'
 #+end_src
 
+** Options
+
+The title menu and pause menu have an OPTIONS screen.
+
+Options are saved to:
+
+#+begin_src text
+save/options.lisp
+#+end_src
+
+With =IMMORTAL_COIL_SAVE_DIR= set, options are saved to:
+
+#+begin_src text
+$IMMORTAL_COIL_SAVE_DIR/options.lisp
+#+end_src
+
 ** Mods
 
 Public mod API:

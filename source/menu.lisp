@@ -5,6 +5,7 @@
 (defparameter *menu-selection*
   (make-command-selection :new-game "NEW GAME"
                           :continue "CONTINUE"
+                          :options "OPTIONS"
                           :mods "MODS"
                           :exit "EXIT"))
 
@@ -237,6 +238,8 @@
        (setf *quit-requested-p* t))
       (:mods
        (refresh-menu-mod-status))
+      (:options
+       (open-options-menu))
       (t
        (if (menu-action-available-p action)
            (begin-start-transition action)
@@ -362,9 +365,12 @@
 (defun draw-menu ()
   (draw-title-logo (menu-alpha-scale))
   (draw-particles (menu-alpha-scale))
-  (draw-menu-arrows)
-  (draw-menu-option)
-  (draw-menu-status))
+  (if (options-menu-active-p)
+      (draw-options-menu)
+      (progn
+        (draw-menu-arrows)
+        (draw-menu-option)
+        (draw-menu-status))))
 
 
 ;;; Updating
@@ -376,9 +382,12 @@
   (update-particles dt)
   (case *menu-start-state*
     (:idle
-     (move-menu-selection (menu-selection-direction))
-     (when (menu-option-pressed-p)
-       (execute-selected-menu-option)))
+     (if (options-menu-active-p)
+         (update-options-menu)
+         (progn
+           (move-menu-selection (menu-selection-direction))
+           (when (menu-option-pressed-p)
+             (execute-selected-menu-option)))))
     (:starting
      (incf *menu-start-elapsed* dt)
      (when (>= *menu-start-elapsed* (start-transition-total-seconds))

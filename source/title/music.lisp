@@ -6,6 +6,12 @@
 
 (defparameter *title-music-volume* 0.38)
 
+(-> title-music-effective-volume (&optional scalar) scalar)
+(defun title-music-effective-volume (&optional (volume-scale 1.0))
+  (* *title-music-volume*
+     (clamp01 *music-volume-scale*)
+     (clamp01 volume-scale)))
+
 (-> load-title-music () t)
 (defun load-title-music ()
   (let ((path (project-pathname "assets/audio/title-ambient-drone.mp3")))
@@ -16,13 +22,13 @@
           (setf *title-music-asset* asset
                 *title-music* (asset *title-music-asset*)
                 *title-music-playing-p* nil)
-          (setf (volume *title-music*) *title-music-volume*
+          (setf (volume *title-music*) (title-music-effective-volume)
                 (looping *title-music*) t))))))
 
 (-> play-title-music () t)
 (defun play-title-music ()
   (when *title-music*
-    (setf (volume *title-music*) *title-music-volume*)
+    (setf (volume *title-music*) (title-music-effective-volume))
     (when (not *title-music-playing-p*)
       (handler-case
           (progn
@@ -48,7 +54,7 @@
     (handler-case
         (progn
           (setf (volume *title-music*)
-                (* *title-music-volume* (clamp01 volume-scale)))
+                (title-music-effective-volume volume-scale))
           (claylib/ll:update-music-stream (claylib::c-ptr *title-music*)))
       (error (condition)
         (runtime-warn "Could not update title music: ~a" condition)
