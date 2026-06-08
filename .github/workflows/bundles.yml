@@ -80,13 +80,18 @@ jobs:
           msystem: MINGW64
           update: true
           install: >-
+            coreutils
             curl
             diffutils
+            findutils
+            gawk
             git
+            grep
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-gcc
             mingw-w64-x86_64-ninja
             mingw-w64-x86_64-sbcl
+            sed
             unzip
             zip
 
