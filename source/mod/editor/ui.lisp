@@ -147,11 +147,7 @@
                              height
                              (claylib::c-ptr
                               (make-color 0 0 0 238)))
-  (claylib/ll:draw-rectangle-lines left
-                                    top
-                                    width
-                                    height
-                                    (claylib::c-ptr color))
+  (draw-rectangle-outline left top width height color)
   (draw-text-at title
                 (+ left 24)
                 (+ top 20)
@@ -223,11 +219,11 @@
                   y
                   17
                   row-color)
-    (claylib/ll:draw-rectangle-lines (+ x 154)
-                                      (+ y 23)
-                                      width
-                                      3
-                                      (claylib::c-ptr row-color))
+    (claylib/ll:draw-rectangle (round (+ x 154))
+                               (round (+ y 23))
+                               (round width)
+                               3
+                               (claylib::c-ptr row-color))
     (when selected-p
       (draw-cursor (+ x 154)
                    y

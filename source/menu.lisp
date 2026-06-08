@@ -474,15 +474,12 @@
                                +mods-menu-panel-height+
                                (claylib::c-ptr
                                 (make-color 0 0 0 255)))
-    (dotimes (offset 2)
-      (claylib/ll:draw-rectangle-lines (+ (round left) offset)
-                                       (+ (round top) offset)
-                                       (- +mods-menu-panel-width+
-                                          (* offset 2))
-                                       (- +mods-menu-panel-height+
-                                          (* offset 2))
-                                       (claylib::c-ptr
-                                        (make-color 255 255 255 255))))))
+    (draw-rectangle-outline left
+                            top
+                            +mods-menu-panel-width+
+                            +mods-menu-panel-height+
+                            (make-color 255 255 255 255)
+                            :thickness 2)))
 
 (-> draw-mods-menu-options (t) t)
 (defun draw-mods-menu-options (color)

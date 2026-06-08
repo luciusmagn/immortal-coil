@@ -93,11 +93,7 @@
                                height
                                (claylib::c-ptr
                                 (make-color 0 0 0 226)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      width
-                                      height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top width height color)
     (draw-text-at "STATE"
                   (+ left 14)
                   (+ top 12)
@@ -150,11 +146,11 @@
                   (+ y 22)
                   size
                   field-color)
-    (claylib/ll:draw-rectangle-lines x
-                                      (+ y 44)
-                                      width
-                                      3
-                                      (claylib::c-ptr field-color))
+    (claylib/ll:draw-rectangle (round x)
+                               (round (+ y 44))
+                               (round width)
+                               3
+                               (claylib::c-ptr field-color))
     (when active-p
       (draw-cursor x
                    (+ y 22)
@@ -174,11 +170,7 @@
                                height
                                (claylib::c-ptr
                                 (make-color 0 0 0 226)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      width
-                                      height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top width height color)
     (draw-text-at "EDIT STATE"
                   (+ left 14)
                   (+ top 12)
@@ -222,11 +214,7 @@
                                height
                                (claylib::c-ptr
                                 (make-color 0 0 0 226)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      width
-                                      height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top width height color)
     (draw-text-at "EDIT TEXT"
                   (+ left 14)
                   (+ top 12)
@@ -307,11 +295,7 @@
                                panel-height
                                (claylib::c-ptr
                                 (make-color 0 0 0 234)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      panel-width
-                                      panel-height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top panel-width panel-height color)
     (draw-text-at title
                   (+ left 24)
                   (+ top 20)
@@ -409,11 +393,7 @@
                                panel-height
                                (claylib::c-ptr
                                 (make-color 0 0 0 234)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      panel-width
-                                      panel-height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top panel-width panel-height color)
     (draw-text-at (format nil "OPTION ~d"
                           (1+ *editor-choice-option-index*))
                   (+ left 24)
@@ -510,11 +490,7 @@
                                panel-height
                                (claylib::c-ptr
                                 (make-color 0 0 0 234)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      panel-width
-                                      panel-height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top panel-width panel-height color)
     (draw-text-at (format nil "CONVERSATION LINE ~d"
                           (1+ *editor-conversation-entry-index*))
                   (+ left 24)
@@ -604,11 +580,7 @@
                                panel-height
                                (claylib::c-ptr
                                 (make-color 0 0 0 234)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      panel-width
-                                      panel-height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top panel-width panel-height color)
     (draw-text-at "EDIT DETAILS"
                   (+ left 24)
                   (+ top 18)
@@ -704,11 +676,7 @@
                                panel-height
                                (claylib::c-ptr
                                 (make-color 0 0 0 234)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      panel-width
-                                      panel-height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top panel-width panel-height color)
     (draw-text-at "EDIT LINKS"
                   (+ left 24)
                   (+ top 18)
@@ -778,11 +746,7 @@
                                panel-height
                                (claylib::c-ptr
                                 (make-color 0 0 0 238)))
-    (claylib/ll:draw-rectangle-lines left
-                                      top
-                                      panel-width
-                                      panel-height
-                                      (claylib::c-ptr color))
+    (draw-rectangle-outline left top panel-width panel-height color)
     (draw-text-at "EDITOR BINDINGS"
                   (+ left 24)
                   (+ top 20)

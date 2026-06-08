@@ -75,6 +75,41 @@
         (a *draw-color*) alpha)
   (claylib::c-ptr *draw-color*))
 
+(-> draw-rectangle-outline
+    (scalar scalar scalar scalar t &key (:thickness nonnegative-integer))
+    t)
+(defun draw-rectangle-outline (left top width height color &key (thickness 1))
+  (let* ((x    (round left))
+         (y    (round top))
+         (w    (round width))
+         (h    (round height))
+         (line (max 1 (round thickness)))
+         (line (min line w h))
+         (ptr  (claylib::c-ptr color)))
+    (when (and (plusp w)
+               (plusp h)
+               (plusp line))
+      (claylib/ll:draw-rectangle x y w line ptr)
+      (when (> h line)
+        (claylib/ll:draw-rectangle x
+                                   (+ y (- h line))
+                                   w
+                                   line
+                                   ptr))
+      (let ((middle-height (- h (* 2 line))))
+        (when (plusp middle-height)
+          (claylib/ll:draw-rectangle x
+                                     (+ y line)
+                                     line
+                                     middle-height
+                                     ptr)
+          (when (> w line)
+            (claylib/ll:draw-rectangle (+ x (- w line))
+                                       (+ y line)
+                                       line
+                                       middle-height
+                                       ptr)))))))
+
 (defun draw-centered-text (text center-x center-y size color)
   (let* ((width (text-width text size))
          (x (- center-x (/ width 2)))
