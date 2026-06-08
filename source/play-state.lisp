@@ -7,12 +7,13 @@
 (defvar *save-current-game-p* nil)
 
 (defstruct play-state
-  (current-id     *runtime-fallback-node-id* :type dialog-id)
-  (elapsed        0.0 :type seconds)
-  (type-delay     0.0 :type seconds)
-  (visible-count  0 :type nonnegative-integer)
-  (selected-index 0 :type nonnegative-integer)
-  (input-buffer   "" :type string))
+  (current-id          *runtime-fallback-node-id* :type dialog-id)
+  (elapsed             0.0 :type seconds)
+  (type-delay          0.0 :type seconds)
+  (visible-count       0 :type nonnegative-integer)
+  (selected-index      0 :type nonnegative-integer)
+  (conversation-index  0 :type nonnegative-integer)
+  (input-buffer        "" :type string))
 
 
 ;;; Save hook
@@ -48,6 +49,7 @@
                  :type-delay *game-start-type-delay-seconds*
                  :visible-count 0
                  :selected-index 0
+                 :conversation-index 0
                  :input-buffer ""))
   (apply-node-enter-effects (current-node)))
 
@@ -58,6 +60,7 @@
         (play-state-type-delay *state*) 0.0
         (play-state-visible-count *state*) 0
         (play-state-selected-index *state*) 0
+        (play-state-conversation-index *state*) 0
         (play-state-input-buffer *state*) "")
   (apply-node-enter-effects (current-node))
   (save-current-game-maybe))

@@ -71,7 +71,11 @@
 
   (deftype node-kind ()
     "Dialog node behavior handled by the runtime."
-    '(member :text :say :choice :number :string :minigame :branch))
+    '(member :text :say :choice :conversation :number :string :minigame :branch))
+
+  (deftype conversation-side ()
+    "Screen side used by a two-character conversation entry."
+    '(member :left :right))
 
   (deftype minigame-id ()
     "A named minigame implementation selected by dialog nodes."

@@ -22,6 +22,7 @@
         :current-id (play-state-current-id *state*)
         :visible-count (play-state-visible-count *state*)
         :selected-index (play-state-selected-index *state*)
+        :conversation-index (play-state-conversation-index *state*)
         :input-buffer (play-state-input-buffer *state*)
         :dialog-store (dialog-store-alist)
         :particle-field (particle-field-state-data)))
@@ -110,6 +111,8 @@
            :type-delay 0.0
            :visible-count (save-data-nonnegative-integer data :visible-count)
            :selected-index (save-data-nonnegative-integer data :selected-index)
+           :conversation-index
+           (save-data-nonnegative-integer data :conversation-index)
            :input-buffer (save-data-string data :input-buffer)))
     (restore-particle-field-state (getf data :particle-field))))
 

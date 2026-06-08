@@ -156,6 +156,64 @@
   node-id)
 
 
+;;; Conversation nodes
+
+(-> dialog-conversation-line (conversation-side string string)
+    conversation-entry)
+(defun dialog-conversation-line (side speaker text)
+  (make-conversation-entry :side side
+                           :speaker speaker
+                           :text text))
+
+(-> dialog-left (string string) conversation-entry)
+(defun dialog-left (speaker text)
+  (dialog-conversation-line :left speaker text))
+
+(-> dialog-right (string string) conversation-entry)
+(defun dialog-right (speaker text)
+  (dialog-conversation-line :right speaker text))
+
+(-> ensure-conversation-entry (t) conversation-entry)
+(defun ensure-conversation-entry (value)
+  (if (conversation-entry-p value)
+      value
+      (progn
+        (runtime-warn "Expected a conversation entry, got: ~s" value)
+        (dialog-left "" ""))))
+
+(-> parse-dialog-conversation-arguments (list)
+    (values (option dialog-id) list))
+(defun parse-dialog-conversation-arguments (arguments)
+  (loop with next = nil
+        with entries = nil
+        for args = arguments then (rest args)
+        while args
+        for value = (first args)
+        do (if (eq value :next)
+               (if (rest args)
+                   (progn
+                     (setf next (second args))
+                     (setf args (rest args)))
+                   (runtime-warn "Conversation :next needs a target."))
+               (push value entries))
+        finally (return (values next (nreverse entries)))))
+
+(-> dialog-conversation (dialog-id &rest t) dialog-id)
+(defun dialog-conversation (id &rest arguments)
+  (multiple-value-bind (next entries)
+      (parse-dialog-conversation-arguments arguments)
+    (unless entries
+      (runtime-warn "Conversation node has no entries: ~a" id))
+    (add-node (make-node
+               :id id
+               :kind :conversation
+               :next next
+               :conversation (coerce (mapcar #'ensure-conversation-entry
+                                             entries)
+                                     'vector))))
+  id)
+
+
 ;;; Branch nodes
 
 (-> dialog-case (dialog-condition dialog-id) branch)

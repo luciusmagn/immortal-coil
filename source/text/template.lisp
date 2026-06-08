@@ -44,3 +44,9 @@
 
 (defun choice-display-label (choice)
   (substitute-dialog-variables (choice-label choice)))
+
+(defun conversation-entry-display-speaker (entry)
+  (substitute-dialog-variables (conversation-entry-speaker entry)))
+
+(defun conversation-entry-display-text (entry)
+  (substitute-dialog-variables (conversation-entry-text entry)))

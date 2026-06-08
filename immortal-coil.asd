@@ -102,7 +102,8 @@
                   :pathname "dialog"
                   :serial t
                   :components
-                  ((:file "choice")
+                  ((:file "conversation")
+                   (:file "choice")
                    (:file "input")))
 
                  (:module "minigame-runtime"

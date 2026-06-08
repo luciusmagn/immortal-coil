@@ -31,6 +31,11 @@
   (condition t :type dialog-condition)
   (target    *runtime-fallback-node-id* :type dialog-id))
 
+(defstruct conversation-entry
+  (side    :left :type conversation-side)
+  (speaker "" :type string)
+  (text    "" :type string))
+
 (defstruct dialog-conflict
   (node-id         *runtime-fallback-node-id* :type dialog-id)
   (previous-source :unknown :type dialog-source)
@@ -45,6 +50,7 @@
   (next           nil :type (option dialog-id))
   (choices        #() :type vector)
   (branches       #() :type vector)
+  (conversation   #() :type vector)
   (layout         nil :type (option choice-layout))
   (target         nil :type (option dialog-id))
   (response-key   nil :type (option dialog-id))
