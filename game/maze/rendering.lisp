@@ -306,18 +306,9 @@
     (draw-thick-line-between x (- y 10) x (- y 3) color 1.0)
     (draw-thick-line-between x (+ y 3) x (+ y 10) color 1.0)))
 
-(-> draw-dream-maze-hud (dream-maze-minigame t) t)
-(defun draw-dream-maze-hud (game color)
-  (declare (ignore game))
-  (draw-centered-text "W/S MOVE   A/D TURN   FIND AN EXIT"
-                      +virtual-center-x+
-                      (- +virtual-height+ 44)
-                      16
-                      color))
-
 (-> draw-dream-maze-minigame (node t) t)
 (defun draw-dream-maze-minigame (node color)
+  (declare (ignore color))
   (let ((game (ensure-dream-maze-minigame node)))
     (draw-dream-maze-view game)
-    (draw-dream-maze-reticle)
-    (draw-dream-maze-hud game color)))
+    (draw-dream-maze-reticle)))
