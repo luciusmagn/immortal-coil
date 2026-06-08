@@ -244,6 +244,8 @@
        (update-editor-choice-option-edit))
       (:edit-conversation-entry
        (update-editor-conversation-entry-edit))
+      (:edit-node-target
+       (update-editor-node-target-edit))
       (t
        (cond
          ((update-editor-help-overlay-controls)
@@ -265,6 +267,8 @@
           (editor-cycle-current-particles))
          ((editor-control-key-pressed-p +key-m+)
           (editor-cycle-current-music))
+         ((editor-control-key-pressed-p +key-l+)
+          (editor-start-node-target-edit))
          ((or (is-key-pressed-p +key-f3+)
               (editor-control-key-pressed-p +key-s+))
           (editor-toggle-store-overlay))

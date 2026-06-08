@@ -535,6 +535,106 @@
                             12
                             color)))
 
+(-> editor-node-target-field-label (editor-node-target-field) string)
+(defun editor-node-target-field-label (field)
+  (case field
+    (:next "NEXT")
+    (:target "TARGET")
+    (:success "SUCCESS")
+    (:failure "FAILURE")
+    (t "")))
+
+(-> editor-node-target-kind-label (editor-node-target-field) string)
+(defun editor-node-target-kind-label (field)
+  (case (editor-node-target-buffer-kind field)
+    (:function "FUNCTION")
+    (t "NODE ID")))
+
+(-> draw-editor-node-target-row
+    (editor-node-target-field nonnegative-integer scalar scalar t)
+    t)
+(defun draw-editor-node-target-row (field index x y color)
+  (let* ((selected-p (= index *editor-node-target-field-index*))
+         (row-color (if selected-p
+                        color
+                        (make-color 255 255 255 128)))
+         (label (editor-node-target-field-label field))
+         (kind-label (editor-node-target-kind-label field))
+         (value (editor-truncate-text
+                 (editor-node-target-buffer-value field)
+                 54)))
+    (when selected-p
+      (draw-text-at ">"
+                    (- x 22)
+                    y
+                    17
+                    color))
+    (draw-text-at label
+                  x
+                  y
+                  14
+                  row-color)
+    (draw-text-at kind-label
+                  (+ x 132)
+                  y
+                  14
+                  row-color)
+    (draw-text-at value
+                  (+ x 270)
+                  y
+                  17
+                  row-color)
+    (when selected-p
+      (draw-cursor (+ x 270)
+                   y
+                   (text-width value 17)
+                   17
+                   row-color))))
+
+(-> draw-editor-node-target-panel (t) t)
+(defun draw-editor-node-target-panel (color)
+  (let* ((panel-width 760)
+         (panel-height 226)
+         (left (round (- +virtual-center-x+ (/ panel-width 2))))
+         (top 332)
+         (node-id (or *editor-node-target-node-id* ""))
+         (node (and *editor-node-target-node-id*
+                    (node-exists-p *editor-node-target-node-id*)
+                    (find-node *editor-node-target-node-id*))))
+    (claylib/ll:draw-rectangle left
+                               top
+                               panel-width
+                               panel-height
+                               (claylib::c-ptr
+                                (make-color 0 0 0 234)))
+    (claylib/ll:draw-rectangle-lines left
+                                      top
+                                      panel-width
+                                      panel-height
+                                      (claylib::c-ptr color))
+    (draw-text-at "EDIT LINKS"
+                  (+ left 24)
+                  (+ top 18)
+                  14
+                  color)
+    (draw-text-at node-id
+                  (+ left 24)
+                  (+ top 42)
+                  12
+                  (make-color 255 255 255 142))
+    (when node
+      (loop for field across (editor-node-target-fields node)
+            for index from 0
+            do (draw-editor-node-target-row field
+                                            index
+                                            (+ left 58)
+                                            (+ top 78 (* index 34))
+                                            color)))
+    (draw-editor-right-text "LEFT/RIGHT TYPE  C-s SAVE  C-g CANCEL"
+                            (+ top panel-height 14)
+                            12
+                            color)))
+
 (-> draw-editor-help-row (string string nonnegative-integer scalar scalar t) t)
 (defun draw-editor-help-row (binding description index x y color)
   (let ((row-y (+ y (* index 24)))
@@ -553,7 +653,7 @@
 (-> draw-editor-help-overlay (t) t)
 (defun draw-editor-help-overlay (color)
   (let* ((panel-width 610)
-         (panel-height 440)
+         (panel-height 464)
          (left (round (- +virtual-center-x+ (/ panel-width 2))))
          (top 154)
          (rows '(("C-h" "close this help overlay")
@@ -564,6 +664,7 @@
                  ("C-p" "cycle the current minigame")
                  ("C-f" "cycle the current node particle field")
                  ("C-m" "cycle the current node music")
+                 ("C-l" "edit current node destinations")
                  ("C-o" "edit the highlighted option or line")
                  ("C-e" "edit the current node text")
                  ("C-s" "show shared state or save active panel")
@@ -641,6 +742,8 @@
         (draw-editor-choice-option-panel color))
       (when (eq *editor-mode* :edit-conversation-entry)
         (draw-editor-conversation-entry-panel color))
+      (when (eq *editor-mode* :edit-node-target)
+        (draw-editor-node-target-panel color))
       (when (eq *editor-mode* :edit-text)
         (draw-editor-text-edit-panel color))
       (when *editor-help-overlay-p*

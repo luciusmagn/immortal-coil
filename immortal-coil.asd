@@ -122,6 +122,7 @@
                    (:file "draft")
                    (:file "choice-option-edit")
                    (:file "conversation-entry-edit")
+                   (:file "node-target-edit")
                    (:file "store-edit")
                    (:file "audio")
                    (:file "text-edit")

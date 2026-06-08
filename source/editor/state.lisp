@@ -35,6 +35,10 @@
 (defvar *editor-conversation-entry-side* :left)
 (defvar *editor-conversation-entry-speaker-buffer* "")
 (defvar *editor-conversation-entry-text-buffer* "")
+(defvar *editor-node-target-node-id* nil)
+(defvar *editor-node-target-field-index* 0)
+(defvar *editor-node-target-value-buffers* (make-hash-table :test #'eq))
+(defvar *editor-node-target-kind-buffers* (make-hash-table :test #'eq))
 
 (defparameter *editor-draft-script-path* "game/editor-drafts.lisp")
 (defparameter *editor-placeholder-text* "newly inserted editor text.")
@@ -90,11 +94,17 @@
         *editor-conversation-entry-field-index* 0
         *editor-conversation-entry-side* :left
         *editor-conversation-entry-speaker-buffer* ""
-        *editor-conversation-entry-text-buffer* "")
+        *editor-conversation-entry-text-buffer* ""
+        *editor-node-target-node-id* nil
+        *editor-node-target-field-index* 0)
+  (clrhash *editor-node-target-value-buffers*)
+  (clrhash *editor-node-target-kind-buffers*)
   (when (fboundp 'reset-editor-store-edit-state)
     (funcall (symbol-function 'reset-editor-store-edit-state)))
   (when (fboundp 'reset-editor-conversation-entry-edit-state)
     (funcall (symbol-function 'reset-editor-conversation-entry-edit-state)))
+  (when (fboundp 'reset-editor-node-target-edit-state)
+    (funcall (symbol-function 'reset-editor-node-target-edit-state)))
   t)
 
 
@@ -159,15 +169,21 @@
         *editor-conversation-entry-side* :left
         *editor-conversation-entry-speaker-buffer* ""
         *editor-conversation-entry-text-buffer* ""
+        *editor-node-target-node-id* nil
+        *editor-node-target-field-index* 0
         *mode* :game
         *game-fade-elapsed* 0.0
         *menu-start-state* :idle
         *menu-start-action* nil
         *menu-start-elapsed* 0.0)
+  (clrhash *editor-node-target-value-buffers*)
+  (clrhash *editor-node-target-kind-buffers*)
   (when (fboundp 'reset-editor-store-edit-state)
     (funcall (symbol-function 'reset-editor-store-edit-state)))
   (when (fboundp 'reset-editor-conversation-entry-edit-state)
     (funcall (symbol-function 'reset-editor-conversation-entry-edit-state)))
+  (when (fboundp 'reset-editor-node-target-edit-state)
+    (funcall (symbol-function 'reset-editor-node-target-edit-state)))
   t)
 
 (-> start-base-game-editor () t)

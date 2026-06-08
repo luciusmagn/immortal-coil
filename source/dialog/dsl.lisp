@@ -36,6 +36,45 @@
   (setf (node-next (find-node node-id)) next-id)
   node-id)
 
+(-> dialog-node-kind-p (dialog-id list string) (option node))
+(defun dialog-node-kind-p (node-id kinds warning-text)
+  (let ((node (find-node node-id)))
+    (if (member (node-kind node) kinds)
+        node
+        (progn
+          (runtime-warn "~a on ~a node: ~a"
+                        warning-text
+                        (node-kind node)
+                        node-id)
+          nil))))
+
+(-> dialog-set-target (dialog-id dialog-target) dialog-id)
+(defun dialog-set-target (node-id target)
+  (let ((node (dialog-node-kind-p node-id
+                                  '(:number :string)
+                                  "Cannot set target")))
+    (when node
+      (setf (node-target node) target)))
+  node-id)
+
+(-> dialog-set-minigame-success (dialog-id dialog-target) dialog-id)
+(defun dialog-set-minigame-success (node-id target)
+  (let ((node (dialog-node-kind-p node-id
+                                  '(:minigame)
+                                  "Cannot set minigame success target")))
+    (when node
+      (setf (node-success-target node) target)))
+  node-id)
+
+(-> dialog-set-minigame-failure (dialog-id dialog-target) dialog-id)
+(defun dialog-set-minigame-failure (node-id target)
+  (let ((node (dialog-node-kind-p node-id
+                                  '(:minigame)
+                                  "Cannot set minigame failure target")))
+    (when node
+      (setf (node-failure-target node) target)))
+  node-id)
+
 (-> dialog-choice-at (dialog-id nonnegative-integer string) (option choice))
 (defun dialog-choice-at (node-id choice-index warning-text)
   (let ((node (find-node node-id)))

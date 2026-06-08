@@ -104,7 +104,8 @@
              :edit-text
              :edit-store
              :edit-choice-option
-             :edit-conversation-entry))
+             :edit-conversation-entry
+             :edit-node-target))
 
   (deftype editor-insert-kind ()
     "Dialog node skeleton types created by the in-game editor."
@@ -125,6 +126,10 @@
   (deftype editor-conversation-entry-field ()
     "Editable fields in the selected conversation-entry editor."
     '(member :side :speaker :text))
+
+  (deftype editor-node-target-field ()
+    "Editable destination fields on a node."
+    '(member :next :target :success :failure))
 
   (deftype conversation-side ()
     "Screen side used by a two-character conversation entry."
