@@ -73,6 +73,7 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 - Prefer clear, boring, established Common Lisp over clever low-level tricks.
 - Keep functions small and purpose-named, even when a helper is only used once.
 - Use CLOS where it naturally models the domain, but do not add abstractions before they remove real complexity.
+- TODO: move repeated node-kind dispatch toward CLOS methods when it reduces complexity. Good candidates are node write/persist behavior, editor panels, draw/update behavior, and current `editor-write-...` or `case`-based node handling. Do this deliberately, not as a broad rewrite.
 - Prefer `first` and `rest` over `car` and `cdr` in application-level code.
 - Use `kebab-case` for functions and variables, `+snake-case+` for constants, and `*snake-case*` for special variables.
 - Use entity-prefixed function names when a domain concept exists, such as `node-find`, `scene-load`, or `renderer-register`.
