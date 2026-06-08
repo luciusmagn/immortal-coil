@@ -3,6 +3,7 @@
 (dialog-particles "base/awake" :rising :immediate t)
 (dialog-stop-music "base/awake")
 (dialog-particles "ship/wake" :stars :fade-seconds 6.5)
+(dialog-music "ship/wake" "audio/ship-lyria-drone.mp3" :volume 0.26)
 
 (dialog-minigame-kind :wire-flight
                       :update #'update-flight-minigame-node

@@ -326,8 +326,8 @@ Start bundle-local story music on node entry:
 
 ```lisp
 (dialog-music "forest/threshold"
-              "audio/forest-wind-drone.mp3"
-              :volume 0.30)
+              "audio/forest-lyria-drone.mp3"
+              :volume 0.28)
 ```
 
 Stop story music on node entry:

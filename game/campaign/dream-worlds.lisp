@@ -1,5 +1,5 @@
 (dialog-particles "alice/fall" :rising :fade-seconds 3.0)
-(dialog-music "alice/fall" "audio/alice-glass-drone.mp3" :volume 0.25)
+(dialog-music "alice/fall" "audio/alice-lyria-drone.mp3" :volume 0.24)
 
 (dialog-text "alice/fall"
              "the left exit descends as a stairwell pretending to be a rabbit hole."
@@ -38,7 +38,7 @@
 
 
 (dialog-particles "rogue/entrance" :rising :fade-seconds 2.5)
-(dialog-music "rogue/entrance" "audio/rogue-cavern-drone.mp3" :volume 0.27)
+(dialog-music "rogue/entrance" "audio/rogue-lyria-drone.mp3" :volume 0.26)
 
 (dialog-text "rogue/entrance"
              "the upper exit opens onto a dungeon floor drawn in hard white lines."

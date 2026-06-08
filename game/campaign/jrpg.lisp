@@ -1,5 +1,5 @@
 (dialog-particles "jrpg/inn" :rising :fade-seconds 2.0)
-(dialog-music "jrpg/inn" "audio/jrpg-plain-drone.mp3" :volume 0.24)
+(dialog-music "jrpg/inn" "audio/jrpg-lyria-drone.mp3" :volume 0.24)
 
 (dialog-text "jrpg/inn"
              "the match flares. the room is plainly an inn room: checked blanket, wooden chest, and a quest notice nailed above the basin."

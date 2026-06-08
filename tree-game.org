@@ -181,7 +181,8 @@ Current author-facing helpers:
 
 #+begin_src lisp
 (dialog-particles "ship/wake" :stars :fade-seconds 6.5)
-(dialog-music "forest/threshold" "audio/forest-wind-drone.mp3" :volume 0.30)
+(dialog-music "ship/wake" "audio/ship-lyria-drone.mp3" :volume 0.26)
+(dialog-music "forest/threshold" "audio/forest-lyria-drone.mp3" :volume 0.28)
 (dialog-stop-music "base/awake")
 #+end_src
 

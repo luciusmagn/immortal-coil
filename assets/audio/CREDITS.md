@@ -38,10 +38,10 @@
 - Prompt: Evolving dark ambient background music for a black-and-white text narrative, with long sustained tones, slow harmonic drift, low organ pad, soft analog hum, distant airy texture, subtle unease, and no drums/percussion/bells/beat.
 - Notes: Selected as the title/menu background ambience candidate. Review the applicable OpenRouter and Google terms before public release.
 
-## forest-wind-drone.mp3, jrpg-plain-drone.mp3, alice-glass-drone.mp3, rogue-cavern-drone.mp3
+## ship-lyria-drone.mp3, forest-lyria-drone.mp3, jrpg-lyria-drone.mp3, alice-lyria-drone.mp3, rogue-lyria-drone.mp3
 
-- Source: Generated locally with FFmpeg lavfi sine and noise sources.
-- Author: Procedural audio generated for Immortal Coil.
-- License: Procedural audio generated for this project.
+- Source: Generated with OpenRouter using `google/lyria-3-pro-preview`.
+- Provider: Google AI Studio via OpenRouter.
 - Date generated: 2026-06-08.
-- Notes: Draft beatless ambience for the forest, JRPG, Alice, and Rogue campaign branches. Replace or regenerate before release if the branch identity changes.
+- Prompt notes: Track-specific prompts asked for long, drawn-out, beatless dark ambience with no drums, percussion, snare, bells, vocals, lyrics, or melody hook. The cues target the ship, forest, fantasy-adventure, dream, and dungeon branches.
+- Notes: Story-branch background ambience candidates. Review the applicable OpenRouter and Google terms before public release.

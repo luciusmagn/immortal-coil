@@ -119,7 +119,7 @@
 
 
 (dialog-particles "forest/threshold" :forest-wind :fade-seconds 4.0)
-(dialog-music "forest/threshold" "audio/forest-wind-drone.mp3" :volume 0.30)
+(dialog-music "forest/threshold" "audio/forest-lyria-drone.mp3" :volume 0.28)
 
 (dialog-text "forest/threshold"
              "the brass key is warm enough to hurt. it fits the front door."
