@@ -387,17 +387,8 @@ Audio:
 
 * Editor
 
-The visual editor is served with:
-
-#+begin_src sh
-nix run .#editor
-#+end_src
-
-Open:
-
-#+begin_src text
-http://127.0.0.1:8080/tools/dialog-editor/
-#+end_src
+The editor is in-game. Start Immortal Coil and use the title menu:
+=MODS=, then =EDIT BASE GAME=, =CREATE MOD=, or =EDIT MOD=.
 
 The editor should avoid forcing authors to write full Common Lisp into tiny
 fields. Prefer templates and focused fields, with custom Lisp as an escape
