@@ -58,6 +58,7 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 - No sandboxing is currently required. Treat that as a conscious prototype tradeoff, not as a forgotten security design.
 - Helper macros for common patterns are welcome when they make authoring dialogue easier: linear paths, choices with generated child IDs, common branches, and test-only dev save overrides.
 - The visual editor should avoid forcing authors to write full Common Lisp into tiny fields. Prefer predefined condition/effect templates with focused fill-in fields, while still allowing escape hatches for Lisp.
+- Once the in-game editor covers the supported authoring workflow, remove the Nim web editor, its README instructions, and its Nix/Nim build wiring instead of maintaining two editors.
 
 ## Gameplay And UI
 
