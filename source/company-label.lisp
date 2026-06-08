@@ -3,8 +3,8 @@
 (defparameter *copyright-label-text* "(c) 2026")
 (defparameter *company-label-text* "lambda symbolics ou")
 (defconstant +company-label-size+ 24)
-(defconstant +company-label-left-padding+ 28.0)
-(defconstant +company-label-right-padding+ 42.0)
+(defconstant +company-label-left-padding+ 64.0)
+(defconstant +company-label-right-padding+ 78.0)
 (defconstant +company-label-bottom-padding+ 25.0)
 
 (-> company-label-y () scalar)
