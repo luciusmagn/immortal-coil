@@ -130,17 +130,29 @@ The matchbook path leads to a straight-faced fantasy adventure.
 Author truth:
 
 - It should initially read as a bog-standard JRPG demon-lord quest.
+- It can be corny and stereotypical at first. The familiar frame is useful
+  because the later game can pull that certainty away.
 - The genre comfort is useful because later details can reframe the same room,
   bed, keyhole, inventory, and role expectations.
 - It should not wink too hard at the player. The joke can exist, but the path
   should remain sincere enough to support later unease.
+- Hidden long-term idea: the demon lord may turn out to be the player from
+  another path. Do not foreshadow this in the early JRPG route.
+- The demon-lord route is the built-in spine, not the only valid JRPG branch.
+  Keep enough stored state and hook points that later authors can leave the
+  expected route in substantial ways.
+- JRPG stats, route choices, companion choice, combat results, and inventory
+  should live in the shared dialog store so later branches and mods can hook
+  into them.
 
 Current surface:
 
 - `jrpg/inn` reframes the room as an inn room.
 - `jrpg/party` chooses a companion and stores the selected companion.
-- `jrpg/tower` ties the north tower door back to the same brass keyhole.
-- `jrpg/demon-lord` keeps the bed visible in the demon lord room.
+- `jrpg/overworld` is a small overworld-walk minigame.
+- `jrpg/slime-combat` is an early-Final-Fantasy-style turn combat minigame.
+- `jrpg/tower-choice` records the tower approach.
+- `jrpg/demon-choice` records how the player approaches the demon lord.
 
 ## Dream Maze
 
