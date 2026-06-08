@@ -454,7 +454,7 @@
 
 (-> draw-mods-menu-options (t) t)
 (defun draw-mods-menu-options (color)
-  (let ((start-y (- +virtual-center-y+ 76))
+  (let ((start-y (+ +virtual-center-y+ 30))
         (spacing 46.0))
     (loop for i below (mods-menu-option-count)
           do (draw-mods-menu-option i
@@ -466,7 +466,7 @@
   (when *menu-status-message*
     (draw-centered-text *menu-status-message*
                         +virtual-center-x+
-                        (+ +virtual-center-y+ 184)
+                        (+ +virtual-center-y+ 208)
                         13
                         color)))
 
@@ -478,7 +478,7 @@
                            (round (* 238 (menu-alpha-scale))))))
     (draw-centered-text "MODS"
                         +virtual-center-x+
-                        (- +virtual-center-y+ 154)
+                        (- +virtual-center-y+ 6)
                         28
                         color)
     (draw-mods-menu-options color)

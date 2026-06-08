@@ -2,8 +2,11 @@
 
 ;;; Rendering
 
-(defconstant +editor-corner-margin-x+ 64)
-(defconstant +editor-corner-margin-y+ 44)
+(defconstant +editor-corner-margin-x+ 86)
+(defconstant +editor-corner-margin-y+ 62)
+(defconstant +editor-corner-heading-size+ 16)
+(defconstant +editor-corner-body-size+ 14)
+(defconstant +editor-corner-line-gap+ 25)
 
 (-> draw-editor-right-text (string scalar nonnegative-integer t) t)
 (defun draw-editor-right-text (text y size color)
@@ -799,36 +802,39 @@
 (defun draw-editor-overlay ()
   (when (and *editor-active-p* *state*)
     (let* ((node (current-node))
-           (color (make-color 255 255 255 178))
-           (dim-color (make-color 255 255 255 118))
+           (color (make-color 255 255 255 218))
+           (dim-color (make-color 255 255 255 186))
+           (bottom-y (- +virtual-height+
+                        +editor-corner-margin-y+
+                        +editor-corner-body-size+))
            (next-label (editor-next-label node)))
       (draw-text-at "EDITOR"
                     +editor-corner-margin-x+
                     +editor-corner-margin-y+
-                    14
+                    +editor-corner-heading-size+
                     color)
       (draw-text-at (format nil "~a" (node-id node))
                     +editor-corner-margin-x+
-                    (+ +editor-corner-margin-y+ 20)
-                    12
+                    (+ +editor-corner-margin-y+ +editor-corner-line-gap+)
+                    +editor-corner-body-size+
                     dim-color)
       (when next-label
         (draw-editor-right-text (format nil "NEXT ~a" next-label)
                                 +editor-corner-margin-y+
-                                12
+                                +editor-corner-body-size+
                                 dim-color))
       (draw-text-at (format nil "C-h HELP  HISTORY ~d~@[  ~a~]"
                             (length *editor-history*)
                             (when *editor-show-all-choices-p*
                               "ALL CHOICES"))
                     +editor-corner-margin-x+
-                    (- +virtual-height+ +editor-corner-margin-y+)
-                    12
+                    bottom-y
+                    +editor-corner-body-size+
                     dim-color)
       (when *editor-status-message*
         (draw-editor-right-text *editor-status-message*
-                                (- +virtual-height+ +editor-corner-margin-y+)
-                                12
+                                bottom-y
+                                +editor-corner-body-size+
                                 dim-color))
       (when *editor-store-overlay-p*
         (draw-editor-store-overlay color))
