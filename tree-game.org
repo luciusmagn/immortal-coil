@@ -14,7 +14,7 @@ The immediate goal is a small playable loop:
 
 - stark black-and-white CRT text
 - typewriter pacing and sound
-- choices, inputs, branches, and text substitution
+- choices, inputs, conditional traversal, and text substitution
 - minigames authored through the same dialog/mod surface
 - particles and music controlled by dialog nodes
 - hot-reload-friendly scripts and focused save data
@@ -73,17 +73,17 @@ Node kinds:
 - =:number=
 - =:string=
 - =:minigame=
-- =:branch=
 
-Choices and branches can use conditions. Conditions may read the shared dialog
-store or run explicit lambdas.
+Ordinary node targets and choice destinations may be direct node IDs or
+delegates that resolve to node IDs. Choices can also have visible/enabled
+predicates. Conditions may read the shared dialog store or run explicit lambdas.
 
 The shared dialog store is for author-facing facts:
 
 - player name
 - age or other input values
 - inventory flags
-- hidden branch flags
+- hidden path flags
 - minigame results
 
 Dialog text and choice labels can substitute store values with ={store-key}=.
@@ -134,16 +134,22 @@ Input nodes:
                :response-key "door-count"
                :min 0
                :max 9
-               :target "base/door-count-branch")
+               :target "base/choose-door-by-count")
 #+end_src
 
-Branches:
+Conditional traversal uses target delegates on ordinary nodes, not branch
+nodes:
 
 #+begin_src lisp
-(dialog-branch "base/door-count-branch"
-               (dialog-case '(>= (dialog-value "door-count" 0) 5)
-                            "base/too-many-doors")
-               (dialog-default "base/choose-door"))
+(dialog-number "base/count-doors"
+               "how many doors do you count?"
+               :response-key "door-count"
+               :min 0
+               :max 9
+               :target (lambda ()
+                         (if (>= (dialog-value "door-count" 0) 5)
+                             "base/too-many-doors"
+                             "base/choose-door")))
 #+end_src
 
 Common path helpers:
