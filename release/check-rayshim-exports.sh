@@ -35,3 +35,4 @@ if ! cmp -s "$EXPECTED" "$ACTUAL"; then
 fi
 
 echo "rayshim exports match all Claylib bindings ($(wc -l < "$EXPECTED") symbols)."
+"${ROOT}/release/check-rayshim-signatures.pl" "$SOURCE"
