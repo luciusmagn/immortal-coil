@@ -19,6 +19,10 @@
 (defvar *menu-status-message* nil)
 (defvar *mods-menu-active-p* nil)
 
+(defconstant +mods-menu-panel-width+ 560)
+(defconstant +mods-menu-panel-height+ 440)
+(defconstant +mods-menu-panel-top+ 172)
+
 (-> current-mod-status-text () string)
 (defun current-mod-status-text ()
   (if (fboundp 'dialog-mod-status-summary)
@@ -452,10 +456,38 @@
                                    4
                                    (claylib::c-ptr color))))))
 
+(-> mods-menu-panel-left () scalar)
+(defun mods-menu-panel-left ()
+  (- +virtual-center-x+ (/ +mods-menu-panel-width+ 2.0)))
+
+(-> mods-menu-panel-bottom () scalar)
+(defun mods-menu-panel-bottom ()
+  (+ +mods-menu-panel-top+ +mods-menu-panel-height+))
+
+(-> draw-mods-menu-panel () t)
+(defun draw-mods-menu-panel ()
+  (let ((left (mods-menu-panel-left))
+        (top +mods-menu-panel-top+))
+    (claylib/ll:draw-rectangle (round left)
+                               (round top)
+                               +mods-menu-panel-width+
+                               +mods-menu-panel-height+
+                               (claylib::c-ptr
+                                (make-color 0 0 0 255)))
+    (dotimes (offset 2)
+      (claylib/ll:draw-rectangle-lines (+ (round left) offset)
+                                       (+ (round top) offset)
+                                       (- +mods-menu-panel-width+
+                                          (* offset 2))
+                                       (- +mods-menu-panel-height+
+                                          (* offset 2))
+                                       (claylib::c-ptr
+                                        (make-color 255 255 255 255))))))
+
 (-> draw-mods-menu-options (t) t)
 (defun draw-mods-menu-options (color)
-  (let ((start-y (+ +virtual-center-y+ 30))
-        (spacing 46.0))
+  (let ((start-y (+ +mods-menu-panel-top+ 134))
+        (spacing 44.0))
     (loop for i below (mods-menu-option-count)
           do (draw-mods-menu-option i
                                     (+ start-y (* i spacing))
@@ -466,7 +498,7 @@
   (when *menu-status-message*
     (draw-centered-text *menu-status-message*
                         +virtual-center-x+
-                        (+ +virtual-center-y+ 208)
+                        (- (mods-menu-panel-bottom) 42)
                         13
                         color)))
 
@@ -476,9 +508,10 @@
                            255
                            255
                            (round (* 238 (menu-alpha-scale))))))
+    (draw-mods-menu-panel)
     (draw-centered-text "MODS"
                         +virtual-center-x+
-                        (- +virtual-center-y+ 6)
+                        (+ +mods-menu-panel-top+ 58)
                         28
                         color)
     (draw-mods-menu-options color)
