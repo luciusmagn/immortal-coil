@@ -102,3 +102,9 @@ chmod +x "${BUNDLE}/run-immortal-coil.sh" "${BUNDLE}/immortal-coil"
 
 rm -f "${DIST}/immortal-coil-linux-x86_64.zip"
 (cd "$BUILD_DIR" && zip -qr "${DIST}/immortal-coil-linux-x86_64.zip" "immortal-coil-linux-x86_64")
+
+EXPECTED_GIT="$(git -C "$ROOT" rev-parse --short HEAD 2>/dev/null || true)"
+"${ROOT}/release/check-release-bundle.sh" "$BUNDLE" "$EXPECTED_GIT"
+"${ROOT}/release/check-release-bundle.sh" \
+  "${DIST}/immortal-coil-linux-x86_64.zip" \
+  "$EXPECTED_GIT"

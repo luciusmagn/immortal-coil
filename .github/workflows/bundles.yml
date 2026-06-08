@@ -49,6 +49,13 @@ jobs:
       - name: Build bundle
         run: release/build-linux-bundle.sh
 
+      - name: Verify bundle shims
+        run: |
+          expected="$(git rev-parse --short HEAD)"
+          release/check-release-bundle.sh \
+            build/release/linux-x86_64/immortal-coil-linux-x86_64 \
+            "$expected"
+
       - name: Upload Linux bundle
         uses: actions/upload-artifact@v4
         with:
@@ -97,6 +104,13 @@ jobs:
 
       - name: Build bundle
         run: release/build-windows-bundle.sh
+
+      - name: Verify bundle shims
+        run: |
+          expected="$(git rev-parse --short HEAD)"
+          release/check-release-bundle.sh \
+            build/release/windows-x86_64/immortal-coil-windows-x86_64 \
+            "$expected"
 
       - name: Upload Windows bundle
         uses: actions/upload-artifact@v4
