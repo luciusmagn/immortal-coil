@@ -29,6 +29,12 @@
 (defvar *editor-choice-option-target-buffer* "")
 (defvar *editor-choice-option-visible-buffer* "t")
 (defvar *editor-choice-option-enabled-buffer* "t")
+(defvar *editor-conversation-entry-node-id* nil)
+(defvar *editor-conversation-entry-index* 0)
+(defvar *editor-conversation-entry-field-index* 0)
+(defvar *editor-conversation-entry-side* :left)
+(defvar *editor-conversation-entry-speaker-buffer* "")
+(defvar *editor-conversation-entry-text-buffer* "")
 
 (defparameter *editor-draft-script-path* "game/editor-drafts.lisp")
 (defparameter *editor-placeholder-text* "newly inserted editor text.")
@@ -37,6 +43,8 @@
   #(:text :say :choice :conversation :number :string :minigame))
 (defparameter *editor-choice-option-fields*
   #(:label :target-kind :target :visible :enabled))
+(defparameter *editor-conversation-entry-fields*
+  #(:side :speaker :text))
 
 (-> editor-control-down-p () boolean)
 (defun editor-control-down-p ()
@@ -76,9 +84,17 @@
         *editor-choice-option-label-buffer* ""
         *editor-choice-option-target-buffer* ""
         *editor-choice-option-visible-buffer* "t"
-        *editor-choice-option-enabled-buffer* "t")
+        *editor-choice-option-enabled-buffer* "t"
+        *editor-conversation-entry-node-id* nil
+        *editor-conversation-entry-index* 0
+        *editor-conversation-entry-field-index* 0
+        *editor-conversation-entry-side* :left
+        *editor-conversation-entry-speaker-buffer* ""
+        *editor-conversation-entry-text-buffer* "")
   (when (fboundp 'reset-editor-store-edit-state)
     (funcall (symbol-function 'reset-editor-store-edit-state)))
+  (when (fboundp 'reset-editor-conversation-entry-edit-state)
+    (funcall (symbol-function 'reset-editor-conversation-entry-edit-state)))
   t)
 
 
@@ -137,6 +153,12 @@
         *editor-choice-option-target-buffer* ""
         *editor-choice-option-visible-buffer* "t"
         *editor-choice-option-enabled-buffer* "t"
+        *editor-conversation-entry-node-id* nil
+        *editor-conversation-entry-index* 0
+        *editor-conversation-entry-field-index* 0
+        *editor-conversation-entry-side* :left
+        *editor-conversation-entry-speaker-buffer* ""
+        *editor-conversation-entry-text-buffer* ""
         *mode* :game
         *game-fade-elapsed* 0.0
         *menu-start-state* :idle
@@ -144,6 +166,8 @@
         *menu-start-elapsed* 0.0)
   (when (fboundp 'reset-editor-store-edit-state)
     (funcall (symbol-function 'reset-editor-store-edit-state)))
+  (when (fboundp 'reset-editor-conversation-entry-edit-state)
+    (funcall (symbol-function 'reset-editor-conversation-entry-edit-state)))
   t)
 
 (-> start-base-game-editor () t)

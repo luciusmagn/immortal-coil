@@ -238,6 +238,15 @@
                            :speaker speaker
                            :text text))
 
+(-> dialog-conversation-side (t) conversation-side)
+(defun dialog-conversation-side (side)
+  (case side
+    (:right :right)
+    (:left :left)
+    (t
+     (runtime-warn "Unknown conversation side: ~s" side)
+     :left)))
+
 (-> dialog-left (string string) conversation-entry)
 (defun dialog-left (speaker text)
   (dialog-conversation-line :left speaker text))
@@ -285,6 +294,61 @@
                                              entries)
                                      'vector))))
   id)
+
+(-> dialog-conversation-node (dialog-id string) (option node))
+(defun dialog-conversation-node (node-id warning-text)
+  (let ((node (find-node node-id)))
+    (if (eq (node-kind node) :conversation)
+        node
+        (progn
+          (runtime-warn "~a on non-conversation node: ~a"
+                        warning-text
+                        node-id)
+          nil))))
+
+(-> dialog-conversation-entry
+    (t string string)
+    conversation-entry)
+(defun dialog-conversation-entry (side speaker text)
+  (dialog-conversation-line (dialog-conversation-side side)
+                            speaker
+                            text))
+
+(-> dialog-set-conversation-entry
+    (dialog-id nonnegative-integer t string string)
+    dialog-id)
+(defun dialog-set-conversation-entry (node-id entry-index side speaker text)
+  (let ((node (dialog-conversation-node node-id
+                                        "Cannot edit conversation entry")))
+    (cond
+      ((null node)
+       nil)
+      ((>= entry-index (length (node-conversation node)))
+       (runtime-warn "Conversation entry index ~d out of range for node: ~a"
+                     entry-index
+                     node-id))
+      (t
+       (setf (aref (node-conversation node) entry-index)
+             (dialog-conversation-entry side speaker text)))))
+  node-id)
+
+(-> dialog-insert-conversation-entry
+    (dialog-id nonnegative-integer t string string)
+    dialog-id)
+(defun dialog-insert-conversation-entry (node-id entry-index side speaker text)
+  (let ((node (dialog-conversation-node node-id
+                                        "Cannot insert conversation entry")))
+    (when node
+      (let* ((entries (node-conversation node))
+             (count (length entries))
+             (index (min count (max 0 entry-index)))
+             (entry (vector (dialog-conversation-entry side speaker text))))
+        (setf (node-conversation node)
+              (concatenate 'vector
+                           (subseq entries 0 index)
+                           entry
+                           (subseq entries index))))))
+  node-id)
 
 
 ;;; Branch nodes

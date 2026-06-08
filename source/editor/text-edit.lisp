@@ -242,6 +242,8 @@
        (update-editor-store-edit))
       (:edit-choice-option
        (update-editor-choice-option-edit))
+      (:edit-conversation-entry
+       (update-editor-conversation-entry-edit))
       (t
        (cond
          ((update-editor-help-overlay-controls)
@@ -256,7 +258,7 @@
          ((editor-control-key-pressed-p +key-r+)
           (editor-open-replace-menu))
          ((editor-control-key-pressed-p +key-a+)
-          (editor-add-choice-option-to-current))
+          (editor-add-node-detail))
          ((editor-control-key-pressed-p +key-p+)
           (editor-cycle-current-minigame))
          ((editor-control-key-pressed-p +key-f+)
@@ -269,7 +271,7 @@
          ((update-editor-store-overlay-controls)
           t)
          ((editor-control-key-pressed-p +key-o+)
-          (editor-start-choice-option-edit))
+          (editor-start-node-detail-edit))
          ((and (or (is-key-pressed-p +key-delete+)
                    (editor-control-key-pressed-p +key-d+))
                (not *editor-store-overlay-p*))

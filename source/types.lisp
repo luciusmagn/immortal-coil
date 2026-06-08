@@ -99,7 +99,12 @@
 
   (deftype editor-mode ()
     "Transient editor input mode."
-    '(member :play :insert :edit-text :edit-store :edit-choice-option))
+    '(member :play
+             :insert
+             :edit-text
+             :edit-store
+             :edit-choice-option
+             :edit-conversation-entry))
 
   (deftype editor-insert-kind ()
     "Dialog node skeleton types created by the in-game editor."
@@ -116,6 +121,10 @@
   (deftype editor-choice-option-field ()
     "Editable fields in the selected-choice option editor."
     '(member :label :target-kind :target :visible :enabled))
+
+  (deftype editor-conversation-entry-field ()
+    "Editable fields in the selected conversation-entry editor."
+    '(member :side :speaker :text))
 
   (deftype conversation-side ()
     "Screen side used by a two-character conversation entry."

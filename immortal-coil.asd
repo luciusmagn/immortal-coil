@@ -121,6 +121,7 @@
                   ((:file "state")
                    (:file "draft")
                    (:file "choice-option-edit")
+                   (:file "conversation-entry-edit")
                    (:file "store-edit")
                    (:file "audio")
                    (:file "text-edit")

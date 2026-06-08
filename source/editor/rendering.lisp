@@ -434,6 +434,107 @@
                             12
                             color)))
 
+(-> editor-conversation-side-label () string)
+(defun editor-conversation-side-label ()
+  (case *editor-conversation-entry-side*
+    (:right "RIGHT")
+    (t "LEFT")))
+
+(-> editor-conversation-field-label (editor-conversation-entry-field) string)
+(defun editor-conversation-field-label (field)
+  (case field
+    (:side "SIDE")
+    (:speaker "SPEAKER")
+    (:text "TEXT")
+    (t "")))
+
+(-> editor-conversation-field-value (editor-conversation-entry-field) string)
+(defun editor-conversation-field-value (field)
+  (case field
+    (:side
+     (editor-conversation-side-label))
+    (:speaker
+     *editor-conversation-entry-speaker-buffer*)
+    (:text
+     *editor-conversation-entry-text-buffer*)
+    (t "")))
+
+(-> draw-editor-conversation-entry-row
+    (editor-conversation-entry-field nonnegative-integer scalar scalar t)
+    t)
+(defun draw-editor-conversation-entry-row (field index x y color)
+  (let* ((selected-p (= index *editor-conversation-entry-field-index*))
+         (row-color (if selected-p
+                        color
+                        (make-color 255 255 255 128)))
+         (label (editor-conversation-field-label field))
+         (value (editor-truncate-text
+                 (editor-conversation-field-value field)
+                 66)))
+    (when selected-p
+      (draw-text-at ">"
+                    (- x 22)
+                    y
+                    17
+                    color))
+    (draw-text-at label
+                  x
+                  y
+                  14
+                  row-color)
+    (draw-text-at value
+                  (+ x 164)
+                  y
+                  17
+                  row-color)
+    (when (and selected-p
+               (not (eq field :side)))
+      (draw-cursor (+ x 164)
+                   y
+                   (text-width value 17)
+                   17
+                   row-color))))
+
+(-> draw-editor-conversation-entry-panel (t) t)
+(defun draw-editor-conversation-entry-panel (color)
+  (let* ((panel-width 760)
+         (panel-height 236)
+         (left (round (- +virtual-center-x+ (/ panel-width 2))))
+         (top 326))
+    (claylib/ll:draw-rectangle left
+                               top
+                               panel-width
+                               panel-height
+                               (claylib::c-ptr
+                                (make-color 0 0 0 234)))
+    (claylib/ll:draw-rectangle-lines left
+                                      top
+                                      panel-width
+                                      panel-height
+                                      (claylib::c-ptr color))
+    (draw-text-at (format nil "CONVERSATION LINE ~d"
+                          (1+ *editor-conversation-entry-index*))
+                  (+ left 24)
+                  (+ top 18)
+                  14
+                  color)
+    (draw-text-at (or *editor-conversation-entry-node-id* "")
+                  (+ left 24)
+                  (+ top 42)
+                  12
+                  (make-color 255 255 255 142))
+    (loop for field across *editor-conversation-entry-fields*
+          for index from 0
+          do (draw-editor-conversation-entry-row field
+                                                 index
+                                                 (+ left 58)
+                                                 (+ top 76 (* index 36))
+                                                 color))
+    (draw-editor-right-text "C-s SAVE  C-g CANCEL  TAB NEXT"
+                            (+ top panel-height 14)
+                            12
+                            color)))
+
 (-> draw-editor-help-row (string string nonnegative-integer scalar scalar t) t)
 (defun draw-editor-help-row (binding description index x y color)
   (let ((row-y (+ y (* index 24)))
@@ -459,11 +560,11 @@
                  ("C-b" "rewind to previous editor step")
                  ("C-i" "insert a node at the current link")
                  ("C-r" "replace the current node")
-                 ("C-a" "add an option to a choice node")
+                 ("C-a" "add an option or conversation line")
                  ("C-p" "cycle the current minigame")
                  ("C-f" "cycle the current node particle field")
                  ("C-m" "cycle the current node music")
-                 ("C-o" "edit the highlighted choice option")
+                 ("C-o" "edit the highlighted option or line")
                  ("C-e" "edit the current node text")
                  ("C-s" "show shared state or save active panel")
                  ("C-d" "delete current linear editor node")
@@ -538,6 +639,8 @@
         (draw-editor-store-edit-panel color))
       (when (eq *editor-mode* :edit-choice-option)
         (draw-editor-choice-option-panel color))
+      (when (eq *editor-mode* :edit-conversation-entry)
+        (draw-editor-conversation-entry-panel color))
       (when (eq *editor-mode* :edit-text)
         (draw-editor-text-edit-panel color))
       (when *editor-help-overlay-p*
