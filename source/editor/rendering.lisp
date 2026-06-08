@@ -260,6 +260,7 @@
     (:conversation "TWO-SIDED TALK")
     (:number "NUMBER INPUT")
     (:string "TEXT INPUT")
+    (:minigame "MINIGAME NODE")
     (t "TEXT")))
 
 (-> draw-editor-insert-kind-row (editor-insert-kind nonnegative-integer scalar scalar t) t)
@@ -459,6 +460,7 @@
                  ("C-i" "insert a node at the current link")
                  ("C-r" "replace the current node")
                  ("C-a" "add an option to a choice node")
+                 ("C-p" "cycle the current minigame")
                  ("C-o" "edit the highlighted choice option")
                  ("C-e" "edit the current node text")
                  ("C-s" "show shared state or save active panel")

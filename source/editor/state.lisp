@@ -34,7 +34,7 @@
 (defparameter *editor-placeholder-text* "newly inserted editor text.")
 (defparameter *editor-text-max-length* 1200)
 (defparameter *editor-insert-kinds*
-  #(:text :say :choice :conversation :number :string))
+  #(:text :say :choice :conversation :number :string :minigame))
 (defparameter *editor-choice-option-fields*
   #(:label :target-kind :target :visible :enabled))
 

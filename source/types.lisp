@@ -103,7 +103,7 @@
 
   (deftype editor-insert-kind ()
     "Dialog node skeleton types created by the in-game editor."
-    '(member :text :say :choice :conversation :number :string))
+    '(member :text :say :choice :conversation :number :string :minigame))
 
   (deftype editor-insert-action ()
     "What the insert-kind menu will do when confirmed."

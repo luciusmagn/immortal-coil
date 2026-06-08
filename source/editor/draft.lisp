@@ -85,6 +85,12 @@
   (editor-write-target stream target)
   (format stream ")~2%"))
 
+(-> editor-write-set-minigame-form (t dialog-id minigame-id) t)
+(defun editor-write-set-minigame-form (stream node-id game-id)
+  (format stream "~&(dialog-set-minigame ~s ~s)~2%"
+          node-id
+          game-id))
+
 (-> editor-write-set-choice-visible-predicate-form
     (t dialog-id nonnegative-integer dialog-condition)
     t)
@@ -191,6 +197,25 @@
   (editor-write-target stream (or target-id *runtime-fallback-node-id*))
   (format stream ")~2%"))
 
+(-> editor-default-minigame-id () minigame-id)
+(defun editor-default-minigame-id ()
+  (or (first (registered-minigame-ids))
+      :unknown))
+
+(-> editor-write-minigame-form
+    (t dialog-id string minigame-id (option dialog-target))
+    t)
+(defun editor-write-minigame-form (stream node-id text game-id next-id)
+  (let ((target (or next-id *runtime-fallback-node-id*)))
+    (format stream "~&(dialog-minigame ~s~%                 ~s~%                 :game ~s~%                 :success "
+            node-id
+            text
+            game-id)
+    (editor-write-target stream target)
+    (format stream "~%                 :failure ")
+    (editor-write-target stream target)
+    (format stream ")~2%")))
+
 (-> editor-write-insert-node-form
     (t editor-insert-kind dialog-id (option dialog-target))
     t)
@@ -222,6 +247,12 @@
                                "enter text."
                                (format nil "~a/value" node-id)
                                next-id))
+    (:minigame
+     (editor-write-minigame-form stream
+                                 node-id
+                                 "play the minigame."
+                                 (editor-default-minigame-id)
+                                 next-id))
     (t
      (editor-write-text-form stream
                              node-id
@@ -314,6 +345,22 @@
       (runtime-warn "Could not append editor node replace: ~a" condition)
       nil)))
 
+(-> editor-append-minigame-edit (dialog-id minigame-id) boolean)
+(defun editor-append-minigame-edit (node-id game-id)
+  (handler-case
+      (let ((path (editor-draft-script-pathname)))
+        (ensure-directories-exist path)
+        (with-open-file (stream path
+                                :direction :output
+                                :if-exists :append
+                                :if-does-not-exist :create)
+          (format stream "~&;;; minigame edit for ~s~%" node-id)
+          (editor-write-set-minigame-form stream node-id game-id))
+        t)
+    (error (condition)
+      (runtime-warn "Could not append editor minigame edit: ~a" condition)
+      nil)))
+
 (-> editor-append-text-rewrite (dialog-id string) boolean)
 (defun editor-append-text-rewrite (node-id text)
   (handler-case
@@ -375,6 +422,13 @@
                     "enter text."
                     :response-key (format nil "~a/value" node-id)
                     :target (or next-id *runtime-fallback-node-id*)))
+    (:minigame
+     (let ((target (or next-id *runtime-fallback-node-id*)))
+       (dialog-minigame node-id
+                        "play the minigame."
+                        :game (editor-default-minigame-id)
+                        :success target
+                        :failure target)))
     (t
      (dialog-text node-id *editor-placeholder-text* :next next-id))))
 
@@ -585,6 +639,46 @@
                  "EDITOR: REPLACE WRITE FAILED")
            (play-choice-switch)
            nil)))
+      nil))
+
+(-> editor-next-minigame-id (minigame-id list) minigame-id)
+(defun editor-next-minigame-id (current-id ids)
+  (let* ((position (position current-id ids))
+         (next-position (if position
+                            (mod (1+ position) (length ids))
+                            0)))
+    (nth next-position ids)))
+
+(-> editor-cycle-current-minigame () boolean)
+(defun editor-cycle-current-minigame ()
+  (if (and *editor-active-p* *state*)
+      (let ((node (current-node)))
+        (cond
+          ((not (eq (node-kind node) :minigame))
+           (setf *editor-status-message*
+                 "EDITOR: CURRENT NODE IS NOT A MINIGAME")
+           (play-choice-switch)
+           nil)
+          ((null (registered-minigame-ids))
+           (setf *editor-status-message* "EDITOR: NO MINIGAMES REGISTERED")
+           (play-choice-switch)
+           nil)
+          (t
+           (let ((game-id (editor-next-minigame-id
+                           (or (node-minigame node) :unknown)
+                           (registered-minigame-ids))))
+             (if (editor-append-minigame-edit (node-id node) game-id)
+                 (progn
+                   (dialog-set-minigame (node-id node) game-id)
+                   (setf *editor-status-message*
+                         (format nil "EDITOR: MINIGAME ~a" game-id))
+                   (play-start-confirm)
+                   t)
+                 (progn
+                   (setf *editor-status-message*
+                         "EDITOR: MINIGAME WRITE FAILED")
+                   (play-choice-switch)
+                   nil))))))
       nil))
 
 (-> editor-current-delete-parent () (option node))

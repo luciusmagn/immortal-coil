@@ -54,6 +54,13 @@
 (defun reset-minigames ()
   (clrhash *minigame-definitions*))
 
+(-> registered-minigame-ids () list)
+(defun registered-minigame-ids ()
+  (sort (loop for id being the hash-keys of *minigame-definitions*
+              collect id)
+        #'string<
+        :key #'symbol-name))
+
 
 ;;; Id normalization
 

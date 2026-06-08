@@ -397,6 +397,15 @@
                               "Minigame node needs a failure target")))
   id)
 
+(-> dialog-set-minigame (dialog-id minigame-id) dialog-id)
+(defun dialog-set-minigame (node-id game-id)
+  (let ((node (find-node node-id)))
+    (if (eq (node-kind node) :minigame)
+        (setf (node-minigame node) game-id)
+        (runtime-warn "Cannot set minigame on non-minigame node: ~a"
+                      node-id)))
+  node-id)
+
 
 ;;; Node effects
 
