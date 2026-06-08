@@ -23,9 +23,15 @@
       (runtime-warn "Could not resolve configured title logo: ~a" condition)
       (fallback-title-logo-path))))
 
+(defun title-logo-image-ready-p ()
+  (and *title-logo-image-asset*
+       (plusp (width *title-logo-image-asset*))
+       (plusp (height *title-logo-image-asset*))))
+
 (defun title-logo-loaded-p ()
   (and *title-logo-texture*
-       *title-logo-image-asset*))
+       (title-logo-image-ready-p)
+       (plusp (title-logo-height))))
 
 (defun title-logo-height ()
   (if (and *title-logo-texture-asset*
@@ -95,10 +101,12 @@
            (local-y (/ (- y top) height)))
       (when (and (<= 0.0 local-x 1.0)
                  (<= 0.0 local-y 1.0))
-        (values (min (1- (width *title-logo-image-asset*))
-                     (max 0 (floor (* local-x (width *title-logo-image-asset*)))))
-                (min (1- (height *title-logo-image-asset*))
-                     (max 0 (floor (* local-y (height *title-logo-image-asset*))))))))))
+        (let ((image-width (width *title-logo-image-asset*))
+              (image-height (height *title-logo-image-asset*)))
+          (values (min (1- image-width)
+                       (max 0 (floor (* local-x image-width))))
+                  (min (1- image-height)
+                       (max 0 (floor (* local-y image-height))))))))))
 
 (defun title-logo-white-at-p (x y)
   (handler-case

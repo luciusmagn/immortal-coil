@@ -18,6 +18,22 @@
           (+ +flight-center-y+
              (* y +flight-view-height+ +flight-cockpit-scale+))))
 
+(-> flight-view-left () scalar)
+(defun flight-view-left ()
+  (- +flight-center-x+ (/ +flight-view-width+ 2.0)))
+
+(-> flight-view-top () scalar)
+(defun flight-view-top ()
+  (- +flight-center-y+ (/ +flight-view-height+ 2.0)))
+
+(-> flight-view-right () scalar)
+(defun flight-view-right ()
+  (+ +flight-center-x+ (/ +flight-view-width+ 2.0)))
+
+(-> flight-view-bottom () scalar)
+(defun flight-view-bottom ()
+  (+ +flight-center-y+ (/ +flight-view-height+ 2.0)))
+
 (-> flight-depth-alpha (scalar alpha-channel alpha-channel) alpha-channel)
 (defun flight-depth-alpha (z min-alpha max-alpha)
   (let ((progress (clamp01 (/ (- +flight-visible-depth+ z)
@@ -82,6 +98,34 @@
                                   z
                                   (make-color 255 255 255 alpha)))
   (draw-flight-tunnel-rails))
+
+(-> draw-flight-view-border () t)
+(defun draw-flight-view-border ()
+  (let ((color (make-color 255 255 255 82)))
+    (draw-thick-line-between (flight-view-left)
+                             (flight-view-top)
+                             (flight-view-right)
+                             (flight-view-top)
+                             color
+                             1.0)
+    (draw-thick-line-between (flight-view-left)
+                             (flight-view-bottom)
+                             (flight-view-right)
+                             (flight-view-bottom)
+                             color
+                             1.0)
+    (draw-thick-line-between (flight-view-left)
+                             (flight-view-top)
+                             (flight-view-left)
+                             (flight-view-bottom)
+                             color
+                             1.0)
+    (draw-thick-line-between (flight-view-right)
+                             (flight-view-top)
+                             (flight-view-right)
+                             (flight-view-bottom)
+                             color
+                             1.0)))
 
 
 ;;; Gates
@@ -214,12 +258,37 @@
                                        (make-color 255 255 255 184))
           (draw-flight-guidance-dot guide-x guide-y))))))
 
+(-> flight-ship-rotated-point (scalar scalar list)
+    (values scalar scalar scalar))
+(defun flight-ship-rotated-point (aim-x aim-y point)
+  (destructuring-bind (local-x local-y depth) point
+    (let* ((yaw (clamp-value (* aim-x 0.46) -0.46 0.46))
+           (pitch (clamp-value (* aim-y 0.36) -0.36 0.36))
+           (cos-yaw (cos yaw))
+           (sin-yaw (sin yaw))
+           (cos-pitch (cos pitch))
+           (sin-pitch (sin pitch))
+           (x local-x)
+           (y (- local-y 32.0))
+           (z (- depth 22.0))
+           (yaw-x (+ (* x cos-yaw) (* z sin-yaw)))
+           (yaw-z (- (* z cos-yaw) (* x sin-yaw)))
+           (pitch-y (+ (* y cos-pitch) (* yaw-z sin-pitch)))
+           (pitch-z (- (* yaw-z cos-pitch) (* y sin-pitch))))
+      (values yaw-x
+              (+ pitch-y 32.0)
+              (+ pitch-z 22.0)))))
+
 (-> flight-ship-point (scalar scalar scalar scalar list)
     (values scalar scalar))
 (defun flight-ship-point (center-x center-y aim-x aim-y point)
-  (destructuring-bind (local-x local-y depth) point
-    (values (+ center-x local-x (* aim-x depth 0.82))
-            (+ center-y local-y (* aim-y depth 0.58)))))
+  (multiple-value-bind (x y depth)
+      (flight-ship-rotated-point aim-x aim-y point)
+    (let ((scale (+ 1.0 (* (clamp-value depth -26.0 72.0) 0.004))))
+      (values (+ center-x (* x scale))
+              (+ center-y
+                 (* y scale)
+                 (- (* depth 0.13)))))))
 
 (-> draw-flight-ship-surface (scalar scalar scalar scalar list list list t) t)
 (defun draw-flight-ship-surface (center-x center-y aim-x aim-y
@@ -263,16 +332,17 @@
 
 (-> draw-flight-ship-body (scalar scalar scalar scalar t) t)
 (defun draw-flight-ship-body (center-x center-y aim-x aim-y outline-color)
-  (let* ((nose           '(0.0 -4.0 54.0))
-         (left-shoulder  '(-15.0 15.0 28.0))
-         (right-shoulder '(15.0 15.0 28.0))
-         (left-wing      '(-50.0 32.0 10.0))
-         (right-wing     '(50.0 32.0 10.0))
-         (left-tail      '(-18.0 48.0 0.0))
-         (right-tail     '(18.0 48.0 0.0))
-         (tail           '(0.0 58.0 0.0))
-         (left-shade     (flight-ship-side-shade 154.0 aim-x 38.0))
-         (right-shade    (flight-ship-side-shade 118.0 aim-x -38.0))
+  (let* ((nose           '(0.0 -8.0 66.0))
+         (left-shoulder  '(-16.0 14.0 42.0))
+         (right-shoulder '(16.0 14.0 42.0))
+         (spine          '(0.0 28.0 22.0))
+         (left-wing      '(-54.0 34.0 15.0))
+         (right-wing     '(54.0 34.0 15.0))
+         (left-tail      '(-20.0 54.0 0.0))
+         (right-tail     '(20.0 54.0 0.0))
+         (tail           '(0.0 66.0 0.0))
+         (left-shade     (flight-ship-side-shade 154.0 aim-x 42.0))
+         (right-shade    (flight-ship-side-shade 118.0 aim-x -42.0))
          (left-color     (make-color left-shade left-shade left-shade 224))
          (right-color    (make-color right-shade right-shade right-shade 224))
          (center-color   (make-color 224 224 224 232))
@@ -287,10 +357,17 @@
     (draw-flight-ship-surface center-x center-y aim-x aim-y
                               nose tail right-wing right-color)
     (draw-flight-ship-surface center-x center-y aim-x aim-y
-                              nose left-shoulder right-shoulder center-color)
+                              nose left-shoulder spine center-color)
+    (draw-flight-ship-surface center-x center-y aim-x aim-y
+                              nose spine right-shoulder center-color)
     (dolist (edge `((,nose ,left-wing 2.0)
                     (,nose ,right-wing 2.0)
                     (,nose ,tail 1.4)
+                    (,nose ,spine 1.2)
+                    (,left-shoulder ,spine 1.0)
+                    (,spine ,right-shoulder 1.0)
+                    (,left-shoulder ,left-wing 1.0)
+                    (,right-shoulder ,right-wing 1.0)
                     (,left-wing ,left-tail 1.2)
                     (,left-tail ,tail 1.2)
                     (,tail ,right-tail 1.2)
@@ -347,4 +424,5 @@
     (draw-flight-gates game)
     (draw-flight-guidance game)
     (draw-flight-player game color)
+    (draw-flight-view-border)
     (draw-flight-hud game color)))
