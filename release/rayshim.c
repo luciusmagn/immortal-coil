@@ -134,6 +134,34 @@ SHIM_EXPORT void __claw_DrawRectangle(int pos_x,
     DrawRectangle(pos_x, pos_y, width, height, *color);
 }
 
+SHIM_EXPORT void __claw_DrawRectangleLines(int pos_x,
+                                           int pos_y,
+                                           int width,
+                                           int height,
+                                           Color *color) {
+    DrawRectangleLines(pos_x, pos_y, width, height, *color);
+}
+
+SHIM_EXPORT void __claw__DrawRectangleLines(int pos_x,
+                                            int pos_y,
+                                            int width,
+                                            int height,
+                                            Color *color) {
+    __claw_DrawRectangleLines(pos_x, pos_y, width, height, color);
+}
+
+SHIM_EXPORT void __claw_DrawRectangleLinesEx(Rectangle *rec,
+                                             float line_thick,
+                                             Color *color) {
+    DrawRectangleLinesEx(*rec, line_thick, *color);
+}
+
+SHIM_EXPORT void __claw__DrawRectangleLinesEx(Rectangle *rec,
+                                              float line_thick,
+                                              Color *color) {
+    __claw_DrawRectangleLinesEx(rec, line_thick, color);
+}
+
 SHIM_EXPORT void __claw_DrawTriangle(Vector2 *v1,
                                      Vector2 *v2,
                                      Vector2 *v3,
