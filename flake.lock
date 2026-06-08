@@ -3,17 +3,17 @@
     "claylib": {
       "flake": false,
       "locked": {
-        "lastModified": 1684344837,
-        "narHash": "sha256-vooi47ggWIqNvxhS/Wkx6sr2vFX+sqDqPi95Wl46eog=",
-        "owner": "defun-games",
+        "lastModified": 1780949354,
+        "narHash": "sha256-mYjVcpy3C8X8RBRxqtbHHWDhj/0GB3R5KS7HfEVgl0I=",
+        "owner": "luciusmagn",
         "repo": "claylib",
-        "rev": "3eb86bc5f6b88570e053e0eefed66384d2c28365",
+        "rev": "9b83e1a91241bc71d744ff903a3c348312b0e560",
         "type": "github"
       },
       "original": {
-        "owner": "defun-games",
+        "owner": "luciusmagn",
         "repo": "claylib",
-        "rev": "3eb86bc5f6b88570e053e0eefed66384d2c28365",
+        "rev": "9b83e1a91241bc71d744ff903a3c348312b0e560",
         "type": "github"
       }
     },

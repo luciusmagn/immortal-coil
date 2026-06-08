@@ -43,8 +43,8 @@ jobs:
       - name: Install Claylib
         run: |
           mkdir -p "$HOME/quicklisp/local-projects"
-          git clone https://github.com/defun-games/claylib.git "$HOME/quicklisp/local-projects/claylib"
-          git -C "$HOME/quicklisp/local-projects/claylib" checkout 3eb86bc5f6b88570e053e0eefed66384d2c28365
+          git clone https://github.com/luciusmagn/claylib.git "$HOME/quicklisp/local-projects/claylib"
+          git -C "$HOME/quicklisp/local-projects/claylib" checkout 9b83e1a91241bc71d744ff903a3c348312b0e560
 
       - name: Build bundle
         run: release/build-linux-bundle.sh
@@ -81,6 +81,7 @@ jobs:
           update: true
           install: >-
             curl
+            diffutils
             git
             mingw-w64-x86_64-cmake
             mingw-w64-x86_64-gcc
@@ -99,8 +100,8 @@ jobs:
       - name: Install Claylib
         run: |
           mkdir -p "$HOME/quicklisp/local-projects"
-          git clone https://github.com/defun-games/claylib.git "$HOME/quicklisp/local-projects/claylib"
-          git -C "$HOME/quicklisp/local-projects/claylib" checkout 3eb86bc5f6b88570e053e0eefed66384d2c28365
+          git clone https://github.com/luciusmagn/claylib.git "$HOME/quicklisp/local-projects/claylib"
+          git -C "$HOME/quicklisp/local-projects/claylib" checkout 9b83e1a91241bc71d744ff903a3c348312b0e560
 
       - name: Build bundle
         run: release/build-windows-bundle.sh

@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
     claylib = {
-      url = "github:defun-games/claylib/3eb86bc5f6b88570e053e0eefed66384d2c28365";
+      url = "github:luciusmagn/claylib/9b83e1a91241bc71d744ff903a3c348312b0e560";
       flake = false;
     };
   };
@@ -60,7 +60,7 @@
 
           claylibPatched = pkgs.stdenv.mkDerivation {
             pname = "claylib";
-            version = "3eb86bc5";
+            version = "9b83e1a";
             src = claylib;
 
             nativeBuildInputs = [
