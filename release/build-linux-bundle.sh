@@ -37,6 +37,8 @@ gcc -shared -fPIC \
 
 "${ROOT}/release/check-rayshim-library-exports.sh" \
   "${LIB_DIR}/librayshim.x86_64-pc-linux-gnu.so"
+"${ROOT}/release/check-rayshim-imports.sh" \
+  "${LIB_DIR}/librayshim.x86_64-pc-linux-gnu.so"
 
 cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "$LIB_DIR/"
 cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "${LIB_DIR}/libraylib.so.420"

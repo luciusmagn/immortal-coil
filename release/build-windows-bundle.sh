@@ -96,6 +96,8 @@ gcc -shared -DRAYLIB_DLL \
 
 "${ROOT}/release/check-rayshim-library-exports.sh" \
   "${LIB_DIR}/librayshim.dll"
+"${ROOT}/release/check-rayshim-imports.sh" \
+  "${LIB_DIR}/librayshim.dll"
 
 cp "$RAYLIB_DLL" "${LIB_DIR}/$(basename "$RAYLIB_DLL")"
 if [ "$(basename "$RAYLIB_DLL")" != "libraylib.dll" ]; then
