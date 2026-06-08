@@ -13,6 +13,19 @@
                       :update #'update-dream-maze-minigame-node
                       :draw #'draw-dream-maze-minigame)
 
+(defun base-door-count-target ()
+  (if (>= (dialog-value "door-count" 0) 5)
+      "base/too-many-doors"
+      "base/choose-door"))
+
+(defun dream-maze-exit-target ()
+  (let ((exit (dialog-value "dream-maze-exit" "")))
+    (cond
+      ((string= exit "left") "alice/fall")
+      ((string= exit "upper") "rogue/entrance")
+      ((string= exit "right") "dream/right-exit")
+      (t "dream/maze-lost"))))
+
 
 ;;; Base room
 
@@ -50,12 +63,7 @@
                :response-key "door-count"
                :min 0
                :max 9
-               :target "base/door-count-branch")
-
-(dialog-branch "base/door-count-branch"
-               (dialog-case '(>= (dialog-value "door-count" 0) 5)
-                            "base/too-many-doors")
-               (dialog-default "base/choose-door"))
+               :target #'base-door-count-target)
 
 (dialog-text "base/too-many-doors"
              "you decide the room is lying about the number."
@@ -142,20 +150,8 @@
 (dialog-minigame "dream/maze"
                  "w/s or up/down move. a/d or left/right turn. find an exit."
                  :game :dream-maze
-                 :success "dream/maze-exit"
+                 :success #'dream-maze-exit-target
                  :failure "dream/maze-lost")
-
-(dialog-branch "dream/maze-exit"
-               (dialog-case '(string= (dialog-value "dream-maze-exit" "")
-                              "left")
-                            "alice/fall")
-               (dialog-case '(string= (dialog-value "dream-maze-exit" "")
-                              "upper")
-                            "rogue/entrance")
-               (dialog-case '(string= (dialog-value "dream-maze-exit" "")
-                              "right")
-                            "dream/right-exit")
-               (dialog-default "dream/maze-lost"))
 
 (dialog-say "dream/left-exit"
             "the hall"

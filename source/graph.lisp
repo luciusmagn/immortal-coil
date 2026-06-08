@@ -27,10 +27,6 @@
   (condition         t :type dialog-condition)
   (enabled-condition t :type dialog-condition))
 
-(defstruct branch
-  (condition t :type dialog-condition)
-  (target    *runtime-fallback-node-id* :type dialog-target))
-
 (defstruct conversation-entry
   (side    :left :type conversation-side)
   (speaker "" :type string)
@@ -49,7 +45,6 @@
   (text           "" :type string)
   (next           nil :type (option dialog-target))
   (choices        #() :type vector)
-  (branches       #() :type vector)
   (conversation   #() :type vector)
   (layout         nil :type (option choice-layout))
   (target         nil :type (option dialog-target))

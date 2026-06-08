@@ -9,7 +9,7 @@ The primitive graph forms still exist:
              (dialog-option "left" "base/left"))
 ```
 
-For common prose-heavy branches, use the pattern helpers.
+For common prose-heavy choice paths, use the pattern helpers.
 
 ## Paths
 
@@ -33,7 +33,7 @@ The last node points to `base/door`.
 ## Choice Paths
 
 `dialog-choice-path`, `dialog-pick-path`, and `dialog-list-path` define a
-choice node plus short child paths. Branch IDs default to
+choice node plus short child paths. Option IDs default to
 `parent/sanitized-label`.
 
 ```lisp
@@ -52,8 +52,8 @@ This creates option targets:
 - `base/night-stand/glass`
 - `base/night-stand/nothing`
 
-Use `:id` when the label is long or likely to change. Use `:target` on a branch
-with no text to point directly to an existing node. If a branch has text,
+Use `:id` when the label is long or likely to change. Use `:target` on an
+option with no text to point directly to an existing node. If an option has text,
 `:target` is treated as the path's final `:next`.
 
 Conditions work like normal choices:
@@ -65,7 +65,7 @@ Conditions work like normal choices:
  "the hinges count themselves out loud.")
 ```
 
-`:when` and `:unless` hide a branch option. Use `:enabled-when` or
+`:when` and `:unless` hide a choice option. Use `:enabled-when` or
 `:enabled-unless` to keep it visible but locked until the predicate passes:
 
 ```lisp

@@ -95,7 +95,7 @@
 
   (deftype node-kind ()
     "Dialog node behavior handled by the runtime."
-    '(member :text :say :choice :conversation :number :string :minigame :branch))
+    '(member :text :say :choice :conversation :number :string :minigame))
 
   (deftype editor-mode ()
     "Transient editor input mode."
@@ -162,8 +162,8 @@
     "Script effect evaluated when a node is entered."
     '(or symbol runtime-function cons))
 
-  (deftype dialog-pattern-branch-data ()
-    "A parsed choice-branch pattern used by graph authoring macros."
+  (deftype dialog-pattern-option-data ()
+    "A parsed choice option pattern used by graph authoring macros."
     'plist)
 
   (deftype dialog-conflict-resolution ()

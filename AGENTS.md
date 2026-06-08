@@ -52,6 +52,7 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 - The bundled game title logo and story root should be declared in `game/manifest.lisp` through the same manifest metadata available to mods. Mods can use `:title-logo` and `:start` for total conversions; deterministic latest-wins load order decides which one is active.
 - Mods are expected to append choices and nodes to base story nodes and to nodes from other mods.
 - Namespaced node IDs such as `some-mod/opening` are preferred. Intentional replacement should be rare.
+- Do not add pure branch/router node kinds. Nodes should be authored experiences such as dialogue, input, choices, conversations, or minigames. Conditional traversal belongs on outgoing choices, node targets, or explicit target delegates.
 - Current conflict policy is deterministic latest-wins with conflicts recorded and surfaced in the menu. Future "negotiation" should build on that record rather than making conflicts silent.
 - A mod manager screen can grow later, but keep the first official mod support simple and visible from the menu.
 - No sandboxing is currently required. Treat that as a conscious prototype tradeoff, not as a forgotten security design.

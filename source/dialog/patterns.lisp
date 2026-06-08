@@ -105,8 +105,8 @@
                   (setf forms (rest forms)))))
       (values (nreverse texts) keys)))
 
-  (-> dialog-pattern-branch (t) dialog-pattern-branch-data)
-  (defun dialog-pattern-branch (spec)
+  (-> dialog-pattern-option (t) dialog-pattern-option-data)
+  (defun dialog-pattern-option (spec)
     (if (consp spec)
         (multiple-value-bind (texts keys)
             (dialog-pattern-read-body (rest spec))
@@ -114,83 +114,83 @@
                 :texts texts
                 :keys keys))
         (progn
-          (runtime-warn "Ignoring malformed dialog branch pattern: ~s" spec)
+          (runtime-warn "Ignoring malformed dialog option pattern: ~s" spec)
           (list :label "continue"
                 :texts nil
                 :keys nil))))
 
-  (-> dialog-pattern-branch-key
-      (dialog-pattern-branch-data keyword &optional t)
+  (-> dialog-pattern-option-key
+      (dialog-pattern-option-data keyword &optional t)
       t)
-  (defun dialog-pattern-branch-key (branch key &optional default)
-    (let ((value (getf (getf branch :keys) key default)))
+  (defun dialog-pattern-option-key (option key &optional default)
+    (let ((value (getf (getf option :keys) key default)))
       (if (eq value default)
           default
           value)))
 
-  (-> dialog-pattern-branch-suffix (dialog-pattern-branch-data) t)
-  (defun dialog-pattern-branch-suffix (branch)
-    (or (dialog-pattern-branch-key branch :id)
-        (getf branch :label)))
+  (-> dialog-pattern-option-suffix (dialog-pattern-option-data) t)
+  (defun dialog-pattern-option-suffix (option)
+    (or (dialog-pattern-option-key option :id)
+        (getf option :label)))
 
-  (-> dialog-pattern-branch-next (dialog-pattern-branch-data) t)
-  (defun dialog-pattern-branch-next (branch)
-    (or (dialog-pattern-branch-key branch :next)
-        (dialog-pattern-branch-key branch :target)))
+  (-> dialog-pattern-option-next (dialog-pattern-option-data) t)
+  (defun dialog-pattern-option-next (option)
+    (or (dialog-pattern-option-key option :next)
+        (dialog-pattern-option-key option :target)))
 
-  (-> dialog-pattern-branch-target (symbol dialog-pattern-branch-data) t)
-  (defun dialog-pattern-branch-target (parent branch)
-    (let ((texts  (getf branch :texts))
-          (target (dialog-pattern-branch-key branch :target)))
+  (-> dialog-pattern-option-target (symbol dialog-pattern-option-data) t)
+  (defun dialog-pattern-option-target (parent option)
+    (let ((texts  (getf option :texts))
+          (target (dialog-pattern-option-key option :target)))
       (cond
         (texts
-         `(dialog-child-id ,parent ,(dialog-pattern-branch-suffix branch)))
+         `(dialog-child-id ,parent ,(dialog-pattern-option-suffix option)))
         (target
          target)
         (t
          `(progn
-            (runtime-warn "Dialog choice branch has no target or text under ~a: ~a"
+            (runtime-warn "Dialog choice option has no target or text under ~a: ~a"
                           ,parent
-                          ,(getf branch :label))
+                          ,(getf option :label))
             *runtime-fallback-node-id*)))))
 
-  (-> dialog-pattern-option-form (symbol dialog-pattern-branch-data) cons)
-  (defun dialog-pattern-option-form (parent branch)
-    `(dialog-option ,(getf branch :label)
-                    ,(dialog-pattern-branch-target parent branch)
-                    :when ,(dialog-pattern-branch-key branch :when t)
-                    :unless ,(dialog-pattern-branch-key branch :unless nil)
+  (-> dialog-pattern-option-form (symbol dialog-pattern-option-data) cons)
+  (defun dialog-pattern-option-form (parent option)
+    `(dialog-option ,(getf option :label)
+                    ,(dialog-pattern-option-target parent option)
+                    :when ,(dialog-pattern-option-key option :when t)
+                    :unless ,(dialog-pattern-option-key option :unless nil)
                     :enabled-when
-                    ,(dialog-pattern-branch-key branch :enabled-when t)
+                    ,(dialog-pattern-option-key option :enabled-when t)
                     :enabled-unless
-                    ,(dialog-pattern-branch-key branch :enabled-unless nil)))
+                    ,(dialog-pattern-option-key option :enabled-unless nil)))
 
   (-> dialog-pattern-path-form
-      (symbol dialog-pattern-branch-data)
+      (symbol dialog-pattern-option-data)
       (option cons))
-  (defun dialog-pattern-path-form (parent branch)
-    (let ((texts (getf branch :texts)))
+  (defun dialog-pattern-path-form (parent option)
+    (let ((texts (getf option :texts)))
       (when texts
         `(dialog-define-path
-          (dialog-child-id ,parent ,(dialog-pattern-branch-suffix branch))
+          (dialog-child-id ,parent ,(dialog-pattern-option-suffix option))
           (list ,@texts)
-          :next ,(dialog-pattern-branch-next branch)))))
+          :next ,(dialog-pattern-option-next option)))))
 
   (-> dialog-choice-pattern-expansion (symbol t t list) cons)
-  (defun dialog-choice-pattern-expansion (choice-function id prompt branches)
+  (defun dialog-choice-pattern-expansion (choice-function id prompt options)
     (let ((parent (gensym "PARENT-"))
-          (parsed-branches (mapcar #'dialog-pattern-branch branches)))
+          (parsed-options (mapcar #'dialog-pattern-option options)))
       `(let ((,parent ,id))
          (,choice-function
           ,parent
           ,prompt
-          ,@(mapcar (lambda (branch)
-                      (dialog-pattern-option-form parent branch))
-                    parsed-branches))
+          ,@(mapcar (lambda (option)
+                      (dialog-pattern-option-form parent option))
+                    parsed-options))
          ,@(remove nil
-                   (mapcar (lambda (branch)
-                             (dialog-pattern-path-form parent branch))
-                           parsed-branches))
+                   (mapcar (lambda (option)
+                             (dialog-pattern-path-form parent option))
+                           parsed-options))
          ,parent))))
 
 (-> dialog-define-path (t list &key (:next (option dialog-id))) dialog-id)
@@ -219,11 +219,11 @@
                          (list ,@texts)
                          :next ,(getf keys :next))))
 
-(defmacro dialog-choice-path (id prompt &body branches)
-  (dialog-choice-pattern-expansion 'dialog-choice id prompt branches))
+(defmacro dialog-choice-path (id prompt &body options)
+  (dialog-choice-pattern-expansion 'dialog-choice id prompt options))
 
-(defmacro dialog-pick-path (id prompt &body branches)
-  (dialog-choice-pattern-expansion 'dialog-pick id prompt branches))
+(defmacro dialog-pick-path (id prompt &body options)
+  (dialog-choice-pattern-expansion 'dialog-pick id prompt options))
 
-(defmacro dialog-list-path (id prompt &body branches)
-  (dialog-choice-pattern-expansion 'dialog-list id prompt branches))
+(defmacro dialog-list-path (id prompt &body options)
+  (dialog-choice-pattern-expansion 'dialog-list id prompt options))

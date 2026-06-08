@@ -90,19 +90,6 @@
            (choice
             (play-choice-switch))))))))
 
-(defun matching-branch-target (node)
-  (loop for branch across (node-branches node)
-        when (dialog-condition-true-p (branch-condition branch))
-          return (branch-target branch)))
-
-(defun update-branch-node (node)
-  (let ((target (matching-branch-target node)))
-    (unless target
-      (runtime-warn "Branch node has no matching case: ~a" (node-id node))
-      (setf target *runtime-fallback-node-id*))
-    (jump-to-dialog-target target)))
-
-
 ;;; Rendering
 
 (defconstant +choice-visible-count+ 7)

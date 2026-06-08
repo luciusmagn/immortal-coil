@@ -290,8 +290,6 @@
      (editor-choice-next-label node))
     ((:number :string)
      (editor-target-next-label (node-target node)))
-    (:branch
-     (editor-target-next-label (matching-branch-target node)))
     (:minigame
      (editor-minigame-next-label node))
     (t nil)))

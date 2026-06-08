@@ -179,18 +179,25 @@ locked:
                :enabled-when '(dialog-value "has-crowbar"))
 ```
 
-## Branches
+## Conditional Destinations
 
-Branch nodes immediately jump to the first matching case:
+Destinations may be node IDs or delegates that return node IDs. Use delegates
+when traversal depends on shared state:
 
 ```lisp
-(dialog-branch "my-mod/door-count"
-               (dialog-case '(>= (dialog-value "door-count" 0) 5)
-                            "my-mod/too-many")
-               (dialog-default "my-mod/normal"))
+(defun my-mod-door-count-target ()
+  (if (>= (dialog-value "door-count" 0) 5)
+      "my-mod/too-many"
+      "my-mod/normal"))
+
+(dialog-number "my-mod/door-count"
+               "how many doors?"
+               :response-key "door-count"
+               :target #'my-mod-door-count-target)
 ```
 
-Conditions may be:
+Destination delegates may be function objects, function forms, lambda forms, or
+symbols naming functions. Option predicates support:
 
 - `t` or `nil`
 - a function object
@@ -293,10 +300,10 @@ Choice paths:
                    (:next "my-mod/empty")))
 ```
 
-Branch options support:
+Choice path options support:
 
 - `:id`: child ID suffix when the label is unstable or too long.
-- `:target`: direct target for a branch with no text.
+- `:target`: direct target for an option with no text.
 - `:next`: final target after generated text nodes.
 - `:when`: option condition.
 - `:unless`: inverted option condition.
