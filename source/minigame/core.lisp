@@ -49,9 +49,35 @@
 ;;; Definition store
 
 (defvar *minigame-definitions* (make-hash-table :test #'eq))
+(defvar *minigame-reset-hooks* nil)
+
+(-> register-minigame-reset-hook (t) t)
+(defun register-minigame-reset-hook (hook)
+  (pushnew hook *minigame-reset-hooks* :test #'equal)
+  hook)
+
+(-> minigame-reset-hook-function (t) (option runtime-function))
+(defun minigame-reset-hook-function (hook)
+  (cond
+    ((functionp hook)
+     hook)
+    ((and (symbolp hook)
+          (fboundp hook))
+     (symbol-function hook))))
+
+(-> run-minigame-reset-hooks () t)
+(defun run-minigame-reset-hooks ()
+  (dolist (hook *minigame-reset-hooks*)
+    (let ((function (minigame-reset-hook-function hook)))
+      (when function
+        (handler-case
+            (funcall function)
+          (error (condition)
+            (runtime-warn "Minigame reset hook failed: ~a" condition)))))))
 
 (-> reset-minigames () t)
 (defun reset-minigames ()
+  (run-minigame-reset-hooks)
   (clrhash *minigame-definitions*))
 
 (-> registered-minigame-ids () list)

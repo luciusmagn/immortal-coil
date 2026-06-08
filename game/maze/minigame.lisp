@@ -22,11 +22,12 @@
 (defvar *dream-maze-minigame* nil)
 
 (defstruct dream-maze-minigame
-  (node-id *runtime-fallback-node-id* :type dialog-id)
-  (x       1.5 :type scalar)
-  (y       1.5 :type scalar)
-  (angle   0.0 :type scalar)
-  (elapsed 0.0 :type seconds))
+  (node-id       *runtime-fallback-node-id* :type dialog-id)
+  (x             1.5 :type scalar)
+  (y             1.5 :type scalar)
+  (angle         0.0 :type scalar)
+  (elapsed       0.0 :type seconds)
+  (step-distance 0.0 :type scalar))
 
 (defstruct dream-maze-ray-hit
   (distance   +dream-maze-max-depth+ :type scalar)
@@ -43,7 +44,8 @@
                             :x 1.5
                             :y 1.5
                             :angle 0.0
-                            :elapsed 0.0))
+                            :elapsed 0.0
+                            :step-distance 0.0))
 
 (-> ensure-dream-maze-minigame (node) dream-maze-minigame)
 (defun ensure-dream-maze-minigame (node)
@@ -66,6 +68,15 @@
 (-> dream-maze-exit-cell-p (character) boolean)
 (defun dream-maze-exit-cell-p (cell)
   (not (null (member cell '(#\A #\B #\C) :test #'char=))))
+
+(-> dream-maze-exit-cells () list)
+(defun dream-maze-exit-cells ()
+  (loop for y from 0 below +dream-maze-height+
+        append
+        (loop for x from 0 below +dream-maze-width+
+              for cell = (dream-maze-cell x y)
+              when (dream-maze-exit-cell-p cell)
+                collect (list x y cell))))
 
 (-> dream-maze-solid-cell-p (character) boolean)
 (defun dream-maze-solid-cell-p (cell)
@@ -103,33 +114,59 @@
   (+ (dream-maze-axis +key-left+ +key-right+)
      (dream-maze-axis +key-a+ +key-d+)))
 
-(-> move-dream-maze-player (dream-maze-minigame scalar scalar) t)
+(-> move-dream-maze-player (dream-maze-minigame scalar scalar) scalar)
 (defun move-dream-maze-player (game dx dy)
-  (let ((next-x (+ (dream-maze-minigame-x game) dx))
-        (next-y (+ (dream-maze-minigame-y game) dy)))
-    (when (dream-maze-position-passable-p next-x
-                                          (dream-maze-minigame-y game))
-      (setf (dream-maze-minigame-x game) next-x))
-    (when (dream-maze-position-passable-p (dream-maze-minigame-x game)
-                                          next-y)
-      (setf (dream-maze-minigame-y game) next-y))))
+  (let ((old-x (dream-maze-minigame-x game))
+        (old-y (dream-maze-minigame-y game)))
+    (let ((next-x (+ old-x dx))
+          (next-y (+ old-y dy)))
+      (when (dream-maze-position-passable-p next-x
+                                            (dream-maze-minigame-y game))
+        (setf (dream-maze-minigame-x game) next-x))
+      (when (dream-maze-position-passable-p (dream-maze-minigame-x game)
+                                            next-y)
+        (setf (dream-maze-minigame-y game) next-y)))
+    (sqrt (+ (expt (- (dream-maze-minigame-x game) old-x) 2)
+             (expt (- (dream-maze-minigame-y game) old-y) 2)))))
 
-(-> update-dream-maze-motion (dream-maze-minigame seconds) t)
+(-> update-dream-maze-motion (dream-maze-minigame seconds) scalar)
 (defun update-dream-maze-motion (game dt)
   (let ((turn (dream-maze-clamp-value (dream-maze-turn-input) -1.0 1.0))
         (move (dream-maze-clamp-value (dream-maze-forward-input) -1.0 1.0)))
     (incf (dream-maze-minigame-angle game)
           (* turn +dream-maze-turn-speed+ dt))
-    (when (not (zerop move))
-      (let ((dx (* (cos (dream-maze-minigame-angle game))
-                   move
-                   +dream-maze-move-speed+
-                   dt))
-            (dy (* (sin (dream-maze-minigame-angle game))
-                   move
-                   +dream-maze-move-speed+
-                   dt)))
-        (move-dream-maze-player game dx dy)))))
+    (if (zerop move)
+        0.0
+        (let ((dx (* (cos (dream-maze-minigame-angle game))
+                     move
+                     +dream-maze-move-speed+
+                     dt))
+              (dy (* (sin (dream-maze-minigame-angle game))
+                     move
+                     +dream-maze-move-speed+
+                     dt)))
+          (move-dream-maze-player game dx dy)))))
+
+(-> maybe-call-dream-maze-audio (symbol &rest t) t)
+(defun maybe-call-dream-maze-audio (function-name &rest arguments)
+  (when (fboundp function-name)
+    (handler-case
+        (apply (symbol-function function-name) arguments)
+      (error (condition)
+        (runtime-warn "Dream maze audio function failed: ~a (~a)"
+                      function-name
+                      condition)))))
+
+(-> stop-dream-maze-audio () t)
+(defun stop-dream-maze-audio ()
+  (maybe-call-dream-maze-audio 'stop-dream-maze-static))
+
+(-> update-dream-maze-audio (dream-maze-minigame scalar) t)
+(defun update-dream-maze-audio (game moved-distance)
+  (maybe-call-dream-maze-audio 'update-dream-maze-static game)
+  (maybe-call-dream-maze-audio 'update-dream-maze-footsteps
+                               game
+                               moved-distance))
 
 (-> dream-maze-exit-name (character) string)
 (defun dream-maze-exit-name (cell)
@@ -147,6 +184,7 @@
 (-> finish-dream-maze-minigame (node dream-maze-minigame character) t)
 (defun finish-dream-maze-minigame (node game exit-cell)
   (declare (ignore game))
+  (stop-dream-maze-audio)
   (setf (dialog-value "dream-maze-exit")
         (dream-maze-exit-name exit-cell)
         *dream-maze-minigame*
@@ -219,5 +257,6 @@
 (defun update-dream-maze-minigame-node (node dt)
   (let ((game (ensure-dream-maze-minigame node)))
     (incf (dream-maze-minigame-elapsed game) dt)
-    (update-dream-maze-motion game dt)
+    (update-dream-maze-audio game
+                             (update-dream-maze-motion game dt))
     (check-dream-maze-exit node game)))

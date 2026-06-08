@@ -45,3 +45,19 @@
 - Date generated: 2026-06-08.
 - Prompt notes: Track-specific prompts asked for long, drawn-out, beatless dark ambience with no drums, percussion, snare, bells, vocals, lyrics, or melody hook. The cues target the ship, forest, fantasy-adventure, dream, and dungeon branches.
 - Notes: Story-branch background ambience candidates. Review the applicable OpenRouter and Google terms before public release.
+
+## maze/crt-static.mp3
+
+- Source: https://opengameart.org/content/static
+- Original file: `ScatterNoise1.mp3`
+- Author: xhunterko
+- License: CC0
+- Notes: Used as the Doom-like dream-maze exit static cue.
+
+## maze/footstep-01.ogg - maze/footstep-06.ogg
+
+- Source: https://opengameart.org/content/footsteps-0
+- Original files: `01-footstep.ogg` through `06-footstep.ogg`
+- Author: GboxMikeFozzy
+- License: CC0
+- Notes: Used as alternating movement footsteps in the Doom-like dream-maze minigame.

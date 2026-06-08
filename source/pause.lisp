@@ -52,6 +52,7 @@
   (unless (editor-active-p)
     (save-current-game))
   (stop-story-music)
+  (reset-minigames)
   (setf *paused-p* nil
         *save-current-game-p* nil
         *mode* :menu)
@@ -65,6 +66,7 @@
   (play-start-confirm)
   (unless (editor-active-p)
     (save-current-game))
+  (reset-minigames)
   (setf *quit-requested-p* t))
 
 (-> execute-selected-pause-option () t)

@@ -4,6 +4,7 @@
  :description "Bundled story graph."
  :depends-on ()
  :scripts ("maze/minigame.lisp"
+           "maze/audio.lisp"
            "maze/rendering.lisp"
            "flight/minigame.lisp"
            "flight/rendering.lisp"

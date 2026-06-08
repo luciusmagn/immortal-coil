@@ -143,15 +143,6 @@
                                  (make-color 255 255 255 190)
                                  1.0)))))
 
-(-> dream-maze-exit-cells () list)
-(defun dream-maze-exit-cells ()
-  (loop for y from 0 below +dream-maze-height+
-        append
-        (loop for x from 0 below +dream-maze-width+
-              for cell = (dream-maze-cell x y)
-              when (dream-maze-exit-cell-p cell)
-                collect (list x y cell))))
-
 (-> dream-maze-visible-exit-p (dream-maze-minigame integer integer) boolean)
 (defun dream-maze-visible-exit-p (game cell-x cell-y)
   (let* ((exit-x (+ cell-x 0.5))
