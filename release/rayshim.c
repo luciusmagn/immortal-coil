@@ -21,6 +21,12 @@
 #define SHIM_EXPORT __attribute__((visibility("default")))
 #endif
 
+#if defined(_WIN32)
+typedef double claw_long_double;
+#else
+typedef long double claw_long_double;
+#endif
+
 SHIM_EXPORT void __claw_AttachAudioStreamProcessor(AudioStream * stream, AudioCallback processor) {
     AttachAudioStreamProcessor((*stream), processor);
 }
@@ -2243,437 +2249,439 @@ SHIM_EXPORT float __claw_Wrap(float value, float min, float max) {
     return Wrap(value, min, max);
 }
 
-SHIM_EXPORT long double * __claw_acoshl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_acoshl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = acoshl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_acosl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_acosl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = acosl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_asinhl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_asinhl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = asinhl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_asinl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_asinl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = asinl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_atan2l(long double * result, long double * __y, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_atan2l(claw_long_double * result, claw_long_double * __y, claw_long_double * __x) {
     long double _claw_result = atan2l((*__y), (*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_atanhl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_atanhl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = atanhl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_atanl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_atanl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = atanl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cbrtl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_cbrtl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = cbrtl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_ceill(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_ceill(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = ceill((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_copysignl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_copysignl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = copysignl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_coshl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_coshl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = coshl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cosl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_cosl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = cosl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_dreml(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_dreml(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = dreml((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40erfcl(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40erfcl(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = erfcl((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40erfl(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40erfl(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = erfl((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_exp2l(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_exp2l(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = exp2l((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_expl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_expl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = expl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_expm1l(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_expm1l(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = expm1l((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_fabsl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_fabsl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = fabsl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_fdiml(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_fdiml(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = fdiml((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT int __claw_finitel(long double * __value) {
+SHIM_EXPORT int __claw_finitel(claw_long_double * __value) {
     return finitel((*__value));
 }
 
-SHIM_EXPORT long double * __claw_floorl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_floorl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = floorl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_fmal(long double * result, long double * __x, long double * __y, long double * __z) {
+SHIM_EXPORT claw_long_double * __claw_fmal(claw_long_double * result, claw_long_double * __x, claw_long_double * __y, claw_long_double * __z) {
     long double _claw_result = fmal((*__x), (*__y), (*__z));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_fmaxl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_fmaxl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = fmaxl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_fminl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_fminl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = fminl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_fmodl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_fmodl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = fmodl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_frexpl(long double * result, long double * __x, int * __exponent) {
+SHIM_EXPORT claw_long_double * __claw_frexpl(claw_long_double * result, claw_long_double * __x, int * __exponent) {
     long double _claw_result = frexpl((*__x), __exponent);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40gammal(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40gammal(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = gammal((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_hypotl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_hypotl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = hypotl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT int __claw_ilogbl(long double * __x) {
+SHIM_EXPORT int __claw_ilogbl(claw_long_double * __x) {
     return ilogbl((*__x));
 }
 
-SHIM_EXPORT int __claw_isinfl(long double * __value) {
+SHIM_EXPORT int __claw_isinfl(claw_long_double * __value) {
     return isinfl((*__value));
 }
 
-SHIM_EXPORT int __claw_isnanl(long double * __value) {
+SHIM_EXPORT int __claw_isnanl(claw_long_double * __value) {
     return isnanl((*__value));
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40j0l(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40j0l(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = j0l((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40j1l(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40j1l(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = j1l((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40jnl(long double * result, int arg0, long double * arg1) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40jnl(claw_long_double * result, int arg0, claw_long_double * arg1) {
     long double _claw_result = jnl(arg0, (*arg1));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_ldexpl(long double * result, long double * __x, int __exponent) {
+SHIM_EXPORT claw_long_double * __claw_ldexpl(claw_long_double * result, claw_long_double * __x, int __exponent) {
     long double _claw_result = ldexpl((*__x), __exponent);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40lgammal(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40lgammal(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = lgammal((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_lgammal_r(long double * result, long double * arg0, int * __signgamp) {
+SHIM_EXPORT claw_long_double * __claw_lgammal_r(claw_long_double * result, claw_long_double * arg0, int * __signgamp) {
     long double _claw_result = lgammal_r((*arg0), __signgamp);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long long __claw_llrintl(long double * __x) {
+SHIM_EXPORT long long __claw_llrintl(claw_long_double * __x) {
     return llrintl((*__x));
 }
 
-SHIM_EXPORT long long __claw_llroundl(long double * __x) {
+SHIM_EXPORT long long __claw_llroundl(claw_long_double * __x) {
     return llroundl((*__x));
 }
 
-SHIM_EXPORT long double * __claw_log10l(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_log10l(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = log10l((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_log1pl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_log1pl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = log1pl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_log2l(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_log2l(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = log2l((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_logbl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_logbl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = logbl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_logl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_logl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = logl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long __claw_lrintl(long double * __x) {
+SHIM_EXPORT long __claw_lrintl(claw_long_double * __x) {
     return lrintl((*__x));
 }
 
-SHIM_EXPORT long __claw_lroundl(long double * __x) {
+SHIM_EXPORT long __claw_lroundl(claw_long_double * __x) {
     return lroundl((*__x));
 }
 
-SHIM_EXPORT long double * __claw_modfl(long double * result, long double * __x, long double * __iptr) {
-    long double _claw_result = modfl((*__x), __iptr);
+SHIM_EXPORT claw_long_double * __claw_modfl(claw_long_double * result, claw_long_double * __x, claw_long_double * __iptr) {
+    long double _claw_iptr = 0.0L;
+    long double _claw_result = modfl((*__x), &_claw_iptr);
+    *__iptr = _claw_iptr;
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_nanl(long double * result, char * __tagb) {
+SHIM_EXPORT claw_long_double * __claw_nanl(claw_long_double * result, char * __tagb) {
     long double _claw_result = nanl(__tagb);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_nearbyintl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_nearbyintl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = nearbyintl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_nextafterl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_nextafterl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = nextafterl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT double __claw_nexttoward(double __x, long double * __y) {
+SHIM_EXPORT double __claw_nexttoward(double __x, claw_long_double * __y) {
     return nexttoward(__x, (*__y));
 }
 
-SHIM_EXPORT float __claw_nexttowardf(float __x, long double * __y) {
+SHIM_EXPORT float __claw_nexttowardf(float __x, claw_long_double * __y) {
     return nexttowardf(__x, (*__y));
 }
 
-SHIM_EXPORT long double * __claw_nexttowardl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_nexttowardl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = nexttowardl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_powl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_powl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = powl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT char * __claw_qecvt(long double * __value, int __ndigit, int * __decpt, int * __sign) {
+SHIM_EXPORT char * __claw_qecvt(claw_long_double * __value, int __ndigit, int * __decpt, int * __sign) {
     return qecvt((*__value), __ndigit, __decpt, __sign);
 }
 
-SHIM_EXPORT char * __claw_qfcvt(long double * __value, int __ndigit, int * __decpt, int * __sign) {
+SHIM_EXPORT char * __claw_qfcvt(claw_long_double * __value, int __ndigit, int * __decpt, int * __sign) {
     return qfcvt((*__value), __ndigit, __decpt, __sign);
 }
 
-SHIM_EXPORT char * __claw_qgcvt(long double * __value, int __ndigit, char * __buf) {
+SHIM_EXPORT char * __claw_qgcvt(claw_long_double * __value, int __ndigit, char * __buf) {
     return qgcvt((*__value), __ndigit, __buf);
 }
 
-SHIM_EXPORT long double * __claw_remainderl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw_remainderl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = remainderl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_remquol(long double * result, long double * __x, long double * __y, int * __quo) {
+SHIM_EXPORT claw_long_double * __claw_remquol(claw_long_double * result, claw_long_double * __x, claw_long_double * __y, int * __quo) {
     long double _claw_result = remquol((*__x), (*__y), __quo);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_rintl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_rintl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = rintl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_roundl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_roundl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = roundl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_scalbl(long double * result, long double * __x, long double * __n) {
+SHIM_EXPORT claw_long_double * __claw_scalbl(claw_long_double * result, claw_long_double * __x, claw_long_double * __n) {
     long double _claw_result = scalbl((*__x), (*__n));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_scalblnl(long double * result, long double * __x, long __n) {
+SHIM_EXPORT claw_long_double * __claw_scalblnl(claw_long_double * result, claw_long_double * __x, long __n) {
     long double _claw_result = scalblnl((*__x), __n);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_scalbnl(long double * result, long double * __x, int __n) {
+SHIM_EXPORT claw_long_double * __claw_scalbnl(claw_long_double * result, claw_long_double * __x, int __n) {
     long double _claw_result = scalbnl((*__x), __n);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_significandl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_significandl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = significandl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_sinhl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_sinhl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = sinhl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_sinl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_sinl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = sinl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_sqrtl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_sqrtl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = sqrtl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_strtold(long double * result, char * __nptr, char * __endptr) {
+SHIM_EXPORT claw_long_double * __claw_strtold(claw_long_double * result, char * __nptr, char * __endptr) {
     long double _claw_result = strtold(__nptr, (char **)__endptr);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_tanhl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_tanhl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = tanhl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_tanl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_tanl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = tanl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40tgammal(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40tgammal(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = tgammal((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_truncl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw_truncl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = truncl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40y0l(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40y0l(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = y0l((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40y1l(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40y1l(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = y1l((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw_cE3AE40FE40ynl(long double * result, int arg0, long double * arg1) {
+SHIM_EXPORT claw_long_double * __claw_cE3AE40FE40ynl(claw_long_double * result, int arg0, claw_long_double * arg1) {
     long double _claw_result = ynl(arg0, (*arg1));
     *result = _claw_result;
     return result;
@@ -2687,43 +2695,43 @@ SHIM_EXPORT long double * __claw_cE3AE40FE40ynl(long double * result, int arg0, 
  * those symbols so stale FASLs or mis-selected bindings fail less hard.
  */
 
-SHIM_EXPORT long double * __claw__acoshl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__acoshl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = acoshl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__acosl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__acosl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = acosl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__asinhl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__asinhl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = asinhl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__asinl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__asinl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = asinl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__atan2l(long double * result, long double * __y, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__atan2l(claw_long_double * result, claw_long_double * __y, claw_long_double * __x) {
     long double _claw_result = atan2l((*__y), (*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__atanhl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__atanhl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = atanhl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__atanl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__atanl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = atanl((*__x));
     *result = _claw_result;
     return result;
@@ -2753,13 +2761,13 @@ SHIM_EXPORT void __claw__BeginVrStereoMode(VrStereoConfig * config) {
     BeginVrStereoMode((*config));
 }
 
-SHIM_EXPORT long double * __claw__cbrtl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__cbrtl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = cbrtl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__ceill(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__ceill(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = ceill((*__x));
     *result = _claw_result;
     return result;
@@ -2879,19 +2887,19 @@ SHIM_EXPORT int __claw__ColorToInt(Color * color) {
     return ColorToInt((*color));
 }
 
-SHIM_EXPORT long double * __claw__copysignl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__copysignl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = copysignl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__coshl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__coshl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = coshl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__cosl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__cosl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = cosl((*__x));
     *result = _claw_result;
     return result;
@@ -3213,37 +3221,37 @@ SHIM_EXPORT void __claw__DrawTriangleStrip3D(Vector3 * points, int point_count, 
     DrawTriangleStrip3D(points, point_count, (*color));
 }
 
-SHIM_EXPORT long double * __claw__dreml(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__dreml(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = dreml((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__erfcl(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__erfcl(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = erfcl((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__erfl(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__erfl(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = erfl((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__exp2l(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__exp2l(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = exp2l((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__expl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__expl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = expl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__expm1l(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__expm1l(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = expm1l((*__x));
     *result = _claw_result;
     return result;
@@ -3273,7 +3281,7 @@ SHIM_EXPORT bool __claw__ExportWaveAsCode(Wave * wave, char * file_name) {
     return ExportWaveAsCode((*wave), file_name);
 }
 
-SHIM_EXPORT long double * __claw__fabsl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__fabsl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = fabsl((*__x));
     *result = _claw_result;
     return result;
@@ -3285,13 +3293,13 @@ SHIM_EXPORT Color * __claw__Fade(Color * result, Color * color, float alpha) {
     return result;
 }
 
-SHIM_EXPORT long double * __claw__fdiml(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__fdiml(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = fdiml((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT int __claw__finitel(long double * __value) {
+SHIM_EXPORT int __claw__finitel(claw_long_double * __value) {
     return finitel((*__value));
 }
 
@@ -3299,43 +3307,43 @@ SHIM_EXPORT int __claw__FloatEquals(float x, float y) {
     return FloatEquals(x, y);
 }
 
-SHIM_EXPORT long double * __claw__floorl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__floorl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = floorl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__fmal(long double * result, long double * __x, long double * __y, long double * __z) {
+SHIM_EXPORT claw_long_double * __claw__fmal(claw_long_double * result, claw_long_double * __x, claw_long_double * __y, claw_long_double * __z) {
     long double _claw_result = fmal((*__x), (*__y), (*__z));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__fmaxl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__fmaxl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = fmaxl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__fminl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__fminl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = fminl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__fmodl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__fmodl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = fmodl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__frexpl(long double * result, long double * __x, int * __exponent) {
+SHIM_EXPORT claw_long_double * __claw__frexpl(claw_long_double * result, claw_long_double * __x, int * __exponent) {
     long double _claw_result = frexpl((*__x), __exponent);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__gammal(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__gammal(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = gammal((*arg0));
     *result = _claw_result;
     return result;
@@ -3853,13 +3861,13 @@ SHIM_EXPORT bool __claw__GuiWindowBox(Rectangle * bounds, char * title) {
     return GuiWindowBox((*bounds), title);
 }
 
-SHIM_EXPORT long double * __claw__hypotl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__hypotl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = hypotl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT int __claw__ilogbl(long double * __x) {
+SHIM_EXPORT int __claw__ilogbl(claw_long_double * __x) {
     return ilogbl((*__x));
 }
 
@@ -4043,33 +4051,33 @@ SHIM_EXPORT bool __claw__IsWaveReady(Wave * wave) {
     return IsWaveReady((*wave));
 }
 
-SHIM_EXPORT int __claw__isinfl(long double * __value) {
+SHIM_EXPORT int __claw__isinfl(claw_long_double * __value) {
     return isinfl((*__value));
 }
 
-SHIM_EXPORT int __claw__isnanl(long double * __value) {
+SHIM_EXPORT int __claw__isnanl(claw_long_double * __value) {
     return isnanl((*__value));
 }
 
-SHIM_EXPORT long double * __claw__j0l(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__j0l(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = j0l((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__j1l(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__j1l(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = j1l((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__jnl(long double * result, int arg0, long double * arg1) {
+SHIM_EXPORT claw_long_double * __claw__jnl(claw_long_double * result, int arg0, claw_long_double * arg1) {
     long double _claw_result = jnl(arg0, (*arg1));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__ldexpl(long double * result, long double * __x, int __exponent) {
+SHIM_EXPORT claw_long_double * __claw__ldexpl(claw_long_double * result, claw_long_double * __x, int __exponent) {
     long double _claw_result = ldexpl((*__x), __exponent);
     *result = _claw_result;
     return result;
@@ -4079,23 +4087,23 @@ SHIM_EXPORT float __claw__Lerp(float start, float end, float amount) {
     return Lerp(start, end, amount);
 }
 
-SHIM_EXPORT long double * __claw__lgammal(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__lgammal(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = lgammal((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__lgammal_r(long double * result, long double * arg0, int * __signgamp) {
+SHIM_EXPORT claw_long_double * __claw__lgammal_r(claw_long_double * result, claw_long_double * arg0, int * __signgamp) {
     long double _claw_result = lgammal_r((*arg0), __signgamp);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long long __claw__llrintl(long double * __x) {
+SHIM_EXPORT long long __claw__llrintl(claw_long_double * __x) {
     return llrintl((*__x));
 }
 
-SHIM_EXPORT long long __claw__llroundl(long double * __x) {
+SHIM_EXPORT long long __claw__llroundl(claw_long_double * __x) {
     return llroundl((*__x));
 }
 
@@ -4291,41 +4299,41 @@ SHIM_EXPORT float * __claw__LoadWaveSamples(Wave * wave) {
     return LoadWaveSamples((*wave));
 }
 
-SHIM_EXPORT long double * __claw__log10l(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__log10l(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = log10l((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__log1pl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__log1pl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = log1pl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__log2l(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__log2l(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = log2l((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__logbl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__logbl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = logbl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__logl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__logl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = logl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long __claw__lrintl(long double * __x) {
+SHIM_EXPORT long __claw__lrintl(claw_long_double * __x) {
     return lrintl((*__x));
 }
 
-SHIM_EXPORT long __claw__lroundl(long double * __x) {
+SHIM_EXPORT long __claw__lroundl(claw_long_double * __x) {
     return lroundl((*__x));
 }
 
@@ -4457,39 +4465,41 @@ SHIM_EXPORT Vector2 * __claw__MeasureTextEx(Vector2 * result, Font * font, char 
     return result;
 }
 
-SHIM_EXPORT long double * __claw__modfl(long double * result, long double * __x, long double * __iptr) {
-    long double _claw_result = modfl((*__x), __iptr);
+SHIM_EXPORT claw_long_double * __claw__modfl(claw_long_double * result, claw_long_double * __x, claw_long_double * __iptr) {
+    long double _claw_iptr = 0.0L;
+    long double _claw_result = modfl((*__x), &_claw_iptr);
+    *__iptr = _claw_iptr;
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__nanl(long double * result, char * __tagb) {
+SHIM_EXPORT claw_long_double * __claw__nanl(claw_long_double * result, char * __tagb) {
     long double _claw_result = nanl(__tagb);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__nearbyintl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__nearbyintl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = nearbyintl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__nextafterl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__nextafterl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = nextafterl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT double __claw__nexttoward(double __x, long double * __y) {
+SHIM_EXPORT double __claw__nexttoward(double __x, claw_long_double * __y) {
     return nexttoward(__x, (*__y));
 }
 
-SHIM_EXPORT float __claw__nexttowardf(float __x, long double * __y) {
+SHIM_EXPORT float __claw__nexttowardf(float __x, claw_long_double * __y) {
     return nexttowardf(__x, (*__y));
 }
 
-SHIM_EXPORT long double * __claw__nexttowardl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__nexttowardl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = nexttowardl((*__x), (*__y));
     *result = _claw_result;
     return result;
@@ -4523,21 +4533,21 @@ SHIM_EXPORT void __claw__PlaySound(Sound * sound) {
     PlaySound((*sound));
 }
 
-SHIM_EXPORT long double * __claw__powl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__powl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = powl((*__x), (*__y));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT char * __claw__qecvt(long double * __value, int __ndigit, int * __decpt, int * __sign) {
+SHIM_EXPORT char * __claw__qecvt(claw_long_double * __value, int __ndigit, int * __decpt, int * __sign) {
     return qecvt((*__value), __ndigit, __decpt, __sign);
 }
 
-SHIM_EXPORT char * __claw__qfcvt(long double * __value, int __ndigit, int * __decpt, int * __sign) {
+SHIM_EXPORT char * __claw__qfcvt(claw_long_double * __value, int __ndigit, int * __decpt, int * __sign) {
     return qfcvt((*__value), __ndigit, __decpt, __sign);
 }
 
-SHIM_EXPORT char * __claw__qgcvt(long double * __value, int __ndigit, char * __buf) {
+SHIM_EXPORT char * __claw__qgcvt(claw_long_double * __value, int __ndigit, char * __buf) {
     return qgcvt((*__value), __ndigit, __buf);
 }
 
@@ -4673,7 +4683,7 @@ SHIM_EXPORT Quaternion * __claw__QuaternionTransform(Quaternion * result, Quater
     return result;
 }
 
-SHIM_EXPORT long double * __claw__remainderl(long double * result, long double * __x, long double * __y) {
+SHIM_EXPORT claw_long_double * __claw__remainderl(claw_long_double * result, claw_long_double * __x, claw_long_double * __y) {
     long double _claw_result = remainderl((*__x), (*__y));
     *result = _claw_result;
     return result;
@@ -4683,7 +4693,7 @@ SHIM_EXPORT float __claw__Remap(float value, float input_start, float input_end,
     return Remap(value, input_start, input_end, output_start, output_end);
 }
 
-SHIM_EXPORT long double * __claw__remquol(long double * result, long double * __x, long double * __y, int * __quo) {
+SHIM_EXPORT claw_long_double * __claw__remquol(claw_long_double * result, claw_long_double * __x, claw_long_double * __y, int * __quo) {
     long double _claw_result = remquol((*__x), (*__y), __quo);
     *result = _claw_result;
     return result;
@@ -4701,31 +4711,31 @@ SHIM_EXPORT void __claw__ResumeSound(Sound * sound) {
     ResumeSound((*sound));
 }
 
-SHIM_EXPORT long double * __claw__rintl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__rintl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = rintl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__roundl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__roundl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = roundl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__scalbl(long double * result, long double * __x, long double * __n) {
+SHIM_EXPORT claw_long_double * __claw__scalbl(claw_long_double * result, claw_long_double * __x, claw_long_double * __n) {
     long double _claw_result = scalbl((*__x), (*__n));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__scalblnl(long double * result, long double * __x, long __n) {
+SHIM_EXPORT claw_long_double * __claw__scalblnl(claw_long_double * result, claw_long_double * __x, long __n) {
     long double _claw_result = scalblnl((*__x), __n);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__scalbnl(long double * result, long double * __x, int __n) {
+SHIM_EXPORT claw_long_double * __claw__scalbnl(claw_long_double * result, claw_long_double * __x, int __n) {
     long double _claw_result = scalbnl((*__x), __n);
     *result = _claw_result;
     return result;
@@ -4815,25 +4825,25 @@ SHIM_EXPORT void __claw__SetWindowIcon(Image * image) {
     SetWindowIcon((*image));
 }
 
-SHIM_EXPORT long double * __claw__significandl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__significandl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = significandl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__sinhl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__sinhl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = sinhl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__sinl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__sinl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = sinl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__sqrtl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__sqrtl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = sqrtl((*__x));
     *result = _claw_result;
     return result;
@@ -4851,31 +4861,31 @@ SHIM_EXPORT void __claw__StopSound(Sound * sound) {
     StopSound((*sound));
 }
 
-SHIM_EXPORT long double * __claw__strtold(long double * result, char * __nptr, char * __endptr) {
+SHIM_EXPORT claw_long_double * __claw__strtold(claw_long_double * result, char * __nptr, char * __endptr) {
     long double _claw_result = strtold(__nptr, (char **)__endptr);
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__tanhl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__tanhl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = tanhl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__tanl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__tanl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = tanl((*__x));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__tgammal(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__tgammal(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = tgammal((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__truncl(long double * result, long double * __x) {
+SHIM_EXPORT claw_long_double * __claw__truncl(claw_long_double * result, claw_long_double * __x) {
     long double _claw_result = truncl((*__x));
     *result = _claw_result;
     return result;
@@ -5327,19 +5337,19 @@ SHIM_EXPORT float __claw__Wrap(float value, float min, float max) {
     return Wrap(value, min, max);
 }
 
-SHIM_EXPORT long double * __claw__y0l(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__y0l(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = y0l((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__y1l(long double * result, long double * arg0) {
+SHIM_EXPORT claw_long_double * __claw__y1l(claw_long_double * result, claw_long_double * arg0) {
     long double _claw_result = y1l((*arg0));
     *result = _claw_result;
     return result;
 }
 
-SHIM_EXPORT long double * __claw__ynl(long double * result, int arg0, long double * arg1) {
+SHIM_EXPORT claw_long_double * __claw__ynl(claw_long_double * result, int arg0, claw_long_double * arg1) {
     long double _claw_result = ynl(arg0, (*arg1));
     *result = _claw_result;
     return result;

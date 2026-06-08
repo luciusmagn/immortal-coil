@@ -1,7 +1,7 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use File::Basename qw(dirname);
+use File::Basename qw(basename dirname);
 use Cwd qw(abs_path);
 
 my $root = dirname(dirname(abs_path($0)));
@@ -32,7 +32,7 @@ my %cffi_type_map = (
     'claylib/wrap::font' => 'Font',
     'claylib/wrap::glyph-info' => 'GlyphInfo',
     'claylib/wrap::image' => 'Image',
-    'claylib/wrap::long-double' => 'long double',
+    'claylib/wrap::long-double' => 'claw_long_double',
     'claylib/wrap::material' => 'Material',
     'claylib/wrap::matrix' => 'Matrix',
     'claylib/wrap::mesh' => 'Mesh',
@@ -161,7 +161,7 @@ sub signature_string {
 
 sub binding_signatures {
     my %signatures;
-    my @bindings = sort glob("$claylib_dir/wrap/bindings/*.lisp");
+    my @bindings = binding_files();
     die "No Claylib binding files found under $claylib_dir/wrap/bindings\n"
         unless @bindings;
 
@@ -192,6 +192,103 @@ sub binding_signatures {
     return %signatures;
 }
 
+sub binding_files {
+    return sort glob("$claylib_dir/wrap/bindings/*.lisp");
+}
+
+sub x86_64_binding_files {
+    return grep { basename($_) =~ /^x86_64-/ } binding_files();
+}
+
+sub collect_cffi_types {
+    my ($type, $used) = @_;
+
+    if (ref($type) eq 'ARRAY') {
+        collect_cffi_types($type->[1], $used)
+            if @$type == 2 && $type->[0] eq ':pointer';
+        return;
+    }
+
+    $used->{$type} = 1
+        if $type =~ /^claylib\/wrap::/;
+}
+
+sub defcstruct_name_and_size {
+    my ($form) = @_;
+    return unless ref($form) eq 'ARRAY';
+    return unless @$form >= 2 && $form->[0] eq 'cffi:defcstruct';
+
+    my $spec = $form->[1];
+    my ($name, $size);
+
+    if (ref($spec) eq 'ARRAY') {
+        $name = $spec->[0];
+        for (my $index = 1; $index < @$spec - 1; $index++) {
+            $size = $spec->[$index + 1]
+                if $spec->[$index] eq ':size';
+        }
+    } else {
+        $name = $spec;
+    }
+
+    return unless defined $name && defined $size && $size =~ /^\d+$/;
+    return ($name, int($size));
+}
+
+sub check_x86_64_struct_layouts {
+    my %used;
+    my %sizes_by_binding;
+    my @bindings = x86_64_binding_files();
+    my @errors;
+
+    die "No x86_64 Claylib binding files found under $claylib_dir/wrap/bindings\n"
+        unless @bindings;
+
+    for my $binding (@bindings) {
+        my %sizes;
+        for my $form (parse_top_level_forms(slurp($binding))) {
+            next unless ref($form) eq 'ARRAY';
+
+            if (@$form >= 3
+                && $form->[0] eq 'cffi:defcfun'
+                && ref($form->[1]) eq 'ARRAY'
+                && $form->[1]->[0] =~ /__claw/) {
+                collect_cffi_types($form->[2], \%used);
+                for my $param (@$form[3 .. $#$form]) {
+                    next unless ref($param) eq 'ARRAY' && @$param >= 2;
+                    collect_cffi_types($param->[1], \%used);
+                }
+            }
+
+            my ($name, $size) = defcstruct_name_and_size($form);
+            $sizes{$name} = $size
+                if defined $name;
+        }
+
+        $sizes_by_binding{basename($binding)} = \%sizes;
+    }
+
+    for my $type (sort keys %used) {
+        my %seen;
+        my @details;
+
+        for my $binding (sort keys %sizes_by_binding) {
+            my $sizes = $sizes_by_binding{$binding};
+            next unless exists $sizes->{$type};
+            $seen{$sizes->{$type}} = 1;
+            push @details, "$binding=$sizes->{$type}";
+        }
+
+        next unless keys(%seen) > 1;
+        next if $type eq 'claylib/wrap::long-double';
+
+        push @errors, "$type has divergent x86_64 Claylib struct sizes: "
+            . join(', ', @details);
+    }
+
+    return @errors;
+}
+
 sub source_signatures {
     my %signatures;
     my $text = slurp($source);
@@ -213,9 +310,26 @@ sub source_signatures {
     return %signatures;
 }
 
+sub check_long_double_storage_type {
+    my $text = slurp($source);
+    my @errors;
+
+    push @errors, "Missing Windows claw_long_double typedef to double"
+        unless $text =~ /#if\s+defined\(_WIN32\)\s*typedef\s+double\s+claw_long_double\s*;/s;
+    push @errors, "Missing non-Windows claw_long_double typedef to long double"
+        unless $text =~ /#else\s*typedef\s+long\s+double\s+claw_long_double\s*;/s;
+
+    while ($text =~ /^SHIM_EXPORT[^{;]*\blong\s+double\s+\*\s*__claw[_A-Za-z0-9]*\s*\(/mg) {
+        push @errors, "Exported shim prototype still exposes native long double pointer near byte " . pos($text);
+    }
+
+    return @errors;
+}
+
 my %expected = binding_signatures();
 my %actual = source_signatures();
-my @errors;
+my @errors = (check_long_double_storage_type(),
+              check_x86_64_struct_layouts());
 
 for my $symbol (sort keys %expected) {
     if (!exists $actual{$symbol}) {
