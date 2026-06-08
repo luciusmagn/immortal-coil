@@ -114,6 +114,15 @@
           using (hash-value value)
         collect (cons key value)))
 
+(-> dialog-store-entry< (cons cons) boolean)
+(defun dialog-store-entry< (left right)
+  (not (null (string< (princ-to-string (first left))
+                      (princ-to-string (first right))))))
+
+(-> dialog-store-snapshot () list)
+(defun dialog-store-snapshot ()
+  (sort (copy-list (dialog-store-alist)) #'dialog-store-entry<))
+
 (-> restore-dialog-store (list) t)
 (defun restore-dialog-store (entries)
   (reset-dialog-store)

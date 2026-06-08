@@ -103,6 +103,16 @@
 
 ;;; Controls
 
+(-> editor-toggle-store-overlay () boolean)
+(defun editor-toggle-store-overlay ()
+  (setf *editor-store-overlay-p* (not *editor-store-overlay-p*)
+        *editor-status-message*
+        (if *editor-store-overlay-p*
+            "EDITOR: STATE SHOWN"
+            "EDITOR: STATE HIDDEN"))
+  (play-choice-switch)
+  t)
+
 (-> update-editor-controls () boolean)
 (defun update-editor-controls ()
   (when *editor-active-p*
@@ -115,4 +125,6 @@
           ((is-key-pressed-p +key-insert+)
            (editor-insert-text-node-after-current))
           ((is-key-pressed-p +key-f2+)
-           (editor-start-text-edit))))))
+           (editor-start-text-edit))
+          ((is-key-pressed-p +key-f3+)
+           (editor-toggle-store-overlay))))))

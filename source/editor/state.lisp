@@ -14,6 +14,7 @@
 (defvar *editor-mode* :play)
 (defvar *editor-text-buffer* "")
 (defvar *editor-edit-node-id* nil)
+(defvar *editor-store-overlay-p* nil)
 
 (defparameter *editor-draft-script-path* "game/editor-drafts.lisp")
 (defparameter *editor-placeholder-text* "newly inserted editor text.")
@@ -32,7 +33,8 @@
         *editor-suppress-history-p* nil
         *editor-mode* :play
         *editor-text-buffer* ""
-        *editor-edit-node-id* nil)
+        *editor-edit-node-id* nil
+        *editor-store-overlay-p* nil)
   t)
 
 
@@ -54,6 +56,7 @@
         *editor-mode* :play
         *editor-text-buffer* ""
         *editor-edit-node-id* nil
+        *editor-store-overlay-p* nil
         *mode* :game
         *game-fade-elapsed* 0.0
         *menu-start-state* :idle
