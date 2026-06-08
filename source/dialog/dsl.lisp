@@ -6,7 +6,7 @@
 (defun dialog-start (id)
   (setf *story-start-node* id))
 
-(-> dialog-text (dialog-id string &key (:next (option dialog-id))) dialog-id)
+(-> dialog-text (dialog-id string &key (:next (option dialog-target))) dialog-id)
 (defun dialog-text (id text &key next)
   (add-node (make-node :id id
                        :kind :text
@@ -14,7 +14,7 @@
                        :next next))
   id)
 
-(-> dialog-say (dialog-id string string &key (:next (option dialog-id)))
+(-> dialog-say (dialog-id string string &key (:next (option dialog-target)))
     dialog-id)
 (defun dialog-say (id speaker text &key next)
   (add-node (make-node :id id
@@ -24,16 +24,70 @@
                        :next next))
   id)
 
-(-> dialog-required-link ((option dialog-id) dialog-id string) dialog-id)
+(-> dialog-required-link ((option dialog-target) dialog-id string) dialog-target)
 (defun dialog-required-link (target id warning-text)
   (or target
       (progn
         (runtime-warn "~a: ~a" warning-text id)
         *runtime-fallback-node-id*)))
 
-(-> dialog-set-next (dialog-id dialog-id) dialog-id)
+(-> dialog-set-next (dialog-id (option dialog-target)) dialog-id)
 (defun dialog-set-next (node-id next-id)
   (setf (node-next (find-node node-id)) next-id)
+  node-id)
+
+(-> dialog-choice-at (dialog-id nonnegative-integer string) (option choice))
+(defun dialog-choice-at (node-id choice-index warning-text)
+  (let ((node (find-node node-id)))
+    (cond
+      ((not (eq (node-kind node) :choice))
+       (runtime-warn "~a on non-choice node: ~a"
+                     warning-text
+                     node-id)
+       nil)
+      ((>= choice-index (length (node-choices node)))
+       (runtime-warn "~a index ~d out of range for node: ~a"
+                     warning-text
+                     choice-index
+                     node-id)
+       nil)
+      (t
+       (aref (node-choices node) choice-index)))))
+
+(-> dialog-set-choice-target (dialog-id nonnegative-integer dialog-target)
+    dialog-id)
+(defun dialog-set-choice-target (node-id choice-index target)
+  (let ((choice (dialog-choice-at node-id choice-index "Cannot retarget choice")))
+    (when choice
+      (setf (choice-target choice) target)))
+  node-id)
+
+(-> dialog-set-choice-visible-predicate
+    (dialog-id nonnegative-integer dialog-condition)
+    dialog-id)
+(defun dialog-set-choice-visible-predicate (node-id choice-index predicate)
+  (let ((choice (dialog-choice-at node-id
+                                  choice-index
+                                  "Cannot set choice visibility")))
+    (when choice
+      (setf (choice-condition choice) predicate)))
+  node-id)
+
+(-> dialog-set-choice-enabled-predicate
+    (dialog-id nonnegative-integer dialog-condition)
+    dialog-id)
+(defun dialog-set-choice-enabled-predicate (node-id choice-index predicate)
+  (let ((choice (dialog-choice-at node-id
+                                  choice-index
+                                  "Cannot set choice availability")))
+    (when choice
+      (setf (choice-enabled-condition choice) predicate)))
+  node-id)
+
+(-> dialog-delete-node (dialog-id) dialog-id)
+(defun dialog-delete-node (node-id)
+  (unless (delete-node node-id)
+    (runtime-warn "Cannot delete missing dialog node: ~a" node-id))
   node-id)
 
 (-> dialog-set-text (dialog-id string) dialog-id)
@@ -66,7 +120,7 @@
       when-condition))
 
 (-> dialog-option (string
-                   dialog-id
+                   dialog-target
                    &key
                    (:when dialog-condition)
                    (:unless (option dialog-condition))
@@ -137,7 +191,7 @@
 
 (-> dialog-add-choice (dialog-id
                        string
-                       dialog-id
+                       dialog-target
                        &key
                        (:when dialog-condition)
                        (:unless (option dialog-condition))
@@ -192,7 +246,7 @@
         (dialog-left "" ""))))
 
 (-> parse-dialog-conversation-arguments (list)
-    (values (option dialog-id) list))
+    (values (option dialog-target) list))
 (defun parse-dialog-conversation-arguments (arguments)
   (loop with next = nil
         with entries = nil
@@ -226,11 +280,11 @@
 
 ;;; Branch nodes
 
-(-> dialog-case (dialog-condition dialog-id) branch)
+(-> dialog-case (dialog-condition dialog-target) branch)
 (defun dialog-case (condition target)
   (make-branch :condition condition :target target))
 
-(-> dialog-default (dialog-id) branch)
+(-> dialog-default (dialog-target) branch)
 (defun dialog-default (target)
   (dialog-case t target))
 
@@ -267,7 +321,7 @@
 (-> dialog-number (dialog-id
                    string
                    &key
-                   (:target (option dialog-id))
+                   (:target (option dialog-target))
                    (:response-key (option dialog-id))
                    (:min (option number))
                    (:max (option number)))
@@ -288,7 +342,7 @@
 (-> dialog-string (dialog-id
                    string
                    &key
-                   (:target (option dialog-id))
+                   (:target (option dialog-target))
                    (:response-key (option dialog-id))
                    (:max-length nonnegative-integer)
                    (:allow-empty t))
@@ -313,8 +367,8 @@
                      string
                      &key
                      (:game (option minigame-id))
-                     (:success (option dialog-id))
-                     (:failure (option dialog-id)))
+                     (:success (option dialog-target))
+                     (:failure (option dialog-target)))
     dialog-id)
 (defun dialog-minigame (id text &key game success failure)
   (unless game

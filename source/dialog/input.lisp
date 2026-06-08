@@ -130,7 +130,7 @@
     (if (number-input-valid-p node value)
         (progn
           (setf (dialog-value (node-response-key node)) value)
-          (jump-to-node (node-target node)))
+          (jump-to-dialog-target (node-target node)))
         (play-choice-switch))))
 
 (-> update-number-node (node) t)
@@ -192,7 +192,7 @@
     (if (string-input-valid-p node value)
         (progn
           (setf (dialog-value (node-response-key node)) value)
-          (jump-to-node (node-target node)))
+          (jump-to-dialog-target (node-target node)))
         (play-choice-switch))))
 
 (-> update-string-node (node) t)

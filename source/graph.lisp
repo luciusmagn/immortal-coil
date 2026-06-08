@@ -23,13 +23,13 @@
 
 (defstruct choice
   (label             "" :type string)
-  (target            *runtime-fallback-node-id* :type dialog-id)
+  (target            *runtime-fallback-node-id* :type dialog-target)
   (condition         t :type dialog-condition)
   (enabled-condition t :type dialog-condition))
 
 (defstruct branch
   (condition t :type dialog-condition)
-  (target    *runtime-fallback-node-id* :type dialog-id))
+  (target    *runtime-fallback-node-id* :type dialog-target))
 
 (defstruct conversation-entry
   (side    :left :type conversation-side)
@@ -47,20 +47,20 @@
   (kind           :text :type node-kind)
   (speaker        nil :type (option string))
   (text           "" :type string)
-  (next           nil :type (option dialog-id))
+  (next           nil :type (option dialog-target))
   (choices        #() :type vector)
   (branches       #() :type vector)
   (conversation   #() :type vector)
   (layout         nil :type (option choice-layout))
-  (target         nil :type (option dialog-id))
+  (target         nil :type (option dialog-target))
   (response-key   nil :type (option dialog-id))
   (min-value      nil :type (option number))
   (max-value      nil :type (option number))
   (max-length     0 :type nonnegative-integer)
   (allow-empty-p  nil :type boolean)
   (minigame       nil :type (option minigame-id))
-  (success-target nil :type (option dialog-id))
-  (failure-target nil :type (option dialog-id))
+  (success-target nil :type (option dialog-target))
+  (failure-target nil :type (option dialog-target))
   (enter-effects  nil :type (list-of dialog-effect)))
 
 
@@ -170,6 +170,18 @@
 (defun node-exists-p (id)
   (not (null (gethash id *nodes*))))
 
+(-> delete-node (dialog-id) boolean)
+(defun delete-node (id)
+  (let ((existed-p (node-exists-p id)))
+    (remhash id *nodes*)
+    (remhash id *node-sources*)
+    (remhash id *pending-node-enter-effects*)
+    (when (equal *last-dialog-node-id* id)
+      (setf *last-dialog-node-id* nil))
+    (when (equal *story-start-node* id)
+      (setf *story-start-node* *runtime-fallback-node-id*))
+    existed-p))
+
 (-> resolve-node-id (t) dialog-id)
 (defun resolve-node-id (id)
   (if (node-exists-p id)
@@ -177,6 +189,69 @@
       (progn
         (runtime-warn "Unknown story node: ~a" id)
         (node-id (ensure-runtime-fallback-node)))))
+
+(-> eval-dialog-target (t) t)
+(defun eval-dialog-target (target)
+  (handler-case
+      (cond
+        ((functionp target)
+         (funcall target))
+        ((lambda-expression-p target)
+         (funcall (compile nil target)))
+        ((function-expression-p target)
+         (funcall (eval target)))
+        ((and (symbolp target) (fboundp target))
+         (funcall target))
+        ((consp target)
+         (eval target))
+        (t
+         target))
+    (error (condition)
+      (runtime-warn "Dialog target delegate failed: ~s (~a)"
+                    target
+                    condition)
+      nil)))
+
+(-> dialog-target-id (t) (option dialog-id))
+(defun dialog-target-id (target)
+  (let ((value (if (stringp target)
+                   target
+                   (eval-dialog-target target))))
+    (cond
+      ((stringp value)
+       value)
+      ((null value)
+       nil)
+      (t
+       (runtime-warn "Dialog target did not resolve to a node id: ~s -> ~s"
+                     target
+                     value)
+       nil))))
+
+(-> resolve-dialog-target (t) dialog-id)
+(defun resolve-dialog-target (target)
+  (resolve-node-id (or (dialog-target-id target)
+                       *runtime-fallback-node-id*)))
+
+(-> dialog-target-label (t) string)
+(defun dialog-target-label (target)
+  (cond
+    ((null target)
+     "nil")
+    ((stringp target)
+     target)
+    ((symbolp target)
+     (format nil "fn ~a" (string-downcase (symbol-name target))))
+    ((functionp target)
+     "#<function>")
+    ((lambda-expression-p target)
+     "lambda")
+    ((function-expression-p target)
+     (format nil "fn ~s" target))
+    ((consp target)
+     (format nil "expr ~s" target))
+    (t
+     (princ-to-string target))))
 
 (-> find-node (t) node)
 (defun find-node (id)

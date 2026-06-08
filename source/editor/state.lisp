@@ -14,11 +14,36 @@
 (defvar *editor-mode* :play)
 (defvar *editor-text-buffer* "")
 (defvar *editor-edit-node-id* nil)
+(defvar *editor-text-backspace-held-seconds* 0.0)
+(defvar *editor-text-backspace-repeat-accumulator* 0.0)
 (defvar *editor-store-overlay-p* nil)
+(defvar *editor-insert-kind* :text)
+(defvar *editor-insert-menu-selected-index* 0)
+(defvar *editor-choice-option-node-id* nil)
+(defvar *editor-choice-option-index* 0)
+(defvar *editor-choice-option-field-index* 0)
+(defvar *editor-choice-option-target-kind* :id)
+(defvar *editor-choice-option-target-buffer* "")
+(defvar *editor-choice-option-visible-buffer* "t")
+(defvar *editor-choice-option-enabled-buffer* "t")
 
 (defparameter *editor-draft-script-path* "game/editor-drafts.lisp")
 (defparameter *editor-placeholder-text* "newly inserted editor text.")
 (defparameter *editor-text-max-length* 1200)
+(defparameter *editor-insert-kinds*
+  #(:text :say :choice :conversation :number :string))
+(defparameter *editor-choice-option-fields*
+  #(:target-kind :target :visible :enabled))
+
+(-> editor-control-down-p () boolean)
+(defun editor-control-down-p ()
+  (or (is-key-down-p +key-left-control+)
+      (is-key-down-p +key-right-control+)))
+
+(-> editor-control-key-pressed-p (integer) boolean)
+(defun editor-control-key-pressed-p (key)
+  (and (editor-control-down-p)
+       (is-key-pressed-p key)))
 
 (-> editor-active-p () boolean)
 (defun editor-active-p ()
@@ -34,7 +59,20 @@
         *editor-mode* :play
         *editor-text-buffer* ""
         *editor-edit-node-id* nil
-        *editor-store-overlay-p* nil)
+        *editor-text-backspace-held-seconds* 0.0
+        *editor-text-backspace-repeat-accumulator* 0.0
+        *editor-store-overlay-p* nil
+        *editor-insert-kind* :text
+        *editor-insert-menu-selected-index* 0
+        *editor-choice-option-node-id* nil
+        *editor-choice-option-index* 0
+        *editor-choice-option-field-index* 0
+        *editor-choice-option-target-kind* :id
+        *editor-choice-option-target-buffer* ""
+        *editor-choice-option-visible-buffer* "t"
+        *editor-choice-option-enabled-buffer* "t")
+  (when (fboundp 'reset-editor-store-edit-state)
+    (funcall (symbol-function 'reset-editor-store-edit-state)))
   t)
 
 
@@ -56,12 +94,25 @@
         *editor-mode* :play
         *editor-text-buffer* ""
         *editor-edit-node-id* nil
+        *editor-text-backspace-held-seconds* 0.0
+        *editor-text-backspace-repeat-accumulator* 0.0
         *editor-store-overlay-p* nil
+        *editor-insert-kind* :text
+        *editor-insert-menu-selected-index* 0
+        *editor-choice-option-node-id* nil
+        *editor-choice-option-index* 0
+        *editor-choice-option-field-index* 0
+        *editor-choice-option-target-kind* :id
+        *editor-choice-option-target-buffer* ""
+        *editor-choice-option-visible-buffer* "t"
+        *editor-choice-option-enabled-buffer* "t"
         *mode* :game
         *game-fade-elapsed* 0.0
         *menu-start-state* :idle
         *menu-start-action* nil
         *menu-start-elapsed* 0.0)
+  (when (fboundp 'reset-editor-store-edit-state)
+    (funcall (symbol-function 'reset-editor-store-edit-state)))
   t)
 
 (-> start-base-game-editor () t)
@@ -116,29 +167,101 @@
 
 ;;; Overlay data
 
-(-> editor-choice-next-id (node) (option dialog-id))
-(defun editor-choice-next-id (node)
+(-> editor-target-next-label ((option dialog-target)) (option string))
+(defun editor-target-next-label (target)
+  (when target
+    (dialog-target-label target)))
+
+(-> editor-choice-next-label (node) (option string))
+(defun editor-choice-next-label (node)
   (let ((choice (selected-active-choice node)))
     (when choice
-      (choice-target choice))))
+      (dialog-target-label (choice-target choice)))))
 
 (-> editor-minigame-next-label (node) (option string))
 (defun editor-minigame-next-label (node)
   (format nil "success ~a / failure ~a"
-          (node-success-target node)
-          (node-failure-target node)))
+          (dialog-target-label (node-success-target node))
+          (dialog-target-label (node-failure-target node))))
 
 (-> editor-next-label (node) (option string))
 (defun editor-next-label (node)
   (case (node-kind node)
     ((:text :say :conversation)
-     (node-next node))
+     (editor-target-next-label (node-next node)))
     (:choice
-     (editor-choice-next-id node))
+     (editor-choice-next-label node))
     ((:number :string)
-     (node-target node))
+     (editor-target-next-label (node-target node)))
     (:branch
-     (matching-branch-target node))
+     (editor-target-next-label (matching-branch-target node)))
     (:minigame
      (editor-minigame-next-label node))
     (t nil)))
+
+(-> editor-insert-kind-label (&optional editor-insert-kind) string)
+(defun editor-insert-kind-label (&optional (kind *editor-insert-kind*))
+  (string-upcase (symbol-name kind)))
+
+(-> editor-current-insert-kind () editor-insert-kind)
+(defun editor-current-insert-kind ()
+  (aref *editor-insert-kinds*
+        (min (max 0 *editor-insert-menu-selected-index*)
+             (1- (length *editor-insert-kinds*)))))
+
+(-> editor-select-insert-kind (editor-insert-kind) editor-insert-kind)
+(defun editor-select-insert-kind (kind)
+  (setf *editor-insert-kind* kind)
+  kind)
+
+(-> editor-clamp-insert-menu-selection () nonnegative-integer)
+(defun editor-clamp-insert-menu-selection ()
+  (setf *editor-insert-menu-selected-index*
+        (min (max 0 *editor-insert-menu-selected-index*)
+             (1- (length *editor-insert-kinds*)))))
+
+(-> editor-open-insert-menu () boolean)
+(defun editor-open-insert-menu ()
+  (let ((position (or (position *editor-insert-kind* *editor-insert-kinds*)
+                      0)))
+    (setf *editor-mode* :insert
+          *editor-insert-menu-selected-index* position
+          *editor-status-message* "EDITOR: INSERT TYPE")
+    (play-choice-switch)
+    t))
+
+(-> editor-close-insert-menu (string) boolean)
+(defun editor-close-insert-menu (message)
+  (setf *editor-mode* :play
+        *editor-status-message* message)
+  (play-choice-switch)
+  t)
+
+(-> editor-cancel-insert-menu () boolean)
+(defun editor-cancel-insert-menu ()
+  (editor-close-insert-menu "EDITOR: INSERT CANCELED"))
+
+(-> editor-move-insert-selection (integer) boolean)
+(defun editor-move-insert-selection (direction)
+  (setf *editor-insert-menu-selected-index*
+        (mod (+ *editor-insert-menu-selected-index* direction)
+             (length *editor-insert-kinds*))
+        *editor-status-message*
+        (format nil "EDITOR: INSERT ~a"
+                (editor-insert-kind-label (editor-current-insert-kind))))
+  (play-choice-switch)
+  t)
+
+(-> editor-cycle-insert-kind () boolean)
+(defun editor-cycle-insert-kind ()
+  (let* ((position (or (position *editor-insert-kind* *editor-insert-kinds*)
+                       0))
+         (next-position (mod (1+ position)
+                             (length *editor-insert-kinds*)))
+         (kind (aref *editor-insert-kinds* next-position)))
+    (setf *editor-insert-menu-selected-index* next-position
+          *editor-status-message*
+          (format nil "EDITOR: INSERT ~a" (editor-insert-kind-label kind)))
+    (editor-select-insert-kind kind)
+    (play-choice-switch)
+    t))

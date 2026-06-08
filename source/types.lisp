@@ -65,6 +65,18 @@
     "Canonical node and response-key identifier used by dialog scripts."
     'string)
 
+  (deftype runtime-function ()
+    "A live function object."
+    '(satisfies functionp))
+
+  (deftype dialog-target ()
+    "A destination, either a node id or a delegate returning one."
+    '(or dialog-id symbol runtime-function cons))
+
+  (deftype dialog-choice-target ()
+    "A choice destination, either a node id or a delegate returning one."
+    'dialog-target)
+
   (deftype dialog-source ()
     "A script/mod source marker for conflict reports."
     '(or pathname string symbol))
@@ -72,6 +84,22 @@
   (deftype node-kind ()
     "Dialog node behavior handled by the runtime."
     '(member :text :say :choice :conversation :number :string :minigame :branch))
+
+  (deftype editor-mode ()
+    "Transient editor input mode."
+    '(member :play :insert :edit-text :edit-store :edit-choice-option))
+
+  (deftype editor-insert-kind ()
+    "Dialog node skeleton types created by the in-game editor."
+    '(member :text :say :choice :conversation :number :string))
+
+  (deftype editor-choice-target-kind ()
+    "How the editor should interpret a choice destination field."
+    '(member :id :function))
+
+  (deftype editor-choice-option-field ()
+    "Editable fields in the selected-choice option editor."
+    '(member :target-kind :target :visible :enabled))
 
   (deftype conversation-side ()
     "Screen side used by a two-character conversation entry."
@@ -84,10 +112,6 @@
   (deftype choice-layout ()
     "Choice presentation style."
     '(member :horizontal :vertical :list))
-
-  (deftype runtime-function ()
-    "A live function object."
-    '(satisfies functionp))
 
   (deftype dialog-condition ()
     "Permissive script condition accepted by the dialog runtime."

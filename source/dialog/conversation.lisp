@@ -69,7 +69,7 @@
 (-> finish-conversation-node (node) t)
 (defun finish-conversation-node (node)
   (when (node-next node)
-    (jump-to-node (node-next node))))
+    (jump-to-dialog-target (node-next node))))
 
 (-> update-conversation-node (node) t)
 (defun update-conversation-node (node)

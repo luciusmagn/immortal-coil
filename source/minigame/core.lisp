@@ -152,7 +152,7 @@
 
 ;;; Runtime dispatch
 
-(-> minigame-fallback-target (node) dialog-id)
+(-> minigame-fallback-target (node) dialog-target)
 (defun minigame-fallback-target (node)
   (or (node-failure-target node)
       (node-success-target node)
@@ -160,7 +160,7 @@
 
 (-> fail-minigame-node (node) t)
 (defun fail-minigame-node (node)
-  (jump-to-node (minigame-fallback-target node)))
+  (jump-to-dialog-target (minigame-fallback-target node)))
 
 (-> update-minigame-definition (minigame-definition node seconds) t)
 (defun update-minigame-definition (definition node dt)

@@ -16,6 +16,8 @@
               (setf *editor-mode* :edit-text
                     *editor-edit-node-id* (node-id node)
                     *editor-text-buffer* (node-text node)
+                    *editor-text-backspace-held-seconds* 0.0
+                    *editor-text-backspace-repeat-accumulator* 0.0
                     *editor-status-message* "EDITOR: EDITING TEXT")
               (play-choice-switch)
               t)
@@ -34,29 +36,75 @@
          (play-input-click)
          t)))
 
-(-> editor-delete-text-character () boolean)
-(defun editor-delete-text-character ()
-  (when (plusp (length *editor-text-buffer*))
-    (setf *editor-text-buffer*
-          (subseq *editor-text-buffer* 0 (1- (length *editor-text-buffer*))))
+(-> editor-delete-text-characters (nonnegative-integer) boolean)
+(defun editor-delete-text-characters (count)
+  (when (and (plusp count)
+             (plusp (length *editor-text-buffer*)))
+    (let ((new-length (max 0 (- (length *editor-text-buffer*) count))))
+      (setf *editor-text-buffer*
+            (subseq *editor-text-buffer* 0 new-length)))
     (play-choice-switch)
     t))
 
-(-> drain-editor-text-input () t)
-(defun drain-editor-text-input ()
+(-> reset-editor-text-backspace-repeat () t)
+(defun reset-editor-text-backspace-repeat ()
+  (setf *editor-text-backspace-held-seconds* 0.0
+        *editor-text-backspace-repeat-accumulator* 0.0)
+  t)
+
+(-> editor-text-backspace-interval () seconds)
+(defun editor-text-backspace-interval ()
+  (max 0.025
+       (- 0.13 (* *editor-text-backspace-held-seconds* 0.04))))
+
+(-> editor-text-backspace-repeat-count (seconds) nonnegative-integer)
+(defun editor-text-backspace-repeat-count (dt)
+  (cond
+    ((not (is-key-down-p +key-backspace+))
+     (reset-editor-text-backspace-repeat)
+     0)
+    ((is-key-pressed-p +key-backspace+)
+     (reset-editor-text-backspace-repeat)
+     1)
+    (t
+     (incf *editor-text-backspace-held-seconds* dt)
+     (if (< *editor-text-backspace-held-seconds* 0.26)
+         0
+         (let ((interval (editor-text-backspace-interval))
+               (count 0))
+           (incf *editor-text-backspace-repeat-accumulator* dt)
+           (loop while (>= *editor-text-backspace-repeat-accumulator*
+                           interval)
+                 do (incf count)
+                    (decf *editor-text-backspace-repeat-accumulator*
+                          interval))
+           count)))))
+
+(-> editor-delete-text-character () boolean)
+(defun editor-delete-text-character ()
+  (editor-delete-text-characters 1))
+
+(-> editor-delete-text-repeat (seconds) boolean)
+(defun editor-delete-text-repeat (dt)
+  (editor-delete-text-characters
+   (editor-text-backspace-repeat-count dt)))
+
+(-> drain-editor-text-input (seconds) t)
+(defun drain-editor-text-input (dt)
   (loop for code = (get-char-pressed)
         until (zerop code)
         for char = (code-char code)
         when (and char (string-input-character-p char))
           do (editor-append-text-character char))
-  (when (is-key-pressed-p +key-backspace+)
-    (editor-delete-text-character)))
+  (editor-delete-text-repeat dt))
 
 (-> editor-cancel-text-edit () boolean)
 (defun editor-cancel-text-edit ()
   (setf *editor-mode* :play
         *editor-text-buffer* ""
         *editor-edit-node-id* nil
+        *editor-text-backspace-held-seconds* 0.0
+        *editor-text-backspace-repeat-accumulator* 0.0
         *editor-status-message* "EDITOR: TEXT EDIT CANCELED")
   (play-choice-switch)
   t)
@@ -82,6 +130,8 @@
           (setf *editor-mode* :play
                 *editor-text-buffer* ""
                 *editor-edit-node-id* nil
+                *editor-text-backspace-held-seconds* 0.0
+                *editor-text-backspace-repeat-accumulator* 0.0
                 *editor-status-message* "EDITOR: TEXT SAVED")
           (play-start-confirm)
           t)
@@ -90,13 +140,15 @@
           (play-choice-switch)
           nil))))
 
-(-> update-editor-text-edit () boolean)
-(defun update-editor-text-edit ()
-  (drain-editor-text-input)
+(-> update-editor-text-edit (seconds) boolean)
+(defun update-editor-text-edit (dt)
+  (drain-editor-text-input dt)
   (cond
-    ((is-key-pressed-p +key-escape+)
+    ((or (is-key-pressed-p +key-escape+)
+         (editor-control-key-pressed-p +key-g+))
      (editor-cancel-text-edit))
-    ((string-submit-pressed-p)
+    ((or (string-submit-pressed-p)
+         (editor-control-key-pressed-p +key-s+))
      (editor-save-text-edit))
     (t t)))
 
@@ -113,18 +165,71 @@
   (play-choice-switch)
   t)
 
-(-> update-editor-controls () boolean)
-(defun update-editor-controls ()
+(-> editor-insert-selection-direction () (option navigation-direction))
+(defun editor-insert-selection-direction ()
+  (cond
+    ((or (is-key-pressed-p +key-down+)
+         (is-key-pressed-p +key-right+))
+     1)
+    ((or (is-key-pressed-p +key-up+)
+         (is-key-pressed-p +key-left+))
+     -1)))
+
+(-> editor-confirm-insert-menu () boolean)
+(defun editor-confirm-insert-menu ()
+  (let ((kind (editor-current-insert-kind)))
+    (editor-select-insert-kind kind)
+    (setf *editor-mode* :play)
+    (editor-insert-node-at-current-link kind)))
+
+(-> update-editor-insert-menu () boolean)
+(defun update-editor-insert-menu ()
+  (let ((direction (editor-insert-selection-direction)))
+    (cond
+      ((or (is-key-pressed-p +key-escape+)
+           (editor-control-key-pressed-p +key-g+))
+       (editor-cancel-insert-menu))
+      ((and direction
+            (editor-move-insert-selection direction))
+       t)
+      ((confirm-pressed-p)
+       (editor-confirm-insert-menu))
+      (t t))))
+
+(-> update-editor-controls (&optional seconds) boolean)
+(defun update-editor-controls (&optional (dt (get-frame-time)))
   (when *editor-active-p*
-    (if (eq *editor-mode* :edit-text)
-        (update-editor-text-edit)
-        (cond
-          ((is-key-pressed-p +key-page-up+)
-           (editor-return-to-previous-node)
-           t)
-          ((is-key-pressed-p +key-insert+)
-           (editor-insert-text-node-after-current))
-          ((is-key-pressed-p +key-f2+)
-           (editor-start-text-edit))
-          ((is-key-pressed-p +key-f3+)
-           (editor-toggle-store-overlay))))))
+    (case *editor-mode*
+      (:insert
+       (update-editor-insert-menu))
+      (:edit-text
+       (update-editor-text-edit dt))
+      (:edit-store
+       (update-editor-store-edit))
+      (:edit-choice-option
+       (update-editor-choice-option-edit))
+      (t
+       (cond
+         ((or (is-key-pressed-p +key-page-up+)
+              (editor-control-key-pressed-p +key-b+))
+          (editor-return-to-previous-node)
+          t)
+         ((or (is-key-pressed-p +key-insert+)
+              (editor-control-key-pressed-p +key-i+))
+          (editor-open-insert-menu))
+         ((or (is-key-pressed-p +key-f3+)
+              (editor-control-key-pressed-p +key-s+))
+          (editor-toggle-store-overlay))
+         ((update-editor-store-overlay-controls)
+          t)
+         ((editor-control-key-pressed-p +key-o+)
+          (editor-start-choice-option-edit))
+         ((and (or (is-key-pressed-p +key-delete+)
+                   (editor-control-key-pressed-p +key-d+))
+               (not *editor-store-overlay-p*))
+          (editor-delete-current-node))
+         ((or (is-key-pressed-p +key-f2+)
+              (editor-control-key-pressed-p +key-e+))
+          (editor-start-text-edit))
+         ((is-key-pressed-p +key-f6+)
+          (editor-cycle-insert-kind)))))))

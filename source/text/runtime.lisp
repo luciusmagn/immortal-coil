@@ -62,7 +62,7 @@
        (skip-typewriter node)))
     ((and (node-next node)
           (confirm-pressed-p))
-     (jump-to-node (node-next node)))))
+     (jump-to-dialog-target (node-next node)))))
 
 
 ;;; Rendering

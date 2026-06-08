@@ -69,3 +69,7 @@
           (play-state-input-buffer *state*) "")
     (apply-node-enter-effects (current-node))
     (save-current-game-maybe)))
+
+(-> jump-to-dialog-target (t) t)
+(defun jump-to-dialog-target (target)
+  (jump-to-node (resolve-dialog-target target)))

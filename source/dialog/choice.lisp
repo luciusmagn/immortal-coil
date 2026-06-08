@@ -7,13 +7,12 @@
 
 (defun choice-selectable-index-p (choices index)
   (and (<= 0 index)
-       (< index (length choices))
-       (choice-enabled-p (aref choices index))))
+       (< index (length choices))))
 
 (defun first-selectable-choice-index (choices)
   (loop for choice across choices
         for index from 0
-        when (choice-enabled-p choice)
+        when choice
           return index))
 
 (defun normalize-choice-selection (choices)
@@ -35,7 +34,7 @@
   (loop with count = (length choices)
         for step from 1 to count
         for index = (mod (+ selected (* step direction)) count)
-        when (choice-enabled-p (aref choices index))
+        when (aref choices index)
           return index))
 
 (defun horizontal-selection-direction ()
@@ -87,7 +86,7 @@
        (let ((choice (selected-active-choice node)))
          (cond
            ((and choice (choice-enabled-p choice))
-            (jump-to-node (choice-target choice)))
+            (jump-to-dialog-target (choice-target choice)))
            (choice
             (play-choice-switch))))))))
 
@@ -101,7 +100,7 @@
     (unless target
       (runtime-warn "Branch node has no matching case: ~a" (node-id node))
       (setf target *runtime-fallback-node-id*))
-    (jump-to-node target)))
+    (jump-to-dialog-target target)))
 
 
 ;;; Rendering
@@ -133,12 +132,12 @@
     (draw-text-at label x y size option-color)
     (unless enabled-p
       (draw-locked-choice-strike x y width size option-color))
-    (when (and selected-p enabled-p)
+    (when selected-p
       (claylib/ll:draw-rectangle (round x)
                                  (round (+ y size 3))
                                  width
                                  4
-                                 (claylib::c-ptr color)))))
+                                 (claylib::c-ptr option-color)))))
 
 (defun draw-choice-option-centered (choice center-x y selected-p color)
   (let* ((size 20)

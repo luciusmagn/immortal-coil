@@ -151,7 +151,7 @@
         (dream-maze-exit-name exit-cell)
         *dream-maze-minigame*
         nil)
-  (jump-to-node (node-success-target node)))
+  (jump-to-dialog-target (node-success-target node)))
 
 (-> check-dream-maze-exit (node dream-maze-minigame) t)
 (defun check-dream-maze-exit (node game)

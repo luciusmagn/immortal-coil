@@ -47,7 +47,7 @@
            (cond
              (*paused-p*
               (update-pause-menu))
-             ((update-editor-controls)
+             ((update-editor-controls dt)
               nil)
              ((maybe-open-pause-menu)
               nil)

@@ -128,8 +128,16 @@
       (and (member (node-kind node) '(:number :string))
            (story-text-visible-p node)))))
 
+(-> current-editor-input-active-p () boolean)
+(defun current-editor-input-active-p ()
+  (and (boundp '*editor-active-p*)
+       (boundp '*editor-mode*)
+       *editor-active-p*
+       (not (eq *editor-mode* :play))))
+
 (defun fullscreen-shortcut-available-p ()
-  (not (current-dialog-input-active-p)))
+  (not (or (current-dialog-input-active-p)
+           (current-editor-input-active-p))))
 
 (defun update-window-controls ()
   (when (and (fullscreen-shortcut-available-p)

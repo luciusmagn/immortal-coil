@@ -100,10 +100,10 @@
 (defun record-flight-crash ()
   (setf (dialog-value "ship-crashed") t))
 
-(-> finish-flight-minigame ((option dialog-id)) t)
+(-> finish-flight-minigame ((option dialog-target)) t)
 (defun finish-flight-minigame (target)
   (setf *flight-minigame* nil)
-  (jump-to-node target))
+  (jump-to-dialog-target target))
 
 (-> fail-flight-minigame (node) t)
 (defun fail-flight-minigame (node)

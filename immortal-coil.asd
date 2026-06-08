@@ -117,6 +117,8 @@
                   :components
                   ((:file "state")
                    (:file "draft")
+                   (:file "choice-option-edit")
+                   (:file "store-edit")
                    (:file "text-edit")
                    (:file "rendering")))
 
