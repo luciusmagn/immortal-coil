@@ -5,8 +5,23 @@
 (defvar *title-logo-texture* nil)
 (defvar *title-logo-sample-color* (make-color 0 0 0 255))
 
-(defun title-logo-path ()
+(-> fallback-title-logo-path () pathname)
+(defun fallback-title-logo-path ()
   (project-pathname "assets/logo/title-logo.png"))
+
+(-> configured-title-logo-path () pathname)
+(defun configured-title-logo-path ()
+  (handler-case
+      (or (loop with winner = nil
+                for bundle in (configured-dialog-bundles)
+                for logo = (dialog-bundle-title-logo bundle)
+                when logo
+                  do (setf winner logo)
+                finally (return winner))
+          (fallback-title-logo-path))
+    (error (condition)
+      (runtime-warn "Could not resolve configured title logo: ~a" condition)
+      (fallback-title-logo-path))))
 
 (defun title-logo-loaded-p ()
   (and *title-logo-texture*
@@ -26,24 +41,39 @@
 (defun title-logo-top ()
   +title-logo-y+)
 
+(-> load-title-logo-from-path (pathname) boolean)
+(defun load-title-logo-from-path (path)
+  (cond
+    ((not (probe-file path))
+     (runtime-warn "Title logo does not exist: ~a" path)
+     nil)
+    (t
+     (handler-case
+         (progn
+           (clear-title-logo)
+           (setf *title-logo-texture-asset* (make-texture-asset path :load-now t)
+                 *title-logo-image-asset* (make-image-asset path :load-now t)
+                 *title-logo-texture* nil)
+           (setf *title-logo-texture*
+                 (make-texture *title-logo-texture-asset*
+                               (title-logo-left)
+                               (title-logo-top)
+                               :width +title-logo-width+
+                               :height (title-logo-height)
+                               :tint (make-color 255 255 255 255)))
+           t)
+       (error (condition)
+         (runtime-warn "Could not load title logo ~a: ~a" path condition)
+         (clear-title-logo)
+         nil)))))
+
+(-> load-title-logo () boolean)
 (defun load-title-logo ()
-  (let ((path (title-logo-path)))
-    (when (probe-file path)
-      (handler-case
-          (progn
-            (setf *title-logo-texture-asset* (make-texture-asset path :load-now t)
-                  *title-logo-image-asset* (make-image-asset path :load-now t)
-                  *title-logo-texture* nil)
-            (setf *title-logo-texture*
-                  (make-texture *title-logo-texture-asset*
-                                (title-logo-left)
-                                (title-logo-top)
-                                :width +title-logo-width+
-                                :height (title-logo-height)
-                                :tint (make-color 255 255 255 255))))
-        (error (condition)
-          (runtime-warn "Could not load title logo: ~a" condition)
-          (clear-title-logo))))))
+  (let ((path (configured-title-logo-path))
+        (fallback (fallback-title-logo-path)))
+    (or (load-title-logo-from-path path)
+        (and (not (equal (namestring path) (namestring fallback)))
+             (load-title-logo-from-path fallback)))))
 
 (defun clear-title-logo ()
   (setf *title-logo-texture-asset* nil

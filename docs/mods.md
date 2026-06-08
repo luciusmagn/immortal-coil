@@ -31,6 +31,16 @@ Script paths and asset paths are relative to the manifest directory.
 `:depends-on` names bundle IDs that should load first. The bundled game is a
 bundle too, with ID `immortal-coil/base`.
 
+Total conversions or test bundles can also set:
+
+```lisp
+(:title-logo "logo/title-logo.png"
+ :start "example-mod/start")
+```
+
+`:title-logo` is relative to the manifest's asset root. `:start` changes the
+root story node. Later-loaded bundles win.
+
 Legacy single-file mods are still read from:
 
 ```text

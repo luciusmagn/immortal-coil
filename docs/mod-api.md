@@ -30,7 +30,9 @@ Manifest form:
  :author "Optional author."
  :depends-on ("immortal-coil/base")
  :scripts ("story.lisp")
- :assets "assets/")
+ :assets "assets/"
+ :title-logo "logo/title-logo.png"
+ :start "example-mod/start")
 ```
 
 Fields:
@@ -43,6 +45,8 @@ Fields:
 - `:depends-on`: bundle IDs that should load before this bundle.
 - `:scripts`: script path or list of script paths, relative to the manifest.
 - `:assets`: asset root path, relative to the manifest.
+- `:title-logo`: optional title-screen logo path, relative to the asset root.
+- `:start`: optional story start node. `:start-node` and `:root-node` are aliases.
 
 The bundled game is also a bundle. Its ID is `immortal-coil/base`.
 
@@ -73,9 +77,15 @@ Set the story start node:
 (dialog-start "base/awake")
 ```
 
+Manifests may also set the story start node:
+
+```lisp
+(:start "my-mod/start")
+```
+
 Ordinary additive mods should usually not call `dialog-start`. Use it for the
 bundled game, total conversions, or test bundles that intentionally replace the
-entry point.
+entry point. If several bundles set a start node, the latest loaded bundle wins.
 
 Plain text node:
 

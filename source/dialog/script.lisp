@@ -111,6 +111,8 @@
       (when (eval-dialog-script-source script)
         (setf loaded-any-p t)))
     (when loaded-any-p
+      (when (dialog-bundle-start-node bundle)
+        (setf *story-start-node* (dialog-bundle-start-node bundle)))
       (record-loaded-dialog-bundle bundle)
       t)))
 

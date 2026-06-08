@@ -99,6 +99,37 @@
                         asset-root)
           (merge-pathnames "assets/" root)))))
 
+(-> manifest-start-node (pathname plist) (option dialog-id))
+(defun manifest-start-node (manifest-path form)
+  (let ((start (or (getf form :start)
+                   (getf form :start-node)
+                   (getf form :root-node))))
+    (cond
+      ((null start)
+       nil)
+      (t
+       (let ((id (normalize-manifest-string start)))
+         (unless id
+           (runtime-warn "Ignoring invalid start node in dialog manifest ~a: ~s"
+                         manifest-path
+                         start))
+         id)))))
+
+(-> manifest-title-logo (pathname pathname plist) (option pathname))
+(defun manifest-title-logo (asset-root manifest-path form)
+  (let ((logo (or (getf form :title-logo)
+                  (getf form :logo))))
+    (cond
+      ((null logo)
+       nil)
+      ((manifest-path-designator-p logo)
+       (resolve-relative-pathname asset-root logo))
+      (t
+       (runtime-warn "Ignoring invalid title logo in dialog manifest ~a: ~s"
+                     manifest-path
+                     logo)
+       nil))))
+
 (-> manifest-dependency-ids (pathname t) list)
 (defun manifest-dependency-ids (manifest-path dependencies)
   (remove-duplicates
@@ -136,6 +167,9 @@
              (scripts (manifest-script-paths root
                                              path
                                              (getf form :scripts)))
+             (asset-root (manifest-asset-root root
+                                              path
+                                              form))
              (dependencies (manifest-dependency-ids
                             path
                             (or (getf form :depends-on)
@@ -148,9 +182,11 @@
                                 :author (manifest-author form)
                                 :origin origin
                                 :root root
-                                :asset-root (manifest-asset-root root
+                                :asset-root asset-root
+                                :title-logo (manifest-title-logo asset-root
                                                                  path
                                                                  form)
+                                :start-node (manifest-start-node path form)
                                 :script-paths scripts
                                 :dependencies dependencies
                                 :manifest-path path)

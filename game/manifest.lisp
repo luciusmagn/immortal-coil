@@ -11,4 +11,6 @@
            "campaign/forest.lisp"
            "campaign/jrpg.lisp"
            "campaign/dream-worlds.lisp")
- :assets "../assets/")
+ :assets "../assets/"
+ :title-logo "logo/title-logo.png"
+ :start "base/awake")

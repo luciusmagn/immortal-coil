@@ -186,6 +186,7 @@
         (if (fboundp 'refresh-dialog-mod-status)
             (funcall (symbol-function 'refresh-dialog-mod-status))
             "MODS: UNAVAILABLE"))
+  (load-title-logo)
   (play-choice-switch))
 
 (-> start-transition-total-seconds () seconds)

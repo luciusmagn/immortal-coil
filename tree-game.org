@@ -250,7 +250,9 @@ Bundled game manifest:
            "campaign/forest.lisp"
            "campaign/jrpg.lisp"
            "campaign/dream-worlds.lisp")
- :assets "../assets/")
+ :assets "../assets/"
+ :title-logo "logo/title-logo.png"
+ :start "base/awake")
 #+end_src
 
 Player mod layout:
@@ -270,6 +272,13 @@ Minimal mod manifest:
  :assets "assets/")
 #+end_src
 
+Total conversions can also set manifest metadata:
+
+#+begin_src lisp
+(:title-logo "logo/title-logo.png"
+ :start "example-mod/start")
+#+end_src
+
 Bundle-local assets should be resolved with =dialog-asset-pathname= or helpers
 that use it. Do not hardcode project-global paths in scripts.
 
@@ -279,6 +288,7 @@ Load order is deterministic:
 - mod bundles after it
 - =:depends-on= can order one bundle after another
 - remaining ties use path order
+- latest loaded =:title-logo= and =:start= manifest metadata wins
 - node conflicts are recorded and currently resolve as latest-wins
 
 * Save Data

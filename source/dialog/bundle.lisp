@@ -28,6 +28,8 @@
   (origin        :bundled :type dialog-script-origin)
   (root          #P"" :type pathname)
   (asset-root    #P"" :type pathname)
+  (title-logo    nil :type (option pathname))
+  (start-node    nil :type (option dialog-id))
   (script-paths  nil :type list)
   (dependencies  nil :type list)
   (manifest-path nil :type (option pathname)))

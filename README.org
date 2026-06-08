@@ -87,6 +87,13 @@ Minimal manifest:
  :assets "assets/")
 #+end_src
 
+Total conversion manifests can also set:
+
+#+begin_src lisp
+(:title-logo "logo/title-logo.png"
+ :start "example-mod/start")
+#+end_src
+
 Player mods are loaded from:
 
 #+begin_src sh
