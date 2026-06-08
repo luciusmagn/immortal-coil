@@ -51,12 +51,20 @@
              "you stand beside the bed. a night stand waits under the wrong shadow."
              :next "base/night-stand")
 
-(dialog-pick "base/night-stand"
-             "what do you take from the night stand?"
-             (dialog-option "glass of water" "ship/wake")
-             (dialog-option "matchbook"      "jrpg/inn")
-             (dialog-option "brass key"      "forest/threshold")
-             (dialog-option "nothing"        "base/count-doors"))
+(dialog-choice "base/night-stand"
+               "there is a glass of water on the night stand. pick it up?"
+               (dialog-option "yes" "ship/wake")
+               (dialog-option "no"  "base/night-stand-matchbook"))
+
+(dialog-choice "base/night-stand-matchbook"
+               "there is a matchbook under the glass. take it?"
+               (dialog-option "yes" "jrpg/inn")
+               (dialog-option "no"  "base/night-stand-key"))
+
+(dialog-choice "base/night-stand-key"
+               "there is a brass key at the back of the drawer. take it?"
+               (dialog-option "yes" "forest/threshold")
+               (dialog-option "no"  "base/count-doors"))
 
 (dialog-number "base/count-doors"
                "how many doors do you count?"

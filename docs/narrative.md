@@ -15,17 +15,19 @@ create new context, not announce new genres.
 
 ## Current Branch Shape
 
-The current branch events are deliberately obvious prototype hooks:
+The current branch events are still prototype hooks, but the base-room object
+split should avoid looking like a genre picker:
 
 - `base/exit-bed`: starts the ordinary room interaction.
-- `base/night-stand`: routes by visible object choice.
+- `base/night-stand`: starts a sequence of small yes/no object prompts.
 - `base/sleep`: enters the dream maze.
 - `dream/maze-exit`: routes by maze exit value.
 
 This is acceptable for proving the graph, minigame, music, particle, and mod
-surfaces. Future versions should make these events subtler and easier for mods
-to hook into. Prefer small diegetic cues, hidden flags, remembered details, and
-ordinary node extension points over loud "choose your genre" moments.
+surfaces. Future versions should keep making these events subtler and easier
+for mods to hook into. Prefer small diegetic cues, hidden flags, remembered
+details, and ordinary node extension points over loud "choose your genre"
+moments.
 
 ## Base Room
 
