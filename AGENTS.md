@@ -66,6 +66,7 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 - Main-menu navigation uses left/right arrows to cycle a single central option. Do not add redundant underlines or extra chrome unless it improves usability.
 - When there are too many vertical choices, show a scrollbar or equivalent overflow indicator.
 - Minigames need clear controls and enough readability that failure feels like play, not confusion.
+- Any minigame or interaction that supports WASD movement must also support arrow keys and say so in its control text.
 
 ## Common Lisp Style
 

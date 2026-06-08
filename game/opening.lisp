@@ -140,7 +140,7 @@
             :next "dream/maze")
 
 (dialog-minigame "dream/maze"
-                 "w/s move. a/d turn. find an exit."
+                 "w/s or up/down move. a/d or left/right turn. find an exit."
                  :game :dream-maze
                  :success "dream/maze-exit"
                  :failure "dream/maze-lost")
