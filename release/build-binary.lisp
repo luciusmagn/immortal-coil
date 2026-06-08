@@ -3,10 +3,17 @@
 (setf uiop:*compile-file-warnings-behaviour* :warn)
 
 (defun getenv-nonempty (name)
-  (let ((value (uiop:getenv name)))
-    (and value
-         (plusp (length value))
-         value)))
+  (handler-case
+      (let ((value (uiop:getenv name)))
+        (and value
+             (plusp (length value))
+             value))
+    (error (condition)
+      (format *error-output*
+              "~&[immortal-coil] Could not read environment variable ~a: ~a~%"
+              name
+              condition)
+      nil)))
 
 (defun ensure-directory-env-pushed (name)
   (let ((value (getenv-nonempty name)))
@@ -43,8 +50,32 @@
 (defun eager-future-call (symbol-name &rest arguments)
   (apply (loaded-symbol "EAGER-FUTURE2" symbol-name) arguments))
 
+(defun cffi-call (symbol-name &rest arguments)
+  (apply (loaded-symbol "CFFI" symbol-name) arguments))
+
 (defun set-loaded-symbol-value (package-name symbol-name value)
   (setf (symbol-value (loaded-symbol package-name symbol-name)) value))
+
+(defun release-library-directory ()
+  (or (getenv-nonempty "IMMORTAL_COIL_LIB_DIR")
+      (let ((root (getenv-nonempty "IMMORTAL_COIL_ROOT")))
+        (when root
+          (namestring
+           (merge-pathnames "lib/" (uiop:ensure-directory-pathname root)))))))
+
+(defun push-release-foreign-library-directory ()
+  (let ((directory (release-library-directory)))
+    (when directory
+      (pushnew directory
+               (symbol-value
+                (loaded-symbol "CFFI" "*FOREIGN-LIBRARY-DIRECTORIES*"))
+               :test #'equal))))
+
+(defun reload-claylib-foreign-libraries ()
+  (push-release-foreign-library-directory)
+  (dolist (library-name '("LIBRAYLIB" "LIBRAYGUI" "LIBRAYSHIM"))
+    (cffi-call "LOAD-FOREIGN-LIBRARY"
+               (loaded-symbol "CLAYLIB/WRAP" library-name))))
 
 (defun make-release-color (red green blue alpha)
   (funcall (loaded-symbol "CLAYLIB" "MAKE-COLOR") red green blue alpha))
@@ -109,6 +140,7 @@
     (error "Eager Future2 workers did not stop before image save.")))
 
 (defun release-main ()
+  (reload-claylib-foreign-libraries)
   (rehydrate-release-foreign-objects)
   (eager-future-call "ADVISE-THREAD-POOL-SIZE" 10)
   (funcall (loaded-symbol "IMMORTAL-COIL" "MAIN")))

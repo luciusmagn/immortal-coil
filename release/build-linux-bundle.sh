@@ -34,6 +34,7 @@ gcc -shared -fPIC \
   -lraylib
 
 cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "$LIB_DIR/"
+cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "${LIB_DIR}/libraylib.so.420"
 cp "${CLAYLIB_DIR}/wrap/lib/libraygui.so" "$LIB_DIR/"
 copy-linux-library-maybe "libglfw.so.3"
 
@@ -78,6 +79,7 @@ set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 export IMMORTAL_COIL_ROOT="$HERE"
+export IMMORTAL_COIL_LIB_DIR="$HERE/lib"
 export LD_LIBRARY_PATH="$HERE/lib:${LD_LIBRARY_PATH:-}"
 if [ -z "${IMMORTAL_COIL_SAVE_DIR:-}" ]; then
   export IMMORTAL_COIL_SAVE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/immortal-coil"

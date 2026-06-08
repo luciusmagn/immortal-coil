@@ -136,10 +136,16 @@ cat > "${BUNDLE}/run-immortal-coil.bat" <<'EOF'
 @echo off
 setlocal
 set "HERE=%~dp0"
-set "IMMORTAL_COIL_ROOT=%HERE%"
-if not defined IMMORTAL_COIL_SAVE_DIR set "IMMORTAL_COIL_SAVE_DIR=%APPDATA%\Immortal Coil"
-set "PATH=%HERE%lib;%PATH%"
-"%HERE%immortal-coil.exe" %*
+pushd "%HERE%" >nul
+set "IMMORTAL_COIL_ROOT=."
+set "IMMORTAL_COIL_LIB_DIR=lib"
+if not defined IMMORTAL_COIL_SAVE_DIR set "IMMORTAL_COIL_SAVE_DIR=save"
+if not exist "save" mkdir "save"
+set "PATH=lib;%PATH%"
+.\immortal-coil.exe %*
+set "IMMORTAL_COIL_STATUS=%ERRORLEVEL%"
+popd >nul
+exit /b %IMMORTAL_COIL_STATUS%
 EOF
 
 rm -f "${DIST}/immortal-coil-windows-x86_64.zip"
