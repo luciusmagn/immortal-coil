@@ -153,16 +153,6 @@
                  :success #'dream-maze-exit-target
                  :failure "dream/maze-lost")
 
-(dialog-say "dream/left-exit"
-            "the hall"
-            "past the left exit, you recognize the empty bed from the room you thought you left."
-            :next "alice/fall")
-
-(dialog-say "dream/upper-exit"
-            "the hall"
-            "past the upper exit, the ceiling has the same cracks you ignored above the bed."
-            :next "rogue/entrance")
-
 (dialog-say "dream/right-exit"
             "the hall"
             "past the right exit, the handle matches the door that was behind you."
