@@ -121,6 +121,8 @@
 (defun load-dialog-graph (&optional (sources *dialog-manifest-paths*))
   (reset-dialog-graph)
   (reset-minigames)
+  (when (fboundp 'reset-script-particle-field-modes)
+    (funcall (symbol-function 'reset-script-particle-field-modes)))
   (reset-loaded-dialog-scripts)
   (reset-loaded-dialog-bundles)
   (let ((bundles (configured-dialog-bundles sources)))

@@ -49,6 +49,7 @@
 (-> return-to-title-menu () t)
 (defun return-to-title-menu ()
   (save-current-game)
+  (stop-story-music)
   (setf *paused-p* nil
         *save-current-game-p* nil
         *mode* :menu)

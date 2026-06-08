@@ -20,6 +20,10 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 - The truth of the ship-captain path is private: the captain keeps failing, dying, looping, and carrying the pain forward. The loop should feel like hidden labor and trauma, not a power fantasy.
 - Crew praise should become painful through context. The crew sees the final polished result; the player remembers the failed attempts that made it possible.
 - Hallucinations in the ship path should read as memory intrusions from previous loops, such as seeing a living crew member as they died before. Do not frame these as ghosts, prophecies, or reality changing in front of the player.
+- Expand the campaign as a diverging built-in mod, not as privileged engine logic. Current planned path families include the hard-sci-fi ship captain loop, a dark-forest escape/hunted path, a seemingly bog-standard JRPG demon-lord quest, an Alice-in-Wonderland-style dream path, and a Rogue-inspired dungeon path.
+- The dark-forest path begins as leaving a house in the middle of a black forest and surviving pursuit. The later reveal is that the player was kidnapped and has unwittingly escaped confinement; the pursuer is the kidnapper, possibly supernatural. Do not tell the player this early, and do not frame the house as transforming.
+- The JRPG path should initially read as a straight-faced genre branch: inn, village, party, demon lord. Its later value is how that familiar frame can recontextualize the same opening room and inventory without announcing the trick.
+- Dream-maze exits are good portals into divergent dream genres. At least one exit should lead toward an Alice-in-Wonderland-style branch, and another toward a Rogue-inspired dungeon branch.
 - The shared dialog store exists so scripts and mods can remember facts such as names, choices, inventory, age, or hidden flags. Conditions may read this store or evaluate explicit lambdas.
 - Text substitution is part of the authoring model. Later nodes should be able to refer to values collected earlier.
 

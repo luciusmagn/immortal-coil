@@ -1,6 +1,7 @@
 (dialog-start "base/awake")
 
 (dialog-particles "base/awake" :rising :immediate t)
+(dialog-stop-music "base/awake")
 (dialog-particles "ship/wake" :stars :fade-seconds 6.5)
 
 (dialog-minigame-kind :wire-flight
@@ -39,8 +40,8 @@
 (dialog-pick "base/night-stand"
              "what do you take from the night stand?"
              (dialog-option "glass of water" "ship/wake")
-             (dialog-option "matchbook"      "base/count-doors")
-             (dialog-option "brass key"      "base/count-doors")
+             (dialog-option "matchbook"      "jrpg/inn")
+             (dialog-option "brass key"      "forest/threshold")
              (dialog-option "nothing"        "base/count-doors"))
 
 (dialog-number "base/count-doors"
@@ -146,10 +147,10 @@
 (dialog-branch "dream/maze-exit"
                (dialog-case '(string= (dialog-value "dream-maze-exit" "")
                                       "left")
-                            "dream/left-exit")
+                            "alice/fall")
                (dialog-case '(string= (dialog-value "dream-maze-exit" "")
                                       "upper")
-                            "dream/upper-exit")
+                            "rogue/entrance")
                (dialog-case '(string= (dialog-value "dream-maze-exit" "")
                                       "right")
                             "dream/right-exit")
@@ -158,12 +159,12 @@
 (dialog-say "dream/left-exit"
             "the hall"
             "past the left exit, you recognize the empty bed from the room you thought you left."
-            :next "base/awake")
+            :next "alice/fall")
 
 (dialog-say "dream/upper-exit"
             "the hall"
             "past the upper exit, the ceiling has the same cracks you ignored above the bed."
-            :next "base/awake")
+            :next "rogue/entrance")
 
 (dialog-say "dream/right-exit"
             "the hall"

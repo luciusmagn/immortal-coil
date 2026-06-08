@@ -123,7 +123,7 @@
 
   (deftype particle-field-mode ()
     "A named full-screen particle field managed by the engine."
-    '(member :rising :stars :title-menu))
+    'keyword)
 
   (deftype particle-field-save-data ()
     "A save plist for the active particle field and transition."

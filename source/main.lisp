@@ -37,6 +37,7 @@
 (defun update-world ()
   (handler-case
       (let ((dt (get-frame-time)))
+        (update-story-music)
         (case *mode*
           (:menu (update-menu dt))
           (:game

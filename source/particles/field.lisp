@@ -1,23 +1,158 @@
 (in-package #:immortal-coil)
 
-;;; Mode state
+;;; Definitions
 
+(-> particle-field-reset-fallback () t)
+(defun particle-field-reset-fallback ()
+  nil)
+
+(-> particle-field-ensure-fallback () t)
+(defun particle-field-ensure-fallback ()
+  nil)
+
+(-> particle-field-update-fallback (seconds) t)
+(defun particle-field-update-fallback (dt)
+  (declare (ignore dt))
+  nil)
+
+(-> particle-field-draw-fallback (scalar) t)
+(defun particle-field-draw-fallback (alpha-scale)
+  (declare (ignore alpha-scale))
+  nil)
+
+(defstruct particle-field-definition
+  (id              :rising :type particle-field-mode)
+  (reset-function  #'particle-field-reset-fallback :type runtime-function)
+  (ensure-function #'particle-field-ensure-fallback :type runtime-function)
+  (update-function #'particle-field-update-fallback :type runtime-function)
+  (draw-function   #'particle-field-draw-fallback :type runtime-function)
+  (builtin-p       nil :type boolean))
+
+(defvar *particle-field-definitions* (make-hash-table :test #'eq))
+(defvar *particle-field-modes* nil)
 (defvar *particle-field-mode* :rising)
 (defvar *particle-field-from-mode* :rising)
 (defvar *particle-field-to-mode* :rising)
 (defvar *particle-field-transition-elapsed* 0.0)
 (defvar *particle-field-transition-seconds* 0.0)
 
+(-> particle-field-mode-keyword (t) particle-field-mode)
+(defun particle-field-mode-keyword (mode)
+  (typecase mode
+    (keyword mode)
+    (symbol (intern (symbol-name mode) "KEYWORD"))
+    (string (intern (string-upcase mode) "KEYWORD"))
+    (t
+     (runtime-warn "Expected a particle field mode, got: ~s" mode)
+     :rising)))
+
+(-> particle-field-handler-function (t string runtime-function) runtime-function)
+(defun particle-field-handler-function (handler description fallback-function)
+  (handler-case
+      (cond
+        ((functionp handler)
+         handler)
+        ((and (symbolp handler)
+              (fboundp handler))
+         (symbol-function handler))
+        ((consp handler)
+         (let ((value (eval handler)))
+           (if (functionp value)
+               value
+               (progn
+                 (runtime-warn "Particle field ~a did not evaluate to a function: ~s"
+                               description
+                               handler)
+                 fallback-function))))
+        (t
+         (runtime-warn "Particle field ~a is not a function designator: ~s"
+                       description
+                       handler)
+         fallback-function))
+    (error (condition)
+      (runtime-warn "Particle field ~a failed to resolve: ~s (~a)"
+                    description
+                    handler
+                    condition)
+      fallback-function)))
+
+(-> register-particle-field-definition
+    (particle-field-mode runtime-function runtime-function runtime-function runtime-function boolean)
+    particle-field-definition)
+(defun register-particle-field-definition (mode reset-function ensure-function
+                                           update-function draw-function
+                                           builtin-p)
+  (let ((definition (make-particle-field-definition
+                     :id mode
+                     :reset-function reset-function
+                     :ensure-function ensure-function
+                     :update-function update-function
+                     :draw-function draw-function
+                     :builtin-p builtin-p)))
+    (setf (gethash mode *particle-field-definitions*) definition)
+    (unless (member mode *particle-field-modes* :test #'eq)
+      (setf *particle-field-modes*
+            (append *particle-field-modes* (list mode))))
+    definition))
+
+(-> dialog-particle-field-kind
+    (t &key (:reset t) (:ensure t) (:update t) (:draw t) (:builtin-p boolean))
+    particle-field-mode)
+(defun dialog-particle-field-kind (mode &key reset ensure update draw builtin-p)
+  (let ((field-mode (particle-field-mode-keyword mode)))
+    (register-particle-field-definition
+     field-mode
+     (if reset
+         (particle-field-handler-function reset
+                                          "reset handler"
+                                          #'particle-field-reset-fallback)
+         #'particle-field-reset-fallback)
+     (if ensure
+         (particle-field-handler-function ensure
+                                          "ensure handler"
+                                          #'particle-field-ensure-fallback)
+         #'particle-field-ensure-fallback)
+     (if update
+         (particle-field-handler-function update
+                                          "update handler"
+                                          #'particle-field-update-fallback)
+         #'particle-field-update-fallback)
+     (if draw
+         (particle-field-handler-function draw
+                                          "draw handler"
+                                          #'particle-field-draw-fallback)
+         #'particle-field-draw-fallback)
+     builtin-p)
+    field-mode))
+
+(-> reset-script-particle-field-modes () t)
+(defun reset-script-particle-field-modes ()
+  (maphash (lambda (mode definition)
+             (unless (particle-field-definition-builtin-p definition)
+               (remhash mode *particle-field-definitions*)))
+           *particle-field-definitions*)
+  (setf *particle-field-modes*
+        (remove-if-not (lambda (mode)
+                         (let ((definition
+                                 (gethash mode *particle-field-definitions*)))
+                           (and definition
+                                (particle-field-definition-builtin-p
+                                 definition))))
+                       *particle-field-modes*))
+  (unless (gethash *particle-field-mode* *particle-field-definitions*)
+    (clear-particle-field-transition :rising)))
+
+
+;;; Mode state
+
 (-> valid-particle-field-mode-p (t) boolean)
 (defun valid-particle-field-mode-p (mode)
-  (typep mode 'particle-field-mode))
+  (and (keywordp mode)
+       (not (null (gethash mode *particle-field-definitions*)))))
 
 (-> normalize-particle-field-mode (t) particle-field-mode)
 (defun normalize-particle-field-mode (mode)
-  (let ((normalized (typecase mode
-                      (keyword mode)
-                      (symbol (intern (symbol-name mode) "KEYWORD"))
-                      (string (intern (string-upcase mode) "KEYWORD")))))
+  (let ((normalized (particle-field-mode-keyword mode)))
     (cond
       ((valid-particle-field-mode-p normalized)
        normalized)
@@ -169,34 +304,77 @@
 
 ;;; Mode dispatch
 
-(defparameter *particle-field-modes* '(:rising :stars :title-menu))
-
 (-> reset-particle-modes () t)
 (defun reset-particle-modes ()
-  (reset-rising-particles)
-  (reset-star-particles)
-  (reset-title-particles))
+  (dolist (mode *particle-field-modes*)
+    (let ((definition (gethash mode *particle-field-definitions*)))
+      (when definition
+        (handler-case
+            (funcall (particle-field-definition-reset-function definition))
+          (error (condition)
+            (runtime-warn "Could not reset particle mode ~a: ~a"
+                          mode
+                          condition)))))))
 
 (-> ensure-particle-count () t)
 (defun ensure-particle-count ()
-  (ensure-rising-particle-count)
-  (ensure-star-particle-count))
+  (dolist (mode *particle-field-modes*)
+    (let ((definition (gethash mode *particle-field-definitions*)))
+      (when definition
+        (handler-case
+            (funcall (particle-field-definition-ensure-function definition))
+          (error (condition)
+            (runtime-warn "Could not ensure particle mode ~a: ~a"
+                          mode
+                          condition)))))))
 
 (-> update-particle-mode (particle-field-mode seconds) t)
 (defun update-particle-mode (mode dt)
-  (case mode
-    (:rising (update-rising-particles dt))
-    (:stars (update-star-particles dt))
-    (:title-menu (update-title-particles dt))
-    (t (runtime-warn "Cannot update unknown particle mode: ~a" mode))))
+  (let ((definition (gethash mode *particle-field-definitions*)))
+    (if definition
+        (handler-case
+            (funcall (particle-field-definition-update-function definition)
+                     dt)
+          (error (condition)
+            (runtime-warn "Could not update particle mode ~a: ~a"
+                          mode
+                          condition)))
+        (runtime-warn "Cannot update unknown particle mode: ~a" mode))))
 
 (-> draw-particle-mode (particle-field-mode scalar) t)
 (defun draw-particle-mode (mode alpha-scale)
-  (case mode
-    (:rising (draw-rising-particles alpha-scale))
-    (:stars (draw-star-particles alpha-scale))
-    (:title-menu (draw-title-particles alpha-scale))
-    (t (runtime-warn "Cannot draw unknown particle mode: ~a" mode))))
+  (let ((definition (gethash mode *particle-field-definitions*)))
+    (if definition
+        (handler-case
+            (funcall (particle-field-definition-draw-function definition)
+                     alpha-scale)
+          (error (condition)
+            (runtime-warn "Could not draw particle mode ~a: ~a"
+                          mode
+                          condition)))
+        (runtime-warn "Cannot draw unknown particle mode: ~a" mode))))
+
+(-> register-builtin-particle-field-modes () t)
+(defun register-builtin-particle-field-modes ()
+  (dialog-particle-field-kind :rising
+                              :reset #'reset-rising-particles
+                              :ensure #'ensure-rising-particle-count
+                              :update #'update-rising-particles
+                              :draw #'draw-rising-particles
+                              :builtin-p t)
+  (dialog-particle-field-kind :stars
+                              :reset #'reset-star-particles
+                              :ensure #'ensure-star-particle-count
+                              :update #'update-star-particles
+                              :draw #'draw-star-particles
+                              :builtin-p t)
+  (dialog-particle-field-kind :title-menu
+                              :reset #'reset-title-particles
+                              :update #'update-title-particles
+                              :draw #'draw-title-particles
+                              :builtin-p t))
+
+(register-builtin-particle-field-modes)
 
 
 ;;; Public field loop

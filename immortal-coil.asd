@@ -61,7 +61,8 @@
                  (:module "audio"
                   :serial t
                   :components
-                  ((:file "resources")))
+                  ((:file "resources")
+                   (:file "story-music")))
 
                  (:module "title"
                   :serial t

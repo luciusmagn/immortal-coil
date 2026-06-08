@@ -279,3 +279,14 @@
    `(set-particle-field-mode ,mode
                              :fade-seconds ,fade-seconds
                              :immediate ,immediate)))
+
+(-> dialog-music (dialog-id t &key (:volume scalar)) dialog-id)
+(defun dialog-music (node-id path &key (volume 0.28))
+  (dialog-on-enter
+   node-id
+   `(set-story-music ,(namestring (dialog-asset-pathname path))
+                     :volume ,volume)))
+
+(-> dialog-stop-music (dialog-id) dialog-id)
+(defun dialog-stop-music (node-id)
+  (dialog-on-enter node-id 'stop-story-music))

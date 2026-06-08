@@ -128,6 +128,7 @@
 (-> start-new-game () t)
 (defun start-new-game ()
   (stop-title-music)
+  (stop-story-music)
   (load-dialog-graph)
   (reset-particles)
   (unless (restore-dev-save-override)
@@ -146,6 +147,7 @@
   (reset-particles)
   (when (load-current-game-save)
     (stop-title-music)
+    (stop-story-music)
     (setf *save-current-game-p* t
           *mode* :game
           *game-fade-elapsed* 0.0

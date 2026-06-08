@@ -7,5 +7,8 @@
            "maze/rendering.lisp"
            "flight/minigame.lisp"
            "flight/rendering.lisp"
-           "opening.lisp")
+           "opening.lisp"
+           "campaign/forest.lisp"
+           "campaign/jrpg.lisp"
+           "campaign/dream-worlds.lisp")
  :assets "../assets/")
