@@ -102,6 +102,10 @@ if [ "$(basename "$RAYLIB_DLL")" != "libraylib.dll" ]; then
   cp "$RAYLIB_DLL" "${LIB_DIR}/libraylib.dll"
 fi
 
+"${ROOT}/release/check-claylib-direct-library-exports.sh" \
+  "${LIB_DIR}/libraylib.dll" \
+  "${LIB_DIR}/libraygui.dll"
+
 SHARED_OBJECTS="$(basename "$RAYLIB_DLL");libraygui.dll;librayshim.dll"
 if [ "$(basename "$RAYLIB_DLL")" != "libraylib.dll" ]; then
   SHARED_OBJECTS="${SHARED_OBJECTS};libraylib.dll"

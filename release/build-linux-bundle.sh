@@ -41,6 +41,9 @@ gcc -shared -fPIC \
 cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "$LIB_DIR/"
 cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "${LIB_DIR}/libraylib.so.420"
 cp "${CLAYLIB_DIR}/wrap/lib/libraygui.so" "$LIB_DIR/"
+"${ROOT}/release/check-claylib-direct-library-exports.sh" \
+  "${LIB_DIR}/libraylib.so" \
+  "${LIB_DIR}/libraygui.so"
 copy-linux-library-maybe "libglfw.so.3"
 
 export IMMORTAL_COIL_CLAYLIB_DIR="$CLAYLIB_DIR"
