@@ -159,6 +159,51 @@ sub signature_string {
     return $return_type . '(' . join(', ', @$params) . ')';
 }
 
+sub add_signature {
+    my ($signatures, $symbol, $signature, $binding) = @_;
+
+    if (exists $signatures->{$symbol} && $signatures->{$symbol} ne $signature) {
+        die "$symbol has conflicting Claylib signatures:\n"
+            . "  $signatures->{$symbol}\n"
+            . "  $signature\n";
+    }
+
+    $signatures->{$symbol} = $signature;
+}
+
+sub collect_foreign_funcall_signatures {
+    my ($form, $binding, $signatures) = @_;
+    return unless ref($form) eq 'ARRAY';
+
+    if (@$form >= 3
+        && $form->[0] eq 'cffi:foreign-funcall'
+        && !ref($form->[1])
+        && $form->[1] =~ /^__claw/) {
+        my $symbol = $form->[1];
+        my @tail = @$form[2 .. $#$form];
+
+        die "Malformed foreign-funcall for $symbol in $binding\n"
+            unless @tail % 2 == 1;
+
+        my $return_type = cffi_type_to_c($tail[-1]);
+        my @params;
+
+        for (my $index = 0; $index < @tail - 1; $index += 2) {
+            push @params, cffi_type_to_c($tail[$index]);
+        }
+
+        add_signature($signatures,
+                      $symbol,
+                      signature_string($return_type, \@params),
+                      $binding);
+    }
+
+    for my $child (@$form) {
+        collect_foreign_funcall_signatures($child, $binding, $signatures)
+            if ref($child) eq 'ARRAY';
+    }
+}
+
 sub binding_signatures {
     my %signatures;
     my @bindings = binding_files();
@@ -167,6 +212,7 @@ sub binding_signatures {
 
     for my $binding (@bindings) {
         for my $form (parse_top_level_forms(slurp($binding))) {
+            collect_foreign_funcall_signatures($form, $binding, \%signatures);
             next unless ref($form) eq 'ARRAY';
             next unless @$form >= 3 && $form->[0] eq 'cffi:defcfun';
             next unless ref($form->[1]) eq 'ARRAY' && $form->[1]->[0] =~ /__claw/;
@@ -180,12 +226,7 @@ sub binding_signatures {
             } @$form[3 .. $#$form];
             my $signature = signature_string($return_type, \@params);
 
-            if (exists $signatures{$symbol} && $signatures{$symbol} ne $signature) {
-                die "$symbol has conflicting Claylib signatures:\n"
-                    . "  $signatures{$symbol}\n"
-                    . "  $signature\n";
-            }
-            $signatures{$symbol} = $signature;
+            add_signature(\%signatures, $symbol, $signature, $binding);
         }
     }
 

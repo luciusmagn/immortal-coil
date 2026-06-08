@@ -81,6 +81,11 @@ static long double claw_win32_significandl(long double value) {
 #define ynl(order, value) ((long double)yn((order), (double)(value)))
 #endif
 
+/* Claw-generated bindings call this adapter initializer if requested. */
+SHIM_EXPORT int __claw_claylib_makewrap_loader_029F3B4D4B4751761EE365971C1CE3853(void) {
+    return 0;
+}
+
 SHIM_EXPORT void __claw_AttachAudioStreamProcessor(AudioStream * stream, AudioCallback processor) {
     AttachAudioStreamProcessor((*stream), processor);
 }

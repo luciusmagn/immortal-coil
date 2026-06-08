@@ -10,7 +10,7 @@ ACTUAL="$(mktemp)"
 trap 'rm -f "$EXPECTED" "$ACTUAL"' EXIT
 
 extract_binding_shims() {
-  perl -ne 'while (/\("([^"]*__claw[^"]*)"/g) { print "$1\n" }' "$@" \
+  perl -ne 'while (/"(__claw[^"]*)"/g) { print "$1\n" }' "$@" \
     | sort -u
 }
 

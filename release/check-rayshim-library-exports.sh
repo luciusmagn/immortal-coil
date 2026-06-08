@@ -12,7 +12,7 @@ CANDIDATE="$(mktemp)"
 trap 'rm -f "$EXPECTED" "$ACTUAL" "$RAW_NM" "$CANDIDATE"' EXIT
 
 extract_binding_shims() {
-  perl -ne 'while (/\("([^"]*__claw[^"]*)"/g) { print "$1\n" }' "$@" \
+  perl -ne 'while (/"(__claw[^"]*)"/g) { print "$1\n" }' "$@" \
     | sort -u
 }
 
