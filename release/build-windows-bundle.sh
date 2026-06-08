@@ -70,6 +70,7 @@ patch_claylib_binding_features() {
 patch_claylib_binding_features
 
 "${ROOT}/release/check-rayshim-exports.sh"
+"${ROOT}/release/check-rayshim-windows-compile.sh"
 
 if [ ! -d "$RAYLIB_INSTALL" ] || [ -z "$(find_raylib_dll 2>/dev/null)" ]; then
   build_raylib

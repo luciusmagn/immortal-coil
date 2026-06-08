@@ -3,11 +3,6 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#if defined(_WIN32)
-#include <winsock2.h>
-#else
-#include <sys/select.h>
-#endif
 #include <math.h>
 #include "raylib.h"
 #include "raymath.h"
@@ -25,6 +20,65 @@
 typedef double claw_long_double;
 #else
 typedef long double claw_long_double;
+#endif
+
+#if defined(_WIN32)
+static long double claw_win32_dreml(long double x, long double y) {
+    return (long double)remainder((double)x, (double)y);
+}
+
+static int claw_win32_finitel(long double value) {
+    return isfinite((double)value);
+}
+
+static long double claw_win32_gammal(long double value) {
+    return lgammal(value);
+}
+
+static int claw_win32_isinfl(long double value) {
+    return isinf((double)value);
+}
+
+static int claw_win32_isnanl(long double value) {
+    return isnan((double)value);
+}
+
+static long double claw_win32_lgammal_r(long double value, int *signgamp) {
+    long double result = lgammal(value);
+    if (signgamp) {
+        *signgamp = signgam;
+    }
+    return result;
+}
+
+static long double claw_win32_scalbl(long double x, long double n) {
+    return scalbnl(x, (int)n);
+}
+
+static long double claw_win32_significandl(long double value) {
+    if (value == 0.0L || !isfinite((double)value)) {
+        return value;
+    }
+    return scalbnl(value, -ilogbl(value));
+}
+
+#define dreml claw_win32_dreml
+#define finitel claw_win32_finitel
+#define gammal claw_win32_gammal
+#define isinfl claw_win32_isinfl
+#define isnanl claw_win32_isnanl
+#define j0l(value) ((long double)j0((double)(value)))
+#define j1l(value) ((long double)j1((double)(value)))
+#define jnl(order, value) ((long double)jn((order), (double)(value)))
+#define lgammal_r claw_win32_lgammal_r
+#define qecvt(value, ndigit, decpt, sign) ecvt((double)(value), (ndigit), (decpt), (sign))
+#define qfcvt(value, ndigit, decpt, sign) fcvt((double)(value), (ndigit), (decpt), (sign))
+#define qgcvt(value, ndigit, buf) gcvt((double)(value), (ndigit), (buf))
+#define scalbl claw_win32_scalbl
+#define significandl claw_win32_significandl
+#define y0l(value) ((long double)y0((double)(value)))
+#define y1l(value) ((long double)y1((double)(value)))
+#define ynl(order, value) ((long double)yn((order), (double)(value)))
 #endif
 
 SHIM_EXPORT void __claw_AttachAudioStreamProcessor(AudioStream * stream, AudioCallback processor) {
