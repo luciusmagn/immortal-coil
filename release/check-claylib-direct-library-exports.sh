@@ -12,17 +12,25 @@ RAYGUI_API="$(mktemp)"
 RAYLIB_EXPECTED="$(mktemp)"
 RAYGUI_EXPECTED="$(mktemp)"
 RAYGUI_HELPERS="$(mktemp)"
+FOREIGN_GLOBALS="$(mktemp)"
+RUNTIME_GLOBALS="$(mktemp)"
 CLASSIFIED="$(mktemp)"
 UNCLASSIFIED="$(mktemp)"
+UNCLASSIFIED_GLOBALS="$(mktemp)"
 ACTUAL="$(mktemp)"
 MISSING="$(mktemp)"
 RAW_NM="$(mktemp)"
 CANDIDATE="$(mktemp)"
-trap 'rm -f "$DIRECT_CFFI" "$RAYLIB_API" "$RAYGUI_API" "$RAYLIB_EXPECTED" "$RAYGUI_EXPECTED" "$RAYGUI_HELPERS" "$CLASSIFIED" "$UNCLASSIFIED" "$ACTUAL" "$MISSING" "$RAW_NM" "$CANDIDATE"' EXIT
+trap 'rm -f "$DIRECT_CFFI" "$RAYLIB_API" "$RAYGUI_API" "$RAYLIB_EXPECTED" "$RAYGUI_EXPECTED" "$RAYGUI_HELPERS" "$FOREIGN_GLOBALS" "$RUNTIME_GLOBALS" "$CLASSIFIED" "$UNCLASSIFIED" "$UNCLASSIFIED_GLOBALS" "$ACTUAL" "$MISSING" "$RAW_NM" "$CANDIDATE"' EXIT
 
 extract_direct_cffi_symbols() {
   perl -ne 'while (/\(cffi:defcfun\s+\("([^"]+)"/g) { print "$1\n" }' "$@" \
     | grep -v '__claw' \
+    | sort -u
+}
+
+extract_foreign_global_symbols() {
+  perl -ne 'while (/foreign-symbol-pointer\s+"([^"]+)"/g) { print "$1\n" }' "$@" \
     | sort -u
 }
 
@@ -101,6 +109,15 @@ write_runtime_direct_symbols() {
     | sort -u
 }
 
+write_runtime_foreign_globals() {
+  {
+    echo "signgam"
+    echo "stderr"
+    echo "stdin"
+    echo "stdout"
+  } | sort -u
+}
+
 check_direct_symbol_classification() {
   {
     cat "$RAYLIB_EXPECTED"
@@ -119,12 +136,25 @@ check_direct_symbol_classification() {
   fi
 }
 
+check_foreign_global_classification() {
+  comm -23 "$FOREIGN_GLOBALS" "$RUNTIME_GLOBALS" > "$UNCLASSIFIED_GLOBALS"
+
+  if [ -s "$UNCLASSIFIED_GLOBALS" ]; then
+    echo "Claylib has foreign-symbol-pointer globals with no checked runtime classification." >&2
+    echo
+    cat "$UNCLASSIFIED_GLOBALS" >&2
+    exit 1
+  fi
+}
+
 extract_direct_cffi_symbols "${CLAYLIB_DIR}/wrap/bindings/"*.lisp > "$DIRECT_CFFI"
+extract_foreign_global_symbols "${CLAYLIB_DIR}/wrap/bindings/"*.lisp > "$FOREIGN_GLOBALS"
 extract_header_api_symbols RLAPI \
   "${CLAYLIB_DIR}/wrap/lib/raylib.h" \
   "${CLAYLIB_DIR}/wrap/lib/rcamera.h" > "$RAYLIB_API"
 extract_header_api_symbols RAYGUIAPI "${CLAYLIB_DIR}/wrap/lib/raygui.h" > "$RAYGUI_API"
 write_checked_raygui_helpers > "$RAYGUI_HELPERS"
+write_runtime_foreign_globals > "$RUNTIME_GLOBALS"
 
 comm -12 "$DIRECT_CFFI" "$RAYLIB_API" > "$RAYLIB_EXPECTED"
 {
@@ -133,5 +163,6 @@ comm -12 "$DIRECT_CFFI" "$RAYLIB_API" > "$RAYLIB_EXPECTED"
 } | sort -u > "$RAYGUI_EXPECTED"
 
 check_direct_symbol_classification
+check_foreign_global_classification
 check_library_exports raylib "$RAYLIB_LIBRARY" "$RAYLIB_EXPECTED"
 check_library_exports raygui "$RAYGUI_LIBRARY" "$RAYGUI_EXPECTED"

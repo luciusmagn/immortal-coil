@@ -254,10 +254,12 @@ sub collect_cffi_types {
         if $type =~ /^claylib\/wrap::/;
 }
 
-sub defcstruct_name_and_size {
+sub cffi_layout_name_and_size {
     my ($form) = @_;
     return unless ref($form) eq 'ARRAY';
-    return unless @$form >= 2 && $form->[0] eq 'cffi:defcstruct';
+    return unless @$form >= 2
+        && ($form->[0] eq 'cffi:defcstruct'
+            || $form->[0] eq 'cffi:defcunion');
 
     my $spec = $form->[1];
     my ($name, $size);
@@ -301,7 +303,7 @@ sub check_x86_64_struct_layouts {
                 }
             }
 
-            my ($name, $size) = defcstruct_name_and_size($form);
+            my ($name, $size) = cffi_layout_name_and_size($form);
             $sizes{$name} = $size
                 if defined $name;
         }
