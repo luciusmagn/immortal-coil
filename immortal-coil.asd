@@ -122,6 +122,7 @@
                    (:file "draft")
                    (:file "choice-option-edit")
                    (:file "store-edit")
+                   (:file "audio")
                    (:file "text-edit")
                    (:file "rendering")))
 

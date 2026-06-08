@@ -261,6 +261,8 @@
           (editor-cycle-current-minigame))
          ((editor-control-key-pressed-p +key-f+)
           (editor-cycle-current-particles))
+         ((editor-control-key-pressed-p +key-m+)
+          (editor-cycle-current-music))
          ((or (is-key-pressed-p +key-f3+)
               (editor-control-key-pressed-p +key-s+))
           (editor-toggle-store-overlay))

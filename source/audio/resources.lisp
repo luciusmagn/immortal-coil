@@ -24,6 +24,14 @@
                     condition)
       nil)))
 
+(-> audio-device-ready-p () boolean)
+(defun audio-device-ready-p ()
+  (handler-case
+      (claylib/ll:is-audio-device-ready-p)
+    (error (condition)
+      (runtime-warn "Could not query audio device readiness: ~a" condition)
+      nil)))
+
 (-> play-sound-maybe (t string) t)
 (defun play-sound-maybe (sound description)
   (handler-case

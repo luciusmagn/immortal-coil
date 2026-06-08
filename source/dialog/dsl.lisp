@@ -474,3 +474,25 @@
 (-> dialog-stop-music (dialog-id) dialog-id)
 (defun dialog-stop-music (node-id)
   (dialog-on-enter node-id 'stop-story-music))
+
+(-> dialog-story-music-effect (t scalar) dialog-effect)
+(defun dialog-story-music-effect (path volume)
+  (if (eq path :stop)
+      'stop-story-music
+      `(set-story-music ,(namestring (dialog-asset-pathname path))
+                        :volume ,volume)))
+
+(-> dialog-set-music (dialog-id t &key (:volume scalar)) dialog-id)
+(defun dialog-set-music (node-id path &key (volume 0.28))
+  (let ((effect (dialog-story-music-effect path volume))
+        (node (gethash node-id *nodes*)))
+    (if node
+        (setf (node-enter-effects node)
+              (append (dialog-without-story-music-effects
+                       (node-enter-effects node))
+                      (list effect)))
+        (setf (gethash node-id *pending-node-enter-effects*)
+              (append (dialog-without-story-music-effects
+                       (node-pending-enter-effects node-id))
+                      (list effect)))))
+  node-id)

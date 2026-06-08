@@ -128,6 +128,33 @@
         when mode
           return mode))
 
+(-> dialog-story-music-effect-p (t) boolean)
+(defun dialog-story-music-effect-p (effect)
+  (or (eq effect 'stop-story-music)
+      (and (consp effect)
+           (eq (first effect) 'set-story-music))))
+
+(-> dialog-story-music-effect-selection (t) (option t))
+(defun dialog-story-music-effect-selection (effect)
+  (cond
+    ((eq effect 'stop-story-music)
+     :stop)
+    ((and (dialog-story-music-effect-p effect)
+          (consp effect)
+          (second effect))
+     (second effect))))
+
+(-> dialog-without-story-music-effects (list) list)
+(defun dialog-without-story-music-effects (effects)
+  (remove-if #'dialog-story-music-effect-p effects))
+
+(-> node-story-music-selection (node) (option t))
+(defun node-story-music-selection (node)
+  (loop for effect in (reverse (node-enter-effects node))
+        for selection = (dialog-story-music-effect-selection effect)
+        when selection
+          return selection))
+
 (-> combine-node-enter-effects (node) list)
 (defun combine-node-enter-effects (node)
   (let ((id (node-id node)))

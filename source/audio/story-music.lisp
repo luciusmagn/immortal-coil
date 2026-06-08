@@ -75,11 +75,14 @@
 
 (-> set-story-music (t &key (:volume scalar)) t)
 (defun set-story-music (path &key (volume 0.28))
-  (let ((pathname (story-music-pathname path)))
-    (unless (story-music-same-path-p pathname)
-      (load-story-music pathname volume))
-    (setf *story-music-volume* volume)
-    (play-story-music-loaded)))
+  (if (audio-device-ready-p)
+      (let ((pathname (story-music-pathname path)))
+        (unless (story-music-same-path-p pathname)
+          (load-story-music pathname volume))
+        (setf *story-music-volume* volume)
+        (play-story-music-loaded))
+      (runtime-warn "Story music skipped; audio device is not ready: ~a"
+                    path)))
 
 (-> update-story-music () t)
 (defun update-story-music ()
