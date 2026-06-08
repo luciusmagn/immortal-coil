@@ -1,5 +1,6 @@
 .env
 assets/audio/generated/
+assets/audio/backup/generated/
 result
 save/
 tools/dialog-editor/config.nims
