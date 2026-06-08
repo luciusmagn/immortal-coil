@@ -11,6 +11,21 @@ LIB_DIR="${BUNDLE}/lib"
 rm -rf "$BUILD_DIR"
 mkdir -p "$LIB_DIR" "$DIST"
 
+copy-linux-library-maybe() {
+  local soname="$1"
+  local path=""
+
+  if command -v ldconfig >/dev/null 2>&1; then
+    path="$(ldconfig -p 2>/dev/null | awk -v soname="$soname" '$1 == soname { print $NF; exit }' || true)"
+  fi
+
+  if [ -n "$path" ] && [ -f "$path" ]; then
+    cp "$path" "$LIB_DIR/"
+  else
+    echo "Warning: could not find $soname to include in the bundle" >&2
+  fi
+}
+
 gcc -shared -fPIC \
   -o "${LIB_DIR}/librayshim.x86_64-pc-linux-gnu.so" \
   "${ROOT}/release/rayshim.c" \
@@ -20,6 +35,7 @@ gcc -shared -fPIC \
 
 cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "$LIB_DIR/"
 cp "${CLAYLIB_DIR}/wrap/lib/libraygui.so" "$LIB_DIR/"
+copy-linux-library-maybe "libglfw.so.3"
 
 export IMMORTAL_COIL_CLAYLIB_DIR="$CLAYLIB_DIR"
 export IMMORTAL_COIL_BINARY="${BUNDLE}/immortal-coil"
