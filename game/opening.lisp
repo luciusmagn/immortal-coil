@@ -68,29 +68,29 @@
              (dialog-option "right" "base/listen"))
 
 (dialog-list-path "base/listen"
-    "select a sound from the hall."
-  ("breathing"
-   "the breathing stops when you notice it.")
-  ("static"
-   "under the static, a voice has been waiting.")
-  ("water"
-   "the water runs uphill behind the door.")
-  ("glass"
-   "glass shifts in the wall like teeth.")
-  ("keys"
-   "the keys turn by themselves.")
-  ("bells"
-   "the bells are too distant to be outside.")
-  ("steps"
-   "the steps stop one pace from the threshold.")
-  ("wood"
-   "wood creaks where no wood should be.")
-  ("silence"
-   "the silence notices you first.")
-  ("hinges"
-   :when #'(lambda ()
-             (>= (dialog-value "door-count" 0) 5))
-   "the hinges count themselves out loud."))
+                  "select a sound from the hall."
+                  ("breathing"
+                   "the breathing stops when you notice it.")
+                  ("static"
+                   "under the static, a voice has been waiting.")
+                  ("water"
+                   "the water runs uphill behind the door.")
+                  ("glass"
+                   "glass shifts in the wall like teeth.")
+                  ("keys"
+                   "the keys turn by themselves.")
+                  ("bells"
+                   "the bells are too distant to be outside.")
+                  ("steps"
+                   "the steps stop one pace from the threshold.")
+                  ("wood"
+                   "wood creaks where no wood should be.")
+                  ("silence"
+                   "the silence notices you first.")
+                  ("hinges"
+                   :when #'(lambda ()
+                             (>= (dialog-value "door-count" 0) 5))
+                   "the hinges count themselves out loud."))
 
 (dialog-text "base/sleep"
              "you rolled over and went back to sleep, nothing of interest happened..."
@@ -147,13 +147,13 @@
 
 (dialog-branch "dream/maze-exit"
                (dialog-case '(string= (dialog-value "dream-maze-exit" "")
-                                      "left")
+                              "left")
                             "alice/fall")
                (dialog-case '(string= (dialog-value "dream-maze-exit" "")
-                                      "upper")
+                              "upper")
                             "rogue/entrance")
                (dialog-case '(string= (dialog-value "dream-maze-exit" "")
-                                      "right")
+                              "right")
                             "dream/right-exit")
                (dialog-default "dream/maze-lost"))
 
