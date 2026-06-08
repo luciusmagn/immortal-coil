@@ -294,7 +294,7 @@
          (left (round (- +virtual-center-x+ (/ panel-width 2))))
          (top 248)
          (replace-p (eq *editor-insert-action* :replace))
-         (title (if replace-p "REPLACE" "INSERT"))
+         (title (if replace-p "DESTRUCTIVE REPLACE" "NON-DESTRUCTIVE INSERT"))
          (target (if replace-p
                      "CURRENT NODE"
                      (editor-insert-target-label))))
@@ -327,8 +327,8 @@
                                           (+ top 78 (* index 28))
                                           color))
     (draw-editor-right-text (if replace-p
-                                "RET REPLACE  C-g CANCEL"
-                                "RET INSERT  C-g CANCEL")
+                                "RET REPLACE NODE  C-g CANCEL"
+                                "RET INSERT BETWEEN LINKS  C-g CANCEL")
                             (+ top panel-height 14)
                             12
                             color)))
@@ -752,9 +752,9 @@
          (top 154)
          (rows '(("C-h" "close this help overlay")
                  ("C-b" "rewind to previous editor step")
-                 ("C-i" "insert a node at the current link")
-                 ("C-r" "replace the current node")
-                 ("C-a" "add an option or conversation line")
+                 ("C-i" "non-destructive insert at current link")
+                 ("C-r" "destructive replace current node")
+                 ("C-a" "add option or conversation line")
                  ("C-p" "cycle the current minigame")
                  ("C-f" "cycle the current node particle field")
                  ("C-m" "cycle the current node music")

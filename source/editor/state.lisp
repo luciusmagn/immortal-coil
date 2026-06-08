@@ -326,8 +326,8 @@
           *editor-insert-menu-selected-index* position
           *editor-status-message*
           (if (eq action :replace)
-              "EDITOR: REPLACE TYPE"
-              "EDITOR: INSERT TYPE"))
+              "EDITOR: DESTRUCTIVE REPLACE TYPE"
+              "EDITOR: NON-DESTRUCTIVE INSERT TYPE"))
     (play-choice-switch)
     t))
 
@@ -353,7 +353,10 @@
         (mod (+ *editor-insert-menu-selected-index* direction)
              (length *editor-insert-kinds*))
         *editor-status-message*
-        (format nil "EDITOR: INSERT ~a"
+        (format nil "EDITOR: ~a ~a"
+                (if (eq *editor-insert-action* :replace)
+                    "REPLACE"
+                    "INSERT")
                 (editor-insert-kind-label (editor-current-insert-kind))))
   (play-choice-switch)
   t)

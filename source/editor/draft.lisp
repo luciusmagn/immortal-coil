@@ -653,7 +653,7 @@
            (editor-add-insert-node kind node-id next-id)
            (editor-reset-current-node-display node-id)
            (setf *editor-status-message*
-                 (format nil "EDITOR: REPLACED ~a" node-id))
+                 (format nil "EDITOR: DESTRUCTIVELY REPLACED ~a" node-id))
            (play-start-confirm)
            t)
           (t
