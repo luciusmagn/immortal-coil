@@ -62,6 +62,15 @@
       (setf (choice-target choice) target)))
   node-id)
 
+(-> dialog-set-choice-label (dialog-id nonnegative-integer string) dialog-id)
+(defun dialog-set-choice-label (node-id choice-index label)
+  (let ((choice (dialog-choice-at node-id
+                                  choice-index
+                                  "Cannot relabel choice")))
+    (when choice
+      (setf (choice-label choice) label)))
+  node-id)
+
 (-> dialog-set-choice-visible-predicate
     (dialog-id nonnegative-integer dialog-condition)
     dialog-id)

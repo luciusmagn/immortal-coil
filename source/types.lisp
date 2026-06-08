@@ -111,7 +111,7 @@
 
   (deftype editor-choice-option-field ()
     "Editable fields in the selected-choice option editor."
-    '(member :target-kind :target :visible :enabled))
+    '(member :label :target-kind :target :visible :enabled))
 
   (deftype conversation-side ()
     "Screen side used by a two-character conversation entry."

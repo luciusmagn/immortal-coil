@@ -28,6 +28,11 @@
   (editor-generated-child-id-with-prefix
    (format nil "~a/option-~d" parent-id (1+ choice-index))))
 
+(-> editor-generated-appended-choice-child-id (node) dialog-id)
+(defun editor-generated-appended-choice-child-id (node)
+  (editor-generated-choice-child-id (node-id node)
+                                    (length (node-choices node))))
+
 (-> editor-target-form (t) t)
 (defun editor-target-form (target)
   (cond
@@ -60,6 +65,23 @@
   (format stream "~&(dialog-set-choice-target ~s ~d "
           node-id
           choice-index)
+  (editor-write-target stream target)
+  (format stream ")~2%"))
+
+(-> editor-write-set-choice-label-form
+    (t dialog-id nonnegative-integer string)
+    t)
+(defun editor-write-set-choice-label-form (stream node-id choice-index label)
+  (format stream "~&(dialog-set-choice-label ~s ~d ~s)~2%"
+          node-id
+          choice-index
+          label))
+
+(-> editor-write-add-choice-form (t dialog-id string dialog-target) t)
+(defun editor-write-add-choice-form (stream node-id label target)
+  (format stream "~&(dialog-add-choice ~s ~s "
+          node-id
+          label)
   (editor-write-target stream target)
   (format stream ")~2%"))
 
@@ -255,6 +277,25 @@
       (runtime-warn "Could not append editor choice insert: ~a" condition)
       nil)))
 
+(-> editor-append-choice-add
+    (dialog-id string dialog-id editor-insert-kind)
+    boolean)
+(defun editor-append-choice-add (parent-id label child-id kind)
+  (handler-case
+      (let ((path (editor-draft-script-pathname)))
+        (ensure-directories-exist path)
+        (with-open-file (stream path
+                                :direction :output
+                                :if-exists :append
+                                :if-does-not-exist :create)
+          (format stream "~&;;; add option in ~s~%" parent-id)
+          (editor-write-add-choice-form stream parent-id label child-id)
+          (editor-write-insert-node-form stream kind child-id nil))
+        t)
+    (error (condition)
+      (runtime-warn "Could not append editor choice add: ~a" condition)
+      nil)))
+
 (-> editor-append-text-rewrite (dialog-id string) boolean)
 (defun editor-append-text-rewrite (node-id text)
   (handler-case
@@ -432,6 +473,46 @@
 (defun editor-insert-text-node-after-current ()
   (let ((*editor-insert-kind* :text))
     (editor-insert-node-after-current)))
+
+(-> editor-choice-add-select-new-option (node) t)
+(defun editor-choice-add-select-new-option (node)
+  (let ((choices (active-node-choices node)))
+    (setf (play-state-selected-index *state*)
+          (max 0 (1- (length choices)))))
+  t)
+
+(-> editor-add-choice-option-to-current () boolean)
+(defun editor-add-choice-option-to-current ()
+  (if (and *editor-active-p* *state*)
+      (let ((node (current-node)))
+        (if (eq (node-kind node) :choice)
+            (let* ((parent-id (node-id node))
+                   (label "new option")
+                   (child-id (editor-generated-appended-choice-child-id node))
+                   (kind :text))
+              (if (editor-append-choice-add parent-id label child-id kind)
+                  (progn
+                    (dialog-add-choice parent-id label child-id)
+                    (editor-add-insert-node kind child-id nil)
+                    (editor-choice-add-select-new-option node)
+                    (setf *editor-status-message*
+                          (format nil "EDITOR: ADDED OPTION ~a" child-id))
+                    (play-start-confirm)
+                    (when (fboundp 'editor-start-choice-option-edit)
+                      (funcall (symbol-function
+                                'editor-start-choice-option-edit)))
+                    t)
+                  (progn
+                    (setf *editor-status-message*
+                          "EDITOR: OPTION ADD WRITE FAILED")
+                    (play-choice-switch)
+                    nil)))
+            (progn
+              (setf *editor-status-message*
+                    "EDITOR: ADD OPTION NEEDS CHOICE NODE")
+              (play-choice-switch)
+              nil)))
+      nil))
 
 (-> editor-current-delete-parent () (option node))
 (defun editor-current-delete-parent ()

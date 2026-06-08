@@ -248,6 +248,8 @@
          ((or (is-key-pressed-p +key-insert+)
               (editor-control-key-pressed-p +key-i+))
           (editor-open-insert-menu))
+         ((editor-control-key-pressed-p +key-a+)
+          (editor-add-choice-option-to-current))
          ((or (is-key-pressed-p +key-f3+)
               (editor-control-key-pressed-p +key-s+))
           (editor-toggle-store-overlay))

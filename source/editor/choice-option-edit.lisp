@@ -10,6 +10,7 @@
         *editor-choice-option-index* 0
         *editor-choice-option-field-index* 0
         *editor-choice-option-target-kind* :id
+        *editor-choice-option-label-buffer* ""
         *editor-choice-option-target-buffer* ""
         *editor-choice-option-visible-buffer* "t"
         *editor-choice-option-enabled-buffer* "t")
@@ -80,6 +81,8 @@
                       *editor-choice-option-field-index* 0
                       *editor-choice-option-target-kind*
                       (editor-choice-target-kind (choice-target choice))
+                      *editor-choice-option-label-buffer*
+                      (choice-label choice)
                       *editor-choice-option-target-buffer*
                       (editor-choice-option-target-input
                        (choice-target choice))
@@ -131,6 +134,10 @@
       (t
        (editor-choice-input-symbol trimmed)))))
 
+(-> editor-choice-option-label-value () string)
+(defun editor-choice-option-label-value ()
+  (editor-trim-choice-option-input *editor-choice-option-label-buffer*))
+
 (-> editor-choice-option-target-kind-label () string)
 (defun editor-choice-option-target-kind-label ()
   (case *editor-choice-option-target-kind*
@@ -149,6 +156,7 @@
 (-> editor-choice-option-selected-buffer () string)
 (defun editor-choice-option-selected-buffer ()
   (case (editor-choice-option-selected-field)
+    (:label *editor-choice-option-label-buffer*)
     (:visible *editor-choice-option-visible-buffer*)
     (:enabled *editor-choice-option-enabled-buffer*)
     (:target *editor-choice-option-target-buffer*)
@@ -156,6 +164,8 @@
 
 (defun (setf editor-choice-option-selected-buffer) (value)
   (case (editor-choice-option-selected-field)
+    (:label
+     (setf *editor-choice-option-label-buffer* value))
     (:visible
      (setf *editor-choice-option-visible-buffer* value))
     (:enabled
@@ -209,10 +219,11 @@
   t)
 
 (-> editor-append-choice-option-edit
-    (dialog-id nonnegative-integer dialog-target dialog-condition dialog-condition)
+    (dialog-id nonnegative-integer string dialog-target dialog-condition dialog-condition)
     boolean)
 (defun editor-append-choice-option-edit (node-id
                                          choice-index
+                                         label
                                          target
                                          visible-predicate
                                          enabled-predicate)
@@ -226,6 +237,10 @@
           (format stream "~&;;; option edit ~d in ~s~%"
                   choice-index
                   node-id)
+          (editor-write-set-choice-label-form stream
+                                              node-id
+                                              choice-index
+                                              label)
           (editor-write-set-choice-target-form stream
                                                node-id
                                                choice-index
@@ -244,13 +259,15 @@
       nil)))
 
 (-> editor-apply-choice-option-edit
-    (dialog-id nonnegative-integer dialog-target dialog-condition dialog-condition)
+    (dialog-id nonnegative-integer string dialog-target dialog-condition dialog-condition)
     t)
 (defun editor-apply-choice-option-edit (node-id
                                         choice-index
+                                        label
                                         target
                                         visible-predicate
                                         enabled-predicate)
+  (dialog-set-choice-label node-id choice-index label)
   (dialog-set-choice-target node-id choice-index target)
   (dialog-set-choice-visible-predicate node-id choice-index visible-predicate)
   (dialog-set-choice-enabled-predicate node-id choice-index enabled-predicate)
@@ -263,36 +280,44 @@
 
 (-> editor-save-choice-option-edit () boolean)
 (defun editor-save-choice-option-edit ()
-  (let ((target (editor-choice-option-target-value)))
-    (if (not target)
-        (progn
-          (setf *editor-status-message* "EDITOR: OPTION TARGET REQUIRED")
-          (play-choice-switch)
-          nil)
-        (let ((node-id *editor-choice-option-node-id*)
-              (choice-index *editor-choice-option-index*)
-              (visible-predicate
-                (editor-choice-option-predicate-value
-                 *editor-choice-option-visible-buffer*))
-              (enabled-predicate
-                (editor-choice-option-predicate-value
-                 *editor-choice-option-enabled-buffer*)))
-          (if (and node-id
-                   (editor-append-choice-option-edit node-id
-                                                     choice-index
-                                                     target
-                                                     visible-predicate
-                                                     enabled-predicate))
-              (editor-apply-choice-option-edit node-id
-                                               choice-index
-                                               target
-                                               visible-predicate
-                                               enabled-predicate)
-              (progn
-                (setf *editor-status-message*
-                      "EDITOR: OPTION SAVE FAILED")
-                (play-choice-switch)
-                nil))))))
+  (let ((target (editor-choice-option-target-value))
+        (label (editor-choice-option-label-value)))
+    (cond
+      ((zerop (length label))
+       (setf *editor-status-message* "EDITOR: OPTION LABEL REQUIRED")
+       (play-choice-switch)
+       nil)
+      ((not target)
+       (setf *editor-status-message* "EDITOR: OPTION TARGET REQUIRED")
+       (play-choice-switch)
+       nil)
+      (t
+       (let ((node-id *editor-choice-option-node-id*)
+             (choice-index *editor-choice-option-index*)
+             (visible-predicate
+               (editor-choice-option-predicate-value
+                *editor-choice-option-visible-buffer*))
+             (enabled-predicate
+               (editor-choice-option-predicate-value
+                *editor-choice-option-enabled-buffer*)))
+         (if (and node-id
+                  (editor-append-choice-option-edit node-id
+                                                    choice-index
+                                                    label
+                                                    target
+                                                    visible-predicate
+                                                    enabled-predicate))
+             (editor-apply-choice-option-edit node-id
+                                              choice-index
+                                              label
+                                              target
+                                              visible-predicate
+                                              enabled-predicate)
+             (progn
+               (setf *editor-status-message*
+                     "EDITOR: OPTION SAVE FAILED")
+               (play-choice-switch)
+               nil)))))))
 
 (-> update-editor-choice-option-edit () boolean)
 (defun update-editor-choice-option-edit ()

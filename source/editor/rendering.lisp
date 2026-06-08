@@ -329,6 +329,7 @@
 (-> editor-choice-option-field-label (editor-choice-option-field) string)
 (defun editor-choice-option-field-label (field)
   (case field
+    (:label "LABEL")
     (:target-kind "DESTINATION")
     (:target "VALUE")
     (:visible "VISIBLE IF")
@@ -338,6 +339,8 @@
 (-> editor-choice-option-field-value (editor-choice-option-field) string)
 (defun editor-choice-option-field-value (field)
   (case field
+    (:label
+     *editor-choice-option-label-buffer*)
     (:target-kind
      (editor-choice-option-target-kind-label))
     (:visible
@@ -387,9 +390,9 @@
 (-> draw-editor-choice-option-panel (t) t)
 (defun draw-editor-choice-option-panel (color)
   (let* ((panel-width 680)
-         (panel-height 244)
+         (panel-height 276)
          (left (round (- +virtual-center-x+ (/ panel-width 2))))
-         (top 302))
+         (top 286))
     (claylib/ll:draw-rectangle left
                                top
                                panel-width
@@ -448,6 +451,7 @@
          (rows '(("C-h" "close this help overlay")
                  ("C-b" "rewind to previous editor step")
                  ("C-i" "insert a node at the current link")
+                 ("C-a" "add an option to a choice node")
                  ("C-o" "edit the highlighted choice option")
                  ("C-e" "edit the current node text")
                  ("C-s" "show shared state or save active panel")

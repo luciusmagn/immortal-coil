@@ -24,6 +24,7 @@
 (defvar *editor-choice-option-index* 0)
 (defvar *editor-choice-option-field-index* 0)
 (defvar *editor-choice-option-target-kind* :id)
+(defvar *editor-choice-option-label-buffer* "")
 (defvar *editor-choice-option-target-buffer* "")
 (defvar *editor-choice-option-visible-buffer* "t")
 (defvar *editor-choice-option-enabled-buffer* "t")
@@ -34,7 +35,7 @@
 (defparameter *editor-insert-kinds*
   #(:text :say :choice :conversation :number :string))
 (defparameter *editor-choice-option-fields*
-  #(:target-kind :target :visible :enabled))
+  #(:label :target-kind :target :visible :enabled))
 
 (-> editor-control-down-p () boolean)
 (defun editor-control-down-p ()
@@ -70,6 +71,7 @@
         *editor-choice-option-index* 0
         *editor-choice-option-field-index* 0
         *editor-choice-option-target-kind* :id
+        *editor-choice-option-label-buffer* ""
         *editor-choice-option-target-buffer* ""
         *editor-choice-option-visible-buffer* "t"
         *editor-choice-option-enabled-buffer* "t")
@@ -128,6 +130,7 @@
         *editor-choice-option-index* 0
         *editor-choice-option-field-index* 0
         *editor-choice-option-target-kind* :id
+        *editor-choice-option-label-buffer* ""
         *editor-choice-option-target-buffer* ""
         *editor-choice-option-visible-buffer* "t"
         *editor-choice-option-enabled-buffer* "t"
