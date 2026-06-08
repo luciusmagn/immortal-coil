@@ -94,13 +94,30 @@
 
 (defconstant +choice-visible-count+ 7)
 
+(defun editor-hidden-choice-p (choice)
+  (and (fboundp 'editor-choice-reveal-active-p)
+       (funcall (symbol-function 'editor-choice-reveal-active-p))
+       (not (choice-visible-p choice))))
+
 (defun choice-option-color (choice color)
-  (if (choice-enabled-p choice)
-      color
-      (make-color 255
-                  255
-                  255
-                  (round (* (a color) 0.36)))))
+  (cond
+    ((editor-hidden-choice-p choice)
+     (make-color 255
+                 255
+                 255
+                 (round (* (a color) 0.28))))
+    ((choice-enabled-p choice)
+     color)
+    (t
+     (make-color 255
+                 255
+                 255
+                 (round (* (a color) 0.36))))))
+
+(defun choice-render-label (choice)
+  (if (editor-hidden-choice-p choice)
+      (format nil "~a [hidden]" (choice-display-label choice))
+      (choice-display-label choice)))
 
 (defun draw-locked-choice-strike (x y width size color)
   (draw-thick-line-between x
@@ -112,7 +129,7 @@
 
 (defun draw-choice-option (choice x y selected-p color)
   (let* ((size 20)
-         (label (choice-display-label choice))
+         (label (choice-render-label choice))
          (width (measure-text label size))
          (enabled-p (choice-enabled-p choice))
          (option-color (choice-option-color choice color)))
@@ -128,7 +145,7 @@
 
 (defun draw-choice-option-centered (choice center-x y selected-p color)
   (let* ((size 20)
-         (width (measure-text (choice-display-label choice) size))
+         (width (measure-text (choice-render-label choice) size))
          (x (- center-x (/ width 2))))
     (draw-choice-option choice x y selected-p color)))
 

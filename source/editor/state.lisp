@@ -18,6 +18,7 @@
 (defvar *editor-text-backspace-repeat-accumulator* 0.0)
 (defvar *editor-store-overlay-p* nil)
 (defvar *editor-help-overlay-p* nil)
+(defvar *editor-show-all-choices-p* nil)
 (defvar *editor-insert-kind* :text)
 (defvar *editor-insert-action* :insert)
 (defvar *editor-insert-menu-selected-index* 0)
@@ -81,6 +82,7 @@
         *editor-text-backspace-repeat-accumulator* 0.0
         *editor-store-overlay-p* nil
         *editor-help-overlay-p* nil
+        *editor-show-all-choices-p* nil
         *editor-insert-kind* :text
         *editor-insert-action* :insert
         *editor-insert-menu-selected-index* 0
@@ -160,6 +162,7 @@
         *editor-text-backspace-repeat-accumulator* 0.0
         *editor-store-overlay-p* nil
         *editor-help-overlay-p* nil
+        *editor-show-all-choices-p* nil
         *editor-insert-kind* :text
         *editor-insert-action* :insert
         *editor-insert-menu-selected-index* 0
@@ -197,6 +200,25 @@
     (funcall (symbol-function 'reset-editor-node-target-edit-state)))
   (when (fboundp 'reset-editor-node-fields-edit-state)
     (funcall (symbol-function 'reset-editor-node-fields-edit-state)))
+  t)
+
+(-> editor-choice-reveal-active-p () boolean)
+(defun editor-choice-reveal-active-p ()
+  (and *editor-active-p*
+       *editor-show-all-choices-p*))
+
+(-> editor-toggle-choice-reveal () boolean)
+(defun editor-toggle-choice-reveal ()
+  (setf *editor-show-all-choices-p* (not *editor-show-all-choices-p*)
+        *editor-status-message*
+        (if *editor-show-all-choices-p*
+            "EDITOR: ALL CHOICES SHOWN"
+            "EDITOR: HIDDEN CHOICES FILTERED"))
+  (when *state*
+    (let ((node (current-node)))
+      (when (eq (node-kind node) :choice)
+        (setf (play-state-selected-index *state*) 0))))
+  (play-choice-switch)
   t)
 
 (-> start-base-game-editor () t)

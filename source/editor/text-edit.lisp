@@ -273,6 +273,8 @@
           (editor-cycle-current-music))
          ((editor-control-key-pressed-p +key-l+)
           (editor-start-node-target-edit))
+         ((editor-control-key-pressed-p +key-v+)
+          (editor-toggle-choice-reveal))
          ((or (is-key-pressed-p +key-f3+)
               (editor-control-key-pressed-p +key-s+))
           (editor-toggle-store-overlay))

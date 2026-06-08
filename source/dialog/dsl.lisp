@@ -246,7 +246,10 @@
 
 (-> active-node-choices (node) vector)
 (defun active-node-choices (node)
-  (remove-if-not #'choice-visible-p (node-choices node)))
+  (if (and (fboundp 'editor-choice-reveal-active-p)
+           (funcall (symbol-function 'editor-choice-reveal-active-p)))
+      (node-choices node)
+      (remove-if-not #'choice-visible-p (node-choices node))))
 
 (-> ensure-dialog-option (t) choice)
 (defun ensure-dialog-option (value)

@@ -747,7 +747,7 @@
 (-> draw-editor-help-overlay (t) t)
 (defun draw-editor-help-overlay (color)
   (let* ((panel-width 610)
-         (panel-height 492)
+         (panel-height 520)
          (left (round (- +virtual-center-x+ (/ panel-width 2))))
          (top 154)
          (rows '(("C-h" "close this help overlay")
@@ -760,6 +760,7 @@
                  ("C-k" "cycle the current node sound")
                  ("C-m" "cycle the current node music")
                  ("C-l" "edit current node destinations")
+                 ("C-v" "show or hide predicate-filtered choices")
                  ("C-o" "edit node details or highlighted item")
                  ("C-e" "edit the current node text")
                  ("C-s" "show shared state or save active panel")
@@ -816,8 +817,10 @@
                                 +editor-corner-margin-y+
                                 12
                                 dim-color))
-      (draw-text-at (format nil "C-h HELP  HISTORY ~d"
-                            (length *editor-history*))
+      (draw-text-at (format nil "C-h HELP  HISTORY ~d~@[  ~a~]"
+                            (length *editor-history*)
+                            (when *editor-show-all-choices-p*
+                              "ALL CHOICES"))
                     +editor-corner-margin-x+
                     (- +virtual-height+ +editor-corner-margin-y+)
                     12
