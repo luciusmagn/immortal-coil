@@ -48,6 +48,27 @@ find_raylib_import_dir() {
   dirname "$import_lib"
 }
 
+patch_claylib_binding_features() {
+  local asd="${CLAYLIB_DIR}/claylib.asd"
+
+  if [ ! -f "$asd" ]; then
+    echo "Could not find Claylib ASDF file at $asd" >&2
+    exit 1
+  fi
+
+  sed -i \
+    -e '/bindings\/i686-pc-windows-msvc/{n;s/:x86-64/:x86/;}' \
+    -e '/bindings\/i686-apple-darwin-gnu/{n;s/:x86-64/:x86/;}' \
+    "$asd"
+
+  if sed -n '/bindings\/i686-pc-windows-msvc/{n;p;}' "$asd" | grep -q ':x86-64'; then
+    echo "Could not patch Claylib i686 Windows binding feature gate" >&2
+    exit 1
+  fi
+}
+
+patch_claylib_binding_features
+
 if [ ! -d "$RAYLIB_INSTALL" ] || [ -z "$(find_raylib_dll 2>/dev/null)" ]; then
   build_raylib
 fi
