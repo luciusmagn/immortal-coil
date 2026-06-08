@@ -76,6 +76,11 @@ if [ "$(basename "$RAYLIB_DLL")" != "libraylib.dll" ]; then
   cp "$RAYLIB_DLL" "${LIB_DIR}/libraylib.dll"
 fi
 
+SHARED_OBJECTS="$(basename "$RAYLIB_DLL");libraygui.dll;librayshim.dll"
+if [ "$(basename "$RAYLIB_DLL")" != "libraylib.dll" ]; then
+  SHARED_OBJECTS="${SHARED_OBJECTS};libraylib.dll"
+fi
+
 export IMMORTAL_COIL_CLAYLIB_DIR="$CLAYLIB_DIR"
 export IMMORTAL_COIL_BINARY="${BUNDLE}/immortal-coil.exe"
 export CLAYLIB_USE_SYSTEM_RAYLIB_LIBRARIES=1
@@ -132,13 +137,14 @@ EOF
   done
 } > "${BUNDLE}/dependencies-windows.txt"
 
-cat > "${BUNDLE}/run-immortal-coil.bat" <<'EOF'
+cat > "${BUNDLE}/run-immortal-coil.bat" <<EOF
 @echo off
 setlocal
 set "HERE=%~dp0"
 pushd "%HERE%" >nul
 set "IMMORTAL_COIL_ROOT=."
 set "IMMORTAL_COIL_LIB_DIR=lib"
+set "IMMORTAL_COIL_SHARED_OBJECTS=${SHARED_OBJECTS}"
 if not defined IMMORTAL_COIL_SAVE_DIR set "IMMORTAL_COIL_SAVE_DIR=save"
 if not exist "save" mkdir "save"
 set "PATH=lib;%PATH%"

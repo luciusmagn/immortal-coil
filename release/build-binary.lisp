@@ -63,6 +63,61 @@
           (namestring
            (merge-pathnames "lib/" (uiop:ensure-directory-pathname root)))))))
 
+(defun windows-release-p ()
+  (or (member :win32 *features*)
+      (member :windows *features*)))
+
+(defun release-shared-object-names ()
+  (or (let ((value (getenv-nonempty "IMMORTAL_COIL_SHARED_OBJECTS")))
+        (and value
+             (remove-if (lambda (part)
+                          (zerop (length part)))
+                        (uiop:split-string value :separator ";"))))
+      (if (windows-release-p)
+          '("libraylib.dll" "libraygui.dll" "librayshim.dll")
+          '("libraylib.so" "libraygui.so" "librayshim.x86_64-pc-linux-gnu.so"))))
+
+(defun release-directory-file-name (directory file-name)
+  (if directory
+      (let ((last-index (1- (length directory))))
+        (if (and (plusp (length directory))
+                 (member (char directory last-index) '(#\/ #\\)))
+            (format nil "~a~a" directory file-name)
+            (format nil "~a~c~a"
+                    directory
+                    (if (windows-release-p) #\\ #\/)
+                    file-name)))
+      file-name))
+
+(defun sbcl-load-shared-object (file-name)
+  (let* ((package (find-package "SB-ALIEN"))
+         (loader  (and package
+                       (find-symbol "LOAD-SHARED-OBJECT" package))))
+    (when loader
+      (funcall loader file-name)
+      t)))
+
+(defun load-release-shared-object (file-name)
+  (handler-case
+      (sbcl-load-shared-object file-name)
+    (error (condition)
+      (format *error-output*
+              "~&[immortal-coil] Could not load shared object ~a: ~a~%"
+              file-name
+              condition)
+      nil)))
+
+(defun load-release-shared-objects ()
+  (let ((directory (release-library-directory))
+        (names     (release-shared-object-names)))
+    (when names
+      (format *error-output*
+              "~&[immortal-coil] Loading bundled shared objects from ~a.~%"
+              (or directory "system paths"))
+      (dolist (name names)
+        (load-release-shared-object
+         (release-directory-file-name directory name))))))
+
 (defun push-release-foreign-library-directory ()
   (let ((directory (release-library-directory)))
     (when directory
@@ -140,6 +195,7 @@
     (error "Eager Future2 workers did not stop before image save.")))
 
 (defun release-main ()
+  (load-release-shared-objects)
   (reload-claylib-foreign-libraries)
   (rehydrate-release-foreign-objects)
   (eager-future-call "ADVISE-THREAD-POOL-SIZE" 10)

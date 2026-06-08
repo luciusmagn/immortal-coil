@@ -80,6 +80,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
 export IMMORTAL_COIL_ROOT="$HERE"
 export IMMORTAL_COIL_LIB_DIR="$HERE/lib"
+export IMMORTAL_COIL_SHARED_OBJECTS="libraylib.so;libraygui.so;librayshim.x86_64-pc-linux-gnu.so"
 export LD_LIBRARY_PATH="$HERE/lib:${LD_LIBRARY_PATH:-}"
 if [ -z "${IMMORTAL_COIL_SAVE_DIR:-}" ]; then
   export IMMORTAL_COIL_SAVE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/immortal-coil"
