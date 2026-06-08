@@ -21,29 +21,17 @@
                   :pathname "dialog"
                   :serial t
                   :components
-                  ((:module "bundle"
-                    :serial t
-                    :components
-                    ((:file "core")))
-                   (:module "manifest"
-                    :serial t
-                    :components
-                    ((:file "core")))
+                  ((:file "bundle")
+                   (:file "manifest")
                    (:file "store")))
 
-                 (:module "graph"
-                  :serial t
-                  :components
-                  ((:file "core")))
+                 (:file "graph")
 
                  (:module "dialog-authoring"
                   :pathname "dialog"
                   :serial t
                   :components
-                  ((:module "dsl"
-                    :serial t
-                    :components
-                    ((:file "core")))
+                  ((:file "dsl")
                    (:file "patterns")))
 
                  (:module "minigame"
@@ -55,21 +43,15 @@
                   :pathname "dialog"
                   :serial t
                   :components
-                  ((:module "script"
-                    :serial t
-                    :components
-                    ((:file "core")))))
+                  ((:file "script")))
 
                  (:module "save-dev"
-                  :pathname "save/dev"
+                  :pathname "save"
                   :serial t
                   :components
-                  ((:file "core")))
+                  ((:file "dev")))
 
-                 (:module "mod"
-                  :serial t
-                  :components
-                  ((:file "core")))
+                 (:file "mod")
 
                  (:module "text"
                   :serial t
@@ -86,10 +68,7 @@
                   :components
                   ((:file "music")
                    (:file "logo")
-                   (:module "particles"
-                    :serial t
-                    :components
-                    ((:file "core")))))
+                   (:file "particles")))
 
                  (:module "audio-core"
                   :pathname "audio"
@@ -102,15 +81,9 @@
                   :components
                   ((:file "rising")
                    (:file "star")
-                   (:module "field"
-                    :serial t
-                    :components
-                    ((:file "core")))))
+                   (:file "field")))
 
-                 (:module "play-state"
-                  :serial t
-                  :components
-                  ((:file "core")))
+                 (:file "play-state")
 
                  (:module "text-runtime"
                   :pathname "text"
@@ -127,14 +100,8 @@
                   :pathname "dialog"
                   :serial t
                   :components
-                  ((:module "choice"
-                    :serial t
-                    :components
-                    ((:file "core")))
-                   (:module "input"
-                    :serial t
-                    :components
-                    ((:file "core")))))
+                  ((:file "choice")
+                   (:file "input")))
 
                  (:module "minigame-runtime"
                   :pathname "minigame"
@@ -145,15 +112,9 @@
                  (:file "fullscreen")
                  (:file "gameplay")
 
-                 (:module "menu"
-                  :serial t
-                  :components
-                  ((:file "core")))
+                 (:file "menu")
 
-                 (:module "pause"
-                  :serial t
-                  :components
-                  ((:file "core")))
+                 (:file "pause")
 
                  (:file "renderer")
                  (:file "main")))))
