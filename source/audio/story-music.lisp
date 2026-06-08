@@ -48,6 +48,7 @@
 (-> load-story-music (pathname scalar) t)
 (defun load-story-music (path volume)
   (clear-story-music-resources)
+  (configure-music-stream-buffer)
   (if (probe-file path)
       (let ((asset (make-music-asset-maybe path "story music")))
         (when asset

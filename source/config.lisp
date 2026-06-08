@@ -31,6 +31,7 @@
 (defparameter *dialog-manifest-paths* '("game/manifest.lisp"))
 (defparameter *dialog-script-paths* '("game/opening.lisp"))
 (defparameter *mod-directory-paths* '("mods/"))
+(defparameter *music-stream-buffer-size* 65536)
 (defparameter *music-volume-scale* 1.0)
 (defparameter *sound-volume-scale* 1.0)
 

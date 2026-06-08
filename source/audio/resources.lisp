@@ -2,6 +2,25 @@
 
 ;;; Asset helpers
 
+(-> music-stream-buffer-size () integer)
+(defun music-stream-buffer-size ()
+  (if (and (integerp *music-stream-buffer-size*)
+           (plusp *music-stream-buffer-size*))
+      *music-stream-buffer-size*
+      (progn
+        (runtime-warn "Invalid music stream buffer size: ~s"
+                      *music-stream-buffer-size*)
+        65536)))
+
+(-> configure-music-stream-buffer () t)
+(defun configure-music-stream-buffer ()
+  (handler-case
+      (claylib/ll:set-audio-stream-buffer-size-default
+       (music-stream-buffer-size))
+    (error (condition)
+      (runtime-warn "Could not configure music stream buffer: ~a"
+                    condition))))
+
 (-> make-sound-asset-maybe (pathname string) t)
 (defun make-sound-asset-maybe (path description)
   (handler-case

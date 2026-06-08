@@ -14,6 +14,7 @@
 
 (-> load-title-music () t)
 (defun load-title-music ()
+  (configure-music-stream-buffer)
   (let ((path (project-pathname "assets/audio/title-ambient-drone.mp3")))
     (when (probe-file path)
       (stop-title-music)

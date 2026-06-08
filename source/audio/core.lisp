@@ -2,6 +2,7 @@
 
 (-> load-audio () t)
 (defun load-audio ()
+  (configure-music-stream-buffer)
   (load-type-clicks)
   (load-choice-switch)
   (load-start-confirm)
