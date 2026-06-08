@@ -3,7 +3,7 @@
 (defun load-crt-shader ()
   (handler-case
       (make-shader-asset
-       :fspath (project-pathname "assets/shaders/crt.fs")
+       :fspath (project-pathname "assets/shaders/crt.frag")
        :load-now t)
     (error (condition)
       (runtime-warn "Could not load CRT shader: ~a" condition)
@@ -45,7 +45,7 @@
 (defun game-fade-in-alpha ()
   (if (eq *mode* :game)
       (round (* 255 (- 1.0 (smoothstep (/ *game-fade-elapsed*
-                                           *game-fade-in-seconds*)))))
+                                          *game-fade-in-seconds*)))))
       0))
 
 (defun screen-fade-alpha ()
