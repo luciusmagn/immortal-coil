@@ -65,6 +65,15 @@ Conditions work like normal choices:
  "the hinges count themselves out loud.")
 ```
 
+`:when` and `:unless` hide a branch option. Use `:enabled-when` or
+`:enabled-unless` to keep it visible but locked until the predicate passes:
+
+```lisp
+("service hatch"
+ :enabled-when '(dialog-value "has-crowbar")
+ "the hatch opens with a sound like a bad tooth.")
+```
+
 The visual editor expands these helpers into ordinary graph nodes when reading a
 script. Export still writes primitive `dialog-*` forms.
 

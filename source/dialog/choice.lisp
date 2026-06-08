@@ -5,6 +5,39 @@
 (defun choice-layout (node)
   (or (node-layout node) :horizontal))
 
+(defun choice-selectable-index-p (choices index)
+  (and (<= 0 index)
+       (< index (length choices))
+       (choice-enabled-p (aref choices index))))
+
+(defun first-selectable-choice-index (choices)
+  (loop for choice across choices
+        for index from 0
+        when (choice-enabled-p choice)
+          return index))
+
+(defun normalize-choice-selection (choices)
+  (let ((count (length choices)))
+    (cond
+      ((zerop count)
+       (setf (play-state-selected-index *state*) 0))
+      (t
+       (when (>= (play-state-selected-index *state*) count)
+         (setf (play-state-selected-index *state*) (1- count)))
+       (let ((fallback (first-selectable-choice-index choices)))
+         (when (and fallback
+                    (not (choice-selectable-index-p
+                          choices
+                          (play-state-selected-index *state*))))
+           (setf (play-state-selected-index *state*) fallback)))))))
+
+(defun next-selectable-choice-index (choices selected direction)
+  (loop with count = (length choices)
+        for step from 1 to count
+        for index = (mod (+ selected (* step direction)) count)
+        when (choice-enabled-p (aref choices index))
+          return index))
+
 (defun horizontal-selection-direction ()
   (cond
     ((is-key-pressed-p +key-right+) 1)
@@ -25,15 +58,23 @@
     (t (vertical-selection-direction))))
 
 (defun move-selection (node direction)
-  (let ((choice-count (length (active-node-choices node))))
-    (when (>= (play-state-selected-index *state*) choice-count)
-      (setf (play-state-selected-index *state*)
-            (max 0 (1- choice-count))))
-    (when (and direction (> choice-count 1))
-      (setf (play-state-selected-index *state*)
-            (mod (+ (play-state-selected-index *state*) direction)
-                 choice-count))
-      (play-choice-switch))))
+  (let ((choices (active-node-choices node)))
+    (normalize-choice-selection choices)
+    (when (and direction (> (length choices) 1))
+      (let ((next-index (next-selectable-choice-index
+                         choices
+                         (play-state-selected-index *state*)
+                         direction)))
+        (when (and next-index
+                   (/= next-index (play-state-selected-index *state*)))
+          (setf (play-state-selected-index *state*) next-index)
+          (play-choice-switch))))))
+
+(defun selected-active-choice (node)
+  (let ((choices (active-node-choices node)))
+    (normalize-choice-selection choices)
+    (when (plusp (length choices))
+      (aref choices (play-state-selected-index *state*)))))
 
 (defun update-choice-node (node)
   (cond
@@ -42,11 +83,13 @@
        (skip-typewriter node)))
     (t
      (move-selection node (selection-direction node))
-     (when (and (plusp (length (active-node-choices node)))
-                (confirm-pressed-p))
-       (jump-to-node
-        (choice-target (aref (active-node-choices node)
-                             (play-state-selected-index *state*))))))))
+     (when (confirm-pressed-p)
+       (let ((choice (selected-active-choice node)))
+         (cond
+           ((and choice (choice-enabled-p choice))
+            (jump-to-node (choice-target choice)))
+           (choice
+            (play-choice-switch))))))))
 
 (defun matching-branch-target (node)
   (loop for branch across (node-branches node)
@@ -65,14 +108,35 @@
 
 (defconstant +choice-visible-count+ 7)
 
+(defun choice-option-color (choice color)
+  (if (choice-enabled-p choice)
+      color
+      (make-color 255
+                  255
+                  255
+                  (round (* (a color) 0.36)))))
+
+(defun draw-locked-choice-strike (x y width size color)
+  (draw-thick-line-between x
+                           (+ y (/ size 2.0))
+                           (+ x width)
+                           (+ y (/ size 2.0))
+                           color
+                           1.0))
+
 (defun draw-choice-option (choice x y selected-p color)
-  (let ((size 20)
-        (label (choice-display-label choice)))
-    (draw-text-at label x y size color)
-    (when selected-p
+  (let* ((size 20)
+         (label (choice-display-label choice))
+         (width (measure-text label size))
+         (enabled-p (choice-enabled-p choice))
+         (option-color (choice-option-color choice color)))
+    (draw-text-at label x y size option-color)
+    (unless enabled-p
+      (draw-locked-choice-strike x y width size option-color))
+    (when (and selected-p enabled-p)
       (claylib/ll:draw-rectangle (round x)
                                  (round (+ y size 3))
-                                 (measure-text label size)
+                                 width
                                  4
                                  (claylib::c-ptr color)))))
 

@@ -22,9 +22,10 @@
 ;;; Models
 
 (defstruct choice
-  (label     "" :type string)
-  (target    *runtime-fallback-node-id* :type dialog-id)
-  (condition t :type dialog-condition))
+  (label             "" :type string)
+  (target            *runtime-fallback-node-id* :type dialog-id)
+  (condition         t :type dialog-condition)
+  (enabled-condition t :type dialog-condition))
 
 (defstruct branch
   (condition t :type dialog-condition)

@@ -163,6 +163,16 @@ Conditional options:
                :unless '(dialog-value "was-seen"))
 ```
 
+`:when` and `:unless` hide options that do not pass. Use
+`:enabled-when` or `:enabled-unless` when the option should stay visible but
+locked:
+
+```lisp
+(dialog-option "force the service hatch"
+               "my-mod/hatch"
+               :enabled-when '(dialog-value "has-crowbar"))
+```
+
 ## Branches
 
 Branch nodes immediately jump to the first matching case:

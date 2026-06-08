@@ -43,7 +43,8 @@
 (defun make-fallback-choice ()
   (make-choice :label "continue"
                :target *runtime-fallback-node-id*
-               :condition t))
+               :condition t
+               :enabled-condition t))
 
 (-> dialog-option-condition (dialog-condition (option dialog-condition))
     dialog-condition)
@@ -58,23 +59,34 @@
                    dialog-id
                    &key
                    (:when dialog-condition)
-                   (:unless (option dialog-condition)))
+                   (:unless (option dialog-condition))
+                   (:enabled-when dialog-condition)
+                   (:enabled-unless (option dialog-condition)))
     choice)
 (defun dialog-option (label target
                       &key ((:when when-condition) t)
-                           ((:unless unless-condition) nil))
+                           ((:unless unless-condition) nil)
+                           ((:enabled-when enabled-when-condition) t)
+                           ((:enabled-unless enabled-unless-condition) nil))
   (make-choice :label label
                :target target
                :condition (dialog-option-condition when-condition
-                                                   unless-condition)))
+                                                   unless-condition)
+               :enabled-condition
+               (dialog-option-condition enabled-when-condition
+                                        enabled-unless-condition)))
 
-(-> choice-active-p (choice) boolean)
-(defun choice-active-p (choice)
+(-> choice-visible-p (choice) boolean)
+(defun choice-visible-p (choice)
   (dialog-condition-true-p (choice-condition choice)))
+
+(-> choice-enabled-p (choice) boolean)
+(defun choice-enabled-p (choice)
+  (dialog-condition-true-p (choice-enabled-condition choice)))
 
 (-> active-node-choices (node) vector)
 (defun active-node-choices (node)
-  (remove-if-not #'choice-active-p (node-choices node)))
+  (remove-if-not #'choice-visible-p (node-choices node)))
 
 (-> ensure-dialog-option (t) choice)
 (defun ensure-dialog-option (value)
@@ -118,11 +130,15 @@
                        dialog-id
                        &key
                        (:when dialog-condition)
-                       (:unless (option dialog-condition)))
+                       (:unless (option dialog-condition))
+                       (:enabled-when dialog-condition)
+                       (:enabled-unless (option dialog-condition)))
     dialog-id)
 (defun dialog-add-choice (node-id label target
                           &key ((:when when-condition) t)
-                               ((:unless unless-condition) nil))
+                               ((:unless unless-condition) nil)
+                               ((:enabled-when enabled-when-condition) t)
+                               ((:enabled-unless enabled-unless-condition) nil))
   (let ((node (find-node node-id)))
     (if (eq (node-kind node) :choice)
         (setf (node-choices node)
@@ -131,7 +147,11 @@
                            (vector (dialog-option label
                                                   target
                                                   :when when-condition
-                                                  :unless unless-condition))))
+                                                  :unless unless-condition
+                                                  :enabled-when
+                                                  enabled-when-condition
+                                                  :enabled-unless
+                                                  enabled-unless-condition))))
         (runtime-warn "Cannot add a choice to non-choice node: ~a" node-id)))
   node-id)
 

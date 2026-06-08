@@ -159,7 +159,11 @@
     `(dialog-option ,(getf branch :label)
                     ,(dialog-pattern-branch-target parent branch)
                     :when ,(dialog-pattern-branch-key branch :when t)
-                    :unless ,(dialog-pattern-branch-key branch :unless nil)))
+                    :unless ,(dialog-pattern-branch-key branch :unless nil)
+                    :enabled-when
+                    ,(dialog-pattern-branch-key branch :enabled-when t)
+                    :enabled-unless
+                    ,(dialog-pattern-branch-key branch :enabled-unless nil)))
 
   (-> dialog-pattern-path-form
       (symbol dialog-pattern-branch-data)
