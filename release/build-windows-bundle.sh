@@ -94,6 +94,9 @@ gcc -shared -DRAYLIB_DLL \
   -L"${RAYLIB_LIB_DIR}" \
   -lraylib -lopengl32 -lgdi32 -lwinmm
 
+"${ROOT}/release/check-rayshim-library-exports.sh" \
+  "${LIB_DIR}/librayshim.dll"
+
 cp "$RAYLIB_DLL" "${LIB_DIR}/$(basename "$RAYLIB_DLL")"
 if [ "$(basename "$RAYLIB_DLL")" != "libraylib.dll" ]; then
   cp "$RAYLIB_DLL" "${LIB_DIR}/libraylib.dll"

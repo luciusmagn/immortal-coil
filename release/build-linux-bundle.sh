@@ -35,6 +35,9 @@ gcc -shared -fPIC \
   -L"${CLAYLIB_DIR}/wrap/lib" \
   -lraylib
 
+"${ROOT}/release/check-rayshim-library-exports.sh" \
+  "${LIB_DIR}/librayshim.x86_64-pc-linux-gnu.so"
+
 cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "$LIB_DIR/"
 cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "${LIB_DIR}/libraylib.so.420"
 cp "${CLAYLIB_DIR}/wrap/lib/libraygui.so" "$LIB_DIR/"
