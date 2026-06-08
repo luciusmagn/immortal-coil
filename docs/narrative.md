@@ -13,6 +13,10 @@ or interface text that explains the trick.
 The player should usually understand less than the author. Branches should
 create new context, not announce new genres.
 
+Keep the prose plain and concrete. The situations can be mysterious by
+themselves; avoid stock paradoxical mystery language where rooms, shadows,
+silence, or objects act ominous just to sound strange.
+
 The "future shapes the past" effect only works when transitions are gentle
 enough that a player on a single playthrough would not recognize them as
 transitions. A branch entry should feel like the next ordinary detail in the

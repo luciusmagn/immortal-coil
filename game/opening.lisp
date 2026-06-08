@@ -48,20 +48,20 @@
                (dialog-option "no" "base/sleep"))
 
 (dialog-text "base/exited-bed"
-             "you stand beside the bed. a night stand waits under the wrong shadow."
+             "you wearily open your eyes, there is a night stand next to your bed"
              :next "base/room-breath")
 
 (dialog-text "base/room-breath"
-             "standing makes the room feel less like a room. the carpet remembers weight in the wrong places."
+             "you stretch and get out of bed"
              :next "base/thirst")
 
 (dialog-choice "base/thirst"
-               "your throat is dry. drink from the glass?"
+               "your throat is dry. drink from the glass on your night stand?"
                (dialog-option "yes" "ship/wake")
                (dialog-option "no"  "base/drawer"))
 
 (dialog-text "base/drawer"
-             "the night stand drawer sticks, then gives. inside, a photograph lies face down beneath a paper matchbook."
+             "there are some drawers in your room, you rummage through the top one looking for something to wear. there's a paper matchbook sticking out of a shirt."
              :next "base/match")
 
 (dialog-choice "base/match"
@@ -70,7 +70,11 @@
                (dialog-option "no"  "base/door-shadow"))
 
 (dialog-text "base/door-shadow"
-             "close to the door, you can make out a lock plate. something small has been warming in your palm."
+             "close to the door, you can make out a lock plate."
+             :next "base/door-key")
+
+(dialog-text "base/door-key"
+             "the key is on a small table by the door"
              :next "base/unlock-door")
 
 (dialog-choice "base/unlock-door"
