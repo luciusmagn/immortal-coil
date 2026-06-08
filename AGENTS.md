@@ -11,6 +11,7 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 ## Narrative Direction
 
 - Preserve player blindness. Do not announce time loops, count loops, or explain genre pivots before the player has earned them.
+- Detailed built-in path notes live in `docs/narrative.md`. Update that file when changing a path premise, reveal, or major hook point.
 - The core narrative tool is that the future shapes the past by supplying context, details, surroundings, names, roles, or relationships that make earlier scenes mean different things on different paths.
 - Narrate as if the earlier scene was always what the later path reveals; the player only lacked the perspective or context to understand it.
 - Prefer revelation over transformation: when a scene changes meaning, it should feel like it was always that thing, not like the game visibly morphed it for the player's benefit.

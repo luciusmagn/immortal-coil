@@ -64,6 +64,12 @@ Public mod API:
 docs/mod-api.md
 #+end_src
 
+Narrative notes:
+
+#+begin_src text
+docs/narrative.md
+#+end_src
+
 Bundled dialogue is loaded from:
 
 #+begin_src sh
