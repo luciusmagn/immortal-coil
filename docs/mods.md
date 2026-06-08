@@ -3,6 +3,9 @@
 Immortal Coil now has a small official mod loading surface. The bundled game
 uses the same manifest shape as player mods.
 
+See [`mod-api.md`](mod-api.md) for the current public prototype API exposed to
+mod scripts.
+
 ## Layout
 
 Preferred mod layout:

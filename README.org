@@ -58,6 +58,12 @@ ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fas
 
 ** Mods
 
+Public mod API:
+
+#+begin_src text
+docs/mod-api.md
+#+end_src
+
 Bundled dialogue is loaded from:
 
 #+begin_src sh
