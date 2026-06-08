@@ -47,9 +47,9 @@
            (cond
              (*paused-p*
               (update-pause-menu))
-             ((maybe-open-pause-menu)
-              nil)
              ((update-editor-controls)
+              nil)
+             ((maybe-open-pause-menu)
               nil)
              (t
               (incf *game-fade-elapsed* dt)

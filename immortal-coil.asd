@@ -112,7 +112,13 @@
                   :components
                   ((:file "node")))
 
-                 (:file "editor")
+                 (:module "editor"
+                  :serial t
+                  :components
+                  ((:file "state")
+                   (:file "draft")
+                   (:file "text-edit")
+                   (:file "rendering")))
 
                  (:file "fullscreen")
 

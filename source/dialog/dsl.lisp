@@ -36,6 +36,16 @@
   (setf (node-next (find-node node-id)) next-id)
   node-id)
 
+(-> dialog-set-text (dialog-id string) dialog-id)
+(defun dialog-set-text (node-id text)
+  (setf (node-text (find-node node-id)) text)
+  node-id)
+
+(-> dialog-set-speaker (dialog-id (option string)) dialog-id)
+(defun dialog-set-speaker (node-id speaker)
+  (setf (node-speaker (find-node node-id)) speaker)
+  node-id)
+
 
 ;;; Choice nodes
 
