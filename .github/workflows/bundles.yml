@@ -95,6 +95,36 @@ jobs:
             unzip
             zip
 
+      - name: Check release tools
+        run: |
+          for tool in \
+            awk \
+            basename \
+            cmp \
+            comm \
+            cmake \
+            date \
+            dirname \
+            find \
+            gcc \
+            grep \
+            head \
+            ldd \
+            mktemp \
+            nm \
+            objdump \
+            sed \
+            sort \
+            tail \
+            tr \
+            unzip \
+            wc \
+            zip
+          do
+            command -v "$tool"
+          done
+          ninja --version
+
       - name: Install Quicklisp
         run: |
           curl -L -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp
