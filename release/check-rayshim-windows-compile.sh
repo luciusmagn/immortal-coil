@@ -11,6 +11,7 @@ if [ -n "${MINGW_PREFIX:-}" ]; then
 fi
 
 CC="${MINGW_CC:-${CC:-${DEFAULT_CC}}}"
+RAYLIB_LIB_DIR="${MINGW_RAYLIB_LIB_DIR:-}"
 OBJECT="$(mktemp --suffix=.o)"
 API_SYMBOLS="$(mktemp)"
 UNDEFINED_SYMBOLS="$(mktemp)"
@@ -35,6 +36,29 @@ fi
   -I"${CLAYLIB_DIR}/wrap/lib" \
   -o "$OBJECT" \
   "$SOURCE"
+
+if [ -n "$RAYLIB_LIB_DIR" ]; then
+  if [ ! -d "$RAYLIB_LIB_DIR" ]; then
+    echo "MINGW_RAYLIB_LIB_DIR does not exist: $RAYLIB_LIB_DIR" >&2
+    exit 1
+  fi
+
+  # MINGW_LDFLAGS is intentionally word-split so local Nix cross compilers can
+  # supply extra runtime library search paths without affecting MSYS2 CI.
+  # shellcheck disable=SC2086
+  "$CC" -shared \
+    -o "$PROBE_DLL" \
+    "$OBJECT" \
+    -L"$RAYLIB_LIB_DIR" \
+    -lraylib -lraygui -lopengl32 -lgdi32 -lwinmm \
+    ${MINGW_LDFLAGS:-}
+
+  "${ROOT}/release/check-rayshim-library-exports.sh" "$PROBE_DLL"
+  "${ROOT}/release/check-rayshim-imports.sh" "$PROBE_DLL"
+
+  echo "$(basename "$SOURCE") compiles and links against Windows Raylib DLLs."
+  exit 0
+fi
 
 perl -ne 'while (/\b(?:RLAPI|RAYGUIAPI|RMAPI)\b[^;{()]*?\b([A-Za-z_][A-Za-z0-9_]*)\s*\(/g) { print "$1\n" }' \
   "${CLAYLIB_DIR}/wrap/lib/raylib.h" \
