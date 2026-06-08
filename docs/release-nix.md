@@ -29,14 +29,15 @@ Do not expect `pkgsCross.mingwW64` to produce a Windows build for this project.
 SBCL dumps native images for the host it is running on; it does not behave like
 a normal C compiler that can cross-link a Windows executable from Linux.
 
-The viable routes are:
+The GitHub Actions bundled-build workflow uses the first viable route:
 
-1. Build on a real Windows runner with Windows SBCL, Raylib/Claylib DLLs, and a
-   script equivalent to `nix/build-binary.lisp`.
+1. Build on a real Windows runner with Windows SBCL, Raylib/Claylib DLLs, and
+   `release/build-binary.lisp`.
 2. Experiment with a Wine-based Nix build that runs Windows SBCL inside Wine and
    dumps a Windows executable there.
 3. Move the release build to a Common Lisp implementation with a better
    cross-compilation story, such as ECL, if Claylib/CFFI compatibility holds.
 
-For now, the Linux Nix package is real. The Windows target is a release
-engineering task, not a one-line Nix cross package.
+For now, the Linux Nix package is real, and the Windows test zip is produced by
+GitHub Actions. A future Steam build still needs a portability pass around the
+Linux runtime target and Windows DLL provenance.

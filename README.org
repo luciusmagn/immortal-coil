@@ -22,6 +22,33 @@ The binary is in:
 ./result/bin/immortal-coil
 #+end_src
 
+** Release Bundles
+
+GitHub Actions has an on-demand workflow:
+
+#+begin_src text
+Actions -> Bundled builds -> Run workflow
+#+end_src
+
+It uploads:
+
+#+begin_src text
+immortal-coil-linux-x86_64.zip
+immortal-coil-windows-x86_64.zip
+#+end_src
+
+Linux:
+
+#+begin_src sh
+./run-immortal-coil.sh
+#+end_src
+
+Windows:
+
+#+begin_src bat
+run-immortal-coil.bat
+#+end_src
+
 ** In-Game Editor
 
 #+begin_src sh

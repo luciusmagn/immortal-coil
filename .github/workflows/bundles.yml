@@ -1,0 +1,105 @@
+name: Bundled builds
+
+on:
+  workflow_dispatch:
+
+jobs:
+  linux:
+    name: Linux x86_64 bundle
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install host packages
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            curl \
+            gcc \
+            git \
+            libgl1 \
+            libglu1-mesa \
+            libx11-6 \
+            libxcursor1 \
+            libxext6 \
+            libxi6 \
+            libxinerama1 \
+            libxrandr2 \
+            libxxf86vm1 \
+            sbcl \
+            unzip \
+            zip
+
+      - name: Install Quicklisp
+        run: |
+          curl -L -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp
+          sbcl --noinform --non-interactive \
+            --load /tmp/quicklisp.lisp \
+            --eval '(quicklisp-quickstart:install)'
+
+      - name: Install Claylib
+        run: |
+          mkdir -p "$HOME/quicklisp/local-projects"
+          git clone https://github.com/defun-games/claylib.git "$HOME/quicklisp/local-projects/claylib"
+          git -C "$HOME/quicklisp/local-projects/claylib" checkout 3eb86bc5f6b88570e053e0eefed66384d2c28365
+
+      - name: Build bundle
+        run: release/build-linux-bundle.sh
+
+      - name: Upload Linux bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: immortal-coil-linux-x86_64
+          path: dist/immortal-coil-linux-x86_64.zip
+          if-no-files-found: error
+
+  windows:
+    name: Windows x86_64 bundle
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            curl
+            git
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-ninja
+            mingw-w64-x86_64-sbcl
+            unzip
+            zip
+
+      - name: Install Quicklisp
+        run: |
+          curl -L -o /tmp/quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp
+          sbcl --noinform --non-interactive \
+            --load /tmp/quicklisp.lisp \
+            --eval '(quicklisp-quickstart:install)'
+
+      - name: Install Claylib
+        run: |
+          mkdir -p "$HOME/quicklisp/local-projects"
+          git clone https://github.com/defun-games/claylib.git "$HOME/quicklisp/local-projects/claylib"
+          git -C "$HOME/quicklisp/local-projects/claylib" checkout 3eb86bc5f6b88570e053e0eefed66384d2c28365
+
+      - name: Build bundle
+        run: release/build-windows-bundle.sh
+
+      - name: Upload Windows bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: immortal-coil-windows-x86_64
+          path: dist/immortal-coil-windows-x86_64.zip
+          if-no-files-found: error

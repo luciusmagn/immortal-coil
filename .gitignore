@@ -2,6 +2,8 @@
 assets/audio/generated/
 assets/audio/backup/generated/
 result
+build/
+dist/
 save/
 tools/dialog-editor/config.nims
 tools/dialog-editor/immortal_coil_editor

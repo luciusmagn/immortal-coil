@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+BUILD_DIR="${ROOT}/build/release/linux-x86_64"
+BUNDLE="${BUILD_DIR}/immortal-coil-linux-x86_64"
+DIST="${ROOT}/dist"
+CLAYLIB_DIR="${IMMORTAL_COIL_CLAYLIB_DIR:-${HOME}/quicklisp/local-projects/claylib}"
+LIB_DIR="${BUNDLE}/lib"
+
+rm -rf "$BUILD_DIR"
+mkdir -p "$LIB_DIR" "$DIST"
+
+gcc -shared -fPIC \
+  -o "${LIB_DIR}/librayshim.x86_64-pc-linux-gnu.so" \
+  "${ROOT}/release/rayshim.c" \
+  -I"${CLAYLIB_DIR}/wrap/lib" \
+  -L"${CLAYLIB_DIR}/wrap/lib" \
+  -lraylib
+
+cp "${CLAYLIB_DIR}/wrap/lib/libraylib.so" "$LIB_DIR/"
+cp "${CLAYLIB_DIR}/wrap/lib/libraygui.so" "$LIB_DIR/"
+
+export IMMORTAL_COIL_CLAYLIB_DIR="$CLAYLIB_DIR"
+export IMMORTAL_COIL_BINARY="${BUNDLE}/immortal-coil"
+export CLAYLIB_USE_SYSTEM_RAYLIB_LIBRARIES=1
+export LD_LIBRARY_PATH="${LIB_DIR}:${CLAYLIB_DIR}/wrap/lib:${LD_LIBRARY_PATH:-}"
+export ASDF_OUTPUT_TRANSLATIONS="${ROOT}/:/tmp/immortal-coil-release-fasl/"
+
+sbcl --no-userinit --no-sysinit --non-interactive \
+  --load "${HOME}/quicklisp/setup.lisp" \
+  --load "${ROOT}/release/build-binary.lisp"
+
+cp -R "${ROOT}/assets" "$BUNDLE/"
+rm -rf "${BUNDLE}/assets/audio/backup"
+cp -R "${ROOT}/game" "$BUNDLE/"
+mkdir -p "$BUNDLE/mods"
+cp "${ROOT}/mods/README.md" "$BUNDLE/mods/"
+cp "${ROOT}/README.org" "$BUNDLE/"
+
+cat > "${BUNDLE}/run-immortal-coil.sh" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+export IMMORTAL_COIL_ROOT="$HERE"
+export LD_LIBRARY_PATH="$HERE/lib:${LD_LIBRARY_PATH:-}"
+if [ -z "${IMMORTAL_COIL_SAVE_DIR:-}" ]; then
+  export IMMORTAL_COIL_SAVE_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/immortal-coil"
+fi
+
+exec "$HERE/immortal-coil" "$@"
+EOF
+chmod +x "${BUNDLE}/run-immortal-coil.sh" "${BUNDLE}/immortal-coil"
+
+rm -f "${DIST}/immortal-coil-linux-x86_64.zip"
+(cd "$BUILD_DIR" && zip -qr "${DIST}/immortal-coil-linux-x86_64.zip" "immortal-coil-linux-x86_64")
