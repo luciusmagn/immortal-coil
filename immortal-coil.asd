@@ -125,6 +125,14 @@
                    (:file "text-edit")
                    (:file "rendering")))
 
+                 (:module "mod-ui"
+                  :pathname "mod/editor"
+                  :serial t
+                  :components
+                  ((:file "core")
+                   (:file "manifest")
+                   (:file "ui")))
+
                  (:file "fullscreen")
 
                  (:module "options"

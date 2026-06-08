@@ -61,6 +61,18 @@
     "Pause menu movement direction."
     'navigation-direction)
 
+  (deftype mod-editor-mode ()
+    "Nested MODS-menu workflow state."
+    '(member :inactive :picker :manifest))
+
+  (deftype mod-manifest-field ()
+    "Editable field in the mod manifest editor."
+    '(member :id :name :version :author :description :scripts :assets :depends-on :start))
+
+  (deftype mod-manifest-action ()
+    "Whether the manifest editor is creating or editing a mod."
+    '(member :create :edit))
+
   (deftype dialog-id ()
     "Canonical node and response-key identifier used by dialog scripts."
     'string)

@@ -216,6 +216,7 @@
 
 (-> open-mods-menu () t)
 (defun open-mods-menu ()
+  (reset-mod-editor-state)
   (setf *mods-menu-active-p* t
         *menu-status-message* (current-mod-status-text))
   (selection-reset *mods-menu-selection*)
@@ -223,6 +224,7 @@
 
 (-> close-mods-menu () t)
 (defun close-mods-menu ()
+  (reset-mod-editor-state)
   (setf *mods-menu-active-p* nil
         *menu-status-message* (current-mod-status-text))
   (play-choice-switch))
@@ -308,11 +310,11 @@
     (:back
      (close-mods-menu))
     (:create-mod
-     (setf *menu-status-message* "CREATE MOD: MANIFEST UI PENDING")
-     (play-choice-switch))
+     (open-create-mod-editor))
     (:edit-mod
-     (setf *menu-status-message* "EDIT MOD: MOD PICKER PENDING")
-     (play-choice-switch))
+     (open-edit-mod-picker)
+     (unless (mod-editor-active-p)
+       (setf *menu-status-message* *mod-manifest-status*)))
     (t
      (close-mods-menu))))
 
@@ -493,6 +495,9 @@
   (cond
     ((options-menu-active-p)
      (draw-options-menu))
+    ((and *mods-menu-active-p*
+          (mod-editor-active-p))
+     (draw-mod-editor))
     (*mods-menu-active-p*
      (draw-mods-menu))
     (t
@@ -527,6 +532,8 @@
 (-> update-mods-menu () t)
 (defun update-mods-menu ()
   (cond
+    ((mod-editor-active-p)
+     (update-mod-editor))
     ((is-key-pressed-p +key-escape+)
      (close-mods-menu))
     (t
