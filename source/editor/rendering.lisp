@@ -424,6 +424,64 @@
                             12
                             color)))
 
+(-> draw-editor-help-row (string string nonnegative-integer scalar scalar t) t)
+(defun draw-editor-help-row (binding description index x y color)
+  (let ((row-y (+ y (* index 24)))
+        (dim-color (make-color 255 255 255 150)))
+    (draw-text-at binding
+                  x
+                  row-y
+                  15
+                  color)
+    (draw-text-at description
+                  (+ x 118)
+                  row-y
+                  15
+                  dim-color)))
+
+(-> draw-editor-help-overlay (t) t)
+(defun draw-editor-help-overlay (color)
+  (let* ((panel-width 610)
+         (panel-height 392)
+         (left (round (- +virtual-center-x+ (/ panel-width 2))))
+         (top 154)
+         (rows '(("C-h" "close this help overlay")
+                 ("C-b" "rewind to previous editor step")
+                 ("C-i" "insert a node at the current link")
+                 ("C-o" "edit the highlighted choice option")
+                 ("C-e" "edit the current node text")
+                 ("C-s" "show shared state or save active panel")
+                 ("C-d" "delete current linear editor node")
+                 ("C-g" "cancel active editor panel")
+                 ("TAB" "move to the next panel field")
+                 ("RET" "confirm selection or save a panel")
+                 ("ARROWS" "move choices, fields, and menu rows"))))
+    (claylib/ll:draw-rectangle left
+                               top
+                               panel-width
+                               panel-height
+                               (claylib::c-ptr
+                                (make-color 0 0 0 238)))
+    (claylib/ll:draw-rectangle-lines left
+                                      top
+                                      panel-width
+                                      panel-height
+                                      (claylib::c-ptr color))
+    (draw-text-at "EDITOR BINDINGS"
+                  (+ left 24)
+                  (+ top 20)
+                  14
+                  color)
+    (loop for row in rows
+          for index from 0
+          do (destructuring-bind (binding description) row
+               (draw-editor-help-row binding
+                                     description
+                                     index
+                                     (+ left 42)
+                                     (+ top 56)
+                                     color)))))
+
 (-> draw-editor-overlay () t)
 (defun draw-editor-overlay ()
   (when (and *editor-active-p* *state*)
@@ -446,7 +504,7 @@
                                 +editor-corner-margin-y+
                                 12
                                 dim-color))
-      (draw-text-at (format nil "C-b BACK  C-i INSERT  C-o OPTION  C-e EDIT  C-s STATE  C-d DELETE  ~d"
+      (draw-text-at (format nil "C-h HELP  HISTORY ~d"
                             (length *editor-history*))
                     +editor-corner-margin-x+
                     (- +virtual-height+ +editor-corner-margin-y+)
@@ -466,4 +524,6 @@
       (when (eq *editor-mode* :edit-choice-option)
         (draw-editor-choice-option-panel color))
       (when (eq *editor-mode* :edit-text)
-        (draw-editor-text-edit-panel color)))))
+        (draw-editor-text-edit-panel color))
+      (when *editor-help-overlay-p*
+        (draw-editor-help-overlay color)))))

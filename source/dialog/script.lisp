@@ -55,11 +55,13 @@
       (funcall (symbol-function 'mod-dialog-bundles))
       nil))
 
-(-> configured-dialog-bundles (&optional list) list)
-(defun configured-dialog-bundles (&optional (sources *dialog-manifest-paths*))
+(-> configured-dialog-bundles (&optional list boolean) list)
+(defun configured-dialog-bundles (&optional (sources *dialog-manifest-paths*)
+                                            (include-mods-p t))
   (sort-dialog-bundles
    (append (bundled-dialog-bundles sources)
-           (mod-dialog-bundles-maybe))))
+           (when include-mods-p
+             (mod-dialog-bundles-maybe)))))
 
 
 ;;; Evaluation
@@ -119,15 +121,16 @@
 
 ;;; Graph loading
 
-(-> load-dialog-graph (&optional list) dialog-id)
-(defun load-dialog-graph (&optional (sources *dialog-manifest-paths*))
+(-> load-dialog-graph (&optional list boolean) dialog-id)
+(defun load-dialog-graph (&optional (sources *dialog-manifest-paths*)
+                                    (include-mods-p t))
   (reset-dialog-graph)
   (reset-minigames)
   (when (fboundp 'reset-script-particle-field-modes)
     (funcall (symbol-function 'reset-script-particle-field-modes)))
   (reset-loaded-dialog-scripts)
   (reset-loaded-dialog-bundles)
-  (let ((bundles (configured-dialog-bundles sources)))
+  (let ((bundles (configured-dialog-bundles sources include-mods-p)))
     (dolist (bundle bundles)
       (eval-dialog-bundle-source bundle)))
   (unless *story-start-node*

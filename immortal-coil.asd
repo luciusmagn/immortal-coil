@@ -51,7 +51,10 @@
                   :components
                   ((:file "dev")))
 
-                 (:file "mod")
+                 (:module "mod"
+                  :serial t
+                  :components
+                  ((:file "core")))
 
                  (:module "text"
                   :serial t

@@ -165,6 +165,35 @@
   (play-choice-switch)
   t)
 
+(-> editor-toggle-help-overlay () boolean)
+(defun editor-toggle-help-overlay ()
+  (setf *editor-help-overlay-p* (not *editor-help-overlay-p*)
+        *editor-status-message*
+        (if *editor-help-overlay-p*
+            "EDITOR: HELP SHOWN"
+            "EDITOR: HELP HIDDEN"))
+  (play-choice-switch)
+  t)
+
+(-> editor-close-help-overlay () boolean)
+(defun editor-close-help-overlay ()
+  (setf *editor-help-overlay-p* nil
+        *editor-status-message* "EDITOR: HELP HIDDEN")
+  (play-choice-switch)
+  t)
+
+(-> update-editor-help-overlay-controls () boolean)
+(defun update-editor-help-overlay-controls ()
+  (cond
+    ((editor-control-key-pressed-p +key-h+)
+     (editor-toggle-help-overlay))
+    (*editor-help-overlay-p*
+     (when (or (is-key-pressed-p +key-escape+)
+               (editor-control-key-pressed-p +key-g+))
+       (editor-close-help-overlay))
+     t)
+    (t nil)))
+
 (-> editor-insert-selection-direction () (option navigation-direction))
 (defun editor-insert-selection-direction ()
   (cond
@@ -210,6 +239,8 @@
        (update-editor-choice-option-edit))
       (t
        (cond
+         ((update-editor-help-overlay-controls)
+          t)
          ((or (is-key-pressed-p +key-page-up+)
               (editor-control-key-pressed-p +key-b+))
           (editor-return-to-previous-node)

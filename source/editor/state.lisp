@@ -17,6 +17,7 @@
 (defvar *editor-text-backspace-held-seconds* 0.0)
 (defvar *editor-text-backspace-repeat-accumulator* 0.0)
 (defvar *editor-store-overlay-p* nil)
+(defvar *editor-help-overlay-p* nil)
 (defvar *editor-insert-kind* :text)
 (defvar *editor-insert-menu-selected-index* 0)
 (defvar *editor-choice-option-node-id* nil)
@@ -62,6 +63,7 @@
         *editor-text-backspace-held-seconds* 0.0
         *editor-text-backspace-repeat-accumulator* 0.0
         *editor-store-overlay-p* nil
+        *editor-help-overlay-p* nil
         *editor-insert-kind* :text
         *editor-insert-menu-selected-index* 0
         *editor-choice-option-node-id* nil
@@ -78,11 +80,33 @@
 
 ;;; Session lifecycle
 
-(-> start-editor-session (&key (:manifest-path t) (:target-name string)) t)
-(defun start-editor-session (&key manifest-path target-name)
+(-> editor-session-manifest-paths ((option t) list) list)
+(defun editor-session-manifest-paths (manifest-path manifest-paths)
+  (cond
+    (manifest-paths
+     manifest-paths)
+    (manifest-path
+     (list manifest-path))
+    (t
+     *dialog-manifest-paths*)))
+
+(-> start-editor-session
+    (&key (:manifest-path (option t))
+          (:manifest-paths list)
+          (:target-name string)
+          (:draft-script-path (option t)))
+    t)
+(defun start-editor-session (&key manifest-path
+                                  manifest-paths
+                                  target-name
+                                  draft-script-path)
   (stop-title-music)
   (stop-story-music)
-  (load-dialog-graph (list manifest-path))
+  (when draft-script-path
+    (setf *editor-draft-script-path* draft-script-path))
+  (load-dialog-graph (editor-session-manifest-paths manifest-path
+                                                    manifest-paths)
+                     nil)
   (reset-particles)
   (reset-play-state *story-start-node*)
   (dialog-store-clear-history)
@@ -97,6 +121,7 @@
         *editor-text-backspace-held-seconds* 0.0
         *editor-text-backspace-repeat-accumulator* 0.0
         *editor-store-overlay-p* nil
+        *editor-help-overlay-p* nil
         *editor-insert-kind* :text
         *editor-insert-menu-selected-index* 0
         *editor-choice-option-node-id* nil
@@ -118,7 +143,20 @@
 (-> start-base-game-editor () t)
 (defun start-base-game-editor ()
   (start-editor-session :manifest-path "game/manifest.lisp"
-                        :target-name "BASE GAME"))
+                        :target-name "BASE GAME"
+                        :draft-script-path "game/editor-drafts.lisp"))
+
+(-> start-mod-editor-session (t &key (:target-name string)
+                                (:draft-script-path (option t)))
+    t)
+(defun start-mod-editor-session (manifest-path
+                                 &key
+                                   (target-name "MOD")
+                                   draft-script-path)
+  (start-editor-session :manifest-paths (list "game/manifest.lisp"
+                                              manifest-path)
+                        :target-name target-name
+                        :draft-script-path draft-script-path))
 
 
 ;;; Navigation history
