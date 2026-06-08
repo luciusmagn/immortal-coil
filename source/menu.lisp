@@ -9,7 +9,15 @@
                           :mods "MODS"
                           :exit "EXIT"))
 
+(defparameter *mods-menu-selection*
+  (make-command-selection :edit-base "EDIT BASE GAME"
+                          :create-mod "CREATE MOD"
+                          :edit-mod "EDIT MOD"
+                          :refresh "REFRESH"
+                          :back "BACK"))
+
 (defvar *menu-status-message* nil)
+(defvar *mods-menu-active-p* nil)
 
 (-> current-mod-status-text () string)
 (defun current-mod-status-text ()
@@ -37,13 +45,27 @@
 (defun selected-menu-label ()
   (selection-current-label *menu-selection*))
 
+(-> selected-mods-action () (option command-action))
+(defun selected-mods-action ()
+  (selection-current-action *mods-menu-selection*))
+
+(-> mods-menu-option-count () nonnegative-integer)
+(defun mods-menu-option-count ()
+  (selection-count *mods-menu-selection*))
+
+(-> mods-menu-option (integer) (option command-option))
+(defun mods-menu-option (index)
+  (selection-item *mods-menu-selection* index))
+
 (-> reset-menu-state () selection-model)
 (defun reset-menu-state ()
   (setf *menu-elapsed* 0.0
         *menu-start-action* nil
         *menu-start-state* :idle
         *menu-start-elapsed* 0.0
-        *menu-status-message* (current-mod-status-text))
+        *menu-status-message* (current-mod-status-text)
+        *mods-menu-active-p* nil)
+  (selection-reset *mods-menu-selection*)
   (selection-reset *menu-selection*))
 
 (-> menu-action-available-p (t) boolean)
@@ -128,6 +150,7 @@
 
 (-> start-new-game () t)
 (defun start-new-game ()
+  (reset-editor-state)
   (stop-title-music)
   (stop-story-music)
   (load-dialog-graph)
@@ -144,6 +167,7 @@
 
 (-> continue-game () boolean)
 (defun continue-game ()
+  (reset-editor-state)
   (load-dialog-graph)
   (reset-particles)
   (when (load-current-game-save)
@@ -188,6 +212,19 @@
             (funcall (symbol-function 'refresh-dialog-mod-status))
             "MODS: UNAVAILABLE"))
   (load-title-logo)
+  (play-choice-switch))
+
+(-> open-mods-menu () t)
+(defun open-mods-menu ()
+  (setf *mods-menu-active-p* t
+        *menu-status-message* (current-mod-status-text))
+  (selection-reset *mods-menu-selection*)
+  (play-choice-switch))
+
+(-> close-mods-menu () t)
+(defun close-mods-menu ()
+  (setf *mods-menu-active-p* nil
+        *menu-status-message* (current-mod-status-text))
   (play-choice-switch))
 
 (-> start-transition-total-seconds () seconds)
@@ -237,13 +274,47 @@
        (play-start-confirm)
        (setf *quit-requested-p* t))
       (:mods
-       (refresh-menu-mod-status))
+       (open-mods-menu))
       (:options
        (open-options-menu))
       (t
        (if (menu-action-available-p action)
            (begin-start-transition action)
            (play-choice-switch))))))
+
+(-> mods-menu-selection-direction () (option navigation-direction))
+(defun mods-menu-selection-direction ()
+  (cond
+    ((or (is-key-pressed-p +key-down+)
+         (is-key-pressed-p +key-right+))
+     1)
+    ((or (is-key-pressed-p +key-up+)
+         (is-key-pressed-p +key-left+))
+     -1)))
+
+(-> move-mods-menu-selection ((option navigation-direction)) t)
+(defun move-mods-menu-selection (direction)
+  (when (selection-move *mods-menu-selection* direction)
+    (play-choice-switch)))
+
+(-> execute-selected-mods-menu-option () t)
+(defun execute-selected-mods-menu-option ()
+  (case (selected-mods-action)
+    (:edit-base
+     (play-start-confirm)
+     (start-base-game-editor))
+    (:refresh
+     (refresh-menu-mod-status))
+    (:back
+     (close-mods-menu))
+    (:create-mod
+     (setf *menu-status-message* "CREATE MOD: MANIFEST UI PENDING")
+     (play-choice-switch))
+    (:edit-mod
+     (setf *menu-status-message* "EDIT MOD: MOD PICKER PENDING")
+     (play-choice-switch))
+    (t
+     (close-mods-menu))))
 
 
 ;;; Rendering
@@ -361,16 +432,73 @@
   (draw-menu-arrow -1)
   (draw-menu-arrow 1))
 
+(-> draw-mods-menu-option (integer scalar t) t)
+(defun draw-mods-menu-option (index y color)
+  (let ((label (command-option-label (mods-menu-option index)))
+        (size 22)
+        (selected-p (= index (selection-current-index *mods-menu-selection*))))
+    (multiple-value-bind (x text-y width)
+        (draw-centered-text label
+                            +virtual-center-x+
+                            y
+                            size
+                            color)
+      (when selected-p
+        (claylib/ll:draw-rectangle (round x)
+                                   (round (+ text-y size 5))
+                                   (round width)
+                                   4
+                                   (claylib::c-ptr color))))))
+
+(-> draw-mods-menu-options (t) t)
+(defun draw-mods-menu-options (color)
+  (let ((start-y (- +virtual-center-y+ 76))
+        (spacing 46.0))
+    (loop for i below (mods-menu-option-count)
+          do (draw-mods-menu-option i
+                                    (+ start-y (* i spacing))
+                                    color))))
+
+(-> draw-mods-menu-status (t) t)
+(defun draw-mods-menu-status (color)
+  (when *menu-status-message*
+    (draw-centered-text *menu-status-message*
+                        +virtual-center-x+
+                        (+ +virtual-center-y+ 184)
+                        13
+                        color)))
+
+(-> draw-mods-menu () t)
+(defun draw-mods-menu ()
+  (let ((color (make-color 255
+                           255
+                           255
+                           (round (* 238 (menu-alpha-scale))))))
+    (draw-centered-text "MODS"
+                        +virtual-center-x+
+                        (- +virtual-center-y+ 154)
+                        28
+                        color)
+    (draw-mods-menu-options color)
+    (draw-mods-menu-status
+     (make-color 255
+                 255
+                 255
+                 (round (* 170 (menu-alpha-scale)))))))
+
 (-> draw-menu () t)
 (defun draw-menu ()
   (draw-title-logo (menu-alpha-scale))
   (draw-particles (menu-alpha-scale))
-  (if (options-menu-active-p)
-      (draw-options-menu)
-      (progn
-        (draw-menu-arrows)
-        (draw-menu-option)
-        (draw-menu-status))))
+  (cond
+    ((options-menu-active-p)
+     (draw-options-menu))
+    (*mods-menu-active-p*
+     (draw-mods-menu))
+    (t
+     (draw-menu-arrows)
+     (draw-menu-option)
+     (draw-menu-status))))
 
 
 ;;; Updating
@@ -382,13 +510,26 @@
   (update-particles dt)
   (case *menu-start-state*
     (:idle
-     (if (options-menu-active-p)
-         (update-options-menu)
-         (progn
-           (move-menu-selection (menu-selection-direction))
-           (when (menu-option-pressed-p)
-             (execute-selected-menu-option)))))
+     (cond
+       ((options-menu-active-p)
+        (update-options-menu))
+       (*mods-menu-active-p*
+        (update-mods-menu))
+       (t
+        (move-menu-selection (menu-selection-direction))
+        (when (menu-option-pressed-p)
+          (execute-selected-menu-option)))))
     (:starting
      (incf *menu-start-elapsed* dt)
      (when (>= *menu-start-elapsed* (start-transition-total-seconds))
        (complete-start-action)))))
+
+(-> update-mods-menu () t)
+(defun update-mods-menu ()
+  (cond
+    ((is-key-pressed-p +key-escape+)
+     (close-mods-menu))
+    (t
+     (move-mods-menu-selection (mods-menu-selection-direction))
+     (when (confirm-pressed-p)
+       (execute-selected-mods-menu-option)))))

@@ -49,11 +49,13 @@
 
 (-> return-to-title-menu () t)
 (defun return-to-title-menu ()
-  (save-current-game)
+  (unless (editor-active-p)
+    (save-current-game))
   (stop-story-music)
   (setf *paused-p* nil
         *save-current-game-p* nil
         *mode* :menu)
+  (reset-editor-state)
   (reset-menu-state)
   (reset-particles :title-menu)
   (play-title-music))
@@ -61,7 +63,8 @@
 (-> quit-from-pause-menu () t)
 (defun quit-from-pause-menu ()
   (play-start-confirm)
-  (save-current-game)
+  (unless (editor-active-p)
+    (save-current-game))
   (setf *quit-requested-p* t))
 
 (-> execute-selected-pause-option () t)

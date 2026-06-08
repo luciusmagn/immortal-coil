@@ -112,6 +112,8 @@
                   :components
                   ((:file "node")))
 
+                 (:file "editor")
+
                  (:file "fullscreen")
 
                  (:module "options"

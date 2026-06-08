@@ -55,12 +55,17 @@
 
 (-> jump-to-node (t) t)
 (defun jump-to-node (id)
-  (setf (play-state-current-id *state*) (resolve-node-id id)
-        (play-state-elapsed *state*) 0.0
-        (play-state-type-delay *state*) 0.0
-        (play-state-visible-count *state*) 0
-        (play-state-selected-index *state*) 0
-        (play-state-conversation-index *state*) 0
-        (play-state-input-buffer *state*) "")
-  (apply-node-enter-effects (current-node))
-  (save-current-game-maybe))
+  (let ((resolved-id (resolve-node-id id)))
+    (when (and *state*
+               (not (equal (play-state-current-id *state*) resolved-id))
+               (fboundp 'editor-before-jump))
+      (funcall (symbol-function 'editor-before-jump) resolved-id))
+    (setf (play-state-current-id *state*) resolved-id
+          (play-state-elapsed *state*) 0.0
+          (play-state-type-delay *state*) 0.0
+          (play-state-visible-count *state*) 0
+          (play-state-selected-index *state*) 0
+          (play-state-conversation-index *state*) 0
+          (play-state-input-buffer *state*) "")
+    (apply-node-enter-effects (current-node))
+    (save-current-game-maybe)))

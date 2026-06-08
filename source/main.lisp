@@ -8,6 +8,7 @@
         *save-current-game-p* nil
         *requested-window-mode* nil
         *fullscreen-size-ready-p* nil)
+  (reset-editor-state)
   (reset-menu-state)
   (reset-pause-menu-state)
   (reset-options-menu-state)
@@ -47,6 +48,8 @@
              (*paused-p*
               (update-pause-menu))
              ((maybe-open-pause-menu)
+              nil)
+             ((update-editor-controls)
               nil)
              (t
               (incf *game-fade-elapsed* dt)
