@@ -45,6 +45,19 @@
      (merge-pathnames (princ-to-string path)
                       (project-root-pathname)))))
 
+(-> estimated-text-width (string nonnegative-integer) nonnegative-integer)
+(defun estimated-text-width (text size)
+  (round (* (length text) size 0.58)))
+
+(-> text-width (string nonnegative-integer) nonnegative-integer)
+(defun text-width (text size)
+  (if (zerop (length text))
+      0
+      (let ((measured-width (measure-text text size)))
+        (if (plusp measured-width)
+            measured-width
+            (estimated-text-width text size)))))
+
 (defun draw-text-at (text x y size color)
   (claylib/ll:draw-text text
                         (round x)
@@ -53,7 +66,7 @@
                         (claylib::c-ptr color)))
 
 (defun draw-centered-text (text center-x center-y size color)
-  (let* ((width (measure-text text size))
+  (let* ((width (text-width text size))
          (x (- center-x (/ width 2)))
          (y (- center-y (/ size 2))))
     (draw-text-at text x y size color)

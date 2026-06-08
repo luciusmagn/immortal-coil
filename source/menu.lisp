@@ -83,7 +83,7 @@
 
 (-> menu-option-text-width () nonnegative-integer)
 (defun menu-option-text-width ()
-  (measure-text (selected-menu-label) *menu-start-text-size*))
+  (text-width (selected-menu-label) *menu-start-text-size*))
 
 (-> menu-option-bounds () (values scalar scalar scalar scalar))
 (defun menu-option-bounds ()

@@ -130,7 +130,7 @@
 (defun draw-choice-option (choice x y selected-p color)
   (let* ((size 20)
          (label (choice-render-label choice))
-         (width (measure-text label size))
+         (width (text-width label size))
          (enabled-p (choice-enabled-p choice))
          (option-color (choice-option-color choice color)))
     (draw-text-at label x y size option-color)
@@ -145,7 +145,7 @@
 
 (defun draw-choice-option-centered (choice center-x y selected-p color)
   (let* ((size 20)
-         (width (measure-text (choice-render-label choice) size))
+         (width (text-width (choice-render-label choice) size))
          (x (- center-x (/ width 2))))
     (draw-choice-option choice x y selected-p color)))
 

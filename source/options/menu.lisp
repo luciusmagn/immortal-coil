@@ -79,7 +79,7 @@
          (y (options-row-y index))
          (label (command-option-label option))
          (value (options-value-label action))
-         (value-width (measure-text value 20)))
+         (value-width (text-width value 20)))
     (when selected-p
       (draw-options-marker (- +options-label-x+ 34.0)
                            (+ y 10.0)

@@ -40,18 +40,6 @@
                  (push (subseq paragraph start index) words))))
     (nreverse words)))
 
-(-> estimated-text-width (string nonnegative-integer) nonnegative-integer)
-(defun estimated-text-width (text size)
-  (round (* (length text) size 0.58)))
-
-(-> text-width (string nonnegative-integer) nonnegative-integer)
-(defun text-width (text size)
-  (let ((measured-width (measure-text text size)))
-    (if (or (plusp measured-width)
-            (zerop (length text)))
-        measured-width
-        (estimated-text-width text size))))
-
 (-> text-fits-width-p (string nonnegative-integer scalar) boolean)
 (defun text-fits-width-p (text size max-width)
   (<= (text-width text size) max-width))
