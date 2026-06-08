@@ -2,8 +2,8 @@
 
 ;;; Rendering
 
-(defconstant +editor-corner-margin-x+ 86)
-(defconstant +editor-corner-margin-y+ 62)
+(defconstant +editor-corner-margin-x+ 172)
+(defconstant +editor-corner-margin-y+ 124)
 (defconstant +editor-corner-heading-size+ 16)
 (defconstant +editor-corner-body-size+ 14)
 (defconstant +editor-corner-line-gap+ 25)
@@ -802,8 +802,8 @@
 (defun draw-editor-overlay ()
   (when (and *editor-active-p* *state*)
     (let* ((node (current-node))
-           (color (make-color 255 255 255 218))
-           (dim-color (make-color 255 255 255 186))
+           (color (make-color 255 255 255 255))
+           (dim-color (make-color 255 255 255 255))
            (bottom-y (- +virtual-height+
                         +editor-corner-margin-y+
                         +editor-corner-body-size+))
