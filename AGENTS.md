@@ -14,6 +14,7 @@ Do not introduce LMDB, HAMTs, persistent graph databases, or other heavy storage
 - Detailed built-in path notes live in `docs/narrative.md`. Update that file when changing a path premise, reveal, or major hook point.
 - The core narrative tool is that the future shapes the past by supplying context, details, surroundings, names, roles, or relationships that make earlier scenes mean different things on different paths.
 - Narrate as if the earlier scene was always what the later path reveals; the player only lacked the perspective or context to understand it.
+- Branch transitions must be gentle enough that a player on a single playthrough would not recognize them as transitions. A branch entry should feel like the next ordinary detail in the same situation; only later context or another route should reveal that it carried the story somewhere else.
 - Prefer revelation over transformation: when a scene changes meaning, it should feel like it was always that thing, not like the game visibly morphed it for the player's benefit.
 - Avoid prose that says reality changes because the player acted: no doors becoming other objects, corridors folding shut, or things waiting to transform on cue. Use newly revealed context instead.
 - Keep prose and interface sparse. The game can become strange, but it should not explain its own cleverness.

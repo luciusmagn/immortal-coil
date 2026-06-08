@@ -13,6 +13,12 @@ or interface text that explains the trick.
 The player should usually understand less than the author. Branches should
 create new context, not announce new genres.
 
+The "future shapes the past" effect only works when transitions are gentle
+enough that a player on a single playthrough would not recognize them as
+transitions. A branch entry should feel like the next ordinary detail in the
+same situation; only later, or on another route, should the player understand
+that the detail carried them into a different context.
+
 ## Current Branch Shape
 
 The current branch events are still prototype hooks, but the base-room split
