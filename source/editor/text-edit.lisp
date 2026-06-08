@@ -246,6 +246,8 @@
        (update-editor-conversation-entry-edit))
       (:edit-node-target
        (update-editor-node-target-edit))
+      (:edit-node-fields
+       (update-editor-node-fields-edit))
       (t
        (cond
          ((update-editor-help-overlay-controls)

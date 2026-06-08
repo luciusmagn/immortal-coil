@@ -122,7 +122,11 @@
                    (:file "draft")
                    (:file "choice-option-edit")
                    (:file "conversation-entry-edit")
-                   (:file "node-target-edit")
+                   (:module "node"
+                    :serial t
+                    :components
+                    ((:file "target-edit")
+                     (:file "fields-edit")))
                    (:file "store-edit")
                    (:file "audio")
                    (:file "text-edit")

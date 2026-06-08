@@ -145,7 +145,55 @@
 
 (-> dialog-set-speaker (dialog-id (option string)) dialog-id)
 (defun dialog-set-speaker (node-id speaker)
-  (setf (node-speaker (find-node node-id)) speaker)
+  (let ((node (dialog-node-kind-p node-id
+                                  '(:say)
+                                  "Cannot set speaker")))
+    (when node
+      (setf (node-speaker node) speaker)))
+  node-id)
+
+(-> dialog-set-response-key (dialog-id dialog-id) dialog-id)
+(defun dialog-set-response-key (node-id response-key)
+  (let ((node (dialog-node-kind-p node-id
+                                  '(:number :string)
+                                  "Cannot set response key")))
+    (when node
+      (setf (node-response-key node) response-key)))
+  node-id)
+
+(-> dialog-set-number-bounds
+    (dialog-id (option number) (option number))
+    dialog-id)
+(defun dialog-set-number-bounds (node-id min-value max-value)
+  (let ((node (dialog-node-kind-p node-id
+                                  '(:number)
+                                  "Cannot set number bounds")))
+    (when node
+      (if (and min-value max-value (> min-value max-value))
+          (runtime-warn "Cannot set inverted number bounds on ~a: ~a > ~a"
+                        node-id
+                        min-value
+                        max-value)
+          (setf (node-min-value node) min-value
+                (node-max-value node) max-value))))
+  node-id)
+
+(-> dialog-set-string-max-length (dialog-id nonnegative-integer) dialog-id)
+(defun dialog-set-string-max-length (node-id max-length)
+  (let ((node (dialog-node-kind-p node-id
+                                  '(:string)
+                                  "Cannot set string max length")))
+    (when node
+      (setf (node-max-length node) max-length)))
+  node-id)
+
+(-> dialog-set-string-allow-empty (dialog-id boolean) dialog-id)
+(defun dialog-set-string-allow-empty (node-id allow-empty-p)
+  (let ((node (dialog-node-kind-p node-id
+                                  '(:string)
+                                  "Cannot set string emptiness")))
+    (when node
+      (setf (node-allow-empty-p node) allow-empty-p)))
   node-id)
 
 

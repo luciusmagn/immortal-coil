@@ -110,6 +110,12 @@ Patch a node's next link:
 (dialog-set-next "base/listen" "my-mod/interruption")
 ```
 
+Patch a spoken node's speaker:
+
+```lisp
+(dialog-set-speaker "my-mod/crewman" "navigator")
+```
+
 Use `dialog-set-next` sparingly. Prefer adding choices or writing new nodes
 unless the mod intentionally changes an existing path.
 
@@ -208,6 +214,13 @@ Ask for a number:
                :target "my-mod/after-age")
 ```
 
+Patch input storage and bounds:
+
+```lisp
+(dialog-set-response-key "my-mod/age" "player-age")
+(dialog-set-number-bounds "my-mod/age" 0 130)
+```
+
 Ask for a string:
 
 ```lisp
@@ -216,6 +229,14 @@ Ask for a string:
                :response-key "player-name"
                :max-length 24
                :target "my-mod/after-name")
+```
+
+Patch string input limits:
+
+```lisp
+(dialog-set-response-key "my-mod/name" "player-name")
+(dialog-set-string-max-length "my-mod/name" 24)
+(dialog-set-string-allow-empty "my-mod/name" nil)
 ```
 
 Read and write the shared dialog store:
@@ -377,6 +398,12 @@ Reference it from a node:
                  :game :my-mod/flight
                  :success "my-mod/success"
                  :failure "my-mod/failure")
+```
+
+Patch the selected minigame implementation:
+
+```lisp
+(dialog-set-minigame "my-mod/flight" :my-mod/flight)
 ```
 
 Handlers:

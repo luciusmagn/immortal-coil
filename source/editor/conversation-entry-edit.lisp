@@ -403,8 +403,20 @@
       (case (node-kind (current-node))
         (:conversation
          (editor-start-conversation-entry-edit))
+        (:choice
+         (editor-start-choice-option-edit))
+        ((:say :number :string :minigame)
+         (if (fboundp 'editor-start-node-fields-edit)
+             (funcall (symbol-function 'editor-start-node-fields-edit))
+             (progn
+               (setf *editor-status-message*
+                     "EDITOR: NODE DETAIL EDITOR UNAVAILABLE")
+               (play-choice-switch)
+               nil)))
         (t
-         (editor-start-choice-option-edit)))
+         (setf *editor-status-message* "EDITOR: NO NODE DETAILS")
+         (play-choice-switch)
+         nil))
       nil))
 
 (-> editor-add-node-detail () boolean)

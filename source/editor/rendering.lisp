@@ -535,6 +535,100 @@
                             12
                             color)))
 
+(-> editor-node-field-label (editor-node-field) string)
+(defun editor-node-field-label (field)
+  (case field
+    (:speaker "SPEAKER")
+    (:response-key "RESPONSE KEY")
+    (:min-value "MIN")
+    (:max-value "MAX")
+    (:max-length "MAX LENGTH")
+    (:allow-empty "ALLOW EMPTY")
+    (:minigame "MINIGAME")
+    (t "")))
+
+(-> editor-node-field-display-value (editor-node-field) string)
+(defun editor-node-field-display-value (field)
+  (editor-truncate-text (editor-node-field-buffer field) 64))
+
+(-> draw-editor-node-field-row
+    (editor-node-field nonnegative-integer scalar scalar t)
+    t)
+(defun draw-editor-node-field-row (field index x y color)
+  (let* ((selected-p (= index *editor-node-fields-field-index*))
+         (row-color (if selected-p
+                        color
+                        (make-color 255 255 255 128)))
+         (label (editor-node-field-label field))
+         (value (editor-node-field-display-value field)))
+    (when selected-p
+      (draw-text-at ">"
+                    (- x 22)
+                    y
+                    17
+                    color))
+    (draw-text-at label
+                  x
+                  y
+                  14
+                  row-color)
+    (draw-text-at value
+                  (+ x 184)
+                  y
+                  17
+                  row-color)
+    (when (and selected-p
+               (not (eq field :allow-empty)))
+      (draw-cursor (+ x 184)
+                   y
+                   (text-width value 17)
+                   17
+                   row-color))))
+
+(-> draw-editor-node-fields-panel (t) t)
+(defun draw-editor-node-fields-panel (color)
+  (let* ((panel-width 720)
+         (panel-height 238)
+         (left (round (- +virtual-center-x+ (/ panel-width 2))))
+         (top 324)
+         (node-id (or *editor-node-fields-node-id* ""))
+         (node (and *editor-node-fields-node-id*
+                    (node-exists-p *editor-node-fields-node-id*)
+                    (find-node *editor-node-fields-node-id*))))
+    (claylib/ll:draw-rectangle left
+                               top
+                               panel-width
+                               panel-height
+                               (claylib::c-ptr
+                                (make-color 0 0 0 234)))
+    (claylib/ll:draw-rectangle-lines left
+                                      top
+                                      panel-width
+                                      panel-height
+                                      (claylib::c-ptr color))
+    (draw-text-at "EDIT DETAILS"
+                  (+ left 24)
+                  (+ top 18)
+                  14
+                  color)
+    (draw-text-at node-id
+                  (+ left 24)
+                  (+ top 42)
+                  12
+                  (make-color 255 255 255 142))
+    (when node
+      (loop for field across (editor-node-fields node)
+            for index from 0
+            do (draw-editor-node-field-row field
+                                           index
+                                           (+ left 58)
+                                           (+ top 78 (* index 34))
+                                           color)))
+    (draw-editor-right-text "LEFT/RIGHT ADJUST  C-s SAVE  C-g CANCEL"
+                            (+ top panel-height 14)
+                            12
+                            color)))
+
 (-> editor-node-target-field-label (editor-node-target-field) string)
 (defun editor-node-target-field-label (field)
   (case field
@@ -665,7 +759,7 @@
                  ("C-f" "cycle the current node particle field")
                  ("C-m" "cycle the current node music")
                  ("C-l" "edit current node destinations")
-                 ("C-o" "edit the highlighted option or line")
+                 ("C-o" "edit node details or highlighted item")
                  ("C-e" "edit the current node text")
                  ("C-s" "show shared state or save active panel")
                  ("C-d" "delete current linear editor node")
@@ -744,6 +838,8 @@
         (draw-editor-conversation-entry-panel color))
       (when (eq *editor-mode* :edit-node-target)
         (draw-editor-node-target-panel color))
+      (when (eq *editor-mode* :edit-node-fields)
+        (draw-editor-node-fields-panel color))
       (when (eq *editor-mode* :edit-text)
         (draw-editor-text-edit-panel color))
       (when *editor-help-overlay-p*
