@@ -16,6 +16,7 @@
               (setf *editor-mode* :edit-text
                     *editor-edit-node-id* (node-id node)
                     *editor-text-buffer* (node-text node)
+                    *editor-text-cursor-index* (length *editor-text-buffer*)
                     *editor-text-backspace-held-seconds* 0.0
                     *editor-text-backspace-repeat-accumulator* 0.0
                     *editor-status-message* "EDITOR: EDITING TEXT")
@@ -27,24 +28,67 @@
               nil)))
       nil))
 
-(-> editor-append-text-character (character) boolean)
-(defun editor-append-text-character (char)
+(-> editor-text-buffer-length () nonnegative-integer)
+(defun editor-text-buffer-length ()
+  (length *editor-text-buffer*))
+
+(-> editor-clamp-text-cursor () nonnegative-integer)
+(defun editor-clamp-text-cursor ()
+  (setf *editor-text-cursor-index*
+        (min (max 0 *editor-text-cursor-index*)
+             (editor-text-buffer-length))))
+
+(-> editor-set-text-cursor (integer) nonnegative-integer)
+(defun editor-set-text-cursor (index)
+  (setf *editor-text-cursor-index*
+        (min (max 0 index)
+             (editor-text-buffer-length))))
+
+(-> editor-move-text-cursor (integer) nonnegative-integer)
+(defun editor-move-text-cursor (delta)
+  (editor-set-text-cursor (+ (editor-clamp-text-cursor) delta)))
+
+(-> editor-insert-text-character (character) boolean)
+(defun editor-insert-text-character (char)
   (and (< (length *editor-text-buffer*) *editor-text-max-length*)
-       (progn
+       (let* ((cursor (editor-clamp-text-cursor))
+              (prefix (subseq *editor-text-buffer* 0 cursor))
+              (suffix (subseq *editor-text-buffer* cursor)))
          (setf *editor-text-buffer*
-               (concatenate 'string *editor-text-buffer* (string char)))
+               (concatenate 'string prefix (string char) suffix)
+               *editor-text-cursor-index* (1+ cursor))
          (play-input-click)
          t)))
 
 (-> editor-delete-text-characters (nonnegative-integer) boolean)
 (defun editor-delete-text-characters (count)
-  (when (and (plusp count)
-             (plusp (length *editor-text-buffer*)))
-    (let ((new-length (max 0 (- (length *editor-text-buffer*) count))))
+  (let* ((cursor (editor-clamp-text-cursor))
+         (delete-count (min count cursor)))
+    (when (plusp delete-count)
       (setf *editor-text-buffer*
-            (subseq *editor-text-buffer* 0 new-length)))
-    (play-choice-switch)
-    t))
+            (concatenate 'string
+                         (subseq *editor-text-buffer*
+                                 0
+                                 (- cursor delete-count))
+                         (subseq *editor-text-buffer* cursor))
+            *editor-text-cursor-index* (- cursor delete-count))
+      (play-choice-switch)
+      t)))
+
+(-> editor-delete-text-forward-characters (nonnegative-integer) boolean)
+(defun editor-delete-text-forward-characters (count)
+  (let* ((cursor (editor-clamp-text-cursor))
+         (length (editor-text-buffer-length))
+         (delete-count (min count (- length cursor))))
+    (when (plusp delete-count)
+      (setf *editor-text-buffer*
+            (concatenate 'string
+                         (subseq *editor-text-buffer* 0 cursor)
+                         (subseq *editor-text-buffer*
+                                 (+ cursor delete-count)))
+            *editor-text-cursor-index* cursor)
+      (play-choice-switch)
+      t)))
 
 (-> reset-editor-text-backspace-repeat () t)
 (defun reset-editor-text-backspace-repeat ()
@@ -84,6 +128,10 @@
 (defun editor-delete-text-character ()
   (editor-delete-text-characters 1))
 
+(-> editor-delete-text-forward-character () boolean)
+(defun editor-delete-text-forward-character ()
+  (editor-delete-text-forward-characters 1))
+
 (-> editor-delete-text-repeat (seconds) boolean)
 (defun editor-delete-text-repeat (dt)
   (editor-delete-text-characters
@@ -91,17 +139,19 @@
 
 (-> drain-editor-text-input (seconds) t)
 (defun drain-editor-text-input (dt)
-  (loop for code = (get-char-pressed)
-        until (zerop code)
-        for char = (code-char code)
-        when (and char (string-input-character-p char))
-          do (editor-append-text-character char))
+  (unless (editor-control-down-p)
+    (loop for code = (get-char-pressed)
+          until (zerop code)
+          for char = (code-char code)
+          when (and char (string-input-character-p char))
+            do (editor-insert-text-character char)))
   (editor-delete-text-repeat dt))
 
 (-> editor-cancel-text-edit () boolean)
 (defun editor-cancel-text-edit ()
   (setf *editor-mode* :play
         *editor-text-buffer* ""
+        *editor-text-cursor-index* 0
         *editor-edit-node-id* nil
         *editor-text-backspace-held-seconds* 0.0
         *editor-text-backspace-repeat-accumulator* 0.0
@@ -129,6 +179,7 @@
           (editor-reset-current-text-display node-id)
           (setf *editor-mode* :play
                 *editor-text-buffer* ""
+                *editor-text-cursor-index* 0
                 *editor-edit-node-id* nil
                 *editor-text-backspace-held-seconds* 0.0
                 *editor-text-backspace-repeat-accumulator* 0.0
@@ -140,9 +191,28 @@
           (play-choice-switch)
           nil))))
 
+(-> update-editor-text-cursor-controls () boolean)
+(defun update-editor-text-cursor-controls ()
+  (cond
+    ((is-key-pressed-p +key-left+)
+     (editor-move-text-cursor -1)
+     t)
+    ((is-key-pressed-p +key-right+)
+     (editor-move-text-cursor 1)
+     t)
+    ((is-key-pressed-p +key-home+)
+     (editor-set-text-cursor 0)
+     t)
+    ((is-key-pressed-p +key-end+)
+     (editor-set-text-cursor (editor-text-buffer-length))
+     t)
+    ((is-key-pressed-p +key-delete+)
+     (editor-delete-text-forward-character)
+     t)
+    (t nil)))
+
 (-> update-editor-text-edit (seconds) boolean)
 (defun update-editor-text-edit (dt)
-  (drain-editor-text-input dt)
   (cond
     ((or (is-key-pressed-p +key-escape+)
          (editor-control-key-pressed-p +key-g+))
@@ -150,7 +220,14 @@
     ((or (string-submit-pressed-p)
          (editor-control-key-pressed-p +key-s+))
      (editor-save-text-edit))
-    (t t)))
+    ((or (is-key-pressed-p +key-page-up+)
+         (editor-control-key-pressed-p +key-b+))
+     (editor-return-to-previous-node))
+    ((update-editor-text-cursor-controls)
+     t)
+    (t
+     (drain-editor-text-input dt)
+     t)))
 
 
 ;;; Controls
@@ -181,6 +258,109 @@
         *editor-status-message* "EDITOR: HELP HIDDEN")
   (play-choice-switch)
   t)
+
+
+;;; Bookmarks
+
+(-> editor-clear-key-prefix () t)
+(defun editor-clear-key-prefix ()
+  (setf *editor-key-prefix* nil)
+  t)
+
+(-> editor-prefix-key-pressed-p (integer) boolean)
+(defun editor-prefix-key-pressed-p (key)
+  (or (is-key-pressed-p key)
+      (editor-control-key-pressed-p key)))
+
+(-> editor-start-key-prefix (editor-key-prefix string) boolean)
+(defun editor-start-key-prefix (prefix status)
+  (setf *editor-key-prefix* prefix
+        *editor-status-message* status)
+  t)
+
+(-> editor-cancel-key-prefix () boolean)
+(defun editor-cancel-key-prefix ()
+  (editor-clear-key-prefix)
+  (setf *editor-status-message* "EDITOR: PREFIX CANCELED")
+  (play-choice-switch)
+  t)
+
+(-> editor-bookmark-node-valid-p (t) boolean)
+(defun editor-bookmark-node-valid-p (node-id)
+  (and (stringp node-id)
+       (node-exists-p node-id)))
+
+(-> editor-prune-bookmarks () list)
+(defun editor-prune-bookmarks ()
+  (setf *editor-bookmarks*
+        (remove-if-not #'editor-bookmark-node-valid-p *editor-bookmarks*)))
+
+(-> editor-bookmark-count () nonnegative-integer)
+(defun editor-bookmark-count ()
+  (length (editor-prune-bookmarks)))
+
+(-> editor-bookmark-current-node () boolean)
+(defun editor-bookmark-current-node ()
+  (editor-clear-key-prefix)
+  (if (and *editor-active-p* *state*)
+      (let ((node-id (play-state-current-id *state*)))
+        (setf *editor-bookmarks*
+              (cons node-id
+                    (remove node-id *editor-bookmarks* :test #'equal))
+              *editor-status-message*
+              (format nil "EDITOR: BOOKMARKED ~a" node-id))
+        (play-start-confirm)
+        t)
+      (progn
+        (setf *editor-status-message* "EDITOR: NO NODE TO BOOKMARK")
+        (play-choice-switch)
+        nil)))
+
+(-> editor-jump-to-bookmark () boolean)
+(defun editor-jump-to-bookmark ()
+  (editor-clear-key-prefix)
+  (let ((target (first (editor-prune-bookmarks))))
+    (cond
+      ((null target)
+       (setf *editor-status-message* "EDITOR: NO BOOKMARKS")
+       (play-choice-switch)
+       nil)
+      ((jump-to-node target)
+       (setf *editor-bookmarks*
+             (append (rest *editor-bookmarks*) (list target))
+             *editor-status-message*
+             (format nil "EDITOR: BOOKMARK ~a" target))
+       (play-start-confirm)
+       t)
+      (t
+       (setf *editor-status-message* "EDITOR: BOOKMARK JUMP FAILED")
+       (play-choice-switch)
+       nil))))
+
+(-> update-editor-key-prefix-controls () boolean)
+(defun update-editor-key-prefix-controls ()
+  (case *editor-key-prefix*
+    (:control-x
+     (cond
+       ((or (is-key-pressed-p +key-escape+)
+            (editor-control-key-pressed-p +key-g+))
+        (editor-cancel-key-prefix))
+       ((editor-prefix-key-pressed-p +key-r+)
+        (editor-start-key-prefix :control-x-r "EDITOR: C-x r"))
+       (t t)))
+    (:control-x-r
+     (cond
+       ((or (is-key-pressed-p +key-escape+)
+            (editor-control-key-pressed-p +key-g+))
+        (editor-cancel-key-prefix))
+       ((editor-prefix-key-pressed-p +key-m+)
+        (editor-bookmark-current-node))
+       ((editor-prefix-key-pressed-p +key-j+)
+        (editor-jump-to-bookmark))
+       (t t)))
+    (t
+     (when (editor-control-key-pressed-p +key-x+)
+       (editor-start-key-prefix :control-x "EDITOR: C-x")))))
 
 (-> update-editor-help-overlay-controls () boolean)
 (defun update-editor-help-overlay-controls ()
@@ -251,6 +431,8 @@
       (t
        (cond
          ((update-editor-help-overlay-controls)
+          t)
+         ((update-editor-key-prefix-controls)
           t)
          ((or (is-key-pressed-p +key-page-up+)
               (editor-control-key-pressed-p +key-b+))

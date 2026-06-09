@@ -116,6 +116,10 @@
     "What the insert-kind menu will do when confirmed."
     '(member :insert :replace))
 
+  (deftype editor-key-prefix ()
+    "Prefix chord currently being read by the in-game editor."
+    '(member :control-x :control-x-r))
+
   (deftype editor-choice-target-kind ()
     "How the editor should interpret a choice destination field."
     '(member :id :function))

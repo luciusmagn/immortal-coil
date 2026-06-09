@@ -13,9 +13,12 @@
 (defvar *editor-suppress-history-p* nil)
 (defvar *editor-mode* :play)
 (defvar *editor-text-buffer* "")
+(defvar *editor-text-cursor-index* 0)
 (defvar *editor-edit-node-id* nil)
 (defvar *editor-text-backspace-held-seconds* 0.0)
 (defvar *editor-text-backspace-repeat-accumulator* 0.0)
+(defvar *editor-bookmarks* nil)
+(defvar *editor-key-prefix* nil)
 (defvar *editor-store-overlay-p* nil)
 (defvar *editor-help-overlay-p* nil)
 (defvar *editor-show-all-choices-p* nil)
@@ -77,9 +80,12 @@
         *editor-suppress-history-p* nil
         *editor-mode* :play
         *editor-text-buffer* ""
+        *editor-text-cursor-index* 0
         *editor-edit-node-id* nil
         *editor-text-backspace-held-seconds* 0.0
         *editor-text-backspace-repeat-accumulator* 0.0
+        *editor-bookmarks* nil
+        *editor-key-prefix* nil
         *editor-store-overlay-p* nil
         *editor-help-overlay-p* nil
         *editor-show-all-choices-p* nil
@@ -157,9 +163,12 @@
         *editor-status-message* "EDITOR: PLAYING GRAPH"
         *editor-mode* :play
         *editor-text-buffer* ""
+        *editor-text-cursor-index* 0
         *editor-edit-node-id* nil
         *editor-text-backspace-held-seconds* 0.0
         *editor-text-backspace-repeat-accumulator* 0.0
+        *editor-bookmarks* nil
+        *editor-key-prefix* nil
         *editor-store-overlay-p* nil
         *editor-help-overlay-p* nil
         *editor-show-all-choices-p* nil

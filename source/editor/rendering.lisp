@@ -195,6 +195,37 @@
                             12
                             color)))
 
+(-> editor-text-edit-lines (nonnegative-integer scalar) (list-of string))
+(defun editor-text-edit-lines (size max-width)
+  (or (wrap-text-lines *editor-text-buffer* size max-width)
+      (list "")))
+
+(-> editor-text-cursor-lines (nonnegative-integer scalar) (list-of string))
+(defun editor-text-cursor-lines (size max-width)
+  (let ((cursor (editor-clamp-text-cursor)))
+    (or (wrap-text-lines (subseq *editor-text-buffer* 0 cursor)
+                         size
+                         max-width)
+        (list ""))))
+
+(-> editor-text-visible-start
+    (nonnegative-integer nonnegative-integer nonnegative-integer)
+    nonnegative-integer)
+(defun editor-text-visible-start (line-count cursor-line visible-count)
+  (let ((max-start (max 0 (- line-count visible-count))))
+    (min max-start
+         (max 0 (- cursor-line (floor visible-count 2))))))
+
+(-> editor-visible-text-edit-lines
+    ((list-of string) nonnegative-integer nonnegative-integer)
+    (values list nonnegative-integer))
+(defun editor-visible-text-edit-lines (lines cursor-line visible-count)
+  (let ((start (editor-text-visible-start (length lines)
+                                          cursor-line
+                                          visible-count)))
+    (values (subseq lines start (min (length lines) (+ start visible-count)))
+            start)))
+
 (-> draw-editor-text-edit-panel (t) t)
 (defun draw-editor-text-edit-panel (color)
   (let* ((left 88)
@@ -203,11 +234,11 @@
          (height 144)
          (size 18)
          (line-spacing 22)
-         (lines (or (wrap-text-lines *editor-text-buffer*
-                                     size
-                                     (- width 28))
-                    (list "")))
-         (visible-lines (last lines (min 4 (length lines)))))
+         (max-text-width (- width 28))
+         (lines (editor-text-edit-lines size max-text-width))
+         (cursor-lines (editor-text-cursor-lines size max-text-width))
+         (cursor-line-index (max 0 (1- (length cursor-lines))))
+         (visible-count (min 4 (length lines))))
     (claylib/ll:draw-rectangle left
                                top
                                width
@@ -220,24 +251,23 @@
                   (+ top 12)
                   13
                   color)
-    (loop for line in visible-lines
-          for index from 0
-          do (draw-text-at line
-                           (+ left 14)
-                           (+ top 38 (* index line-spacing))
-                           size
-                           color))
-    (let* ((last-line (car (last visible-lines)))
-           (cursor-y (+ top
-                        38
-                        (* (max 0 (1- (length visible-lines)))
-                           line-spacing)))
-           (cursor-x (+ left 14 (text-width last-line size))))
-      (draw-cursor (+ left 14)
-                   cursor-y
-                   (- cursor-x (+ left 14))
-                   size
-                   color))
+    (multiple-value-bind (visible-lines visible-start)
+        (editor-visible-text-edit-lines lines cursor-line-index visible-count)
+      (loop for line in visible-lines
+            for index from 0
+            do (draw-text-at line
+                             (+ left 14)
+                             (+ top 38 (* index line-spacing))
+                             size
+                             color))
+      (let ((cursor-visible-index (- cursor-line-index visible-start)))
+        (when (and (>= cursor-visible-index 0)
+                   (< cursor-visible-index (length visible-lines)))
+          (draw-cursor (+ left 14)
+                       (+ top 38 (* cursor-visible-index line-spacing))
+                       (text-width (car (last cursor-lines)) size)
+                       size
+                       color))))
     (draw-editor-right-text "RET/C-s SAVE  C-g CANCEL"
                             (+ top height 12)
                             12
@@ -718,9 +748,9 @@
 (-> draw-editor-help-overlay (t) t)
 (defun draw-editor-help-overlay (color)
   (let* ((panel-width 610)
-         (panel-height 520)
+         (panel-height 610)
          (left (round (- +virtual-center-x+ (/ panel-width 2))))
-         (top 154)
+         (top 68)
          (rows '(("C-h" "close this help overlay")
                  ("C-b" "rewind to previous editor step")
                  ("C-i" "non-destructive insert at current link")
@@ -737,6 +767,10 @@
                  ("C-s" "show shared state or save active panel")
                  ("C-d" "delete current linear editor node")
                  ("C-g" "cancel active editor panel")
+                 ("C-x r m" "bookmark current node")
+                 ("C-x r j" "jump through editor bookmarks")
+                 ("LEFT/RIGHT" "move text cursor while editing")
+                 ("HOME/END" "text start or end while editing")
                  ("TAB" "move to the next panel field")
                  ("RET" "confirm selection or save a panel")
                  ("ARROWS" "move choices, fields, and menu rows"))))
@@ -787,8 +821,9 @@
                                 +editor-corner-margin-y+
                                 +editor-corner-body-size+
                                 dim-color))
-      (draw-text-at (format nil "C-h HELP  HISTORY ~d~@[  ~a~]"
+      (draw-text-at (format nil "C-h HELP  HISTORY ~d  BOOKMARKS ~d~@[  ~a~]"
                             (length *editor-history*)
+                            (editor-bookmark-count)
                             (when *editor-show-all-choices-p*
                               "ALL CHOICES"))
                     +editor-corner-margin-x+
