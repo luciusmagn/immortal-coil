@@ -72,7 +72,7 @@
 (defun jrpg-overworld-tile-message (cell)
   (case cell
     (#\V "the village gate is already behind you.")
-    (#\B "the bridge guard salutes too early.")
+    (#\B "the bridge guard raises the gate chain.")
     (#\R "the road sign says NORTH TOWER.")
     (#\T "the tower is still too far to touch.")
     (#\! "the grass shakes.")
