@@ -53,18 +53,32 @@
       (runtime-warn "Could not read monitor name: ~a" condition)
       "")))
 
+(-> monitor-size-label (nonnegative-integer) string)
+(defun monitor-size-label (monitor)
+  (handler-case
+      (let ((width  (get-monitor-width monitor))
+            (height (get-monitor-height monitor)))
+        (if (positive-window-size-p width height)
+            (format nil "~dx~d" width height)
+            "unknown"))
+    (error (condition)
+      (runtime-warn "Could not read monitor size: ~a" condition)
+      "unknown")))
+
 (-> monitor-label () string)
 (defun monitor-label ()
   (let ((count (monitor-count)))
     (if (plusp count)
         (let* ((monitor (or (fullscreen-monitor-index) 0))
-               (name    (monitor-name monitor)))
+               (name    (monitor-name monitor))
+               (size    (monitor-size-label monitor)))
           (if (plusp (length name))
-              (format nil "~d/~d ~a"
+              (format nil "~d/~d ~a ~a"
                       (1+ monitor)
                       count
-                      (subseq name 0 (min 16 (length name))))
-              (format nil "~d/~d" (1+ monitor) count)))
+                      size
+                      (subseq name 0 (min 12 (length name))))
+              (format nil "~d/~d ~a" (1+ monitor) count size)))
         "N/A")))
 
 (-> set-fullscreen-monitor-index (integer) boolean)
@@ -119,11 +133,15 @@
 
 (-> fullscreen-window-width () integer)
 (defun fullscreen-window-width ()
-  (max +virtual-width+ *fullscreen-width*))
+  (if (positive-window-size-p *fullscreen-width* *fullscreen-height*)
+      *fullscreen-width*
+      +virtual-width+))
 
 (-> fullscreen-window-height () integer)
 (defun fullscreen-window-height ()
-  (max +virtual-height+ *fullscreen-height*))
+  (if (positive-window-size-p *fullscreen-width* *fullscreen-height*)
+      *fullscreen-height*
+      +virtual-height+))
 
 (-> prepare-fullscreen-window-size () boolean)
 (defun prepare-fullscreen-window-size ()
@@ -161,7 +179,7 @@
              (height (fullscreen-window-height)))
          (when (or (/= (get-screen-width) width)
                    (/= (get-screen-height) height))
-           (set-window-size width height))
+           (claylib/ll:set-window-size width height))
          t)))
 
 (-> apply-fullscreen-monitor () boolean)
@@ -169,9 +187,13 @@
   (let ((monitor (fullscreen-monitor-index)))
     (when (and monitor (is-window-ready-p))
       (handler-case
-          (progn
-            (claylib/ll:set-window-monitor monitor)
-            (sync-active-fullscreen-window-size))
+          (when (capture-fullscreen-size)
+            (let ((width  (fullscreen-window-width))
+                  (height (fullscreen-window-height)))
+              (claylib/ll:set-window-size width height)
+              (claylib/ll:set-window-monitor monitor)
+              (claylib/ll:set-window-size width height)
+              t))
         (error (condition)
           (runtime-warn "Could not apply fullscreen monitor: ~a" condition)
           nil)))))
