@@ -195,19 +195,6 @@
                             12
                             color)))
 
-(-> editor-text-edit-lines (nonnegative-integer scalar) (list-of string))
-(defun editor-text-edit-lines (size max-width)
-  (or (wrap-text-lines *editor-text-buffer* size max-width)
-      (list "")))
-
-(-> editor-text-cursor-lines (nonnegative-integer scalar) (list-of string))
-(defun editor-text-cursor-lines (size max-width)
-  (let ((cursor (editor-clamp-text-cursor)))
-    (or (wrap-text-lines (subseq *editor-text-buffer* 0 cursor)
-                         size
-                         max-width)
-        (list ""))))
-
 (-> editor-text-visible-start
     (nonnegative-integer nonnegative-integer nonnegative-integer)
     nonnegative-integer)
@@ -235,9 +222,11 @@
          (size 18)
          (line-spacing 22)
          (max-text-width (- width 28))
-         (lines (editor-text-edit-lines size max-text-width))
-         (cursor-lines (editor-text-cursor-lines size max-text-width))
-         (cursor-line-index (max 0 (1- (length cursor-lines))))
+         (layout-lines (text-cursor-layout-lines *editor-text-buffer*
+                                                 size
+                                                 max-text-width))
+         (lines (text-cursor-layout-line-strings layout-lines))
+         (cursor (editor-clamp-text-cursor))
          (visible-count (min 4 (length lines))))
     (claylib/ll:draw-rectangle left
                                top
@@ -251,23 +240,25 @@
                   (+ top 12)
                   13
                   color)
-    (multiple-value-bind (visible-lines visible-start)
-        (editor-visible-text-edit-lines lines cursor-line-index visible-count)
-      (loop for line in visible-lines
-            for index from 0
-            do (draw-text-at line
-                             (+ left 14)
-                             (+ top 38 (* index line-spacing))
-                             size
-                             color))
-      (let ((cursor-visible-index (- cursor-line-index visible-start)))
-        (when (and (>= cursor-visible-index 0)
-                   (< cursor-visible-index (length visible-lines)))
-          (draw-cursor (+ left 14)
-                       (+ top 38 (* cursor-visible-index line-spacing))
-                       (text-width (car (last cursor-lines)) size)
-                       size
-                       color))))
+    (multiple-value-bind (cursor-line-index cursor-width)
+        (text-cursor-layout-placement layout-lines cursor size)
+      (multiple-value-bind (visible-lines visible-start)
+          (editor-visible-text-edit-lines lines cursor-line-index visible-count)
+        (loop for line in visible-lines
+              for index from 0
+              do (draw-text-at line
+                               (+ left 14)
+                               (+ top 38 (* index line-spacing))
+                               size
+                               color))
+        (let ((cursor-visible-index (- cursor-line-index visible-start)))
+          (when (and (>= cursor-visible-index 0)
+                     (< cursor-visible-index (length visible-lines)))
+            (draw-cursor (+ left 14)
+                         (+ top 38 (* cursor-visible-index line-spacing))
+                         cursor-width
+                         size
+                         color)))))
     (draw-editor-right-text "RET/C-s SAVE  C-g CANCEL"
                             (+ top height 12)
                             12

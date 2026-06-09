@@ -19,6 +19,9 @@
                     *editor-text-cursor-index* (length *editor-text-buffer*)
                     *editor-text-backspace-held-seconds* 0.0
                     *editor-text-backspace-repeat-accumulator* 0.0
+                    *editor-text-cursor-held-seconds* 0.0
+                    *editor-text-cursor-repeat-accumulator* 0.0
+                    *editor-text-cursor-repeat-direction* nil
                     *editor-status-message* "EDITOR: EDITING TEXT")
               (play-choice-switch)
               t)
@@ -96,10 +99,22 @@
         *editor-text-backspace-repeat-accumulator* 0.0)
   t)
 
+(-> reset-editor-text-cursor-repeat () t)
+(defun reset-editor-text-cursor-repeat ()
+  (setf *editor-text-cursor-held-seconds* 0.0
+        *editor-text-cursor-repeat-accumulator* 0.0
+        *editor-text-cursor-repeat-direction* nil)
+  t)
+
 (-> editor-text-backspace-interval () seconds)
 (defun editor-text-backspace-interval ()
   (max 0.025
        (- 0.13 (* *editor-text-backspace-held-seconds* 0.04))))
+
+(-> editor-text-cursor-interval () seconds)
+(defun editor-text-cursor-interval ()
+  (max 0.025
+       (- 0.13 (* *editor-text-cursor-held-seconds* 0.04))))
 
 (-> editor-text-backspace-repeat-count (seconds) nonnegative-integer)
 (defun editor-text-backspace-repeat-count (dt)
@@ -137,6 +152,47 @@
   (editor-delete-text-characters
    (editor-text-backspace-repeat-count dt)))
 
+(-> editor-text-cursor-held-direction () (option navigation-direction))
+(defun editor-text-cursor-held-direction ()
+  (let ((left-p  (is-key-down-p +key-left+))
+        (right-p (is-key-down-p +key-right+)))
+    (cond
+      ((and left-p (not right-p)) -1)
+      ((and right-p (not left-p)) 1))))
+
+(-> editor-text-cursor-direction-pressed-p (navigation-direction) boolean)
+(defun editor-text-cursor-direction-pressed-p (direction)
+  (if (minusp direction)
+      (is-key-pressed-p +key-left+)
+      (is-key-pressed-p +key-right+)))
+
+(-> editor-text-cursor-repeat-delta (seconds) integer)
+(defun editor-text-cursor-repeat-delta (dt)
+  (let ((direction (editor-text-cursor-held-direction)))
+    (cond
+      ((null direction)
+       (reset-editor-text-cursor-repeat)
+       0)
+      ((or (not (eql direction *editor-text-cursor-repeat-direction*))
+           (editor-text-cursor-direction-pressed-p direction))
+       (setf *editor-text-cursor-held-seconds* 0.0
+             *editor-text-cursor-repeat-accumulator* 0.0
+             *editor-text-cursor-repeat-direction* direction)
+       direction)
+      (t
+       (incf *editor-text-cursor-held-seconds* dt)
+       (if (< *editor-text-cursor-held-seconds* 0.26)
+           0
+           (let ((interval (editor-text-cursor-interval))
+                 (count    0))
+             (incf *editor-text-cursor-repeat-accumulator* dt)
+             (loop while (>= *editor-text-cursor-repeat-accumulator*
+                             interval)
+                   do (incf count)
+                      (decf *editor-text-cursor-repeat-accumulator*
+                            interval))
+             (* direction count)))))))
+
 (-> drain-editor-text-input (seconds) t)
 (defun drain-editor-text-input (dt)
   (unless (editor-control-down-p)
@@ -155,6 +211,9 @@
         *editor-edit-node-id* nil
         *editor-text-backspace-held-seconds* 0.0
         *editor-text-backspace-repeat-accumulator* 0.0
+        *editor-text-cursor-held-seconds* 0.0
+        *editor-text-cursor-repeat-accumulator* 0.0
+        *editor-text-cursor-repeat-direction* nil
         *editor-status-message* "EDITOR: TEXT EDIT CANCELED")
   (play-choice-switch)
   t)
@@ -183,6 +242,9 @@
                 *editor-edit-node-id* nil
                 *editor-text-backspace-held-seconds* 0.0
                 *editor-text-backspace-repeat-accumulator* 0.0
+                *editor-text-cursor-held-seconds* 0.0
+                *editor-text-cursor-repeat-accumulator* 0.0
+                *editor-text-cursor-repeat-direction* nil
                 *editor-status-message* "EDITOR: TEXT SAVED")
           (play-start-confirm)
           t)
@@ -191,25 +253,26 @@
           (play-choice-switch)
           nil))))
 
-(-> update-editor-text-cursor-controls () boolean)
-(defun update-editor-text-cursor-controls ()
-  (cond
-    ((is-key-pressed-p +key-left+)
-     (editor-move-text-cursor -1)
-     t)
-    ((is-key-pressed-p +key-right+)
-     (editor-move-text-cursor 1)
-     t)
-    ((is-key-pressed-p +key-home+)
-     (editor-set-text-cursor 0)
-     t)
-    ((is-key-pressed-p +key-end+)
-     (editor-set-text-cursor (editor-text-buffer-length))
-     t)
-    ((is-key-pressed-p +key-delete+)
-     (editor-delete-text-forward-character)
-     t)
-    (t nil)))
+(-> update-editor-text-cursor-controls (seconds) boolean)
+(defun update-editor-text-cursor-controls (dt)
+  (let ((delta (editor-text-cursor-repeat-delta dt)))
+    (cond
+      ((not (zerop delta))
+       (editor-move-text-cursor delta)
+       t)
+      ((is-key-pressed-p +key-home+)
+       (reset-editor-text-cursor-repeat)
+       (editor-set-text-cursor 0)
+       t)
+      ((is-key-pressed-p +key-end+)
+       (reset-editor-text-cursor-repeat)
+       (editor-set-text-cursor (editor-text-buffer-length))
+       t)
+      ((is-key-pressed-p +key-delete+)
+       (reset-editor-text-cursor-repeat)
+       (editor-delete-text-forward-character)
+       t)
+      (t nil))))
 
 (-> update-editor-text-edit (seconds) boolean)
 (defun update-editor-text-edit (dt)
@@ -223,7 +286,7 @@
     ((or (is-key-pressed-p +key-page-up+)
          (editor-control-key-pressed-p +key-b+))
      (editor-return-to-previous-node))
-    ((update-editor-text-cursor-controls)
+    ((update-editor-text-cursor-controls dt)
      t)
     (t
      (drain-editor-text-input dt)

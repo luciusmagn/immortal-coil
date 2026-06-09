@@ -61,7 +61,8 @@
                   :serial t
                   :components
                   ((:file "template")
-                   (:file "layout")))
+                   (:file "layout")
+                   (:file "cursor-layout")))
 
                  (:module "audio"
                   :serial t

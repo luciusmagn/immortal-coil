@@ -17,6 +17,9 @@
 (defvar *editor-edit-node-id* nil)
 (defvar *editor-text-backspace-held-seconds* 0.0)
 (defvar *editor-text-backspace-repeat-accumulator* 0.0)
+(defvar *editor-text-cursor-held-seconds* 0.0)
+(defvar *editor-text-cursor-repeat-accumulator* 0.0)
+(defvar *editor-text-cursor-repeat-direction* nil)
 (defvar *editor-bookmarks* nil)
 (defvar *editor-key-prefix* nil)
 (defvar *editor-store-overlay-p* nil)
@@ -84,6 +87,9 @@
         *editor-edit-node-id* nil
         *editor-text-backspace-held-seconds* 0.0
         *editor-text-backspace-repeat-accumulator* 0.0
+        *editor-text-cursor-held-seconds* 0.0
+        *editor-text-cursor-repeat-accumulator* 0.0
+        *editor-text-cursor-repeat-direction* nil
         *editor-bookmarks* nil
         *editor-key-prefix* nil
         *editor-store-overlay-p* nil
@@ -167,6 +173,9 @@
         *editor-edit-node-id* nil
         *editor-text-backspace-held-seconds* 0.0
         *editor-text-backspace-repeat-accumulator* 0.0
+        *editor-text-cursor-held-seconds* 0.0
+        *editor-text-cursor-repeat-accumulator* 0.0
+        *editor-text-cursor-repeat-direction* nil
         *editor-bookmarks* nil
         *editor-key-prefix* nil
         *editor-store-overlay-p* nil
