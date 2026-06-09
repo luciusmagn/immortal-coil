@@ -1,5 +1,23 @@
 (in-package #:immortal-coil)
 
+#+linux
+(cffi:define-foreign-library immortal-coil-glfw
+  (:unix (:or "libglfw.so.3" "libglfw.so")))
+
+#+linux
+(cffi:defcfun ("glfwGetMonitors" glfw-get-monitors) :pointer
+  (count (:pointer :int)))
+
+#+linux
+(cffi:defcfun ("glfwSetWindowMonitor" glfw-set-window-monitor) :void
+  (window       :pointer)
+  (monitor      :pointer)
+  (xpos         :int)
+  (ypos         :int)
+  (width        :int)
+  (height       :int)
+  (refresh-rate :int))
+
 (-> monitor-count () nonnegative-integer)
 (defun monitor-count ()
   (handler-case
@@ -203,8 +221,85 @@
     (claylib/ll:set-window-size width height)
     t))
 
-(-> enter-fullscreen-monitor (nonnegative-integer integer integer) boolean)
-(defun enter-fullscreen-monitor (monitor width height)
+(-> fullscreen-refresh-rate (nonnegative-integer) integer)
+(defun fullscreen-refresh-rate (monitor)
+  (handler-case
+      (let ((rate (get-monitor-refresh-rate monitor)))
+        (if (and (integerp rate) (plusp rate))
+            rate
+            0))
+    (error (condition)
+      (runtime-warn "Could not read monitor refresh rate: ~a" condition)
+      0)))
+
+(-> load-glfw-library () boolean)
+(defun load-glfw-library ()
+  #+linux
+  (handler-case
+      (progn
+        (cffi:use-foreign-library immortal-coil-glfw)
+        t)
+    (error (condition)
+      (runtime-warn "Could not load GLFW for fullscreen monitor switch: ~a"
+                    condition)
+      nil))
+  #-linux
+  nil)
+
+(-> glfw-monitor-pointer (nonnegative-integer) t)
+(defun glfw-monitor-pointer (monitor)
+  #+linux
+  (when (load-glfw-library)
+    (cffi:with-foreign-object (count-ptr :int)
+      (setf (cffi:mem-ref count-ptr :int) 0)
+      (let ((monitors (glfw-get-monitors count-ptr))
+            (count    (cffi:mem-ref count-ptr :int)))
+        (when (and (not (cffi:null-pointer-p monitors))
+                   (valid-monitor-index-p monitor count))
+          (cffi:mem-aref monitors :pointer monitor)))))
+  #-linux
+  (progn
+    (declare (ignore monitor))
+    nil))
+
+#+linux
+(defun glfw-pointer-null-p (pointer)
+  (cffi:null-pointer-p pointer))
+
+#-linux
+(defun glfw-pointer-null-p (pointer)
+  (declare (ignore pointer))
+  nil)
+
+(-> glfw-enter-fullscreen-monitor
+    (nonnegative-integer integer integer integer)
+    boolean)
+(defun glfw-enter-fullscreen-monitor (monitor width height refresh-rate)
+  #+linux
+  (let ((window (claylib/ll:get-window-handle))
+        (glfw-monitor (glfw-monitor-pointer monitor)))
+    (if (or (glfw-pointer-null-p window)
+            (null glfw-monitor)
+            (glfw-pointer-null-p glfw-monitor))
+        nil
+        (progn
+          (glfw-set-window-monitor window
+                                   glfw-monitor
+                                   0
+                                   0
+                                   width
+                                   height
+                                   refresh-rate)
+          t)))
+  #-linux
+  (progn
+    (declare (ignore monitor width height refresh-rate))
+    nil))
+
+(-> raylib-enter-fullscreen-monitor
+    (nonnegative-integer integer integer)
+    boolean)
+(defun raylib-enter-fullscreen-monitor (monitor width height)
   (position-window-on-monitor monitor width height)
   (claylib/ll:set-window-monitor monitor)
   (unless (is-window-fullscreen-p)
@@ -220,6 +315,12 @@
                   (get-screen-width)
                   (get-screen-height)))
   (is-window-fullscreen-p))
+
+(-> enter-fullscreen-monitor (nonnegative-integer integer integer) boolean)
+(defun enter-fullscreen-monitor (monitor width height)
+  (let ((refresh-rate (fullscreen-refresh-rate monitor)))
+    (or (glfw-enter-fullscreen-monitor monitor width height refresh-rate)
+        (raylib-enter-fullscreen-monitor monitor width height))))
 
 (-> apply-fullscreen-monitor () boolean)
 (defun apply-fullscreen-monitor ()

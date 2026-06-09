@@ -4,6 +4,7 @@
   :version "1.0.0"
   :serial t
   :depends-on (#:alexandria
+               #:cffi
                #:serapeum
                #:claylib
                #:trivia)
