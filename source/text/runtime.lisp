@@ -72,10 +72,34 @@
   (and (node-speaker node)
        (plusp (length (node-speaker node)))))
 
+(-> draw-speaker-label (string scalar scalar nonnegative-integer t) t)
+(defun draw-speaker-label (text center-x center-y size color)
+  (let* ((padding-x 18)
+         (padding-y 8)
+         (text-width (text-width text size))
+         (panel-width (+ text-width (* 2 padding-x)))
+         (panel-height (+ size (* 2 padding-y)))
+         (left (- center-x (/ panel-width 2.0)))
+         (top (- center-y (/ panel-height 2.0))))
+    (claylib/ll:draw-rectangle (round left)
+                               (round top)
+                               (round panel-width)
+                               (round panel-height)
+                               (claylib::c-ptr
+                                (make-color 0 0 0 255)))
+    (draw-rectangle-outline left
+                            top
+                            panel-width
+                            panel-height
+                            color
+                            :thickness 2)
+    (draw-centered-text text center-x center-y size color)
+    t))
+
 (-> draw-node-speaker (node t) t)
 (defun draw-node-speaker (node color)
   (when (node-speaker-visible-p node)
-    (draw-centered-text (node-speaker node)
+    (draw-speaker-label (node-speaker node)
                         +virtual-center-x+
                         (- +virtual-center-y+ 82)
                         18
