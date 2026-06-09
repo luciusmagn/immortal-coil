@@ -8,6 +8,8 @@
 (defparameter *jrpg-combat-commands*
   #("ATTACK" "MAGIC" "ITEM" "RUN"))
 
+(defparameter *jrpg-combat-sfx-volume* 0.42)
+
 (defvar *jrpg-combat* nil)
 
 (defstruct jrpg-combat
@@ -40,6 +42,17 @@
 
 (defun jrpg-combat-command-count ()
   (length *jrpg-combat-commands*))
+
+(defun jrpg-sound-path (name)
+  (format nil "assets/audio/jrpg/~a.wav" name))
+
+(defun play-jrpg-sound (name &key (volume *jrpg-combat-sfx-volume*))
+  (handler-case
+      (play-story-sound (jrpg-sound-path name) :volume volume)
+    (error (condition)
+      (runtime-warn "Could not play JRPG sound ~a: ~a"
+                    name
+                    condition))))
 
 (defun jrpg-combat-horizontal-input-p ()
   (or (is-key-pressed-p +key-left+)
@@ -92,6 +105,7 @@
 
 (defun jrpg-combat-victory (node game)
   (jrpg-award-victory :xp 4 :gold 6)
+  (play-jrpg-sound "coin" :volume 0.34)
   (setf (jrpg-combat-message game)
         "the slime is defeated.")
   (jrpg-combat-finish game (node-success-target node)))
@@ -105,12 +119,14 @@
 (defun jrpg-combat-enemy-turn (node game)
   (let ((damage (jrpg-combat-enemy-attack)))
     (jrpg-damage-hero damage)
+    (play-jrpg-sound "hit" :volume 0.34)
     (if (jrpg-hero-alive-p)
         (setf (jrpg-combat-message game)
               (format nil "the slime hits you for ~d." damage))
         (jrpg-combat-defeat node game))))
 
 (defun jrpg-combat-attack-command (node game)
+  (play-jrpg-sound "sword")
   (let ((damage (jrpg-combat-hero-attack)))
     (jrpg-combat-damage-enemy game damage)
     (if (jrpg-combat-enemy-alive-p game)
@@ -123,6 +139,7 @@
 (defun jrpg-combat-magic-command (node game)
   (if (plusp (jrpg-number "jrpg-hero-mp"))
       (let ((damage (+ 7 (get-random-value 0 3))))
+        (play-jrpg-sound "magic" :volume 0.38)
         (jrpg-adjust-number "jrpg-hero-mp" -1)
         (jrpg-combat-damage-enemy game damage)
         (if (jrpg-combat-enemy-alive-p game)
@@ -137,6 +154,7 @@
 (defun jrpg-combat-item-command (node game)
   (if (jrpg-use-potion)
       (progn
+        (play-jrpg-sound "tonic" :volume 0.38)
         (setf (jrpg-combat-message game)
               "you drink a potion.")
         (jrpg-combat-enemy-turn node game))
@@ -145,12 +163,12 @@
 
 (defun jrpg-combat-run-command (node game)
   (jrpg-record-retreat)
+  (play-jrpg-sound "retreat" :volume 0.36)
   (setf (jrpg-combat-message game)
         "you run back to the road sign.")
   (jrpg-combat-finish game (node-success-target node)))
 
 (defun jrpg-combat-confirm-command (node game)
-  (play-start-confirm)
   (case (jrpg-combat-selected game)
     (0 (jrpg-combat-attack-command node game))
     (1 (jrpg-combat-magic-command node game))

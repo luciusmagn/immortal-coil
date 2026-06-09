@@ -51,6 +51,13 @@
 - Prompt notes: Track-specific prompts asked for long, drawn-out, beatless dark ambience with no drums, percussion, snare, bells, vocals, lyrics, or melody hook. The cues target the ship, forest, fantasy-adventure, dream, and dungeon branches.
 - Notes: Story-branch background ambience candidates. Review the applicable OpenRouter and Google terms before public release.
 
+## jrpg/*.wav
+
+- Source: Procedurally generated locally for Immortal Coil.
+- Date generated: 2026-06-09.
+- Files: `bell.wav`, `coin.wav`, `gate-chain.wav`, `hit.wav`, `ledger.wav`, `magic.wav`, `retreat.wav`, `slime.wav`, `sword.wav`, `tonic.wav`.
+- Notes: Short mono PCM JRPG branch sound effects for dialogue nodes and the turn-combat minigame.
+
 ## maze/crt-static.mp3
 
 - Source: https://opengameart.org/content/static
