@@ -148,6 +148,7 @@ Author truth:
 Current surface:
 
 - `jrpg/inn` reframes the room as an inn room.
+- `jrpg/name` collects the name written on the quest notice.
 - `jrpg/party` chooses a companion and stores the selected companion.
 - `jrpg/overworld` is a small overworld-walk minigame.
 - `jrpg/slime-combat` is an early-Final-Fantasy-style turn combat minigame.

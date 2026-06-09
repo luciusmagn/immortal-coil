@@ -41,21 +41,35 @@
 (defun jrpg-combat-command-count ()
   (length *jrpg-combat-commands*))
 
-(defun jrpg-combat-selection-direction ()
-  (cond
-    ((or (is-key-pressed-p +key-down+)
-         (is-key-pressed-p +key-s+))
-     1)
-    ((or (is-key-pressed-p +key-up+)
-         (is-key-pressed-p +key-w+))
-     -1)))
+(defun jrpg-combat-horizontal-input-p ()
+  (or (is-key-pressed-p +key-left+)
+      (is-key-pressed-p +key-a+)
+      (is-key-pressed-p +key-right+)
+      (is-key-pressed-p +key-d+)))
 
-(defun jrpg-combat-move-selection (game direction)
-  (when direction
-    (setf (jrpg-combat-selected game)
-          (mod (+ (jrpg-combat-selected game) direction)
-               (jrpg-combat-command-count)))
-    (play-choice-switch)))
+(defun jrpg-combat-vertical-input-p ()
+  (or (is-key-pressed-p +key-down+)
+      (is-key-pressed-p +key-s+)
+      (is-key-pressed-p +key-up+)
+      (is-key-pressed-p +key-w+)))
+
+(defun jrpg-combat-selection-target (selected)
+  (cond
+    ((jrpg-combat-horizontal-input-p)
+     (if (< selected 2)
+         (+ selected 2)
+         (- selected 2)))
+    ((jrpg-combat-vertical-input-p)
+     (if (evenp selected)
+         (1+ selected)
+         (1- selected)))))
+
+(defun jrpg-combat-move-selection (game)
+  (let ((target (jrpg-combat-selection-target
+                 (jrpg-combat-selected game))))
+    (when target
+      (setf (jrpg-combat-selected game) target)
+      (play-choice-switch))))
 
 (defun jrpg-combat-finish (game target)
   (setf (jrpg-combat-finish-target game) target
@@ -153,8 +167,7 @@
            (setf *jrpg-combat* nil)
            (jump-to-dialog-target target))))
       (t
-       (jrpg-combat-move-selection game
-                                   (jrpg-combat-selection-direction))
+       (jrpg-combat-move-selection game)
        (when (confirm-pressed-p)
          (jrpg-combat-confirm-command node game))))))
 
@@ -208,7 +221,10 @@
 
 (defun draw-jrpg-combat-stats ()
   (draw-jrpg-box 228 428 284 118)
-  (draw-jrpg-line "HERO" 250 448 18)
+  (draw-jrpg-line (string-upcase (jrpg-hero-name))
+                  250
+                  448
+                  18)
   (draw-jrpg-line (format nil "HP ~d/~d"
                           (jrpg-number "jrpg-hero-hp")
                           (jrpg-number "jrpg-hero-max-hp" 18))

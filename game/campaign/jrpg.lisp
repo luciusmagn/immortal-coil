@@ -21,11 +21,17 @@
 
 (dialog-text "jrpg/notice"
              "BRAVE ONE: THE DEMON LORD WAITS IN THE NORTH TOWER. BREAKFAST INCLUDED."
-             :next "jrpg/keeper")
+             :next "jrpg/name")
+
+(dialog-string "jrpg/name"
+               "what name is written on the quest notice?"
+               :response-key "player-name"
+               :max-length 24
+               :target "jrpg/keeper")
 
 (dialog-say "jrpg/keeper"
             "innkeeper"
-            "you are late, hero. the bridge guard has been polishing the same spear since dawn."
+            "you are late, {player-name}. the bridge guard has been polishing the same spear since dawn."
             :next "jrpg/party")
 
 (dialog-pick "jrpg/party"

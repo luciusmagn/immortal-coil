@@ -77,3 +77,10 @@
 
 (defun jrpg-companion ()
   (jrpg-value "jrpg-companion" "the childhood friend"))
+
+(defun jrpg-hero-name ()
+  (let ((name (jrpg-value "player-name" "HERO")))
+    (if (and (stringp name)
+             (plusp (length name)))
+        name
+        "HERO")))
