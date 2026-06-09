@@ -194,6 +194,33 @@
            (claylib/ll:set-window-size width height))
          t)))
 
+(-> position-window-on-monitor (nonnegative-integer integer integer) t)
+(defun position-window-on-monitor (monitor width height)
+  (multiple-value-bind (x y)
+      (monitor-position monitor)
+    (claylib/ll:set-window-size width height)
+    (claylib/ll:set-window-position x y)
+    (claylib/ll:set-window-size width height)
+    t))
+
+(-> enter-fullscreen-monitor (nonnegative-integer integer integer) boolean)
+(defun enter-fullscreen-monitor (monitor width height)
+  (position-window-on-monitor monitor width height)
+  (claylib/ll:set-window-monitor monitor)
+  (unless (is-window-fullscreen-p)
+    (claylib/ll:toggle-fullscreen))
+  (when (is-window-fullscreen-p)
+    (claylib/ll:set-window-monitor monitor))
+  (when (or (/= (get-screen-width) width)
+            (/= (get-screen-height) height))
+    (runtime-warn "Fullscreen monitor ~d requested ~dx~d, got ~dx~d."
+                  monitor
+                  width
+                  height
+                  (get-screen-width)
+                  (get-screen-height)))
+  (is-window-fullscreen-p))
+
 (-> apply-fullscreen-monitor () boolean)
 (defun apply-fullscreen-monitor ()
   (let ((monitor (fullscreen-monitor-index)))
@@ -202,16 +229,7 @@
           (when (capture-fullscreen-size)
             (let ((width  (fullscreen-window-width))
                   (height (fullscreen-window-height)))
-              (multiple-value-bind (x y)
-                  (monitor-position monitor)
-                (claylib/ll:set-window-size width height)
-                (claylib/ll:set-window-position x y)
-                (claylib/ll:set-window-state
-                 (+ +flag-window-undecorated+
-                    +flag-window-topmost+))
-                (claylib/ll:set-window-position x y))
-              (claylib/ll:set-window-size width height)
-              t))
+              (enter-fullscreen-monitor monitor width height)))
         (error (condition)
           (runtime-warn "Could not apply fullscreen monitor: ~a" condition)
           nil)))))
