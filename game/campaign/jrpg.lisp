@@ -9,6 +9,16 @@
       (t
        "jrpg/road-clear"))))
 
+(defun jrpg-companion-road-target ()
+  (let ((companion (jrpg-companion)))
+    (cond
+      ((string= companion "Nio")
+       "jrpg/road-nio")
+      ((string= companion "Bram")
+       "jrpg/road-bram")
+      (t
+       "jrpg/road-lena"))))
+
 
 ;;; Opening quest
 
@@ -29,50 +39,127 @@
                :max-length 24
                :target "jrpg/keeper")
 
-(dialog-say "jrpg/keeper"
-            "innkeeper"
-            "you are late, {player-name}. the bridge guard has been polishing the same spear since dawn."
-            :next "jrpg/party")
+(dialog-conversation "jrpg/keeper"
+                     (dialog-left "Mira"
+                                  "you are late, {player-name}.")
+                     (dialog-right "{player-name}"
+                                   "the notice says breakfast included.")
+                     (dialog-left "Mira"
+                                  "after the tower. i already put your name in the ledger.")
+                     :next "jrpg/common-room")
+
+(dialog-text "jrpg/common-room"
+             "downstairs, Mira writes in the ledger. Toma stacks bread by the stove. Oren stands by the door with a polished spear."
+             :next "jrpg/party")
 
 (dialog-pick "jrpg/party"
              "who joins you at the village gate?"
-             (dialog-option "the childhood friend" "jrpg/friend")
-             (dialog-option "the quiet mage" "jrpg/mage")
-             (dialog-option "the knight with no helmet" "jrpg/knight"))
+             (dialog-option "Lena, the childhood friend" "jrpg/friend")
+             (dialog-option "Nio, the quiet mage" "jrpg/mage")
+             (dialog-option "Bram, the knight" "jrpg/knight"))
 
 (dialog-on-enter "jrpg/friend"
-                 '(jrpg-set-companion "the childhood friend"))
+                 '(jrpg-set-companion "Lena" "childhood friend"))
 (dialog-on-enter "jrpg/mage"
-                 '(jrpg-set-companion "the quiet mage"))
+                 '(jrpg-set-companion "Nio" "quiet mage"))
 (dialog-on-enter "jrpg/knight"
-                 '(jrpg-set-companion "the knight with no helmet"))
+                 '(jrpg-set-companion "Bram" "knight"))
 
-(dialog-text "jrpg/friend"
-             "the childhood friend knows your favorite bread and nothing else about you."
-             :next "jrpg/gate")
+(dialog-conversation "jrpg/friend"
+                     (dialog-left "Lena"
+                                  "i packed rope, bread, and your second-best knife.")
+                     (dialog-right "{player-name}"
+                                   "what happened to the best knife?")
+                     (dialog-left "Lena"
+                                  "Toma used it to wedge the oven door.")
+                     :next "jrpg/square")
 
-(dialog-text "jrpg/mage"
-             "the quiet mage carries a spellbook full of pressed leaves and unpaid bills."
-             :next "jrpg/gate")
+(dialog-conversation "jrpg/mage"
+                     (dialog-left "Nio"
+                                  "i memorized two spells and half of a weather charm.")
+                     (dialog-right "{player-name}"
+                                   "which half?")
+                     (dialog-left "Nio"
+                                  "the half that knows when it is raining.")
+                     :next "jrpg/square")
 
-(dialog-text "jrpg/knight"
-             "the knight with no helmet has excellent posture and a terrible sense of direction."
-             :next "jrpg/gate")
+(dialog-conversation "jrpg/knight"
+                     (dialog-left "Bram"
+                                  "my helmet is still at the blacksmith.")
+                     (dialog-right "{player-name}"
+                                   "are you still a knight without it?")
+                     (dialog-left "Bram"
+                                  "yes. easier to hear orders.")
+                     :next "jrpg/square")
+
+(dialog-text "jrpg/square"
+             "Oakbarrow square has three stalls, a dry well, Mira's ledger table, and Oren's gate chain stretched between two posts."
+             :next "jrpg/village-errand")
+
+(dialog-pick "jrpg/village-errand"
+             "who do you speak to before the north road?"
+             (dialog-option "Mira at the ledger" "jrpg/errand-mira")
+             (dialog-option "Toma at the oven" "jrpg/errand-toma")
+             (dialog-option "Oren at the gate chain" "jrpg/errand-oren"))
+
+(dialog-on-enter "jrpg/errand-mira"
+                 '(setf (jrpg-value "jrpg-village-errand") "mira"))
+
+(dialog-conversation "jrpg/errand-mira"
+                     (dialog-left "Mira"
+                                  "room four, one candle, one basin, one blanket. all on credit.")
+                     (dialog-right "{player-name}"
+                                   "for defeating Vane?")
+                     (dialog-left "Mira"
+                                  "for leaving before breakfast.")
+                     :next "jrpg/gate")
+
+(dialog-on-enter "jrpg/errand-toma"
+                 '(setf (jrpg-value "jrpg-village-errand") "toma"))
+
+(dialog-on-enter "jrpg/errand-toma"
+                 '(jrpg-adjust-number "jrpg-gold" -2))
+
+(dialog-on-enter "jrpg/errand-toma"
+                 '(jrpg-adjust-number "jrpg-potions" 1))
+
+(dialog-conversation "jrpg/errand-toma"
+                     (dialog-left "Toma"
+                                  "two gold for the travel loaf. it comes with a corked tonic.")
+                     (dialog-right "{player-name}"
+                                   "that is expensive bread.")
+                     (dialog-left "Toma"
+                                  "it has to survive the bridge.")
+                     :next "jrpg/gate")
+
+(dialog-on-enter "jrpg/errand-oren"
+                 '(setf (jrpg-value "jrpg-village-errand") "oren"))
+
+(dialog-conversation "jrpg/errand-oren"
+                     (dialog-left "Oren"
+                                  "north road to the bridge. bridge to the mile marker. mile marker to the tower.")
+                     (dialog-right "{jrpg-companion}"
+                                   "and slimes?")
+                     (dialog-left "Oren"
+                                  "six last week. i counted them on the toll board.")
+                     :next "jrpg/gate")
 
 
 ;;; Village gate hooks
 
 (dialog-pick "jrpg/gate"
-             "at the village gate, {jrpg-companion} waits by the road north."
-             (dialog-option "leave at once" "jrpg/gate-leave")
-             (dialog-option "buy bread" "jrpg/gate-bread")
-             (dialog-option "ask the guard" "jrpg/gate-guard"))
+             "at Oakbarrow's north gate, Oren holds the chain while {jrpg-companion} checks the pack."
+             (dialog-option "cross the bridge" "jrpg/gate-leave")
+             (dialog-option "buy Toma's travel loaf" "jrpg/gate-bread"
+                            :unless '(string= (jrpg-value "jrpg-village-errand")
+                                               "toma"))
+             (dialog-option "ask Oren about slimes" "jrpg/gate-guard"))
 
 (dialog-on-enter "jrpg/gate-leave"
                  '(setf (jrpg-value "jrpg-gate-choice") "leave"))
 
 (dialog-text "jrpg/gate-leave"
-             "you leave before anyone can add another errand."
+             "Oren lifts the chain from the right post. the bridge boards are dry, patched, and narrow."
              :next "jrpg/overworld")
 
 (dialog-on-enter "jrpg/gate-bread"
@@ -85,14 +172,14 @@
                  '(jrpg-adjust-number "jrpg-potions" 1))
 
 (dialog-text "jrpg/gate-bread"
-             "the baker sells you a heel of bread and calls it a travel ration. the bag feels one item heavier."
+             "Toma wraps the travel loaf in wax paper and ties a corked tonic beside it."
              :next "jrpg/overworld")
 
 (dialog-on-enter "jrpg/gate-guard"
                  '(setf (jrpg-value "jrpg-gate-choice") "guard"))
 
 (dialog-text "jrpg/gate-guard"
-             "the bridge guard says the north road is safe except for slimes, wolves, bandits, weather, and the demon lord."
+             "Oren points at six chalk marks on the toll board. each mark is one slime from last week."
              :next "jrpg/overworld")
 
 
@@ -101,11 +188,42 @@
 (dialog-minigame "jrpg/overworld"
                  "arrows or wasd move. cross the overworld road."
                  :game :jrpg-overworld
-                 :success "jrpg/slime-arrives"
-                 :failure "jrpg/slime-arrives")
+                 :success "jrpg/road-mile-marker"
+                 :failure "jrpg/road-mile-marker")
+
+(dialog-text "jrpg/road-mile-marker"
+             "past the bridge, a mile marker reads OAKBARROW 1, NORTH TOWER 3. slime tracks shine in the ditch mud."
+             :next #'jrpg-companion-road-target)
+
+(dialog-conversation "jrpg/road-lena"
+                     (dialog-left "Lena"
+                                  "keep left of the ditch. you stepped in it every spring.")
+                     (dialog-right "{player-name}"
+                                   "i remember.")
+                     (dialog-left "Lena"
+                                  "you remember after i tell you.")
+                     :next "jrpg/slime-arrives")
+
+(dialog-conversation "jrpg/road-nio"
+                     (dialog-left "Nio"
+                                  "the weather charm says the mud is recent.")
+                     (dialog-right "{player-name}"
+                                   "the half that knows when it is raining?")
+                     (dialog-left "Nio"
+                                  "also the half that knows when it stopped.")
+                     :next "jrpg/slime-arrives")
+
+(dialog-conversation "jrpg/road-bram"
+                     (dialog-left "Bram"
+                                  "if the slime jumps, stand behind me.")
+                     (dialog-right "{player-name}"
+                                   "without the helmet?")
+                     (dialog-left "Bram"
+                                  "especially without the helmet. i can duck.")
+                     :next "jrpg/slime-arrives")
 
 (dialog-text "jrpg/slime-arrives"
-             "the grass shakes. a slime hops onto the road and waits for its turn."
+             "the grass by the mile marker shakes. a round slime hops onto the road and blocks the tower path."
              :next "jrpg/slime-combat")
 
 (dialog-minigame "jrpg/slime-combat"
@@ -115,59 +233,77 @@
                  :failure "jrpg/slime-defeat")
 
 (dialog-text "jrpg/slime-retreat"
-             "you return to the road sign. NORTH TOWER is still painted in stiff letters."
+             "you return to the mile marker. OAKBARROW 1 is carved deeper than NORTH TOWER 3."
              :next "jrpg/tower-road")
 
 (dialog-text "jrpg/slime-defeat"
-             "you wake on the road with {jrpg-companion} shaking your shoulder and the slime hopping away."
+             "you wake beside the ditch. {jrpg-companion} has one hand on your shoulder and mud on both knees."
              :next "jrpg/tower-road")
 
-(dialog-text "jrpg/road-clear"
-             "the slime is gone. {jrpg-companion} says this means you are doing very well."
-             :next "jrpg/tower-road")
+(dialog-conversation "jrpg/road-clear"
+                     (dialog-left "{jrpg-companion}"
+                                  "one slime. six coins. no bite marks.")
+                     (dialog-right "{player-name}"
+                                   "is that good?")
+                     (dialog-left "{jrpg-companion}"
+                                  "for a first mile, yes.")
+                     :next "jrpg/tower-road")
 
 (dialog-text "jrpg/tower-road"
-             "the north tower is exactly where the map says it is."
-             :next "jrpg/tower-choice")
+             "by late afternoon, the North Tower rises from a bare hill. a small toll hut stands beside the front path."
+             :next "jrpg/tower-steward")
+
+(dialog-conversation "jrpg/tower-steward"
+                     (dialog-left "Pell"
+                                  "name and village.")
+                     (dialog-right "{player-name}"
+                                   "{player-name}, from Oakbarrow.")
+                     (dialog-left "Pell"
+                                  "front door is honest, side stair is faster, morning bell is safer.")
+                     :next "jrpg/tower-choice")
 
 
 ;;; Tower approach
 
 (dialog-pick "jrpg/tower-choice"
              "how do you approach the tower?"
-             (dialog-option "front door" "jrpg/tower-front")
-             (dialog-option "side stair" "jrpg/tower-side")
-             (dialog-option "wait until morning" "jrpg/tower-wait"))
+             (dialog-option "sign Pell's slate" "jrpg/tower-front")
+             (dialog-option "take the side stair" "jrpg/tower-side")
+             (dialog-option "wait for morning bell" "jrpg/tower-wait"))
 
 (dialog-on-enter "jrpg/tower-front"
                  '(setf (jrpg-value "jrpg-tower-approach") "front"))
 
 (dialog-text "jrpg/tower-front"
-             "the front door has a brass keyhole below an iron handle."
+             "Pell writes your name on a slate and unlocks the front door with an iron key."
              :next "jrpg/demon-hall")
 
 (dialog-on-enter "jrpg/tower-side"
                  '(setf (jrpg-value "jrpg-tower-approach") "side"))
 
 (dialog-text "jrpg/tower-side"
-             "the side stair is narrow and full of cobwebs. halfway up, it joins the front hall anyway."
+             "the side stair runs behind the toll hut, past stacked lantern oil and three cracked spear shafts."
              :next "jrpg/demon-hall")
 
 (dialog-on-enter "jrpg/tower-wait"
                  '(setf (jrpg-value "jrpg-tower-approach") "wait"))
 
 (dialog-text "jrpg/tower-wait"
-             "you wait until morning. the tower is still there."
+             "you sleep on the toll hut floor. at dawn, Pell rings a handbell and opens the front door."
              :next "jrpg/demon-hall")
 
 (dialog-text "jrpg/demon-hall"
-             "inside, a long carpet leads to a large door. two torches burn beside it because this is the kind of place that has two torches."
+             "inside, a long carpet leads to a large door. a rack beside it holds three visitor swords and one mop."
              :next "jrpg/demon-lord")
 
-(dialog-say "jrpg/demon-lord"
-            "demon lord"
-            "hero, you have come at last. the notice did not lie."
-            :next "jrpg/demon-choice")
+(dialog-conversation "jrpg/demon-lord"
+                     (dialog-left "Vane"
+                                  "{player-name} from Oakbarrow. Mira's handwriting has improved.")
+                     (dialog-right "{player-name}"
+                                   "you know Mira?")
+                     (dialog-left "Vane"
+                                  "everyone on the north road knows Mira.")
+                     :next "jrpg/demon-choice")
 
 (dialog-pick "jrpg/demon-choice"
              "what do you do?"
@@ -179,22 +315,22 @@
                  '(setf (jrpg-value "jrpg-demon-approach") "fight"))
 
 (dialog-text "jrpg/demon-fight"
-             "you draw your sword. {jrpg-companion} nods like this is exactly how stories are supposed to go."
+             "you draw your sword. {jrpg-companion} steps to your left and watches Vane's hands."
              :next "jrpg/chapter-end")
 
 (dialog-on-enter "jrpg/demon-terms"
                  '(setf (jrpg-value "jrpg-demon-approach") "terms"))
 
 (dialog-text "jrpg/demon-terms"
-             "the demon lord says the terms are simple: the village stops sending heroes, and he stops having to defeat them."
+             "Vane names his terms: Oakbarrow stops posting notices, and he stops collecting broken swords from the hill."
              :next "jrpg/chapter-end")
 
 (dialog-on-enter "jrpg/demon-chest"
                  '(setf (jrpg-value "jrpg-demon-approach") "chest"))
 
 (dialog-text "jrpg/demon-chest"
-             "the chest contains one potion, three coins, and a note that says FOR HERO."
+             "the chest contains one tonic, three coins, and a folded receipt from Toma's oven."
              :next "jrpg/chapter-end")
 
 (dialog-text "jrpg/chapter-end"
-             "the battle music should start here. instead, the room is quiet enough to hear the innkeeper turning pages downstairs.")
+             "Pell's handbell rings below. Vane takes one visitor sword from the rack and sets it on the carpet between you.")

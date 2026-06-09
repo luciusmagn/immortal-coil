@@ -17,6 +17,11 @@ Keep the prose plain and concrete. The situations can be mysterious by
 themselves; avoid stock paradoxical mystery language where rooms, shadows,
 silence, or objects act ominous just to sound strange.
 
+The deeper a route goes, the more specific it should become. Early branch
+entries can withhold context, but once the player is inside a path, scenes
+should be grounded in named characters, concrete places, actions, costs, and
+consequences.
+
 The "future shapes the past" effect only works when transitions are gentle
 enough that a player on a single playthrough would not recognize them as
 transitions. A branch entry should feel like the next ordinary detail in the
@@ -149,11 +154,16 @@ Current surface:
 
 - `jrpg/inn` reframes the room as an inn room.
 - `jrpg/name` collects the name written on the quest notice.
-- `jrpg/party` chooses a companion and stores the selected companion.
-- `jrpg/overworld` is a small overworld-walk minigame.
+- Oakbarrow currently introduces Mira, Toma, Oren, and the companion choices
+  Lena, Nio, and Bram.
+- `jrpg/village-errand` records whether the player dealt with Mira, Toma, or
+  Oren before leaving.
+- `jrpg/overworld` is a small overworld-walk minigame leading to companion
+  road dialogue.
 - `jrpg/slime-combat` is an early-Final-Fantasy-style turn combat minigame.
 - `jrpg/tower-choice` records the tower approach.
-- `jrpg/demon-choice` records how the player approaches the demon lord.
+- Pell, the tower steward, introduces the tower approach choices.
+- `jrpg/demon-choice` records how the player approaches Vane.
 
 ## Dream Maze
 

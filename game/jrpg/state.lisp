@@ -11,6 +11,9 @@
     ("jrpg-xp" . 0)
     ("jrpg-potions" . 1)
     ("jrpg-slimes-defeated" . 0)
+    ("jrpg-companion" . "Lena")
+    ("jrpg-companion-role" . "childhood friend")
+    ("jrpg-village-errand" . "none")
     ("jrpg-route" . "north road")))
 
 (defun jrpg-value (key &optional default)
@@ -24,9 +27,10 @@
     (unless (dialog-store-bound-p (first entry))
       (setf (jrpg-value (first entry)) (rest entry)))))
 
-(defun jrpg-set-companion (name)
+(defun jrpg-set-companion (name &optional (role "companion"))
   (jrpg-init-state)
-  (setf (jrpg-value "jrpg-companion") name))
+  (setf (jrpg-value "jrpg-companion") name
+        (jrpg-value "jrpg-companion-role") role))
 
 (defun jrpg-number (key &optional (default 0))
   (let ((value (jrpg-value key default)))
@@ -76,7 +80,10 @@
   (setf (jrpg-value "jrpg-last-battle") "retreat"))
 
 (defun jrpg-companion ()
-  (jrpg-value "jrpg-companion" "the childhood friend"))
+  (jrpg-value "jrpg-companion" "Lena"))
+
+(defun jrpg-companion-role ()
+  (jrpg-value "jrpg-companion-role" "childhood friend"))
 
 (defun jrpg-hero-name ()
   (let ((name (jrpg-value "player-name" "HERO")))
