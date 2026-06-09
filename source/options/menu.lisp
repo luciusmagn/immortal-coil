@@ -10,6 +10,9 @@
 (defconstant +options-row-left+ 360.0)
 (defconstant +options-row-width+ 560.0)
 (defconstant +options-row-height+ 36.0)
+(defconstant +options-panel-width+ 640)
+(defconstant +options-panel-height+ 440)
+(defconstant +options-panel-top+ 132)
 
 (-> options-row-y (integer) scalar)
 (defun options-row-y (index)
@@ -38,6 +41,15 @@
   (loop for index below (selection-count *options-selection*)
         when (mouse-on-options-row-p index)
           return index))
+
+(-> options-row-hovered-p (integer) boolean)
+(defun options-row-hovered-p (index)
+  (and *options-mouse-hover-active-p*
+       (mouse-on-options-row-p index)))
+
+(-> options-panel-left () scalar)
+(defun options-panel-left ()
+  (- +virtual-center-x+ (/ +options-panel-width+ 2.0)))
 
 
 ;;; Rendering
@@ -71,7 +83,7 @@
   (let* ((option (selection-item *options-selection* index))
          (action (command-option-action option))
          (selected-p (= index (selection-current-index *options-selection*)))
-         (hovered-p (mouse-on-options-row-p index))
+         (hovered-p (options-row-hovered-p index))
          (alpha (cond
                   ((or selected-p hovered-p) 255)
                   (t 172)))
@@ -97,15 +109,27 @@
                                    (+ y 10.0)
                                    color)))))
 
+(-> draw-options-panel () t)
+(defun draw-options-panel ()
+  (let ((left (options-panel-left))
+        (top +options-panel-top+))
+    (claylib/ll:draw-rectangle (round left)
+                               (round top)
+                               +options-panel-width+
+                               +options-panel-height+
+                               (claylib::c-ptr
+                                (make-color 0 0 0 255)))
+    (draw-rectangle-outline left
+                            top
+                            +options-panel-width+
+                            +options-panel-height+
+                            (make-color 255 255 255 255)
+                            :thickness 2)))
+
 (-> draw-options-menu () t)
 (defun draw-options-menu ()
   (let ((color (make-color 255 255 255 240)))
-    (claylib/ll:draw-rectangle 0
-                               0
-                               +virtual-width+
-                               +virtual-height+
-                               (claylib::c-ptr
-                                (make-color 0 0 0 188)))
+    (draw-options-panel)
     (draw-centered-text "OPTIONS"
                         +virtual-center-x+
                         +options-title-y+
@@ -132,15 +156,24 @@
 (-> move-options-selection ((option navigation-direction)) t)
 (defun move-options-selection (direction)
   (when (selection-move *options-selection* direction)
+    (deactivate-options-mouse-hover)
     (play-choice-switch)))
 
 (-> update-options-mouse () t)
 (defun update-options-mouse ()
-  (let ((index (hovered-options-row-index)))
-    (when index
-      (setf (selection-selected-index *options-selection*) index)
-      (when (is-mouse-button-pressed-p +mouse-button-left+)
-        (activate-selected-option)))))
+  (let ((moved-p (options-mouse-moved-p))
+        (index (hovered-options-row-index)))
+    (cond
+      ((and index
+            (is-mouse-button-pressed-p +mouse-button-left+))
+       (setf *options-mouse-hover-active-p* t
+             (selection-selected-index *options-selection*) index)
+       (activate-selected-option))
+      ((and moved-p index)
+       (setf *options-mouse-hover-active-p* t
+             (selection-selected-index *options-selection*) index))
+      (moved-p
+       (deactivate-options-mouse-hover)))))
 
 (-> update-options-menu () t)
 (defun update-options-menu ()

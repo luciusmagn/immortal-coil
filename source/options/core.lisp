@@ -11,11 +11,16 @@
                           :back "BACK"))
 
 (defvar *options-active-p* nil)
+(defvar *options-mouse-position-ready-p* nil)
+(defvar *options-mouse-hover-active-p* nil)
+(defvar *options-last-mouse-x* 0.0)
+(defvar *options-last-mouse-y* 0.0)
 
 (defparameter *options-min-text-speed* 5.0)
 (defparameter *options-max-text-speed* 28.0)
 (defparameter *options-text-speed-step* 1.0)
 (defparameter *options-volume-step* 0.1)
+(defconstant +options-mouse-motion-epsilon+ 0.25)
 
 
 ;;; Persistence
@@ -134,6 +139,32 @@
 
 ;;; Model
 
+(-> reset-options-mouse-tracking () t)
+(defun reset-options-mouse-tracking ()
+  (setf *options-mouse-position-ready-p* nil
+        *options-mouse-hover-active-p* nil
+        *options-last-mouse-x* 0.0
+        *options-last-mouse-y* 0.0))
+
+(-> deactivate-options-mouse-hover () t)
+(defun deactivate-options-mouse-hover ()
+  (setf *options-mouse-hover-active-p* nil))
+
+(-> options-mouse-moved-p () boolean)
+(defun options-mouse-moved-p ()
+  (multiple-value-bind (x y)
+      (virtual-mouse-position)
+    (let ((moved-p
+            (and *options-mouse-position-ready-p*
+                 (or (> (abs (- x *options-last-mouse-x*))
+                        +options-mouse-motion-epsilon+)
+                     (> (abs (- y *options-last-mouse-y*))
+                        +options-mouse-motion-epsilon+)))))
+      (setf *options-mouse-position-ready-p* t
+            *options-last-mouse-x* x
+            *options-last-mouse-y* y)
+      moved-p)))
+
 (-> options-menu-active-p () boolean)
 (defun options-menu-active-p ()
   *options-active-p*)
@@ -141,11 +172,13 @@
 (-> reset-options-menu-state () selection-model)
 (defun reset-options-menu-state ()
   (setf *options-active-p* nil)
+  (reset-options-mouse-tracking)
   (selection-reset *options-selection*))
 
 (-> open-options-menu () t)
 (defun open-options-menu ()
   (setf *options-active-p* t)
+  (reset-options-mouse-tracking)
   (selection-reset *options-selection*)
   (play-choice-switch))
 
