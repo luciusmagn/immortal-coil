@@ -12,3 +12,5 @@ tools/dialog-editor/nimble.paths
 tools/dialog-editor/nimbledeps/
 mods/*
 !mods/README.md
+!mods/one-pace/
+!mods/one-pace/**
