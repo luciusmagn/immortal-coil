@@ -1,0 +1,33 @@
+#+title: Base Room
+
+* Status
+
+Implemented as the opening branch surface.
+
+* Role
+
+The base room is intentionally under-described. It begins as a strange bedroom,
+but each path should reveal that the player lacked the right context.
+
+* Current anchors
+
+- The bed can later read as a crash couch, prison bed, inn bed, dream bed, or
+  dungeon memory without saying it changed.
+- The night stand and door area are branch surfaces for ordinary actions whose
+  meanings become path-local.
+- Door counting and sound selection are secondary hook points.
+- The room should remain sparse enough that mods can reinterpret it.
+
+* Current nodes
+
+- =base/awake=
+- =base/exit-bed=
+- =base/thirst=
+- =base/match=
+- =base/unlock-door=
+- =base/sleep=
+
+* TODO
+
+- Make branch triggers subtler than obvious object-to-genre selection.
+- Keep hook nodes stable for mods.

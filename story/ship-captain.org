@@ -1,0 +1,38 @@
+#+title: Ship Captain
+
+* Status
+
+Partly implemented.
+
+* Entry
+
+The glass of water path leads into the hard-sci-fi ship captain story.
+
+* Author truth
+
+- The player is a stressed captain on a large hard-sci-fi ship.
+- The captain is near a breaking point.
+- The crew sees an impeccable captain who always makes the correct call.
+- The player privately carries the failed attempts, pain, death, and memory.
+- Crew praise should become painful because it only sees the final polished
+  result.
+- Hallucinations are memory intrusions from previous failures, not ghosts,
+  prophecies, or reality changing in front of the player.
+
+* Current surface
+
+- =ship/wake= reveals restraint straps and indicator lights in reflection.
+- =ship/name= collects what the room calls the captain.
+- =ship/flight= runs the wireframe flight minigame.
+- Failure returns to the same alarm without explaining the mechanism.
+
+* Audio and visual
+
+- Music: =assets/audio/ship-lyria-drone.mp3=
+- Particles: star field should be available from this path.
+
+* TODO
+
+- Add crew members with names and duties.
+- Let the player see crew admiration before the cost is clear.
+- Add memory-intrusion scenes after failures.

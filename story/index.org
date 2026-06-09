@@ -1,0 +1,26 @@
+#+title: Story Path Notes
+
+Author-facing notes for major Immortal Coil story paths.
+
+These files are not player text. They are working documents for premises,
+implemented nodes, planned reveals, hook points, state keys, audio, and open
+questions.
+
+* Current path files
+
+- [[file:base-room.org][Base Room]]
+- [[file:ship-captain.org][Ship Captain]]
+- [[file:forest-escape.org][Forest Escape]]
+- [[file:jrpg-adventure.org][JRPG Adventure]]
+- [[file:dream-maze.org][Dream Maze]]
+- [[file:alice-branch.org][Alice Branch]]
+- [[file:rogue-branch.org][Rogue Branch]]
+- [[file:war-leader.org][War Leader]]
+- [[file:containment-researcher.org][Containment Researcher]]
+
+* Shared rule
+
+Early branch entries may withhold context. Once a route deepens, scenes should
+be grounded in concrete people, places, actions, costs, and consequences.
+Later branches may still recontextualize that material, but the reveal should
+feel like it was always true for that branch.

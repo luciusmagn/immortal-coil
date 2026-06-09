@@ -1,0 +1,33 @@
+#+title: Forest Escape
+
+* Status
+
+Partly implemented.
+
+* Entry
+
+The brass key path leads to the dark forest survival story.
+
+* Author truth
+
+- The player has been kidnapped and has escaped without understanding that yet.
+- The house is confinement, not a house that transforms into confinement.
+- The pursuer is the kidnapper, possibly supernatural.
+- The forest may hide the player or return them.
+
+* Current surface
+
+- =forest/threshold= opens the front door with the warm brass key.
+- =forest/porch= places the house alone in a black pine forest.
+- =forest/tag= shows the wrist tag and begins the confinement reveal.
+- =forest/pursuer= names the player like misplaced property.
+
+* Audio and visual
+
+- Music: =assets/audio/forest-lyria-drone.mp3=
+
+* TODO
+
+- Soften the branch trigger so the key does not scream "forest route".
+- Add concrete survival choices and pursuit pressure.
+- Add reusable wind/trees/forest particle effects if needed.

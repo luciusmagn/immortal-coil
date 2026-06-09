@@ -1,0 +1,35 @@
+#+title: Dream Maze
+
+* Status
+
+Implemented as a Doom-like dream-branch surface.
+
+* Role
+
+Sleeping enters the dream maze. The maze is a branch surface for dream genres.
+It should not explain that it is selecting a genre.
+
+* Author truth
+
+- Dream exits should become portals into other narrative frames.
+- Exits should eventually be less mechanical and more tied to remembered
+  detail, orientation, or repeated symbols.
+- Failure/lost results should lead into authored content, not a literal loop
+  back to the opening.
+
+* Current surface
+
+- =dream/maze= runs the Doom-like maze minigame.
+- Left exit leads to Alice.
+- Upper exit leads to Rogue.
+- Right exit should lead toward containment researcher.
+
+* Audio and visual
+
+- CRT static gets stronger near exits.
+- Footstep sounds play during movement.
+
+* TODO
+
+- Make exits more visually legible but still diegetic.
+- Make lost/failure lead to authored content.

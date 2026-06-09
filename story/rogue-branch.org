@@ -1,0 +1,34 @@
+#+title: Rogue Branch
+
+* Status
+
+Stub branch with several implemented nodes.
+
+* Entry
+
+The upper dream maze exit leads to a Rogue-inspired dungeon path.
+
+* Author truth
+
+- The branch should evoke terse dungeon logic: inventory, doors, hidden danger,
+  identification, stairs, and grid-like movement.
+- It should be austere and readable, not a parody.
+- Earlier room details can return as dungeon objects, but should feel like they
+  were always part of this frame.
+
+* Current surface
+
+- =rogue/entrance=
+- =rogue/inventory=
+- =rogue/door=
+- =rogue/loot=
+
+* Audio
+
+- Music: =assets/audio/rogue-lyria-drone.mp3=
+
+* TODO
+
+- Add a small grid-walk or room traversal system.
+- Track inventory facts in the dialog store.
+- Keep prose terse and concrete.

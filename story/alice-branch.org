@@ -1,0 +1,32 @@
+#+title: Alice Branch
+
+* Status
+
+Stub branch with several implemented nodes.
+
+* Entry
+
+The left dream maze exit leads to an Alice-like impossible courtesy path.
+
+* Author truth
+
+- The branch should feel like social rules, etiquette, and accusation in an
+  impossible room.
+- It can be surreal, but should still recontextualize earlier room details
+  rather than transform them.
+
+* Current surface
+
+- =alice/fall=
+- =alice/table=
+- =alice/choice=
+- =alice/court=
+
+* Audio
+
+- Music: =assets/audio/alice-lyria-drone.mp3=
+
+* TODO
+
+- Add concrete recurring characters.
+- Avoid pure whimsy; make social rules matter.

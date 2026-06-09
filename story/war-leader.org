@@ -1,0 +1,33 @@
+#+title: War Leader
+
+* Status
+
+Planned.
+
+* Entry
+
+The refuse-all route through door counting and hall sounds should lead to a
+nation-leader-in-war story.
+
+* Author truth
+
+- The player is a head of state or equivalent national leader during a war.
+- The opening room can later read as a bunker, command residence, cabinet room,
+  or emergency office.
+- The horror is abstract command: reports, maps, propaganda, incomplete
+  information, and costs paid by unseen people.
+- The player should not feel like a battlefield hero.
+
+* Planned surface
+
+- Door counting can become fronts, ministries, shelters, or briefings.
+- Hall sounds can become radio static, boots, sirens, water pipes, blackout
+  glass, archive keys, or distant artillery.
+- The first clear address should be restrained, such as a title spoken by an
+  aide.
+
+* TODO
+
+- Define the first aide.
+- Define the war-room vocabulary.
+- Decide which existing base-room actions feed this branch.

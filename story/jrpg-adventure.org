@@ -1,0 +1,272 @@
+#+title: JRPG Adventure
+
+* Status
+
+Implemented as the largest current branch spine.
+
+* Entry
+
+The matchbook path leads into a straight-faced fantasy adventure. It should read
+at first as a bog-standard JRPG demon-lord quest: inn, village, companion,
+overworld, slime, tower, demon lord.
+
+* Author truth
+
+- The familiar genre frame is useful because later details can pull certainty
+  away.
+- It can be corny and stereotypical early, but should not wink too hard.
+- The demon-lord route is one built-in spine, not the canonical endpoint for
+  all JRPG play.
+- Hidden long-term idea: the demon lord may turn out to be the player from
+  another path. Do not foreshadow this in the early route.
+- Stats, route choices, companion choice, combat results, inventory, and
+  village errands should live in the shared store for later hooks and mods.
+
+* Places
+
+** Inn room
+
+Implemented in =jrpg/inn=. The room is reframed as an inn room with a checked
+blanket, wooden chest, wash basin, and quest notice.
+
+** Oakbarrow
+
+Implemented around =jrpg/common-room=, =jrpg/square=, and =jrpg/gate=.
+
+Concrete elements:
+
+- Mira's ledger table
+- Toma's oven and travel loaf
+- Oren's gate chain
+- dry well
+- three stalls
+- north gate and bridge
+
+** North road
+
+Implemented through =jrpg/overworld= and =jrpg/road-mile-marker=.
+
+Concrete elements:
+
+- bridge boards
+- mile marker reading =OAKBARROW 1, NORTH TOWER 3=
+- ditch mud
+- slime tracks
+
+** North Tower
+
+Implemented from =jrpg/tower-road= onward.
+
+Concrete elements:
+
+- bare hill
+- toll hut
+- Pell's slate
+- side stair
+- visitor sword rack
+- Vane's room
+
+* Characters
+
+** Mira
+
+Innkeeper and ledger keeper. Knows the player by the quest notice and treats the
+quest like a debt-and-room problem.
+
+Current nodes:
+
+- =jrpg/keeper=
+- =jrpg/errand-mira=
+
+** Toma
+
+Baker. Sells a travel loaf and tonic. Used Lena's best knife to wedge the oven
+door.
+
+Current nodes:
+
+- =jrpg/errand-toma=
+- referenced by =jrpg/friend= and =jrpg/demon-chest=
+
+** Oren
+
+Bridge guard. Holds the north gate chain and tracks slime count on the toll
+board.
+
+Current nodes:
+
+- =jrpg/errand-oren=
+- =jrpg/gate=
+- =jrpg/gate-leave=
+- =jrpg/gate-guard=
+
+** Lena
+
+Childhood friend companion. Practical, remembers local habits, packs rope,
+bread, and the player's second-best knife.
+
+Current nodes:
+
+- =jrpg/friend=
+- =jrpg/road-lena=
+
+** Nio
+
+Quiet mage companion. Has two spells and half a weather charm.
+
+Current nodes:
+
+- =jrpg/mage=
+- =jrpg/road-nio=
+
+** Bram
+
+Knight companion. Helmet is at the blacksmith; earnest and useful despite the
+plain joke.
+
+Current nodes:
+
+- =jrpg/knight=
+- =jrpg/road-bram=
+
+** Pell
+
+Tower steward. Manages slate, front door, side stair, and morning bell.
+
+Current nodes:
+
+- =jrpg/tower-steward=
+- =jrpg/tower-front=
+- =jrpg/tower-wait=
+- =jrpg/chapter-end=
+
+** Vane
+
+Demon lord. Knows Mira and receives the player as someone routed through a
+local system, not as abstract evil.
+
+Current nodes:
+
+- =jrpg/demon-lord=
+- =jrpg/demon-choice=
+- =jrpg/demon-terms=
+
+* Current node spine
+
+- =jrpg/inn=
+- =jrpg/notice=
+- =jrpg/name=
+- =jrpg/keeper=
+- =jrpg/common-room=
+- =jrpg/party=
+- companion branch: =jrpg/friend=, =jrpg/mage=, =jrpg/knight=
+- =jrpg/square=
+- =jrpg/village-errand=
+- errand branch: =jrpg/errand-mira=, =jrpg/errand-toma=, =jrpg/errand-oren=
+- =jrpg/gate=
+- gate branch: =jrpg/gate-leave=, =jrpg/gate-bread=, =jrpg/gate-guard=
+- =jrpg/overworld=
+- =jrpg/road-mile-marker=
+- road branch: =jrpg/road-lena=, =jrpg/road-nio=, =jrpg/road-bram=
+- =jrpg/slime-arrives=
+- =jrpg/slime-combat=
+- result branch: =jrpg/slime-retreat=, =jrpg/slime-defeat=, =jrpg/road-clear=
+- =jrpg/tower-road=
+- =jrpg/tower-steward=
+- =jrpg/tower-choice=
+- tower branch: =jrpg/tower-front=, =jrpg/tower-side=, =jrpg/tower-wait=
+- =jrpg/demon-hall=
+- =jrpg/demon-lord=
+- =jrpg/demon-choice=
+- demon branch: =jrpg/demon-fight=, =jrpg/demon-terms=, =jrpg/demon-chest=
+- =jrpg/chapter-end=
+
+* State keys
+
+- =player-name=
+- =jrpg-hero-level=
+- =jrpg-hero-max-hp=
+- =jrpg-hero-hp=
+- =jrpg-hero-mp=
+- =jrpg-hero-attack=
+- =jrpg-hero-defense=
+- =jrpg-gold=
+- =jrpg-xp=
+- =jrpg-potions=
+- =jrpg-slimes-defeated=
+- =jrpg-companion=
+- =jrpg-companion-role=
+- =jrpg-village-errand=
+- =jrpg-gate-choice=
+- =jrpg-route=
+- =jrpg-crossed-bridge=
+- =jrpg-read-road-sign=
+- =jrpg-saw-tower=
+- =jrpg-last-terrain=
+- =jrpg-overworld-steps=
+- =jrpg-last-battle=
+- =jrpg-tower-approach=
+- =jrpg-demon-approach=
+
+* Minigames
+
+** Overworld
+
+Kind: =:jrpg-overworld=
+
+Current behavior:
+
+- WASD/arrows movement.
+- Small map with village, bridge, sign, tower, grass.
+- Reaching grass advances to the road mile marker.
+- Movement stores route/landmark facts.
+
+Expansion direction:
+
+- Larger Oakbarrow-to-tower map.
+- More landmarks: shrine, pond, roadside camp, old bridge, toll hut.
+- More walking is now viable because the path has ambience and short cues.
+
+** Turn combat
+
+Kind: =:jrpg-combat=
+
+Current behavior:
+
+- 2x2 menu: =ATTACK=, =MAGIC=, =ITEM=, =RUN=.
+- Uses JRPG state for HP/MP/gold/potions/xp.
+- Victory, defeat, and retreat set =jrpg-last-battle=.
+
+Expansion direction:
+
+- Add more enemies.
+- Add companion effects.
+- Add a separate battle cue only if it does not become too rhythmic.
+
+* Audio
+
+Music:
+
+- =assets/audio/jrpg-lyria-drone.mp3=
+
+Current SFX:
+
+- =assets/audio/jrpg/bell.wav=
+- =assets/audio/jrpg/coin.wav=
+- =assets/audio/jrpg/gate-chain.wav=
+- =assets/audio/jrpg/hit.wav=
+- =assets/audio/jrpg/ledger.wav=
+- =assets/audio/jrpg/magic.wav=
+- =assets/audio/jrpg/retreat.wav=
+- =assets/audio/jrpg/slime.wav=
+- =assets/audio/jrpg/sword.wav=
+- =assets/audio/jrpg/tonic.wav=
+
+* TODO
+
+- Add more overworld walking and landmark encounters.
+- Add at least one camp/rest scene before the tower.
+- Add one more combat encounter after the slime.
+- Give each companion a real non-joke beat before Vane.
+- Keep early Vane material concrete and local; do not foreshadow the
+  player-from-another-path idea yet.

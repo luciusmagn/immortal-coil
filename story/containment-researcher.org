@@ -1,0 +1,32 @@
+#+title: Containment Researcher
+
+* Status
+
+Planned.
+
+* Entry
+
+The dream right-exit and maze-lost route should lead toward a containment
+research story in the spirit of anomalous-institution horror.
+
+* Author truth
+
+- The player is a researcher, observer, or facility staff member connected to
+  containment protocols.
+- The dream maze can later read as a facility corridor, test route,
+  observation protocol, or decontamination memory.
+- Use procedures, logs, classifications, access levels, observation rooms, and
+  institutional language to make earlier weirdness feel catalogued.
+- Do not import external canon in prose.
+
+* Visual note
+
+A black-and-white demake-style flash of an SCP-Foundation-like circular logo
+could work as a brief institutional mark. It should not be an explanatory title
+card.
+
+* TODO
+
+- Define the institution name.
+- Define the first protocol scene.
+- Decide whether the player is researcher, subject-handler, or observer.
