@@ -342,6 +342,17 @@ names, surroundings, roles, and relationships that make earlier scenes mean
 something different. The earlier scene should feel like it was always that
 thing; the player simply lacked context.
 
+Player blindness is front-loaded. Openings stay ambiguous, but a path should grow
+concrete as it deepens into named people, real stakes, and a specific situation. The
+path coalesces into a committed narrative rather than a permanent haze; endless
+ambiguity reads as moping, not mystery.
+
+Concreteness does not freeze canon. A later divergence can still recontextualize even
+deep material, and the reveal is branch-relative: one branch may turn out to have been
+a simulation all along, another to have been real all along. Each reveal is that
+branch's own canon, not a single truth shared across paths. It should still feel like
+it was always so, never like reality changed.
+
 Avoid transformation language:
 
 - no objects changing into other objects because the player acted

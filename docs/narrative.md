@@ -22,6 +22,14 @@ entries can withhold context, but once the player is inside a path, scenes
 should be grounded in named characters, concrete places, actions, costs, and
 consequences.
 
+Becoming concrete does not fix a single canon. A later divergence can still
+recontextualize even grounded material, and the reveal is branch-relative: one route
+may establish that a path was a simulation all along, while another holds it was the
+real world all along. Each is that route's own canon, not one truth shared across
+paths — the same future-shapes-past method applied to a whole path's reality rather
+than a single object. It should still feel like it was always so, not like the world
+changed.
+
 The "future shapes the past" effect only works when transitions are gentle
 enough that a player on a single playthrough would not recognize them as
 transitions. A branch entry should feel like the next ordinary detail in the
