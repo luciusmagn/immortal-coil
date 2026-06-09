@@ -107,6 +107,7 @@
                         :fps 60
                         :exit-key +key-null+
                         :flags (list +flag-fullscreen-mode+))
+            (apply-fullscreen-monitor)
             (setf next-mode (run-window-contents))))
         (with-window (:width +virtual-width+
                       :height +virtual-height+

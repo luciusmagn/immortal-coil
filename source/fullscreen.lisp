@@ -17,19 +17,76 @@
        (<= 0 monitor)
        (< monitor count)))
 
-(-> fullscreen-monitor-index () (option integer))
+(-> current-monitor-index (nonnegative-integer) (option integer))
+(defun current-monitor-index (count)
+  (let ((monitor (handler-case
+                     (get-current-monitor)
+                   (error (condition)
+                     (runtime-warn "Could not read current monitor: ~a"
+                                   condition)
+                     nil))))
+    (when (valid-monitor-index-p monitor count)
+      monitor)))
+
+(-> fallback-monitor-index (nonnegative-integer) (option integer))
+(defun fallback-monitor-index (count)
+  (or (current-monitor-index count)
+      (when (plusp count)
+        0)))
+
+(-> fullscreen-monitor-index () (option nonnegative-integer))
 (defun fullscreen-monitor-index ()
   (let ((count (monitor-count)))
     (when (plusp count)
-      (let ((monitor (handler-case
-                         (get-current-monitor)
-                       (error (condition)
-                         (runtime-warn "Could not read current monitor: ~a"
-                                       condition)
-                         nil))))
-        (if (valid-monitor-index-p monitor count)
-            monitor
-            0)))))
+      (if (valid-monitor-index-p *fullscreen-monitor-index* count)
+          *fullscreen-monitor-index*
+          (fallback-monitor-index count)))))
+
+(-> monitor-name (nonnegative-integer) string)
+(defun monitor-name (monitor)
+  (handler-case
+      (let ((name (get-monitor-name monitor)))
+        (if (stringp name)
+            name
+            ""))
+    (error (condition)
+      (runtime-warn "Could not read monitor name: ~a" condition)
+      "")))
+
+(-> monitor-label () string)
+(defun monitor-label ()
+  (let ((count (monitor-count)))
+    (if (plusp count)
+        (let* ((monitor (or (fullscreen-monitor-index) 0))
+               (name    (monitor-name monitor)))
+          (if (plusp (length name))
+              (format nil "~d/~d ~a"
+                      (1+ monitor)
+                      count
+                      (subseq name 0 (min 16 (length name))))
+              (format nil "~d/~d" (1+ monitor) count)))
+        "N/A")))
+
+(-> set-fullscreen-monitor-index (integer) boolean)
+(defun set-fullscreen-monitor-index (monitor)
+  (let ((count (monitor-count)))
+    (if (plusp count)
+        (progn
+          (setf *fullscreen-monitor-index* (mod monitor count)
+                *fullscreen-size-ready-p* nil)
+          (capture-fullscreen-size)
+          t)
+        (progn
+          (setf *fullscreen-monitor-index* nil
+                *fullscreen-size-ready-p* nil)
+          nil))))
+
+(-> adjust-fullscreen-monitor-index (navigation-direction) boolean)
+(defun adjust-fullscreen-monitor-index (direction)
+  (let ((count (monitor-count)))
+    (when (plusp count)
+      (set-fullscreen-monitor-index
+       (+ (or (fullscreen-monitor-index) 0) direction)))))
 
 (-> positive-window-size-p (t t) boolean)
 (defun positive-window-size-p (width height)
@@ -106,6 +163,18 @@
                    (/= (get-screen-height) height))
            (set-window-size width height))
          t)))
+
+(-> apply-fullscreen-monitor () boolean)
+(defun apply-fullscreen-monitor ()
+  (let ((monitor (fullscreen-monitor-index)))
+    (when (and monitor (is-window-ready-p))
+      (handler-case
+          (progn
+            (claylib/ll:set-window-monitor monitor)
+            (sync-active-fullscreen-window-size))
+        (error (condition)
+          (runtime-warn "Could not apply fullscreen monitor: ~a" condition)
+          nil)))))
 
 (defun request-fullscreen ()
   (capture-fullscreen-size)

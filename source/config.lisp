@@ -48,3 +48,4 @@
 (defvar *fullscreen-width* +virtual-width+)
 (defvar *fullscreen-height* +virtual-height+)
 (defvar *fullscreen-size-ready-p* nil)
+(defvar *fullscreen-monitor-index* nil)

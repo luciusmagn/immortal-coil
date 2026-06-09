@@ -4,6 +4,7 @@
 
 (defparameter *options-selection*
   (make-command-selection :fullscreen "FULLSCREEN"
+                          :monitor "MONITOR"
                           :text-speed "TEXT SPEED"
                           :music-volume "MUSIC"
                           :sound-volume "SOUND"
@@ -33,7 +34,8 @@
         *music-volume-scale* 1.0
         *sound-volume-scale* 1.0
         *window-mode* :windowed
-        *requested-window-mode* nil))
+        *requested-window-mode* nil
+        *fullscreen-monitor-index* nil))
 
 (-> options-data () plist)
 (defun options-data ()
@@ -41,7 +43,8 @@
         :characters-per-second *characters-per-second*
         :music-volume-scale *music-volume-scale*
         :sound-volume-scale *sound-volume-scale*
-        :window-mode (or *requested-window-mode* *window-mode*)))
+        :window-mode (or *requested-window-mode* *window-mode*)
+        :fullscreen-monitor-index *fullscreen-monitor-index*))
 
 (-> valid-options-data-p (t) boolean)
 (defun valid-options-data-p (data)
@@ -65,6 +68,13 @@
         mode
         :windowed)))
 
+(-> options-data-monitor-index (plist) (option nonnegative-integer))
+(defun options-data-monitor-index (data)
+  (let ((monitor (getf data :fullscreen-monitor-index)))
+    (when (and (integerp monitor)
+               (>= monitor 0))
+      monitor)))
+
 (-> restore-options-data (plist) t)
 (defun restore-options-data (data)
   (when (valid-options-data-p data)
@@ -79,7 +89,9 @@
           *sound-volume-scale*
           (options-data-scalar data :sound-volume-scale 1.0 0.0 1.0)
           *window-mode*
-          (options-data-window-mode data))))
+          (options-data-window-mode data)
+          *fullscreen-monitor-index*
+          (options-data-monitor-index data))))
 
 (-> read-options-data () t)
 (defun read-options-data ()
@@ -165,6 +177,8 @@
   (case action
     (:fullscreen
      (if (options-fullscreen-enabled-p) "ON" "OFF"))
+    (:monitor
+     (monitor-label))
     (:text-speed
      (format nil "~d CPS" (round *characters-per-second*)))
     (:music-volume
@@ -177,6 +191,7 @@
 (defun option-adjustable-p (action)
   (not (null (member action
                      '(:fullscreen
+                       :monitor
                        :text-speed
                        :music-volume
                        :sound-volume)))))
@@ -204,6 +219,10 @@
   (case action
     (:fullscreen
      (toggle-options-fullscreen))
+    (:monitor
+     (when (adjust-fullscreen-monitor-index direction)
+       (when (options-fullscreen-enabled-p)
+         (request-fullscreen))))
     (:text-speed
      (setf *characters-per-second*
            (min *options-max-text-speed*
