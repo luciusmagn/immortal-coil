@@ -105,8 +105,7 @@
                         :height (fullscreen-window-height)
                         :title "mag's Game"
                         :fps 60
-                        :exit-key +key-null+
-                        :flags (list +flag-fullscreen-mode+))
+                        :exit-key +key-null+)
             (apply-fullscreen-monitor)
             (setf next-mode (run-window-contents))))
         (with-window (:width +virtual-width+

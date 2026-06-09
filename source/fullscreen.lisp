@@ -65,6 +65,18 @@
       (runtime-warn "Could not read monitor size: ~a" condition)
       "unknown")))
 
+(-> monitor-position (nonnegative-integer) (values integer integer))
+(defun monitor-position (monitor)
+  (handler-case
+      (let ((position (make-vector2 0 0)))
+        (claylib/ll:get-monitor-position (claylib::c-ptr position)
+                                         monitor)
+        (values (round (x position))
+                (round (y position))))
+    (error (condition)
+      (runtime-warn "Could not read monitor position: ~a" condition)
+      (values 0 0))))
+
 (-> monitor-label () string)
 (defun monitor-label ()
   (let ((count (monitor-count)))
@@ -190,8 +202,14 @@
           (when (capture-fullscreen-size)
             (let ((width  (fullscreen-window-width))
                   (height (fullscreen-window-height)))
-              (claylib/ll:set-window-size width height)
-              (claylib/ll:set-window-monitor monitor)
+              (multiple-value-bind (x y)
+                  (monitor-position monitor)
+                (claylib/ll:set-window-size width height)
+                (claylib/ll:set-window-position x y)
+                (claylib/ll:set-window-state
+                 (+ +flag-window-undecorated+
+                    +flag-window-topmost+))
+                (claylib/ll:set-window-position x y))
               (claylib/ll:set-window-size width height)
               t))
         (error (condition)
