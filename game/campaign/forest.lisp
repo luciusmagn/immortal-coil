@@ -345,7 +345,64 @@
 
 (dialog-text "forest/store-night"
              "the clerk lets you sit by the cooler until close. when she locks up she leaves the porch light on, points at the bench under it, and says the bus comes at six, most days."
-             :next "forest/dawn-end")
+             :next "forest/bench")
+
+(dialog-text "forest/bench"
+             "the bench holds the day's warmth for an hour and then gives it up. you sleep in pieces under the porch light, and nothing comes up the road all night except the road's own sounds, which you are learning."
+             :next "forest/bus")
+
+(dialog-text "forest/bus"
+             "the bus comes at six, most days, and this is one of them. the doors fold open before you stand up, the way they do for people the driver has already decided about."
+             :next "forest/fare")
+
+(dialog-conversation "forest/fare"
+                     (dialog-left "the driver"
+                                  "county line's free going out. coming back costs. that's not the company, that's me.")
+                     (dialog-right "you"
+                                   "why coming back?")
+                     (dialog-left "the driver"
+                                  "because going out i'm helping. coming back i'm just driving. sit anywhere behind the line.")
+                     :next "forest/passengers")
+
+(dialog-text "forest/passengers"
+             "there are four passengers and room for forty. nobody sits near you, and nobody makes it unkind. somewhere past the gravel pits, a woman in a postal jacket passes you half a sandwich over the seat back without turning around."
+             :next "forest/county-line")
+
+(dialog-pick "forest/county-line"
+             "the county line stop is a pole in the grass. the bus slows."
+             (dialog-option "get off at the line" "forest/get-off")
+             (dialog-option "stay on past it" "forest/stay-on")
+             (dialog-option "ask the driver about the hill" "forest/ask-driver"))
+
+(dialog-on-enter "forest/get-off"
+                 '(setf (dialog-value "forest-bus") "line"))
+
+(dialog-text "forest/get-off"
+             "you step down at the pole. across the line the fields are fenced in wire, not plank, and the first mailbox you pass has a name on it that has never been painted over."
+             :next "forest/bus-end")
+
+(dialog-on-enter "forest/stay-on"
+                 '(setf (dialog-value "forest-bus") "stayed"))
+
+(dialog-text "forest/stay-on"
+             "you stay on. the route runs the valley, turns with the river, and climbs. by the second hour you know the shape of it: the road does not leave the hill's country. it circles it, the way water circles a stone."
+             :next "forest/bus-end")
+
+(dialog-on-enter "forest/ask-driver"
+                 '(setf (dialog-value "forest-bus") "asked"))
+
+(dialog-conversation "forest/ask-driver"
+                     (dialog-left "the driver"
+                                  "the hill. you want to know if anyone's gone up and asked.")
+                     (dialog-right "you"
+                                   "have they?")
+                     (dialog-left "the driver"
+                                  "twice that i know. county went up in my father's day and came down satisfied. nobody can tell you satisfied with what. that's the part that keeps the rest of us on the road.")
+                     :next "forest/bus-end")
+
+(dialog-text "forest/bus-end"
+             "wherever the day ends, it ends moving, with the hill somewhere over your shoulder, patient as an address. when you finally sleep, it is the deep kind, and it takes you all at once."
+             :next "base/awake")
 
 (dialog-on-enter "forest/truck-hide"
                  '(setf (dialog-value "forest-dawn") "hid"))
