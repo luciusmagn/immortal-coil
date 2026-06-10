@@ -305,6 +305,46 @@
 
 (dialog-text "forest/truck-drop"
              "he drops you at a crossroads store with a phone, says nothing you can thank him for, and is gone. through the store window, the clerk is already looking at you like a question she has asked before."
+             :next "forest/store")
+
+(dialog-conversation "forest/store"
+                     (dialog-left "the clerk"
+                                  "phone's by the cooler. local's free. you'll want coffee first. you all want coffee first.")
+                     (dialog-right "you"
+                                   "you all?")
+                     (dialog-left "the clerk"
+                                  "hill folk. you come down maybe one a winter. drink your coffee. the phone will still be there.")
+                     :next "forest/phone")
+
+(dialog-pick "forest/phone"
+             "the receiver is heavy and smells of other people's hands."
+             (dialog-option "dial the operator" "forest/operator")
+             (dialog-option "dial the number from the wrist tag" "forest/tag-number")
+             (dialog-option "put the receiver back" "forest/no-call"))
+
+(dialog-on-enter "forest/operator"
+                 '(setf (dialog-value "forest-call") "operator"))
+
+(dialog-text "forest/operator"
+             "the operator asks who you need. you open your mouth and the answer is not there. she waits the way operators wait, and then says, gently, that she can connect you to the county office in the morning."
+             :next "forest/store-night")
+
+(dialog-on-enter "forest/tag-number"
+                 '(setf (dialog-value "forest-call") "tag"))
+
+(dialog-text "forest/tag-number"
+             "under RETURN IF FOUND, under the name, there is a number. you dial it. it rings twice, and a voice you know from the hall of the house says, calm as housework, that you can come home now."
+             :next "forest/store-night")
+
+(dialog-on-enter "forest/no-call"
+                 '(setf (dialog-value "forest-call") "none"))
+
+(dialog-text "forest/no-call"
+             "you set the receiver back. the clerk refills your coffee without being asked and writes nothing down, which out here is a kind of citizenship."
+             :next "forest/store-night")
+
+(dialog-text "forest/store-night"
+             "the clerk lets you sit by the cooler until close. when she locks up she leaves the porch light on, points at the bench under it, and says the bus comes at six, most days."
              :next "forest/dawn-end")
 
 (dialog-on-enter "forest/truck-hide"
