@@ -189,4 +189,104 @@
 
 (dialog-text "facility/rotation-end"
              "the handle is warm. on the other side of the door someone has just let go of it."
+             :next "facility/rotation2")
+
+
+;;; Second rotation: the badge, the archive, and the empty bed.
+
+(dialog-scene "facility/rotation2"
+              "second rotation."
+              :next "facility/badge-ready")
+
+(dialog-text "facility/badge-ready"
+             "your badge is ready. the printed designation is {facility-designation}, the photograph is of the back of someone's head, and M-3 says the photographs are always of the back of someone's head, for everyone's comfort."
+             :next "facility/archive-duty")
+
+(dialog-say "facility/archive-duty"
+            "M-3"
+            "new duty before the watch. the archive wants its files walked back to the shelf. carry them spine out and do not read while walking. reading while walking is how recurrences start."
+            :next "facility/archive")
+
+(dialog-text "facility/archive"
+             "the archive is one room, longer than the corridor that contains it. the returns trolley holds four files. the spines read: CROSSING. HILL HOUSE. THIRD DISTRICT. OAKBARROW."
+             :next "facility/archive-choice")
+
+(dialog-pick "facility/archive-choice"
+             "the shelf gaps are labeled in the same hand as the rerouting slip on the trolley."
+             (dialog-option "shelve them unread" "facility/shelve")
+             (dialog-option "open the thinnest file" "facility/open-file")
+             (dialog-option "check who signed them out" "facility/check-card"))
+
+(dialog-on-enter "facility/shelve"
+                 '(setf (dialog-value "facility-archive") "shelved"))
+
+(dialog-text "facility/shelve"
+             "you shelve all four, spine out, unread. they go in with the soft fit of files that live there, between neighbors labeled in scripts you do not look at long enough to fail to read."
+             :next "facility/watch2")
+
+(dialog-on-enter "facility/open-file"
+                 '(setf (dialog-value "facility-archive") "read"))
+
+(dialog-text "facility/open-file"
+             "the thinnest file is OAKBARROW. inside is one page: an inn ledger line, photographed, and under it a note in pencil. SUBJECT SLEEPS WELL HERE. RECOMMEND NO CHANGE."
+             :next "facility/watch2")
+
+(dialog-on-enter "facility/check-card"
+                 '(setf (dialog-value "facility-archive") "checked"))
+
+(dialog-text "facility/check-card"
+             "each file's card shows one borrower, over and over, signed by designation. the designation is not yours. the handwriting is."
+             :next "facility/watch2")
+
+(dialog-text "facility/watch2"
+             "the watch. M-3 draws the curtain back and goes still in a new way. the room is lit. the bed is empty, made, and the glass on the night stand is gone."
+             :next "facility/incident")
+
+(dialog-say "facility/incident"
+            "M-3"
+            "subject not in containment. do not say missing. say not in containment. take the card out of your pocket, {facility-designation}, and hold it where i can see it."
+            :next "facility/incident-choice")
+
+(dialog-pick "facility/incident-choice"
+             "the card reads: IN THE EVENT OF RECURRENCE, REMAIN WHERE YOU ARE."
+             (dialog-option "remain where you are" "facility/remain")
+             (dialog-option "walk the line to the room's door" "facility/breach-walk")
+             (dialog-option "watch M-3 instead of the window" "facility/watch-m3"))
+
+(dialog-on-enter "facility/remain"
+                 '(setf (dialog-value "facility-incident") "remained"))
+
+(dialog-text "facility/remain"
+             "you remain. the corridor lights dim once, in order, and somewhere in the dark of the room a door you cannot see opens and closes, unhurried. when the lights settle, the bed is slept in, and someone is sleeping in it."
+             :next "facility/incident-after")
+
+(dialog-on-enter "facility/breach-walk"
+                 '(setf (dialog-value "facility-incident") "walked"))
+
+(dialog-text "facility/breach-walk"
+             "you follow the line toward the room's door. the line ends at it. your hand is on the brass handle, and the handle is warm, and M-3 says your designation once, quietly, the way you would say a name."
+             :next "facility/breach-back")
+
+(dialog-text "facility/breach-back"
+             "you let go and walk back. behind you the latch clicks, inward. by the time you reach the window, the bed is slept in, and someone is sleeping in it."
+             :next "facility/incident-after")
+
+(dialog-on-enter "facility/watch-m3"
+                 '(setf (dialog-value "facility-incident") "watched"))
+
+(dialog-text "facility/watch-m3"
+             "you watch M-3. M-3 watches the window and breathes the drill: in for four, hold for four, out for four. it is the breathing from the hall, slow and even, and he is not aware he is doing it."
+             :next "facility/incident-after")
+
+(dialog-text "facility/incident-after"
+             "0744: recurrence concluded. subject in containment. M-3 initials the line, then initials it again with a different letter, catches himself, and draws one neat stroke through the first."
+             :next "facility/rotation2-out")
+
+(dialog-say "facility/rotation2-out"
+            "M-3"
+            "rotation concluded. you did well, which is filed under the same heading as you did badly, so do not let it keep you up. same time."
+            :next "facility/rotation2-end")
+
+(dialog-text "facility/rotation2-end"
+             "the walk out passes the archive. through the door, on the returns trolley, there is one new file. you carry your own eyes past it, spine out."
              :next "base/awake")
