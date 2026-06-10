@@ -8,6 +8,8 @@
            "maze/rendering.lisp"
            "flight/minigame.lisp"
            "flight/rendering.lisp"
+           "war/radio.lisp"
+           "forest/hide.lisp"
            "jrpg/state.lisp"
            "jrpg/combat.lisp"
            "jrpg/overworld.lisp"

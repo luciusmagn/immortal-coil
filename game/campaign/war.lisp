@@ -95,5 +95,19 @@
              :next "war/return")
 
 (dialog-text "war/return"
-             "Brandt walks you back along the numbered doors. behind one of them, the radio is still reading numbers. you sleep in your clothes."
+             "Brandt walks you back along the numbered doors. in your room, the radio is still on."
+             :next "war/radio")
+
+(dialog-minigame "war/radio"
+                 "a / d or left / right arrow keys tune the dial. find a clear band."
+                 :game :war-radio
+                 :success "war/radio-found"
+                 :failure "war/radio-give-up")
+
+(dialog-text "war/radio-found"
+             "the static opens onto a clear band. a voice is reading numbers there too. you turn it down, not off, and sleep in your clothes."
+             :next "base/awake")
+
+(dialog-text "war/radio-give-up"
+             "every band is the same weather. you turn it down, not off, and sleep in your clothes."
              :next "base/awake")
