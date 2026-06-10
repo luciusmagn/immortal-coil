@@ -326,7 +326,117 @@
              :next "rogue/floor-two")
 
 (dialog-text "rogue/floor-two"
-             "the steps are worn smooth in the middle, the way stone wears under years of feet. they end in a small room drawn in the same white lines: a bed, a small table, a door."
+             "the steps are worn smooth in the middle, the way stone wears under years of feet. they end at a landing with three doors and a draft."
+             :next "rogue/landing")
+
+(dialog-list "rogue/landing"
+             "choose a door."
+             (dialog-option "north: oiled metal" "rogue/armory")
+             (dialog-option "east: standing water" "rogue/cistern")
+             (dialog-option "west: old wax" "rogue/shrine"))
+
+(dialog-on-enter "rogue/armory"
+                 '(setf (dialog-value "rogue-floor2-room") "armory"))
+
+(dialog-text "rogue/armory"
+             "an armory, racks empty except one: a short sword, oiled, recently. the whetstone beside it is worn to a wafer."
+             :next "rogue/armory-choice")
+
+(dialog-pick "rogue/armory-choice"
+             "the rack waits."
+             (dialog-option "take the sword" "rogue/take-sword")
+             (dialog-option "leave it on the rack" "rogue/leave-sword"))
+
+(dialog-on-enter "rogue/take-sword"
+                 '(setf (dialog-value "rogue-sword") t))
+
+(dialog-text "rogue/take-sword"
+             "you take the sword. the rack's dust shows nine outlines where swords have been taken before, and one where a sword has always been returned."
+             :next "rogue/far-hall")
+
+(dialog-text "rogue/leave-sword"
+             "you leave it. some things are oiled as bait, and the whetstone worried you more than the blade."
+             :next "rogue/far-hall")
+
+(dialog-on-enter "rogue/cistern"
+                 '(setf (dialog-value "rogue-floor2-room") "cistern"))
+
+(dialog-text "rogue/cistern"
+             "a cistern room, ankle-deep. the water is clear and perfectly still except by the far wall, where it is still in a different way."
+             :next "rogue/cistern-choice")
+
+(dialog-pick "rogue/cistern-choice"
+             "your torchlight stops at the waterline."
+             (dialog-option "wade straight across" "rogue/wade")
+             (dialog-option "edge along the wall" "rogue/edge")
+             (dialog-option "drink" "rogue/drink"))
+
+(dialog-text "rogue/wade"
+             "you cross loudly, on purpose, the way you would announce yourself at a door. nothing moves by the far wall until you are out of the water."
+             :next "rogue/far-hall")
+
+(dialog-text "rogue/edge"
+             "you keep your shoulder to the stone the whole way. by the far door your sleeve is soaked and your count of your own footsteps is wrong by one."
+             :next "rogue/far-hall")
+
+(dialog-on-enter "rogue/drink"
+                 '(setf (dialog-value "rogue-drank") t))
+
+(dialog-text "rogue/drink"
+             "you cup the water and drink. it is cold and tastes faintly of the glass on the night stand, which is not a flavor, and you drink again anyway."
+             :next "rogue/far-hall")
+
+(dialog-on-enter "rogue/shrine"
+                 '(setf (dialog-value "rogue-floor2-room") "shrine"))
+
+(dialog-text "rogue/shrine"
+             "a shrine room. the altar here is smaller than the one above, and instead of maps, the offerings are keys. dozens, on nails, none labeled."
+             :next "rogue/shrine-choice")
+
+(dialog-pick "rogue/shrine-choice"
+             "the candles are lit. someone keeps them lit."
+             (dialog-option "offer your brass key" "rogue/offer-key"
+                            :when '(dialog-value "has-brass-key"))
+             (dialog-option "take a key" "rogue/take-key")
+             (dialog-option "leave the keys alone" "rogue/leave-keys"))
+
+(dialog-on-enter "rogue/take-key"
+                 '(setf (dialog-value "rogue-took-key") t))
+
+(dialog-text "rogue/offer-key"
+             "you hang the brass key on an empty nail. it fits the nail the way it fit the lock, which is to say exactly, which is to say you should not have been surprised either time."
+             :next "rogue/far-hall")
+
+(dialog-text "rogue/take-key"
+             "you take the nearest key. it is brass, warm from the candles, and the nail it leaves behind is the only empty one in the row."
+             :next "rogue/far-hall")
+
+(dialog-text "rogue/leave-keys"
+             "you leave them. on the way out you count the nails, lose the count, and decide the count was not yours to make."
+             :next "rogue/far-hall")
+
+(dialog-text "rogue/far-hall"
+             "the far hall narrows. along it, something keeps pace with you one wall away, matching your steps so well that stopping feels like an agreement."
+             :next "rogue/far-door"
+
+)
+
+(dialog-pick "rogue/far-door"
+             "the hall ends at a barred door. the bar is on your side."
+             (dialog-option "lift the bar quietly" "rogue/bar-quiet")
+             (dialog-option "knock first" "rogue/bar-knock")
+             (dialog-option "wait and listen" "rogue/bar-wait"))
+
+(dialog-text "rogue/bar-quiet"
+             "you lift the bar. it comes up smooth, lifted often. on the other side is a small room drawn in the same white lines: a bed, a small table, a door."
+             :next "rogue/cell")
+
+(dialog-text "rogue/bar-knock"
+             "you knock. the thing pacing you in the wall stops. nothing answers, which is an answer, and you lift the bar. beyond is a small room: a bed, a small table, a door."
+             :next "rogue/cell")
+
+(dialog-text "rogue/bar-wait"
+             "you wait. breathing, slow and even, on the other side of the door. you have heard it before, in a hall, through a different door. you lift the bar. the room beyond is empty: a bed, a small table, a door."
              :next "rogue/cell")
 
 (dialog-text "rogue/cell"

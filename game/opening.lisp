@@ -82,6 +82,9 @@
              "close to the door, you can make out a lock plate."
              :next "base/door-key")
 
+(dialog-on-enter "base/door-key"
+                 '(setf (dialog-value "has-brass-key") t))
+
 (dialog-text "base/door-key"
              "the key is on a small table by the door"
              :next "base/unlock-door")
