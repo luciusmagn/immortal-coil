@@ -3,15 +3,33 @@
 ;;; Path selection
 
 (defparameter *save-file-path* nil)
+(defvar *active-save-slot* nil)
+
+(-> save-directory-pathname () pathname)
+(defun save-directory-pathname ()
+  (let ((save-dir (uiop:getenv "IMMORTAL_COIL_SAVE_DIR")))
+    (if save-dir
+        (uiop:ensure-directory-pathname save-dir)
+        (project-pathname "save/"))))
+
+(-> save-slot-pathname (string) pathname)
+(defun save-slot-pathname (slot)
+  (merge-pathnames (format nil "slot-~a.lisp" slot)
+                   (save-directory-pathname)))
+
+(-> new-save-slot-id () string)
+(defun new-save-slot-id ()
+  (multiple-value-bind (second minute hour day month year)
+      (decode-universal-time (get-universal-time))
+    (format nil "~4,'0d~2,'0d~2,'0d-~2,'0d~2,'0d~2,'0d"
+            year month day hour minute second)))
 
 (-> save-file-pathname () pathname)
 (defun save-file-pathname ()
   (or *save-file-path*
-      (let ((save-dir (uiop:getenv "IMMORTAL_COIL_SAVE_DIR")))
-        (if save-dir
-            (merge-pathnames "current.lisp"
-                             (uiop:ensure-directory-pathname save-dir))
-            (project-pathname "save/current.lisp")))))
+      (when *active-save-slot*
+        (save-slot-pathname *active-save-slot*))
+      (merge-pathnames "current.lisp" (save-directory-pathname))))
 
 
 ;;; Save data
@@ -19,6 +37,10 @@
 (-> save-play-state-data () save-data)
 (defun save-play-state-data ()
   (list :version 1
+        :saved-at (get-universal-time)
+        :playtime (round *playtime-seconds*)
+        :player-name (dialog-value "player-name" "")
+        :slot *active-save-slot*
         :current-id (play-state-current-id *state*)
         :visible-count (play-state-visible-count *state*)
         :selected-index (play-state-selected-index *state*)
@@ -54,11 +76,44 @@
 
 ;;; File IO
 
+(-> list-save-slots () list)
+(defun list-save-slots ()
+  "Metadata plists for every readable save slot, newest first."
+  (handler-case
+      (let ((slots nil))
+        (dolist (path (uiop:directory-files (save-directory-pathname)
+                                            "slot-*.lisp"))
+          (handler-case
+              (with-open-file (stream path)
+                (with-standard-io-syntax
+                  (let ((data (read stream nil nil)))
+                    (when (valid-save-data-p data)
+                      (push (list :path path
+                                  :slot (getf data :slot)
+                                  :saved-at (or (getf data :saved-at) 0)
+                                  :playtime (or (getf data :playtime) 0)
+                                  :player-name (getf data :player-name ""))
+                            slots)))))
+            (error () nil)))
+        (sort slots #'> :key (lambda (entry) (getf entry :saved-at))))
+    (error (condition)
+      (runtime-warn "Could not list save slots: ~a" condition)
+      nil)))
+
+(-> newest-save-slot () (option string))
+(defun newest-save-slot ()
+  (let ((entry (first (list-save-slots))))
+    (when entry
+      (getf entry :slot))))
+
 (-> save-game-exists-p () boolean)
 (defun save-game-exists-p ()
   (or (dev-save-override-exists-p)
+      (not (null (list-save-slots)))
       (handler-case
-          (not (null (probe-file (save-file-pathname))))
+          (not (null (probe-file (merge-pathnames
+                                  "current.lisp"
+                                  (save-directory-pathname)))))
         (error (condition)
           (runtime-warn "Could not check save file: ~a" condition)
           nil))))
@@ -95,7 +150,10 @@
 (-> current-save-data () t)
 (defun current-save-data ()
   (or (dev-save-override-data)
-      (read-save-data)))
+      (let ((newest (newest-save-slot)))
+        (when newest
+          (setf *active-save-slot* newest))
+        (read-save-data))))
 
 
 ;;; Restore
@@ -103,6 +161,10 @@
 (-> restore-play-state-from-save (save-data) t)
 (defun restore-play-state-from-save (data)
   (let ((current-id (resolve-node-id (save-data-current-id data))))
+    (setf *playtime-seconds*
+          (float (save-data-nonnegative-integer data :playtime)))
+    (when (getf data :slot)
+      (setf *active-save-slot* (getf data :slot)))
     (restore-dialog-store (getf data :dialog-store))
     (setf *state*
           (make-play-state

@@ -3,6 +3,7 @@
 ;;; Model
 
 (defvar *state* nil)
+(defvar *playtime-seconds* 0.0)
 (defvar *save-current-game-function* nil)
 (defvar *save-current-game-p* nil)
 

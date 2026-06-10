@@ -157,6 +157,8 @@
   (reset-editor-state)
   (stop-title-music)
   (stop-story-music)
+  (setf *active-save-slot* (new-save-slot-id)
+        *playtime-seconds* 0.0)
   (load-dialog-graph)
   (reset-particles)
   (unless (restore-dev-save-override)

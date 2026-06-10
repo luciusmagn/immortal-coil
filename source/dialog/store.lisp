@@ -83,6 +83,23 @@
             (dialog-store-diffs store))
       t)))
 
+(defvar *suppress-store-save-p* nil)
+
+(-> notify-store-mutation () t)
+(defun notify-store-mutation ()
+  "Persist progress whenever durable state changes, even mid-node, so
+long minigames that keep their progress in the store survive restarts."
+  (unless *suppress-store-save-p*
+    (when (fboundp 'save-current-game-maybe)
+      (funcall 'save-current-game-maybe))))
+
+(defmacro with-batched-store-saves (() &body body)
+  "Run BODY with store-save notifications held, then save once."
+  `(progn
+     (let ((*suppress-store-save-p* t))
+       ,@body)
+     (notify-store-mutation)))
+
 (-> dialog-store-get (dialog-store-key &optional t) t)
 (defun dialog-store-get (key &optional default)
   (gethash key (current-dialog-store-table) default))
@@ -92,8 +109,12 @@
   (let ((table (current-dialog-store-table)))
     (multiple-value-bind (old-value old-bound-p)
         (gethash key table)
-      (record-dialog-store-diff key old-bound-p old-value t value))
-    (setf (gethash key table) value)))
+      (record-dialog-store-diff key old-bound-p old-value t value)
+      (setf (gethash key table) value)
+      (when (or (not old-bound-p)
+                (not (equal old-value value)))
+        (notify-store-mutation))))
+  value)
 
 (-> dialog-store-bound-p (dialog-store-key) boolean)
 (defun dialog-store-bound-p (key)
@@ -106,7 +127,9 @@
         (gethash key table)
       (when old-bound-p
         (record-dialog-store-diff key old-bound-p old-value nil nil))
-      (remhash key table))))
+      (prog1 (remhash key table)
+        (when old-bound-p
+          (notify-store-mutation))))))
 
 (-> dialog-store-alist () list)
 (defun dialog-store-alist ()
