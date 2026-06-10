@@ -267,6 +267,61 @@
 
 (dialog-text "ship/letters"
              "you write to {ship-lost-name}'s family in the format the manual provides. the manual provides three sentences. you use all three and sit a long time over the fourth that is not provided."
+             :next "ship/next-watch")
+
+(dialog-scene "ship/next-watch"
+              "the next watch."
+              :next "ship/watch-bridge")
+
+(dialog-text "ship/watch-bridge"
+             "the bridge runs quiet and exact. Voss recalibrates the lane tables without being asked, twice, the second time more slowly, getting the same answer and not liking it any better."
+             :next "ship/log-sign")
+
+(dialog-conversation "ship/log-sign"
+                     (dialog-left "Imari"
+                                  "the watch log, captain. it needs your signature under mine.")
+                     (dialog-right "{player-name}"
+                                   "read me the loss entry.")
+                     (dialog-left "Imari"
+                                  "cause of loss: crossing fault. action of record: correct and timely. it is true, captain. i was careful that every word of it is true.")
+                     :next "ship/log-choice")
+
+(dialog-pick "ship/log-choice"
+             "the stylus is warm from Imari's hand."
+             (dialog-option "sign it as written" "ship/sign-clean")
+             (dialog-option "add a commendation" "ship/sign-commend")
+             (dialog-option "amend: the order was mine" "ship/sign-amend"))
+
+(dialog-on-enter "ship/sign-clean"
+                 '(setf (dialog-value "ship-log") "clean"))
+
+(dialog-text "ship/sign-clean"
+             "you sign under Imari's hand. the log closes with the soft click of a thing built to outlast everyone who writes in it."
+             :next "ship/watch-voss")
+
+(dialog-on-enter "ship/sign-commend"
+                 '(setf (dialog-value "ship-log") "commended"))
+
+(dialog-text "ship/sign-commend"
+             "you add the commendation, posthumous, in the space reserved for it. there is a space reserved for it. you try not to think about how the manual knew."
+             :next "ship/watch-voss")
+
+(dialog-on-enter "ship/sign-amend"
+                 '(setf (dialog-value "ship-log") "amended"))
+
+(dialog-conversation "ship/sign-amend"
+                     (dialog-right "{player-name}"
+                                   "add a line. the seal order was mine, on my judgment, with time to choose.")
+                     (dialog-left "Imari"
+                                  "respectfully, captain: no. the record protects the living. your judgment is what let there be living. i will not log it as a confession.")
+                     (dialog-right "{player-name}"
+                                   "then log that i asked.")
+                     (dialog-left "Imari"
+                                  "that, i will log.")
+                     :next "ship/watch-voss")
+
+(dialog-text "ship/watch-voss"
+             "at end of watch, Voss leaves a cup at your elbow without a word. it is exactly too hot to drink, which means she timed it to outlast the paperwork."
              :next "ship/bunk")
 
 (dialog-text "ship/bunk"
