@@ -416,6 +416,25 @@
 
 (dialog-text "forest/mailbox-open"
              "the box opens stiffly. inside: circulars, a seed catalog, and one envelope addressed by hand to {forest-tag-name}, postmarked eleven years ago, unopened. the pickup passes while you are holding it."
+             :next "forest/letter-choice")
+
+(dialog-pick "forest/letter-choice"
+             "the flap has been steamed and resealed once already, long ago, by someone careful."
+             (dialog-option "open the letter" "forest/letter-read")
+             (dialog-option "put it back in the box" "forest/letter-back"))
+
+(dialog-on-enter "forest/letter-read"
+                 '(setf (dialog-value "forest-letter") "read"))
+
+(dialog-text "forest/letter-read"
+             "one page, in the round patient hand of someone writing to a child. it says the garden came in, that the dog found her way home, and that there is no shame in coming home the same way. it is signed with love, and no name, and you fold it along the old folds."
+             :next "forest/road-back")
+
+(dialog-on-enter "forest/letter-back"
+                 '(setf (dialog-value "forest-letter") "kept"))
+
+(dialog-text "forest/letter-back"
+             "you put it back the way evidence goes back: exactly, and with the sick sense of having signed for it anyway. the box closes on the first try, which boxes out here do not."
              :next "forest/road-back")
 
 (dialog-text "forest/road-back"
@@ -451,6 +470,27 @@
 
 (dialog-text "forest/keep-going"
              "you turn along the ridge and keep moving. behind you the sweeping goes on, unworried, the sound carrying the way sound does when no one is chasing you because no one needs to."
+             :next "forest/ridge-dusk")
+
+(dialog-text "forest/ridge-dusk"
+             "dusk catches you on the ridge with the house's chimney smoke below, rising straight. somewhere downslope, a lantern is lit, and begins, without hurry, to climb."
+             :next "forest/ridge-hide")
+
+(dialog-minigame "forest/ridge-hide"
+                 "space, w, or up arrow lets a breath out. stay quiet until the light moves on."
+                 :game :forest-hide
+                 :success "forest/ridge-passed"
+                 :failure "forest/ridge-heard")
+
+(dialog-text "forest/ridge-passed"
+             "the lantern crests the ridge two pines over, hangs a while looking at the dark you are part of, and goes down the far side. for the first time, you watched it the whole way through, and your count of your own breathing held."
+             :next "forest/dawn-end")
+
+(dialog-on-enter "forest/ridge-heard"
+                 '(setf (dialog-value "forest-seen") t))
+
+(dialog-text "forest/ridge-heard"
+             "the lantern stops below your stretch of dark and stays there through eleven breaths, the long kind. when it finally goes down the far side, it goes without searching, the way you leave a room when you know where everything is."
              :next "forest/dawn-end")
 
 (dialog-text "forest/dawn-end"
