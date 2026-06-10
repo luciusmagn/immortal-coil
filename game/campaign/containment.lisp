@@ -1,12 +1,17 @@
 ;;; Containment path seeds, grafted from the dream maze. Forms, painted
 ;;; lines, and a designation come before any understanding of the role.
 
-(dialog-set-next "dream/right-exit" "facility/desk")
+(defun facility-desk-target ()
+  (if (dialog-value "facility-designation")
+      "facility/desk-again"
+      "facility/desk"))
+
+(dialog-set-next "dream/right-exit" #'facility-desk-target)
 (dialog-set-next "dream/maze-lost" "facility/found")
 
 (dialog-text "facility/found"
              "at the next turn a man in a grey coat is waiting. he does not ask who you are, and you follow the painted line with him."
-             :next "facility/desk")
+             :next #'facility-desk-target)
 
 (dialog-text "facility/desk"
              "the line ends at a standing desk with a sign-in sheet. the top three lines are filled in. the handwriting on all three is yours."
@@ -17,6 +22,10 @@
                :response-key "facility-designation"
                :max-length 24
                :target "facility/card")
+
+(dialog-text "facility/desk-again"
+             "the line ends at the standing desk. there is a new line on the sign-in sheet, dated today, blank, and your designation is already printed beside it. M-3 does not need to tap the sheet twice."
+             :next "facility/window")
 
 (dialog-text "facility/card"
              "he initials beside it and hands you a laminated card. one side reads IN THE EVENT OF RECURRENCE, REMAIN WHERE YOU ARE. the other side is blank."
@@ -342,6 +351,9 @@
 (dialog-text "facility/kettle"
              "the staff room kettle is warm. there is one mug, grey, designation stenciled, and a tin of the kind of tea that exists to be acceptable to everyone. you have your tea standing up, reading the notice board, exactly the way you would in any job, and for four minutes it works."
              :next "facility/locker")
+
+(dialog-on-enter "facility/locker"
+                 '(setf (dialog-value "facility-second-coat") t))
 
 (dialog-text "facility/locker"
              "the staff room has one row of lockers, designations stenciled on grey doors. yours opens on a folded coat, grey, your size, smelling faintly of the corridor. behind it hangs another coat that is also yours, older, the elbows gone soft."

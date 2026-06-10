@@ -361,6 +361,9 @@
              "walking the rows at night you finally see what daylight crowded out: the doors are planted in family plots. a row of fives, a row of sevens, and at the end, alone in turned earth with its number still wet, one door painted with the figure you gave the foreman, whatever it was, kept now, official."
              :next "alice/juror-gift")
 
+(dialog-on-enter "alice/juror-gift"
+                 '(setf (dialog-value "alice-foreman-pencil") t))
+
 (dialog-text "alice/juror-gift"
              "at the garden gate a juror is waiting, out of uniform, which for a playing card means standing with the plain side forward. they press something into your hand and leave before thanks can be arranged: the foreman's pencil, sharpened down to a thumb's length of use."
              :next "alice/gate-gardener")
@@ -390,6 +393,9 @@
                      (dialog-left "the chair"
                                   "the room's. mind the stair. it pretends to be longer going up.")
                      :next "alice/cups-last")
+
+(dialog-on-enter "alice/cups-last"
+                 '(setf (dialog-value "alice-thread-pocket") t))
 
 (dialog-text "alice/cups-last"
              "behind you, faint and final as a clock in another room, you hear the long table being cleared: every cup turned back over, one by one, in no hurry, by someone who knows exactly how many there are."
@@ -642,6 +648,9 @@
              "you go back into the cell because it is the room you know, and shut the door, and there is still no lock plate on this side, and tonight that is almost a comfort. you set the ration tin against the door anyway, balanced to fall and wake you, dungeon custom, older than locks and more honest about what it can promise."
              :next "rogue/sleep")
 
+(dialog-on-enter "rogue/pillow"
+                 '(setf (dialog-value "rogue-matchbook") t))
+
 (dialog-text "rogue/pillow"
              "under the pillow there is a paper matchbook, half used. inside the cover is a tally in pencil, the same clerk's hand as everywhere else down here, and one struck mark has been gone over twice, the way you redraw a line you wish you had not had to make."
              :next "rogue/sleep")
@@ -657,6 +666,9 @@
 (dialog-text "rogue/wake-below"
              "you wake in the dark below ground with a new torch burning in the bracket, already half spent, lit by no one you heard. dungeons keep their own housekeeping."
              :next "rogue/housekeeping")
+
+(dialog-on-enter "rogue/housekeeping"
+                 '(setf (dialog-value "rogue-saw-tally") t))
 
 (dialog-text "rogue/housekeeping"
              "beside the torch bracket, chalked low on the stone in a tidy clerk's hand, is a tally you did not notice last night: rows of four struck through with a fifth, many rows, and one fresh mark at the end, still dusty. you wipe your thumb beside it and leave the mark alone."

@@ -5,20 +5,29 @@
 (dialog-set-next "base/listen/bells" "war/bells")
 (dialog-set-next "base/listen/glass" "war/glass")
 
+(defun war-knock-target ()
+  (if (dialog-value "war-first-order")
+      "war/knock-again"
+      "war/knock"))
+
 (dialog-text "war/static"
              "the voice finishes its numbers and starts the same list over. closer than the radio, someone in the hall shifts their weight."
-             :next "war/knock")
+             :next #'war-knock-target)
 
 (dialog-text "war/bells"
              "the bells ring on. footsteps pass your door at a walk, unhurried. whoever it is has heard them for days."
-             :next "war/knock")
+             :next #'war-knock-target)
 
 (dialog-text "war/glass"
              "the thuds keep their slow count. the window glass is taped in a wide X. you do not remember taping it."
-             :next "war/knock")
+             :next #'war-knock-target)
 
 (dialog-text "war/knock"
              "two knocks, a pause, one knock. the door opens before you answer."
+             :next "war/aide")
+
+(dialog-text "war/knock-again"
+             "two knocks, a pause, one knock. you are awake before the second knock, and dressed."
              :next "war/aide")
 
 (dialog-conversation "war/aide"
@@ -466,6 +475,9 @@
 (dialog-text "war/day4-table"
              "at the table, Vey is courteous, Olen is punctual, and Sorel has a new ledger with the first page already ruled. the map has moved again overnight, one tape line, toward the river."
              :next "war/day4-sorel")
+
+(dialog-on-enter "war/day4-sorel"
+                 '(setf (dialog-value "war-pencil-note") t))
 
 (dialog-text "war/day4-sorel"
              "Sorel slides you the morning supply sheet to initial. at the bottom, in pencil, small enough to be a stray mark: K9 EMPTY. CAR NOT EMPTY WHEN IT LEFT. you initial the sheet and keep the pencil."

@@ -18,17 +18,46 @@
       "base/too-many-doors"
       "base/choose-door"))
 
+(defun base-feel-echoes ()
+  (let ((echoes nil))
+    (flet ((add (flag id)
+             (when (dialog-value flag)
+               (push id echoes))))
+      (add "facility-designation" "base/feel-laminate")
+      (add "rogue-saw-tally" "base/feel-chalk")
+      (add "alice-thread-pocket" "base/feel-thread")
+      (add "jrpg-vane-answer" "base/feel-bread")
+      (add "forest-refuge" "base/feel-pitch")
+      (add "war-first-order" "base/feel-desk")
+      (add "ship-lost-name" "base/feel-cup"))
+    echoes))
+
+(defun base-feel-target ()
+  (let ((echoes (base-feel-echoes)))
+    (if echoes
+        (nth (mod (dialog-value "wakes" 0) (length echoes)) echoes)
+        "base/feel")))
+
 (defun ship-galley-target ()
   (if (plusp (dialog-value "ship-failures" 0))
       "ship/galley-remembered"
       "ship/galley"))
 
+(defun ship-wake-target ()
+  (if (dialog-value "ship-lost-name")
+      "ship/wake-after"
+      "ship/wake"))
+
 
 ;;; Base room
 
+(dialog-on-enter "base/awake"
+                 '(setf (dialog-value "wakes")
+                        (1+ (dialog-value "wakes" 0))))
+
 (dialog-text "base/awake"
              "you awake in a strange world..."
-             :next "base/feel")
+             :next #'base-feel-target)
 
 ;; Move this below any node while developing, then use New Game.
 ;; (dialog-dev-save-here
@@ -37,6 +66,34 @@
 
 (dialog-text "base/feel"
              "or at least that's how you feel..."
+             :next "base/exit-bed")
+
+(dialog-text "base/feel-cup"
+             "or at least that's how you feel. your right hand is curled, as if it had been holding a cup."
+             :next "base/exit-bed")
+
+(dialog-text "base/feel-desk"
+             "or at least that's how you feel. your neck aches the way it does after sleeping at a desk."
+             :next "base/exit-bed")
+
+(dialog-text "base/feel-pitch"
+             "or at least that's how you feel. there is pine pitch under two of your fingernails."
+             :next "base/exit-bed")
+
+(dialog-text "base/feel-bread"
+             "or at least that's how you feel. you can smell bread, faintly, from nowhere in the room."
+             :next "base/exit-bed")
+
+(dialog-text "base/feel-thread"
+             "or at least that's how you feel. a loop of white thread is wound twice around two of your fingers."
+             :next "base/exit-bed")
+
+(dialog-text "base/feel-chalk"
+             "or at least that's how you feel. there is chalk dust on the pad of your thumb."
+             :next "base/exit-bed")
+
+(dialog-text "base/feel-laminate"
+             "or at least that's how you feel. your fingertips smell faintly of laminate."
              :next "base/exit-bed")
 
 (dialog-choice "base/exit-bed"
@@ -54,7 +111,7 @@
 
 (dialog-choice "base/thirst"
                "drink from the glass on your night stand?"
-               (dialog-option "yes" "ship/wake")
+               (dialog-option "yes" #'ship-wake-target)
                (dialog-option "no"  "base/drawer"))
 
 (dialog-text "base/drawer"
@@ -138,6 +195,13 @@
 (dialog-text "ship/wake"
              "the glass is cold in your hand. in its reflection, you notice restraint straps beside the bed and indicator lights under the night stand."
              :next "ship/name")
+
+(dialog-particles "ship/wake-after" :stars :fade-seconds 6.5)
+(dialog-music "ship/wake-after" "audio/ship-lyria-drone.mp3" :volume 0.26)
+
+(dialog-text "ship/wake-after"
+             "the glass is cold in your hand. you drink it standing, without looking at the reflection, the way you have learned to."
+             :next "ship/alarm")
 
 (dialog-string "ship/name"
                "a name is stenciled on the frame at the foot of the bed. what does it say?"

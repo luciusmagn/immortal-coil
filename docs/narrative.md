@@ -366,3 +366,15 @@ Future hook points should be ordinary nodes and facts that mods can append to:
 
 Prefer hook nodes with stable names and sparse prose. A mod should be able to
 append one detail without fighting a large, over-specific paragraph.
+
+Route through the store, never around it. Any node's next, any choice
+target, and any graft can be a delegate function, and delegates should
+read flags rather than private globals so saves, mods, and tools all see
+the same truth. The built-in graph now plays this way: `wakes` counts
+returns to the room and rotates flag-gated waking echoes (`base/feel-*`);
+`ship/wake-after`, `war/knock-again`, `forest/threshold-again`, and
+`facility/desk-again` are revisit variants chosen by each path's own
+flags. Durable artifacts are flagged as they are established —
+`alice-thread-pocket`, `alice-foreman-pencil`, `rogue-matchbook`,
+`rogue-saw-tally`, `war-pencil-note`, `facility-second-coat`,
+`forest-two-plates` — so later scenes and mods can pay them off.

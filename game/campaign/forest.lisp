@@ -121,8 +121,22 @@
 (dialog-particles "forest/threshold" :forest-wind :fade-seconds 4.0)
 (dialog-music "forest/threshold" "audio/forest-lyria-drone.mp3" :volume 0.28)
 
+(defun forest-threshold-target ()
+  (if (dialog-value "forest-refuge")
+      "forest/threshold-again"
+      "forest/threshold"))
+
+(dialog-set-choice-target "base/unlock-door" 0 #'forest-threshold-target)
+
 (dialog-text "forest/threshold"
              "the brass key is warm enough to hurt. it fits the front door."
+             :next "forest/porch")
+
+(dialog-particles "forest/threshold-again" :forest-wind :fade-seconds 4.0)
+(dialog-music "forest/threshold-again" "audio/forest-lyria-drone.mp3" :volume 0.28)
+
+(dialog-text "forest/threshold-again"
+             "the brass key is warm. the lock takes it on the first try this time."
              :next "forest/porch")
 
 (dialog-text "forest/porch"
@@ -472,6 +486,9 @@
 (dialog-text "forest/stay-still"
              "you stand still. they finish waving, pick up the broom, and go on sweeping. they leave the door open. it is still open when the light starts to go."
              :next "forest/door-watch")
+
+(dialog-on-enter "forest/door-watch"
+                 '(setf (dialog-value "forest-two-plates") t))
 
 (dialog-text "forest/door-watch"
              "you watch the open door the way you watched the hall sounds, cataloguing: lamplight, woodsmoke, the clink of one plate being laid. then a second plate. whoever sets the table sets it for two, every night, on the chance the second chair fills."
