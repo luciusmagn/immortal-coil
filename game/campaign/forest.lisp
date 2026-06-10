@@ -244,4 +244,118 @@
 
 (dialog-text "forest/unfinished"
              "you wait out the dark in short stretches, never long in one place. by the time the sky greys, you cannot tell if you have moved away from the house or in a circle around it."
+             :next "forest/dawn")
+
+
+;;; First light: the road, the mailboxes, and the way back past the house.
+
+(defun forest-dawn-target ()
+  (let ((refuge (dialog-value "forest-refuge" "")))
+    (cond
+      ((string= refuge "culvert") "forest/dawn-culvert")
+      ((string= refuge "gate") "forest/dawn-gate")
+      ((string= refuge "cellar") "forest/dawn-cellar")
+      (t "forest/dawn-walk"))))
+
+(dialog-scene "forest/dawn"
+              "first light."
+              :next #'forest-dawn-target)
+
+(dialog-text "forest/dawn-culvert"
+             "you wake in the culvert with the creek in your shoes. the road overhead is quiet now, and the frost on the concrete shows one set of boot prints that stopped at the mouth and went away."
+             :next "forest/dawn-walk")
+
+(dialog-text "forest/dawn-gate"
+             "you wake against the fence with the gate chain printed in your cheek. in daylight the sign is older than it looked, repainted many times, the same words every coat."
+             :next "forest/dawn-walk")
+
+(dialog-text "forest/dawn-cellar"
+             "you wake on the cot because you let yourself use the cot, near the end. the matches are gone from the shelf. the tags still hang on the nail, and you do not count them again."
+             :next "forest/dawn-walk")
+
+(dialog-text "forest/dawn-walk"
+             "in daylight the forest is just pines and cold. you keep the road in sight through the trees and walk in the direction the cars went."
+             :next "forest/mailboxes")
+
+(dialog-text "forest/mailboxes"
+             "where a gravel lane meets the road there is a rack of mailboxes, five of them, names painted and weathered off. on the newest box the name is still readable: {forest-tag-name}."
+             :next "forest/mailbox-choice")
+
+(dialog-pick "forest/mailbox-choice"
+             "down the road, an engine. a pickup, coming slow."
+             (dialog-option "step out and wave it down" "forest/truck-wave")
+             (dialog-option "stay in the tree line" "forest/truck-hide")
+             (dialog-option "open the mailbox first" "forest/mailbox-open"))
+
+(dialog-on-enter "forest/truck-wave"
+                 '(setf (dialog-value "forest-dawn") "waved"))
+
+(dialog-conversation "forest/truck-wave"
+                     (dialog-left "the driver"
+                                  "morning. you're from the place up the hill, then.")
+                     (dialog-right "you"
+                                   "what place up the hill?")
+                     (dialog-left "the driver"
+                                  "the one folk don't ask about. get in if you're getting in. i don't idle here.")
+                     :next "forest/truck-cab")
+
+(dialog-text "forest/truck-cab"
+             "the cab smells of dog and diesel. the driver watches the mirrors more than the road, and at the county sign he lets out a breath he has been holding since the mailboxes."
+             :next "forest/truck-drop")
+
+(dialog-text "forest/truck-drop"
+             "he drops you at a crossroads store with a phone, says nothing you can thank him for, and is gone. through the store window, the clerk is already looking at you like a question she has asked before."
+             :next "forest/dawn-end")
+
+(dialog-on-enter "forest/truck-hide"
+                 '(setf (dialog-value "forest-dawn") "hid"))
+
+(dialog-text "forest/truck-hide"
+             "you stay in the trees. the pickup slows at the boxes anyway, pauses by the newest one, and moves on. whoever it was knew the boxes well enough not to look at them."
+             :next "forest/road-back")
+
+(dialog-on-enter "forest/mailbox-open"
+                 '(setf (dialog-value "forest-dawn") "opened"))
+
+(dialog-text "forest/mailbox-open"
+             "the box opens stiffly. inside: circulars, a seed catalog, and one envelope addressed by hand to {forest-tag-name}, postmarked eleven years ago, unopened. the pickup passes while you are holding it."
+             :next "forest/road-back")
+
+(dialog-text "forest/road-back"
+             "the road bends with the hill, and every branch of it climbs. by noon you understand what the driver could have told you: out here all the lanes are the hill's lanes, and the hill has one house."
+             :next "forest/porch-again")
+
+(dialog-text "forest/porch-again"
+             "you come out of the trees above the house. on the porch, someone is sweeping. they stop, shade their eyes toward your stretch of woods, and wave, unhurried, the way you wave at family."
+             :next "forest/porch-choice")
+
+(dialog-pick "forest/porch-choice"
+             "the broom leans on the rail. the door behind them is open."
+             (dialog-option "go down to the house" "forest/go-down")
+             (dialog-option "stay still until they stop" "forest/stay-still")
+             (dialog-option "turn and keep to the trees" "forest/keep-going"))
+
+(dialog-on-enter "forest/go-down"
+                 '(setf (dialog-value "forest-porch") "returned"))
+
+(dialog-text "forest/go-down"
+             "you walk down. they hold the door the way it has always been held for you, and the warmth inside smells like every winter you can remember, which is the problem with it."
+             :next "forest/dawn-end")
+
+(dialog-on-enter "forest/stay-still"
+                 '(setf (dialog-value "forest-porch") "stood"))
+
+(dialog-text "forest/stay-still"
+             "you stand still. they finish waving, pick up the broom, and go on sweeping. they leave the door open. it is still open when the light starts to go."
+             :next "forest/dawn-end")
+
+(dialog-on-enter "forest/keep-going"
+                 '(setf (dialog-value "forest-porch") "fled"))
+
+(dialog-text "forest/keep-going"
+             "you turn along the ridge and keep moving. behind you the sweeping goes on, unworried, the sound carrying the way sound does when no one is chasing you because no one needs to."
+             :next "forest/dawn-end")
+
+(dialog-text "forest/dawn-end"
+             "you walk until walking is all there is. when you finally sleep, it is sudden and dreamless, in the needles, with your back against a fence post you did not check for carvings."
              :next "base/awake")
