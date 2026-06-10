@@ -444,4 +444,21 @@
 
 (dialog-text "war/arc-end"
              "you sleep badly, in your clothes, with the pencil copy under the blotter."
+             :next "war/day4")
+
+(dialog-scene "war/day4"
+              "the fourth morning."
+              :next "war/brandt-last")
+
+(dialog-conversation "war/brandt-last"
+                     (dialog-left "Brandt"
+                                  "the pencil copy is filed, chancellor. filed where things are found again, which is not the same cabinet as filed.")
+                     (dialog-right "you"
+                                   "Brandt. when this is over. what will it have been for?")
+                     (dialog-left "Brandt"
+                                  "for the ones who get the version with the all-clear in it. someone has to live in that version. it will not be us.")
+                     :next "war/day4-close")
+
+(dialog-text "war/day4-close"
+             "the eight o'clock bell rings. you put on yesterday's coat, take the new key, and go to lose the war more slowly."
              :next "base/awake")
