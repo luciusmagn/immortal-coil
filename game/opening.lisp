@@ -196,14 +196,77 @@
 
 (dialog-text "ship/doctrine"
              "she nods and writes it into the crossing manual. it is procedure now, with your name beside it."
-             :next "ship/bunk")
+             :next "ship/second-alarm")
 
 (dialog-text "ship/luck"
              "she laughs and lets it go. from the doorway, Imari says the record speaks for itself."
-             :next "ship/bunk")
+             :next "ship/second-alarm")
 
 (dialog-text "ship/quiet"
              "the cup is hot, then warm, then empty. Voss takes the silence as modesty."
+             :next "ship/second-alarm")
+
+(dialog-text "ship/second-alarm"
+             "the cup is still in your hand when the second alarm starts, lower than the first. Imari's voice on the open channel: pressure fault aft, decks six and seven, spreading forward."
+             :next "ship/breach-report")
+
+(dialog-conversation "ship/breach-report"
+                     (dialog-left "Imari"
+                                  "Harrow is in six at the drive trunk. Okafor and two ratings are in seven. Dane is between them with the kit.")
+                     (dialog-right "{player-name}"
+                                   "time to seal?")
+                     (dialog-left "Imari"
+                                  "one bulkhead, captain. the actuator will not cycle twice before the trunk goes. six or seven. your call.")
+                     :next "ship/breach-choice")
+
+(dialog-pick "ship/breach-choice"
+             "the board shows both decks amber, going red."
+             (dialog-option "seal deck six" "ship/seal-six")
+             (dialog-option "seal deck seven" "ship/seal-seven")
+             (dialog-option "hold both open for Dane" "ship/hold-open"))
+
+(dialog-on-enter "ship/seal-six"
+                 '(setf (dialog-value "ship-lost-name") "Harrow"))
+
+(dialog-text "ship/seal-six"
+             "you seal six. the drive trunk holds because Harrow holds it, and the last thing through the channel is Harrow reading out trunk pressure, steady, until there is no more channel."
+             :next "ship/second-flight")
+
+(dialog-on-enter "ship/seal-seven"
+                 '(setf (dialog-value "ship-lost-name") "Okafor"))
+
+(dialog-text "ship/seal-seven"
+             "you seal seven. Okafor does not call the bridge. the two ratings with him are named Imre and Sel, and you make yourself think both names while the board goes red."
+             :next "ship/second-flight")
+
+(dialog-on-enter "ship/hold-open"
+                 '(setf (dialog-value "ship-lost-name") "Dane"))
+
+(dialog-text "ship/hold-open"
+             "you hold both bulkheads for Dane. Dane clears seven with one rating under each arm, turns back for Okafor, and the trunk goes while the doors are still open. you seal onto silence."
+             :next "ship/second-flight")
+
+(dialog-minigame "ship/second-flight"
+                 "w/a/s/d or arrow keys steer. hold the ship in the open gates."
+                 :game :wire-flight
+                 :success "ship/aftermath"
+                 :failure "ship/crash-return")
+
+(dialog-text "ship/aftermath"
+             "the crossing holds. the board goes green deck by deck, except where it stays dark, and the bridge is very loud with no one saying anything."
+             :next "ship/aftermath-praise")
+
+(dialog-conversation "ship/aftermath-praise"
+                     (dialog-left "Voss"
+                                  "textbook seal, captain. nobody cycles an actuator that clean under fault.")
+                     (dialog-right "{player-name}"
+                                   "log the names first.")
+                     (dialog-left "Imari"
+                                  "logged. cause of loss: crossing fault. action of record: correct and timely. that is what the record will say.")
+                     :next "ship/letters")
+
+(dialog-text "ship/letters"
+             "you write to {ship-lost-name}'s family in the format the manual provides. the manual provides three sentences. you use all three and sit a long time over the fourth that is not provided."
              :next "ship/bunk")
 
 (dialog-text "ship/bunk"
@@ -220,6 +283,10 @@
 
 (dialog-text "ship/later-galley"
              "in the galley there is one cup on the rack. the crossing manual lies open to the page with your name beside the procedure."
+             :next "ship/later-roster")
+
+(dialog-text "ship/later-roster"
+             "the duty roster by the door has not been changed. {ship-lost-name} is still on it, third watch. so is everyone."
              :next "ship/later-chair")
 
 (dialog-text "ship/later-chair"
