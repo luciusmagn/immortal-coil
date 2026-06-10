@@ -41,7 +41,7 @@
                  '(jrpg-init-state))
 
 (dialog-text "jrpg/inn"
-             "the match flares. you are in an inn room: checked blanket, wooden chest, wash basin, and a quest notice nailed above the basin."
+             "the lantern steadies. you are in an inn room: checked blanket, wooden chest, wash basin, and a quest notice nailed above the basin."
              :next "jrpg/notice")
 
 (dialog-text "jrpg/notice"

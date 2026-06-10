@@ -126,7 +126,7 @@
       "forest/threshold-again"
       "forest/threshold"))
 
-(dialog-set-choice-target "base/unlock-door" 0 #'forest-threshold-target)
+(dialog-set-next "base/key-turn" #'forest-threshold-target)
 
 (dialog-text "forest/threshold"
              "the brass key is warm enough to hurt. it fits the front door."

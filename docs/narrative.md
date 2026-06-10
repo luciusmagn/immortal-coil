@@ -370,11 +370,19 @@ append one detail without fighting a large, over-specific paragraph.
 Route through the store, never around it. Any node's next, any choice
 target, and any graft can be a delegate function, and delegates should
 read flags rather than private globals so saves, mods, and tools all see
-the same truth. The built-in graph now plays this way: `wakes` counts
-returns to the room and rotates flag-gated waking echoes (`base/feel-*`);
-`ship/wake-after`, `war/knock-again`, `forest/threshold-again`, and
-`facility/desk-again` are revisit variants chosen by each path's own
-flags. Durable artifacts are flagged as they are established —
+the same truth. Divergence must also stay gentle: never fan one slot into
+many parallel variants, because a row of siblings at a fixed spot reads
+as a crossroads. The built-in graph instead picks at most one waking echo
+per return (`choose-wake-echo` stores it in `wake-echo`, rotating by the
+`wakes` counter) and surfaces it as a binary variant of whichever
+ordinary room beat owns that detail diegetically — thread at the blanket,
+pitch in the drawer, laminate on the lock plate. Path entries are padded
+the same way: `base/drink`, `base/key-turn`, and `base/light-lantern`
+each put an ordinary beat between a trigger choice and the first
+path-owned node, and `ship/wake-after`, `war/knock-again`,
+`forest/threshold-again`, and `facility/desk-again` are revisit variants
+chosen by each path's own flags. Durable artifacts are flagged as they
+are established —
 `alice-thread-pocket`, `alice-foreman-pencil`, `rogue-matchbook`,
 `rogue-saw-tally`, `war-pencil-note`, `facility-second-coat`,
 `forest-two-plates` — so later scenes and mods can pay them off.

@@ -18,25 +18,53 @@
       "base/too-many-doors"
       "base/choose-door"))
 
-(defun base-feel-echoes ()
-  (let ((echoes nil))
-    (flet ((add (flag id)
-             (when (dialog-value flag)
-               (push id echoes))))
-      (add "facility-designation" "base/feel-laminate")
-      (add "rogue-saw-tally" "base/feel-chalk")
-      (add "alice-thread-pocket" "base/feel-thread")
-      (add "jrpg-vane-answer" "base/feel-bread")
-      (add "forest-refuge" "base/feel-pitch")
-      (add "war-first-order" "base/feel-desk")
-      (add "ship-lost-name" "base/feel-cup"))
-    echoes))
+(defparameter *base-wake-echoes*
+  '(("alice-thread-pocket" . "thread")
+    ("ship-lost-name" . "cup")
+    ("war-first-order" . "desk")
+    ("forest-refuge" . "pitch")
+    ("jrpg-vane-answer" . "bread")
+    ("rogue-saw-tally" . "chalk")
+    ("facility-designation" . "laminate")))
 
-(defun base-feel-target ()
-  (let ((echoes (base-feel-echoes)))
-    (if echoes
-        (nth (mod (dialog-value "wakes" 0) (length echoes)) echoes)
-        "base/feel")))
+(defun choose-wake-echo ()
+  (let ((available (loop for (flag . echo) in *base-wake-echoes*
+                         when (dialog-value flag)
+                           collect echo)))
+    (setf (dialog-value "wake-echo")
+          (when available
+            (nth (mod (dialog-value "wakes" 0) (length available))
+                 available)))))
+
+(defun wake-echo-p (echo)
+  (equal (dialog-value "wake-echo" "") echo))
+
+(defun base-exited-bed-target ()
+  (if (wake-echo-p "thread")
+      "base/exited-bed-thread"
+      "base/exited-bed"))
+
+(defun base-room-breath-target ()
+  (cond
+    ((wake-echo-p "cup") "base/room-breath-cup")
+    ((wake-echo-p "desk") "base/room-breath-desk")
+    (t "base/room-breath")))
+
+(defun base-drawer-target ()
+  (cond
+    ((wake-echo-p "pitch") "base/drawer-pitch")
+    ((wake-echo-p "bread") "base/drawer-bread")
+    (t "base/drawer")))
+
+(defun base-door-shadow-target ()
+  (if (wake-echo-p "laminate")
+      "base/door-shadow-laminate"
+      "base/door-shadow"))
+
+(defun base-door-key-target ()
+  (if (wake-echo-p "chalk")
+      "base/door-key-chalk"
+      "base/door-key"))
 
 (defun ship-galley-target ()
   (if (plusp (dialog-value "ship-failures" 0))
@@ -53,11 +81,12 @@
 
 (dialog-on-enter "base/awake"
                  '(setf (dialog-value "wakes")
-                        (1+ (dialog-value "wakes" 0))))
+                        (1+ (dialog-value "wakes" 0)))
+                 'choose-wake-echo)
 
 (dialog-text "base/awake"
              "you awake in a strange world..."
-             :next #'base-feel-target)
+             :next "base/feel")
 
 ;; Move this below any node while developing, then use New Game.
 ;; (dialog-dev-save-here
@@ -68,60 +97,56 @@
              "or at least that's how you feel..."
              :next "base/exit-bed")
 
-(dialog-text "base/feel-cup"
-             "or at least that's how you feel. your right hand is curled, as if it had been holding a cup."
-             :next "base/exit-bed")
-
-(dialog-text "base/feel-desk"
-             "or at least that's how you feel. your neck aches the way it does after sleeping at a desk."
-             :next "base/exit-bed")
-
-(dialog-text "base/feel-pitch"
-             "or at least that's how you feel. there is pine pitch under two of your fingernails."
-             :next "base/exit-bed")
-
-(dialog-text "base/feel-bread"
-             "or at least that's how you feel. you can smell bread, faintly, from nowhere in the room."
-             :next "base/exit-bed")
-
-(dialog-text "base/feel-thread"
-             "or at least that's how you feel. a loop of white thread is wound twice around two of your fingers."
-             :next "base/exit-bed")
-
-(dialog-text "base/feel-chalk"
-             "or at least that's how you feel. there is chalk dust on the pad of your thumb."
-             :next "base/exit-bed")
-
-(dialog-text "base/feel-laminate"
-             "or at least that's how you feel. your fingertips smell faintly of laminate."
-             :next "base/exit-bed")
-
 (dialog-choice "base/exit-bed"
                "exit bed?"
-               (dialog-option "yes" "base/exited-bed")
+               (dialog-option "yes" #'base-exited-bed-target)
                (dialog-option "no" "base/sleep"))
 
 (dialog-text "base/exited-bed"
              "you wearily open your eyes, there is a night stand next to your bed"
-             :next "base/room-breath")
+             :next #'base-room-breath-target)
+
+(dialog-text "base/exited-bed-thread"
+             "you wearily open your eyes, there is a night stand next to your bed. pushing back the blanket takes a moment: a loop of white thread is wound twice around two of your fingers."
+             :next #'base-room-breath-target)
 
 (dialog-text "base/room-breath"
              "you stretch and get out of bed"
              :next "base/thirst")
 
+(dialog-text "base/room-breath-cup"
+             "you stretch and get out of bed. your right hand stays curled a moment, as if it had been holding a cup."
+             :next "base/thirst")
+
+(dialog-text "base/room-breath-desk"
+             "you stretch and get out of bed. your neck aches the way it does after sleeping at a desk."
+             :next "base/thirst")
+
 (dialog-choice "base/thirst"
                "drink from the glass on your night stand?"
-               (dialog-option "yes" #'ship-wake-target)
-               (dialog-option "no"  "base/drawer"))
+               (dialog-option "yes" "base/drink")
+               (dialog-option "no"  #'base-drawer-target))
+
+(dialog-text "base/drink"
+             "you drink. the water is colder than anything else in the room."
+             :next #'ship-wake-target)
 
 (dialog-text "base/drawer"
              "there are some drawers in your room, you rummage through the top one looking for something to wear. there's a paper matchbook sticking out of a shirt."
              :next "base/match")
 
+(dialog-text "base/drawer-pitch"
+             "there are some drawers in your room, you rummage through the top one looking for something to wear. there's a paper matchbook sticking out of a shirt, and pine pitch under two of your fingernails."
+             :next "base/match")
+
+(dialog-text "base/drawer-bread"
+             "there are some drawers in your room, you rummage through the top one looking for something to wear. there's a paper matchbook sticking out of a shirt. the shirt smells faintly of bread."
+             :next "base/match")
+
 (dialog-choice "base/match"
                "strike a match?"
                (dialog-option "yes" "base/light-lantern")
-               (dialog-option "no"  "base/door-shadow"))
+               (dialog-option "no"  #'base-door-shadow-target))
 
 (dialog-text "base/light-lantern"
              "the match lights up, you spot a lantern that you can light with the match."
@@ -129,7 +154,11 @@
 
 (dialog-text "base/door-shadow"
              "close to the door, you can make out a lock plate."
-             :next "base/door-key")
+             :next #'base-door-key-target)
+
+(dialog-text "base/door-shadow-laminate"
+             "close to the door, you can make out a lock plate. under your fingertips it is smooth as laminate."
+             :next #'base-door-key-target)
 
 (dialog-on-enter "base/door-key"
                  '(setf (dialog-value "has-brass-key") t))
@@ -138,10 +167,21 @@
              "the key is on a small table by the door"
              :next "base/unlock-door")
 
+(dialog-on-enter "base/door-key-chalk"
+                 '(setf (dialog-value "has-brass-key") t))
+
+(dialog-text "base/door-key-chalk"
+             "the key is on a small table by the door. picking it up leaves chalk dust on the pad of your thumb."
+             :next "base/unlock-door")
+
 (dialog-choice "base/unlock-door"
                "try it in the lock?"
-               (dialog-option "yes" "forest/threshold")
+               (dialog-option "yes" "base/key-turn")
                (dialog-option "no"  "base/count-doors"))
+
+(dialog-text "base/key-turn"
+             "the key turns through one full rotation, then a second. cold air moves through the gap before the door is properly open."
+             :next "forest/threshold")
 
 (dialog-number "base/count-doors"
                "how many doors do you count?"
