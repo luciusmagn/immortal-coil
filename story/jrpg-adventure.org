@@ -150,6 +150,12 @@ Current nodes:
 - =jrpg/demon-lord=
 - =jrpg/demon-choice=
 - =jrpg/demon-terms=
+- =jrpg/sword-choice=
+- duel/terms/swords branch: =jrpg/duel=, =jrpg/refuse=, =jrpg/swords=
+
+Vane marks the visitor sword rack once for every challenger who lost; the
+hill of broken swords stays local lore and must not foreshadow the hidden
+demon-lord idea.
 
 * Current node spine
 
@@ -180,6 +186,10 @@ Current nodes:
 - =jrpg/demon-choice=
 - demon branch: =jrpg/demon-fight=, =jrpg/demon-terms=, =jrpg/demon-chest=
 - =jrpg/chapter-end=
+- =jrpg/sword-choice=
+- answer branch: =jrpg/duel= and =jrpg/duel-end=, =jrpg/refuse=, =jrpg/swords=
+- =jrpg/inn-return=
+- =jrpg/ledger-line=, which sleeps back into =base/awake=
 
 * State keys
 
@@ -207,6 +217,7 @@ Current nodes:
 - =jrpg-last-battle=
 - =jrpg-tower-approach=
 - =jrpg-demon-approach=
+- =jrpg-vane-answer=
 
 * Minigames
 

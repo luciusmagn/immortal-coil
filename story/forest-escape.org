@@ -21,6 +21,12 @@ The brass key path leads to the dark forest survival story.
 - =forest/porch= places the house alone in a black pine forest.
 - =forest/tag= shows the wrist tag and begins the confinement reveal.
 - =forest/pursuer= names the player like misplaced property.
+- The three refuges store =forest-refuge= and deepen the reveal:
+  - =forest/culvert=: a road, passing cars, the lantern turning back at the
+    tree line.
+  - =forest/gate=: the property sign bolted facing inward.
+  - =forest/cellar-dark= and =forest/cellar-overhead=: a kept cot, four more
+    wrist tags, steps crossing the boards above.
 
 * Audio and visual
 

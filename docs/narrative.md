@@ -93,6 +93,17 @@ Planned surface:
 - The first clear address should be restrained, such as a title spoken by an
   aide, not a blunt declaration of identity.
 
+Current surface:
+
+- `game/campaign/war.lisp` grafts onto the static, bells, and glass hall-sound
+  leaves; the other leaves stay open as hook points.
+- `war/aide` is the first address: Brandt says "chancellor" in passing.
+- `war/doors` reuses the counted `door-count` as the cabinet room number.
+- `war/briefing` and `war/decision` are the first abstract command beats; the
+  bridge/rail-yard/delay choice is stored in `war-first-order`, and each cost
+  is paid by people the player never sees.
+- `war/return` ends through sleeping in your clothes.
+
 ## Ship Captain
 
 The glass of water path leads to the hard-sci-fi ship captain story.
@@ -113,7 +124,14 @@ Current surface:
 - `ship/wake` reveals restraint straps and indicator lights in reflection.
 - `ship/name` collects the name stenciled on the frame at the foot of the bed.
 - `ship/flight` is the wireframe flight minigame.
-- Failure loops back into the same alarm without explaining the loop.
+- Failure loops back into the same alarm without explaining the loop, and
+  silently counts in the `ship-failures` store key.
+- `ship/bridge` and `ship/praise` introduce Imari (logs) and Voss (lanes);
+  the crew's praise reads as a compliment and is meant to sting later.
+- `ship/galley-remembered` is the first memory intrusion: Voss's burned
+  sleeve mid-pour, shown only when at least one crossing failed.
+- `ship/voss-question` records how the captain explains the crossing, and
+  `ship/bunk` returns to the room through ordinary sleep.
 
 ## Forest Escape
 
@@ -132,6 +150,10 @@ Current surface:
 - `forest/porch` places the house alone in a black pine forest.
 - `forest/tag` shows the wrist tag and begins the confinement reveal.
 - `forest/pursuer` names the player like misplaced property.
+- The three refuges deepen the reveal and store `forest-refuge`:
+  `forest/culvert` reaches a road where cars pass and the lantern turns back,
+  `forest/gate` finds the property sign facing inward, and
+  `forest/cellar-dark` shows a kept cot and four more wrist tags on a nail.
 
 Future writing should soften the branch trigger. The player should not feel that
 "brass key means forest route" as clearly as they do in this draft.
@@ -172,6 +194,11 @@ Current surface:
 - `jrpg/tower-choice` records the tower approach.
 - Pell, the tower steward, introduces the tower approach choices.
 - `jrpg/demon-choice` records how the player approaches Vane.
+- `jrpg/sword-choice` settles the visit (duel, terms, or asking about the
+  broken swords) into `jrpg-vane-answer`. Vane's hill of broken swords stays
+  ordinary JRPG lore; it must not foreshadow the hidden demon-lord idea.
+- `jrpg/inn-return` and `jrpg/ledger-line` close the chapter at Oakbarrow:
+  breakfast one day late, one ledger line, asleep before the candle is out.
 
 ## Dream Maze
 
@@ -210,6 +237,10 @@ Current surface:
 - `alice/table` introduces the table and inverted cups.
 - `alice/choice` selects an impossible courtesy.
 - `alice/court` asks for name, crime, and room size.
+- `alice/doors` re-records `door-count` through the foreman's question, and
+  `alice/verdict` rules the room was the player's all along — that branch's
+  own canon, not a shared truth.
+- `alice/thread-out` follows the white thread back under the door.
 
 ## Rogue Branch
 
@@ -228,7 +259,14 @@ Current surface:
 - `rogue/entrance` opens onto hard white dungeon lines.
 - `rogue/inventory` gives a ration, a ring, and no memory of the stairs.
 - `rogue/door` chooses a door by list.
-- `rogue/loot` chooses scroll, ring, or ration.
+- `rogue/loot` chooses scroll, ring, or ration; wearing the ring sets
+  `rogue-ring-worn`.
+- `rogue/stairs` descends past the carved name; turning back finds the way
+  locked from the other side.
+- `rogue/floor-two` and `rogue/cell` end in a room furnished like the base
+  bedroom, drawn in dungeon lines, with no lock plate on the inside.
+- `rogue/pillow` hides a half-used matchbook; `rogue/sleep` fades out with
+  the torch.
 
 ## Containment Researcher
 
@@ -254,6 +292,15 @@ Current surface:
 - `dream/right-exit` shows a straightened corridor with a painted line down the
   middle of the floor and a familiar door handle. The painted line is the first
   institutional seed for this path.
+- `game/campaign/containment.lisp` grafts both `dream/right-exit` and
+  `dream/maze-lost` into the facility corridor.
+- `facility/desk` holds a sign-in sheet already signed three times in the
+  player's handwriting; `facility/designation` collects a designation, not a
+  name, into `facility-designation`.
+- `facility/card` introduces the RECURRENCE card; `facility/window` passes a
+  dark room furnished like the base bedroom without comment.
+- `facility/end` leaves the player at a warm brass handle, echoing the forest
+  key.
 
 Visual note:
 

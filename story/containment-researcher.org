@@ -2,7 +2,7 @@
 
 * Status
 
-Planned.
+Partly implemented.
 
 * Entry
 
@@ -25,8 +25,21 @@ A black-and-white demake-style flash of an SCP-Foundation-like circular logo
 could work as a brief institutional mark. It should not be an explanatory title
 card.
 
+* Current surface
+
+- =game/campaign/containment.lisp= grafts both =dream/right-exit= and
+  =dream/maze-lost= into the facility corridor.
+- =facility/desk= shows a sign-in sheet already signed three times in the
+  player's handwriting.
+- =facility/designation= collects a designation, not a name, into
+  =facility-designation=; the grey coat addresses the player by it.
+- =facility/card= introduces IN THE EVENT OF RECURRENCE, REMAIN WHERE YOU
+  ARE; "recurrence" is the institution's word for the loop.
+- =facility/window= passes a dark room furnished like the base bedroom.
+- =facility/end= leaves the player at a warm brass handle.
+
 * TODO
 
 - Define the institution name.
-- Define the first protocol scene.
 - Decide whether the player is researcher, subject-handler, or observer.
+- Give the path its own drone.

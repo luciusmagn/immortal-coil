@@ -21,7 +21,13 @@ The upper dream maze exit leads to a Rogue-inspired dungeon path.
 - =rogue/entrance=
 - =rogue/inventory=
 - =rogue/door=
-- =rogue/loot=
+- =rogue/loot=, where wearing the ring sets =rogue-ring-worn=
+- =rogue/stairs= descends past the carved name; turning back finds the door
+  locked from the other side.
+- =rogue/floor-two= and =rogue/cell= end in a room furnished like the base
+  bedroom, with no lock plate on the inside.
+- =rogue/pillow= hides a half-used matchbook; =rogue/sleep= fades out with
+  the torch.
 
 * Audio
 

@@ -2,7 +2,7 @@
 
 * Status
 
-Planned.
+Partly implemented.
 
 * Entry
 
@@ -26,8 +26,18 @@ nation-leader-in-war story.
 - The first clear address should be restrained, such as a title spoken by an
   aide.
 
+* Current surface
+
+- =game/campaign/war.lisp= grafts onto the static, bells, and glass
+  hall-sound leaves. The other leaves stay open as hook points.
+- Brandt is the aide; the first address is "chancellor", said in passing.
+- =war/doors= reuses =door-count= as the cabinet room number.
+- Olen runs the map. =war/decision= stores bridge/rail-yard/delay in
+  =war-first-order=; each option's cost lands on unseen people.
+- =war/return= exits through sleeping in your clothes.
+
 * TODO
 
-- Define the first aide.
-- Define the war-room vocabulary.
-- Decide which existing base-room actions feed this branch.
+- Give the path its own drone and ambient sound.
+- Add a second briefing that remembers =war-first-order=.
+- Decide what the numbers station is reading.

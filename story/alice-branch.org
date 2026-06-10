@@ -21,6 +21,10 @@ The left dream maze exit leads to an Alice-like impossible courtesy path.
 - =alice/table=
 - =alice/choice=
 - =alice/court=
+- =alice/doors= re-records =door-count= through the foreman.
+- =alice/verdict= rules the room was the player's all along; branch-relative
+  canon, not shared truth.
+- =alice/thread-out= follows the white thread back under the door.
 
 * Audio
 

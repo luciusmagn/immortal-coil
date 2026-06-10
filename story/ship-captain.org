@@ -24,7 +24,14 @@ The glass of water path leads into the hard-sci-fi ship captain story.
 - =ship/wake= reveals restraint straps and indicator lights in reflection.
 - =ship/name= collects the name stenciled on the frame at the foot of the bed.
 - =ship/flight= runs the wireframe flight minigame.
-- Failure returns to the same alarm without explaining the mechanism.
+- Failure returns to the same alarm without explaining the mechanism, and
+  silently counts in =ship-failures=.
+- =ship/bridge= and =ship/praise= introduce Imari (logs) and Voss (lanes);
+  "you make it look rehearsed" is admiration meant to sting later.
+- =ship/galley-remembered= is the first memory intrusion: Voss's burned
+  sleeve mid-pour, shown only after at least one failed crossing.
+- =ship/voss-question= records the captain's explanation; =ship/bunk= sleeps
+  back into the room.
 
 * Audio and visual
 
@@ -33,6 +40,6 @@ The glass of water path leads into the hard-sci-fi ship captain story.
 
 * TODO
 
-- Add crew members with names and duties.
-- Let the player see crew admiration before the cost is clear.
-- Add memory-intrusion scenes after failures.
+- Give Imari and Voss duties in a second crisis.
+- Let a memory intrusion contradict the log in a way only the player notices.
+- Vary the alarm scene subtly with =ship-failures= without announcing it.
