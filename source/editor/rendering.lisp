@@ -535,31 +535,19 @@
                             12
                             color)))
 
-(-> editor-node-field-label (editor-node-field) string)
-(defun editor-node-field-label (field)
-  (case field
-    (:speaker "SPEAKER")
-    (:response-key "RESPONSE KEY")
-    (:min-value "MIN")
-    (:max-value "MAX")
-    (:max-length "MAX LENGTH")
-    (:allow-empty "ALLOW EMPTY")
-    (:minigame "MINIGAME")
-    (t "")))
-
-(-> editor-node-field-display-value (editor-node-field) string)
+(-> editor-node-field-display-value (editor-field) string)
 (defun editor-node-field-display-value (field)
-  (editor-truncate-text (editor-node-field-buffer field) 64))
+  (editor-truncate-text (editor-field-buffer field) 64))
 
 (-> draw-editor-node-field-row
-    (editor-node-field nonnegative-integer scalar scalar t)
+    (editor-field nonnegative-integer scalar scalar t)
     t)
 (defun draw-editor-node-field-row (field index x y color)
   (let* ((selected-p (= index *editor-node-fields-field-index*))
          (row-color (if selected-p
                         color
                         (make-color 255 255 255 128)))
-         (label (editor-node-field-label field))
+         (label (editor-field-label field))
          (value (editor-node-field-display-value field)))
     (when selected-p
       (draw-text-at ">"
@@ -578,7 +566,7 @@
                   17
                   row-color)
     (when (and selected-p
-               (not (eq field :allow-empty)))
+               (field-editable-p field))
       (draw-cursor (+ x 184)
                    y
                    (text-width value 17)

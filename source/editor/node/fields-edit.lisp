@@ -4,49 +4,28 @@
 
 (defparameter *editor-node-field-value-max-length* 160)
 
-(-> reset-editor-node-fields-edit-state () t)
-(defun reset-editor-node-fields-edit-state ()
-  (setf *editor-node-fields-node-id* nil
-        *editor-node-fields-field-index* 0)
-  (clrhash *editor-node-fields-buffers*)
-  t)
 
-(-> editor-node-fields (node) vector)
-(defun editor-node-fields (node)
-  (case (node-kind node)
-    (:say
-     #(:speaker))
-    (:number
-     #(:response-key :min-value :max-value))
-    (:string
-     #(:response-key :max-length :allow-empty))
-    (:minigame
-     #(:minigame))
-    (t #())))
+;;; Field descriptors
 
-(-> editor-node-fields-count () nonnegative-integer)
-(defun editor-node-fields-count ()
-  (if (and *editor-node-fields-node-id*
-           (node-exists-p *editor-node-fields-node-id*))
-      (length (editor-node-fields (find-node *editor-node-fields-node-id*)))
-      0))
+(defclass editor-field ()
+  ((key
+    :initarg :key
+    :reader editor-field-key
+    :type editor-node-field)
+   (label
+    :initarg :label
+    :reader editor-field-label
+    :type string)
+   (reader
+    :initarg :reader
+    :reader editor-field-reader
+    :type runtime-function)))
 
-(-> editor-node-selected-field () (option editor-node-field))
-(defun editor-node-selected-field ()
-  (let ((count (editor-node-fields-count)))
-    (when (plusp count)
-      (let ((fields (editor-node-fields
-                     (find-node *editor-node-fields-node-id*))))
-        (aref fields
-              (min (max 0 *editor-node-fields-field-index*)
-                   (1- count)))))))
-
-(-> editor-node-field-buffer (editor-node-field) string)
-(defun editor-node-field-buffer (field)
-  (gethash field *editor-node-fields-buffers* ""))
-
-(defun (setf editor-node-field-buffer) (value field)
-  (setf (gethash field *editor-node-fields-buffers*) value))
+(defclass editor-string-field (editor-field) ())
+(defclass editor-optional-number-field (editor-field) ())
+(defclass editor-count-field (editor-field) ())
+(defclass editor-boolean-field (editor-field) ())
+(defclass editor-minigame-field (editor-field) ())
 
 (-> editor-node-field-value-string (t) string)
 (defun editor-node-field-value-string (value)
@@ -57,26 +36,127 @@
     (t
      (princ-to-string value))))
 
-(-> editor-node-field-current-value (node editor-node-field) t)
-(defun editor-node-field-current-value (node field)
-  (case field
-    (:speaker (node-speaker node))
-    (:response-key (node-response-key node))
-    (:min-value (node-min-value node))
-    (:max-value (node-max-value node))
-    (:max-length (node-max-length node))
-    (:allow-empty (node-allow-empty-p node))
-    (:minigame (node-minigame node))))
+(defgeneric field-editable-p (field)
+  (:documentation "True when FIELD takes typed input rather than toggling.")
+  (:method ((field editor-field)) t)
+  (:method ((field editor-boolean-field)) nil))
 
-(-> editor-node-field-prime (node editor-node-field) t)
+(defgeneric field-prime-string (field node)
+  (:documentation "Initial buffer content for FIELD read from NODE.")
+  (:method ((field editor-field) node)
+    (editor-node-field-value-string
+     (funcall (editor-field-reader field) node)))
+  (:method ((field editor-boolean-field) node)
+    (if (funcall (editor-field-reader field) node) "t" "nil")))
+
+
+;;; Field instances and per-node field sets
+
+(defparameter *editor-speaker-field*
+  (make-instance 'editor-string-field
+                 :key :speaker
+                 :label "SPEAKER"
+                 :reader #'node-speaker))
+
+(defparameter *editor-response-key-field*
+  (make-instance 'editor-string-field
+                 :key :response-key
+                 :label "RESPONSE KEY"
+                 :reader #'node-response-key))
+
+(defparameter *editor-min-value-field*
+  (make-instance 'editor-optional-number-field
+                 :key :min-value
+                 :label "MIN"
+                 :reader #'node-min-value))
+
+(defparameter *editor-max-value-field*
+  (make-instance 'editor-optional-number-field
+                 :key :max-value
+                 :label "MAX"
+                 :reader #'node-max-value))
+
+(defparameter *editor-max-length-field*
+  (make-instance 'editor-count-field
+                 :key :max-length
+                 :label "MAX LENGTH"
+                 :reader #'node-max-length))
+
+(defparameter *editor-allow-empty-field*
+  (make-instance 'editor-boolean-field
+                 :key :allow-empty
+                 :label "ALLOW EMPTY"
+                 :reader #'node-allow-empty-p))
+
+(defparameter *editor-minigame-id-field*
+  (make-instance 'editor-minigame-field
+                 :key :minigame
+                 :label "MINIGAME"
+                 :reader #'node-minigame))
+
+(defgeneric node-editable-fields (node)
+  (:documentation "Editor detail field descriptors for NODE.")
+  (:method ((node node))
+    #())
+  (:method ((node say-node))
+    (vector *editor-speaker-field*))
+  (:method ((node number-input-node))
+    (vector *editor-response-key-field*
+            *editor-min-value-field*
+            *editor-max-value-field*))
+  (:method ((node string-input-node))
+    (vector *editor-response-key-field*
+            *editor-max-length-field*
+            *editor-allow-empty-field*))
+  (:method ((node minigame-node))
+    (vector *editor-minigame-id-field*)))
+
+(-> editor-node-fields (node) vector)
+(defun editor-node-fields (node)
+  (node-editable-fields node))
+
+
+;;; Edit state
+
+(-> reset-editor-node-fields-edit-state () t)
+(defun reset-editor-node-fields-edit-state ()
+  (setf *editor-node-fields-node-id* nil
+        *editor-node-fields-field-index* 0)
+  (clrhash *editor-node-fields-buffers*)
+  t)
+
+(-> editor-node-fields-count () nonnegative-integer)
+(defun editor-node-fields-count ()
+  (if (and *editor-node-fields-node-id*
+           (node-exists-p *editor-node-fields-node-id*))
+      (length (editor-node-fields (find-node *editor-node-fields-node-id*)))
+      0))
+
+(-> editor-node-selected-field () (option editor-field))
+(defun editor-node-selected-field ()
+  (let ((count (editor-node-fields-count)))
+    (when (plusp count)
+      (let ((fields (editor-node-fields
+                     (find-node *editor-node-fields-node-id*))))
+        (aref fields
+              (min (max 0 *editor-node-fields-field-index*)
+                   (1- count)))))))
+
+(-> editor-node-field-buffer (editor-node-field) string)
+(defun editor-node-field-buffer (key)
+  (gethash key *editor-node-fields-buffers* ""))
+
+(defun (setf editor-node-field-buffer) (value key)
+  (setf (gethash key *editor-node-fields-buffers*) value))
+
+(-> editor-field-buffer (editor-field) string)
+(defun editor-field-buffer (field)
+  (editor-node-field-buffer (editor-field-key field)))
+
+(-> editor-node-field-prime (node editor-field) t)
 (defun editor-node-field-prime (node field)
-  (setf (editor-node-field-buffer field)
-        (case field
-          (:allow-empty
-           (if (node-allow-empty-p node) "t" "nil"))
-          (t
-           (editor-node-field-value-string
-            (editor-node-field-current-value node field)))))
+  (setf (editor-node-field-buffer (editor-field-key field))
+        (field-prime-string field node))
   t)
 
 (-> editor-start-node-fields-edit () boolean)
@@ -124,19 +204,21 @@
 
 (-> editor-node-selected-field-editable-p () boolean)
 (defun editor-node-selected-field-editable-p ()
-  (not (eq (editor-node-selected-field) :allow-empty)))
+  (let ((field (editor-node-selected-field)))
+    (and field
+         (field-editable-p field))))
 
 (-> editor-node-selected-field-buffer () string)
 (defun editor-node-selected-field-buffer ()
   (let ((field (editor-node-selected-field)))
     (if field
-        (editor-node-field-buffer field)
+        (editor-field-buffer field)
         "")))
 
 (defun (setf editor-node-selected-field-buffer) (value)
   (let ((field (editor-node-selected-field)))
     (if field
-        (setf (editor-node-field-buffer field) value)
+        (setf (editor-node-field-buffer (editor-field-key field)) value)
         value)))
 
 (-> editor-append-node-field-character (character) boolean)
@@ -170,6 +252,9 @@
   (when (is-key-pressed-p +key-backspace+)
     (editor-delete-node-field-character)))
 
+
+;;; Buffer parsing
+
 (-> editor-node-field-parse-integer (string) (option integer))
 (defun editor-node-field-parse-integer (text)
   (let ((trimmed (editor-node-field-trim text)))
@@ -183,8 +268,8 @@
 
 (-> editor-node-field-parse-optional-number (editor-node-field)
     (values boolean (option number)))
-(defun editor-node-field-parse-optional-number (field)
-  (let* ((raw (editor-node-field-buffer field))
+(defun editor-node-field-parse-optional-number (key)
+  (let* ((raw (editor-node-field-buffer key))
          (trimmed (editor-node-field-trim raw)))
     (cond
       ((or (zerop (length trimmed))
@@ -197,16 +282,16 @@
 (-> editor-node-field-parse-required-nonnegative
     (editor-node-field)
     (values boolean nonnegative-integer))
-(defun editor-node-field-parse-required-nonnegative (field)
+(defun editor-node-field-parse-required-nonnegative (key)
   (let ((value (editor-node-field-parse-integer
-                (editor-node-field-buffer field))))
+                (editor-node-field-buffer key))))
     (values (and value (>= value 0))
             (or value 0))))
 
 (-> editor-node-field-parse-boolean (editor-node-field)
     (values boolean boolean))
-(defun editor-node-field-parse-boolean (field)
-  (let ((value (editor-node-field-trim (editor-node-field-buffer field))))
+(defun editor-node-field-parse-boolean (key)
+  (let ((value (editor-node-field-trim (editor-node-field-buffer key))))
     (cond
       ((member value '("t" "true" "yes" "1") :test #'string-equal)
        (values t t))
@@ -217,8 +302,8 @@
 
 (-> editor-node-field-keyword-value (editor-node-field)
     (option minigame-id))
-(defun editor-node-field-keyword-value (field)
-  (let ((value (editor-node-field-trim (editor-node-field-buffer field))))
+(defun editor-node-field-keyword-value (key)
+  (let ((value (editor-node-field-trim (editor-node-field-buffer key))))
     (unless (zerop (length value))
       (let ((name (if (char= (char value 0) #\:)
                       (subseq value 1)
@@ -227,85 +312,127 @@
           (intern (string-upcase name) :keyword))))))
 
 (-> editor-node-field-text-value (editor-node-field) string)
-(defun editor-node-field-text-value (field)
-  (editor-node-field-trim (editor-node-field-buffer field)))
+(defun editor-node-field-text-value (key)
+  (editor-node-field-trim (editor-node-field-buffer key)))
 
-(-> editor-node-fields-values-valid-p (node) boolean)
-(defun editor-node-fields-values-valid-p (node)
-  (case (node-kind node)
-    (:number
-     (multiple-value-bind (min-valid-p min-value)
-         (editor-node-field-parse-optional-number :min-value)
-       (multiple-value-bind (max-valid-p max-value)
-           (editor-node-field-parse-optional-number :max-value)
-         (and (plusp (length (editor-node-field-text-value :response-key)))
-              min-valid-p
-              max-valid-p
-              (or (not (and min-value max-value))
-                  (<= min-value max-value))))))
-    (:string
-     (multiple-value-bind (length-valid-p max-length)
-         (editor-node-field-parse-required-nonnegative :max-length)
-       (multiple-value-bind (boolean-valid-p allow-empty-p)
-           (editor-node-field-parse-boolean :allow-empty)
-         (declare (ignore allow-empty-p))
-         (and (plusp (length (editor-node-field-text-value :response-key)))
-              length-valid-p
-              (plusp max-length)
-              boolean-valid-p))))
-    (:minigame
-     (not (null (editor-node-field-keyword-value :minigame))))
-    (t t)))
 
-(-> editor-node-fields-invalid-message (node) string)
-(defun editor-node-fields-invalid-message (node)
-  (case (node-kind node)
-    (:number "EDITOR: RESPONSE KEY OR BOUNDS INVALID")
-    (:string "EDITOR: STRING FIELD INVALID")
-    (:minigame "EDITOR: MINIGAME REQUIRED")
-    (t "EDITOR: DETAILS INVALID")))
+;;; Per-kind validation, draft writing, and apply
 
-(-> editor-write-node-fields-edit (t dialog-id node) t)
-(defun editor-write-node-fields-edit (stream node-id node)
-  (case (node-kind node)
-    (:say
-     (format stream "~&(dialog-set-speaker ~s ~s)~2%"
-             node-id
-             (editor-node-field-text-value :speaker)))
-    (:number
-     (multiple-value-bind (min-valid-p min-value)
-         (editor-node-field-parse-optional-number :min-value)
-       (declare (ignore min-valid-p))
-       (multiple-value-bind (max-valid-p max-value)
-           (editor-node-field-parse-optional-number :max-value)
-         (declare (ignore max-valid-p))
-         (format stream "~&(dialog-set-response-key ~s ~s)~%"
-                 node-id
-                 (editor-node-field-text-value :response-key))
-         (format stream "(dialog-set-number-bounds ~s ~s ~s)~2%"
-                 node-id
-                 min-value
-                 max-value))))
-    (:string
-     (multiple-value-bind (length-valid-p max-length)
-         (editor-node-field-parse-required-nonnegative :max-length)
-       (declare (ignore length-valid-p))
-       (multiple-value-bind (boolean-valid-p allow-empty-p)
-           (editor-node-field-parse-boolean :allow-empty)
-         (declare (ignore boolean-valid-p))
-         (format stream "~&(dialog-set-response-key ~s ~s)~%"
-                 node-id
-                 (editor-node-field-text-value :response-key))
-         (format stream "(dialog-set-string-max-length ~s ~d)~%"
-                 node-id
-                 max-length)
-         (format stream "(dialog-set-string-allow-empty ~s ~s)~2%"
-                 node-id
-                 allow-empty-p))))
-    (:minigame
-     (format stream "~&(dialog-set-minigame ~s ~s)~2%"
-             node-id
-             (editor-node-field-keyword-value :minigame)))))
+(defgeneric node-fields-valid-p (node)
+  (:documentation "True when the edited detail buffers parse for NODE.")
+  (:method ((node node))
+    t)
+  (:method ((node number-input-node))
+    (multiple-value-bind (min-valid-p min-value)
+        (editor-node-field-parse-optional-number :min-value)
+      (multiple-value-bind (max-valid-p max-value)
+          (editor-node-field-parse-optional-number :max-value)
+        (and (plusp (length (editor-node-field-text-value :response-key)))
+             min-valid-p
+             max-valid-p
+             (or (not (and min-value max-value))
+                 (<= min-value max-value))))))
+  (:method ((node string-input-node))
+    (multiple-value-bind (length-valid-p max-length)
+        (editor-node-field-parse-required-nonnegative :max-length)
+      (multiple-value-bind (boolean-valid-p allow-empty-p)
+          (editor-node-field-parse-boolean :allow-empty)
+        (declare (ignore allow-empty-p))
+        (and (plusp (length (editor-node-field-text-value :response-key)))
+             length-valid-p
+             (plusp max-length)
+             boolean-valid-p))))
+  (:method ((node minigame-node))
+    (not (null (editor-node-field-keyword-value :minigame)))))
+
+(defgeneric node-fields-invalid-message (node)
+  (:documentation "Status line shown when NODE's detail buffers do not parse.")
+  (:method ((node node))
+    "EDITOR: DETAILS INVALID")
+  (:method ((node number-input-node))
+    "EDITOR: RESPONSE KEY OR BOUNDS INVALID")
+  (:method ((node string-input-node))
+    "EDITOR: STRING FIELD INVALID")
+  (:method ((node minigame-node))
+    "EDITOR: MINIGAME REQUIRED"))
+
+(defgeneric node-write-fields-edit (node stream)
+  (:documentation "Write the detail edit for NODE as draft setter forms.")
+  (:method ((node node) stream)
+    (declare (ignore stream))
+    nil)
+  (:method ((node say-node) stream)
+    (format stream "~&(dialog-set-speaker ~s ~s)~2%"
+            (node-id node)
+            (editor-node-field-text-value :speaker)))
+  (:method ((node number-input-node) stream)
+    (multiple-value-bind (min-valid-p min-value)
+        (editor-node-field-parse-optional-number :min-value)
+      (declare (ignore min-valid-p))
+      (multiple-value-bind (max-valid-p max-value)
+          (editor-node-field-parse-optional-number :max-value)
+        (declare (ignore max-valid-p))
+        (format stream "~&(dialog-set-response-key ~s ~s)~%"
+                (node-id node)
+                (editor-node-field-text-value :response-key))
+        (format stream "(dialog-set-number-bounds ~s ~s ~s)~2%"
+                (node-id node)
+                min-value
+                max-value))))
+  (:method ((node string-input-node) stream)
+    (multiple-value-bind (length-valid-p max-length)
+        (editor-node-field-parse-required-nonnegative :max-length)
+      (declare (ignore length-valid-p))
+      (multiple-value-bind (boolean-valid-p allow-empty-p)
+          (editor-node-field-parse-boolean :allow-empty)
+        (declare (ignore boolean-valid-p))
+        (format stream "~&(dialog-set-response-key ~s ~s)~%"
+                (node-id node)
+                (editor-node-field-text-value :response-key))
+        (format stream "(dialog-set-string-max-length ~s ~d)~%"
+                (node-id node)
+                max-length)
+        (format stream "(dialog-set-string-allow-empty ~s ~s)~2%"
+                (node-id node)
+                allow-empty-p))))
+  (:method ((node minigame-node) stream)
+    (format stream "~&(dialog-set-minigame ~s ~s)~2%"
+            (node-id node)
+            (editor-node-field-keyword-value :minigame))))
+
+(defgeneric node-apply-fields-edit (node)
+  (:documentation "Apply the edited detail buffers to NODE in memory.")
+  (:method ((node node))
+    nil)
+  (:method ((node say-node))
+    (node-set-speaker node (editor-node-field-text-value :speaker)))
+  (:method ((node number-input-node))
+    (multiple-value-bind (min-valid-p min-value)
+        (editor-node-field-parse-optional-number :min-value)
+      (declare (ignore min-valid-p))
+      (multiple-value-bind (max-valid-p max-value)
+          (editor-node-field-parse-optional-number :max-value)
+        (declare (ignore max-valid-p))
+        (node-set-response-key node
+                               (editor-node-field-text-value :response-key))
+        (node-set-number-bounds node min-value max-value))))
+  (:method ((node string-input-node))
+    (multiple-value-bind (length-valid-p max-length)
+        (editor-node-field-parse-required-nonnegative :max-length)
+      (declare (ignore length-valid-p))
+      (multiple-value-bind (boolean-valid-p allow-empty-p)
+          (editor-node-field-parse-boolean :allow-empty)
+        (declare (ignore boolean-valid-p))
+        (node-set-response-key node
+                               (editor-node-field-text-value :response-key))
+        (node-set-string-max-length node max-length)
+        (node-set-string-allow-empty node allow-empty-p))))
+  (:method ((node minigame-node))
+    (node-set-minigame node
+                       (editor-node-field-keyword-value :minigame))))
+
+
+;;; Save flow
 
 (-> editor-append-node-fields-edit (dialog-id node) boolean)
 (defun editor-append-node-fields-edit (node-id node)
@@ -317,43 +444,15 @@
                                 :if-exists :append
                                 :if-does-not-exist :create)
           (format stream "~&;;; detail edit for ~s~%" node-id)
-          (editor-write-node-fields-edit stream node-id node))
+          (node-write-fields-edit node stream))
         t)
     (error (condition)
       (runtime-warn "Could not append editor detail edit: ~a" condition)
       nil)))
 
-(-> editor-apply-node-fields-edit (dialog-id node) t)
-(defun editor-apply-node-fields-edit (node-id node)
-  (case (node-kind node)
-    (:say
-     (dialog-set-speaker node-id (editor-node-field-text-value :speaker)))
-    (:number
-     (multiple-value-bind (min-valid-p min-value)
-         (editor-node-field-parse-optional-number :min-value)
-       (declare (ignore min-valid-p))
-       (multiple-value-bind (max-valid-p max-value)
-           (editor-node-field-parse-optional-number :max-value)
-         (declare (ignore max-valid-p))
-         (dialog-set-response-key node-id
-                                  (editor-node-field-text-value
-                                   :response-key))
-         (dialog-set-number-bounds node-id min-value max-value))))
-    (:string
-     (multiple-value-bind (length-valid-p max-length)
-         (editor-node-field-parse-required-nonnegative :max-length)
-       (declare (ignore length-valid-p))
-       (multiple-value-bind (boolean-valid-p allow-empty-p)
-           (editor-node-field-parse-boolean :allow-empty)
-         (declare (ignore boolean-valid-p))
-         (dialog-set-response-key node-id
-                                  (editor-node-field-text-value
-                                   :response-key))
-         (dialog-set-string-max-length node-id max-length)
-         (dialog-set-string-allow-empty node-id allow-empty-p))))
-    (:minigame
-     (dialog-set-minigame node-id
-                          (editor-node-field-keyword-value :minigame))))
+(-> editor-finish-node-fields-edit (node) t)
+(defun editor-finish-node-fields-edit (node)
+  (node-apply-fields-edit node)
   (setf *editor-status-message* "EDITOR: DETAILS SAVED")
   (reset-editor-node-fields-edit-state)
   (setf *editor-mode* :play)
@@ -371,13 +470,13 @@
        (setf *editor-status-message* "EDITOR: NODE MISSING")
        (play-choice-switch)
        nil)
-      ((not (editor-node-fields-values-valid-p node))
+      ((not (node-fields-valid-p node))
        (setf *editor-status-message*
-             (editor-node-fields-invalid-message node))
+             (node-fields-invalid-message node))
        (play-choice-switch)
        nil)
       ((editor-append-node-fields-edit node-id node)
-       (editor-apply-node-fields-edit node-id node))
+       (editor-finish-node-fields-edit node))
       (t
        (setf *editor-status-message* "EDITOR: DETAIL SAVE FAILED")
        (play-choice-switch)
@@ -391,36 +490,41 @@
   (play-choice-switch)
   t)
 
-(-> editor-cycle-node-minigame-field (navigation-direction) boolean)
-(defun editor-cycle-node-minigame-field (direction)
-  (let ((ids (registered-minigame-ids)))
-    (when ids
-      (let* ((current (editor-node-field-keyword-value :minigame))
-             (position (or (position current ids) 0))
-             (next (nth (mod (+ position direction) (length ids)) ids)))
-        (setf (editor-node-field-buffer :minigame)
-              (editor-node-field-value-string next))
-        (play-choice-switch)
-        t))))
 
-(-> editor-toggle-node-boolean-field () boolean)
-(defun editor-toggle-node-boolean-field ()
-  (multiple-value-bind (valid-p allow-empty-p)
-      (editor-node-field-parse-boolean :allow-empty)
-    (declare (ignore valid-p))
-    (setf (editor-node-field-buffer :allow-empty)
-          (if allow-empty-p "nil" "t"))
-    (play-choice-switch)
-    t))
+;;; Field adjustment
+
+(defgeneric field-adjust (field direction)
+  (:documentation "Adjust FIELD with left/right input; true when handled.")
+  (:method ((field editor-field) direction)
+    (declare (ignore direction))
+    nil)
+  (:method ((field editor-boolean-field) direction)
+    (declare (ignore direction))
+    (let ((key (editor-field-key field)))
+      (multiple-value-bind (valid-p value)
+          (editor-node-field-parse-boolean key)
+        (declare (ignore valid-p))
+        (setf (editor-node-field-buffer key)
+              (if value "nil" "t"))
+        (play-choice-switch)
+        t)))
+  (:method ((field editor-minigame-field) direction)
+    (let ((ids (registered-minigame-ids))
+          (key (editor-field-key field)))
+      (when ids
+        (let* ((current (editor-node-field-keyword-value key))
+               (position (or (position current ids) 0))
+               (next (nth (mod (+ position direction) (length ids)) ids)))
+          (setf (editor-node-field-buffer key)
+                (editor-node-field-value-string next))
+          (play-choice-switch)
+          t)))))
 
 (-> editor-node-fields-adjust-selected (navigation-direction) boolean)
 (defun editor-node-fields-adjust-selected (direction)
-  (case (editor-node-selected-field)
-    (:allow-empty
-     (editor-toggle-node-boolean-field))
-    (:minigame
-     (editor-cycle-node-minigame-field direction))
-    (t nil)))
+  (let ((field (editor-node-selected-field)))
+    (and field
+         (field-adjust field direction))))
 
 (-> update-editor-node-fields-edit () boolean)
 (defun update-editor-node-fields-edit ()
