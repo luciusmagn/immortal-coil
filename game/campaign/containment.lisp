@@ -289,4 +289,56 @@
 
 (dialog-text "facility/rotation2-end"
              "the walk out passes the archive. through the door, on the returns trolley, there is one new file. you carry your own eyes past it, spine out."
+             :next "facility/rotation3")
+
+
+;;; Third rotation: the new file.
+
+(dialog-scene "facility/rotation3"
+              "third rotation."
+              :next "facility/trolley")
+
+(dialog-say "facility/trolley"
+            "M-3"
+            "one return today. walk it back, spine out. shelf gap is marked. {facility-designation} — today i would especially not read while walking."
+            :next "facility/file-carry")
+
+(dialog-text "facility/file-carry"
+             "the file is heavier than the four from yesterday together. the spine label is new, the ink not long dry. it reads: ROOM."
+             :next "facility/file-choice")
+
+(dialog-pick "facility/file-choice"
+             "the marked gap is at the end of the longest shelf, past the others."
+             (dialog-option "shelve it unread" "facility/file-shelve")
+             (dialog-option "open it at the gap" "facility/file-open")
+             (dialog-option "read just the first page" "facility/file-page"))
+
+(dialog-on-enter "facility/file-shelve"
+                 '(setf (dialog-value "facility-room-file") "shelved"))
+
+(dialog-text "facility/file-shelve"
+             "you shelve it. it goes in stiffly, a file that has never lived anywhere yet, and the shelf takes its weight with a sound like a held breath let go two rooms away."
+             :next "facility/file-after")
+
+(dialog-on-enter "facility/file-open"
+                 '(setf (dialog-value "facility-room-file") "opened"))
+
+(dialog-text "facility/file-open"
+             "you open it at the gap, which is against the instruction but not against the card. inside there are no pages. there is a paper matchbook, a brass key on a loop of white thread, and a laminated card with both sides blank."
+             :next "facility/file-after")
+
+(dialog-on-enter "facility/file-page"
+                 '(setf (dialog-value "facility-room-file") "read"))
+
+(dialog-text "facility/file-page"
+             "the first page is an inventory. BED, ONE. NIGHT STAND, ONE. GLASS, ONE, FULL. DOORS, FIGURE DISPUTED. SUBJECT, ONE, RECURRING. the second page is the first page again, and you stop there on your own."
+             :next "facility/file-after")
+
+(dialog-say "facility/file-after"
+            "M-3"
+            "filed is filed. whatever you did or did not do between the trolley and the shelf is between you and appendix two, and appendix two does not read while walking either."
+            :next "facility/rotation3-end")
+
+(dialog-text "facility/rotation3-end"
+             "he initials your third rotation, and under his initials, for the first time, he writes the date in full, as if some dates deserve to be found again. same time. the handle is warm."
              :next "base/awake")
