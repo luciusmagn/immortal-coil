@@ -310,6 +310,9 @@ Current surface:
   bedroom, drawn in dungeon lines, with no lock plate on the inside.
 - `rogue/pillow` hides a half-used matchbook; `rogue/sleep` fades out with
   the torch.
+- `rogue/delve` is the long stair: the reusable pixel-sprite crawl with
+  store-persisted progress. Its bottom room is the bedroom with a fresh
+  wrist tag; marks gathered tie back to the chalk tally.
 
 ## Containment Researcher
 

@@ -484,6 +484,13 @@ read and write the shared dialog store through their own handle:
 
 Function-based minigames use `dialog-value` directly for the same store.
 
+The game autosaves on every store mutation, so durable minigame progress
+kept in the store survives restarts mid-minigame. Mutate several keys per
+turn inside `(with-batched-store-saves () ...)` to save once per turn.
+See `game/rogue/delve.lisp` for a full example: a reusable, multi-floor
+crawl whose maps and outcome ids arrive via node config and whose whole
+run state lives under a config save prefix.
+
 Patch config and outcomes on existing nodes:
 
 ```lisp

@@ -134,6 +134,7 @@ Example:
 - GPU/audio resources are external resources; reload paths must explicitly unload or replace them when needed.
 - Prefer robust runtime warnings and safe fallbacks over dropping into the debugger during normal play. Narrative scripts, mods, saves, audio, and rendering paths should be defensive.
 - Graph and mod reloads should be explicit enough that developers can test a node quickly, including with a top-level dev save override form that can be moved around during development.
+- The game saves on every dialog store mutation, not only on node changes, into per-playthrough save slots (date, playtime, player name). Long minigames must keep their durable progress in the store (batched with `with-batched-store-saves`) so a restart resumes them mid-run.
 
 ## Claylib Notes
 

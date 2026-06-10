@@ -29,12 +29,33 @@ The upper dream maze exit leads to a Rogue-inspired dungeon path.
 - =rogue/pillow= hides a half-used matchbook; =rogue/sleep= fades out with
   the torch.
 
+* Delve device
+
+The south door off the second-floor landing opens the long stair: the
+=:rogue-delve= minigame (=game/rogue/delve.lisp=), the path's central
+device.
+
+- Reusable: maps, save prefix, and outcome ids all arrive via node
+  config. Other paths or mods can run their own delves with their own
+  floors.
+- Tiny black-and-white pixel sprites (5x5 bitmaps), a four-tile torch
+  radius, turn-based steps: player moves, then the hunter answers.
+- All progress (floor, position, marks, hunter, picked set) lives in
+  the dialog store under the prefix, so the autosave keeps mid-delve
+  progress and the stair resumes where the player left it, even across
+  restarts.
+- Marks gathered echo the chalk tally; three or more change the bottom
+  reveal. The bottom room is the bedroom again, with a fresh RETURN IF
+  FOUND tag on the bed. Being caught wakes the player on the landing,
+  counted, nothing missing except the going down.
+
 * Audio
 
 - Music: =assets/audio/rogue-lyria-drone.mp3=
 
 * TODO
 
-- Add a small grid-walk or room traversal system.
+- Grow the delve: more floors, a second hunter behavior, items
+  beyond marks.
 - Track inventory facts in the dialog store.
 - Keep prose terse and concrete.
