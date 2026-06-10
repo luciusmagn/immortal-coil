@@ -185,11 +185,12 @@
 (defun finish-dream-maze-minigame (node game exit-cell)
   (declare (ignore game))
   (stop-dream-maze-audio)
-  (setf (dialog-value "dream-maze-exit")
-        (dream-maze-exit-name exit-cell)
-        *dream-maze-minigame*
-        nil)
-  (jump-to-dialog-target (node-success-target node)))
+  (let ((exit-name (dream-maze-exit-name exit-cell)))
+    (setf (dialog-value "dream-maze-exit") exit-name
+          *dream-maze-minigame* nil)
+    (finish-minigame-node node
+                          (intern (string-upcase exit-name) :keyword)
+                          :success)))
 
 (-> check-dream-maze-exit (node dream-maze-minigame) t)
 (defun check-dream-maze-exit (node game)
