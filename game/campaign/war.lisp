@@ -460,5 +460,13 @@
                      :next "war/day4-close")
 
 (dialog-text "war/day4-close"
-             "the eight o'clock bell rings. you put on yesterday's coat, take the new key, and go to lose the war more slowly."
+             "the eight o'clock bell rings. you put on yesterday's coat, take the new key, and go down to the cabinet room."
+             :next "war/day4-table")
+
+(dialog-text "war/day4-table"
+             "at the table, Vey is courteous, Olen is punctual, and Sorel has a new ledger with the first page already ruled. the map has moved again overnight, one tape line, toward the river."
+             :next "war/day4-end")
+
+(dialog-text "war/day4-end"
+             "you take your seat. whatever the third district is counting tonight, the war is still there in front of everyone, asking to be lost more slowly, and you are still the one they ask."
              :next "base/awake")

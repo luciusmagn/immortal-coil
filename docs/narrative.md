@@ -32,10 +32,13 @@ changed.
 
 Every major path should eventually hold 20 to 30 minutes of content at the
 typewriter pace, minigames included. `scripts/content-report.lisp` measures
-this per path family. As of the cabinet-arc commit the typed-pace standings
-were: jrpg 13.8, war 12.1, ship 5.8, forest 5.5, rogue 3.3, facility 2.2,
-alice 1.8. Each path should also keep growing its own minigames, not only
-prose.
+this per path family. After the second expansion round the typed-pace
+standings were: war 19.9, jrpg 17.6, facility 15.1, forest 12.8, ship 12.8,
+rogue 12.5, alice 11.9 — war is effectively at target; every other path
+still needs one to two more arcs. Each path should also keep growing its own
+minigames, not only prose. The war path is Suzerain-inspired: conspiracy and
+intrigue through cabinet politics, with the player's unremembered signature
+at the center.
 
 The "future shapes the past" effect only works when transitions are gentle
 enough that a player on a single playthrough would not recognize them as
