@@ -244,3 +244,18 @@
         ((or (is-key-pressed-p +key-delete+)
              (editor-control-key-pressed-p +key-d+))
          (editor-delete-selected-store-entry))))))
+
+
+;;; Panel registration
+
+(defclass editor-store-edit-panel (editor-panel) ())
+
+(register-editor-panel
+ (make-instance 'editor-store-edit-panel :mode :edit-store))
+
+(defmethod panel-update ((panel editor-store-edit-panel) dt)
+  (declare (ignore dt))
+  (update-editor-store-edit))
+
+(defmethod panel-save ((panel editor-store-edit-panel))
+  (editor-save-store-edit))

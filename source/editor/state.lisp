@@ -271,29 +271,46 @@
       (push frame *editor-history*)
       frame)))
 
-(-> editor-active-panel-save-function () (option symbol))
-(defun editor-active-panel-save-function ()
-  (case *editor-mode*
-    (:edit-text 'editor-save-text-edit)
-    (:edit-store 'editor-save-store-edit)
-    (:edit-choice-option 'editor-save-choice-option-edit)
-    (:edit-conversation-entry 'editor-save-conversation-entry-edit)
-    (:edit-node-target 'editor-save-node-target-edit)
-    (:edit-node-fields 'editor-save-node-fields-edit)
-    (t nil)))
+;;; Panel protocol
+;;;
+;;; Each editor mode with its own overlay registers a panel object.
+;;; Update and save methods live next to the panel's edit functions;
+;;; draw methods live with the other editor rendering.
+
+(defclass editor-panel ()
+  ((mode
+    :initarg :mode
+    :reader editor-panel-mode
+    :type editor-mode)))
+
+(defvar *editor-panels* (make-hash-table :test #'eq))
+
+(-> register-editor-panel (editor-panel) editor-panel)
+(defun register-editor-panel (panel)
+  (setf (gethash (editor-panel-mode panel) *editor-panels*) panel))
+
+(-> active-editor-panel () (option editor-panel))
+(defun active-editor-panel ()
+  (gethash *editor-mode* *editor-panels*))
+
+(defgeneric panel-update (panel dt)
+  (:documentation "Frame update for PANEL while its mode is active."))
+
+(defgeneric panel-draw (panel color)
+  (:documentation "Draw PANEL's overlay."))
+
+(defgeneric panel-save (panel)
+  (:documentation "Commit PANEL's pending edit; true on success.")
+  (:method ((panel editor-panel))
+    t))
 
 (-> editor-autosave-active-panel () boolean)
 (defun editor-autosave-active-panel ()
-  (let ((save-function (editor-active-panel-save-function)))
+  (let ((panel (active-editor-panel)))
     (cond
-      ((null save-function)
+      ((null panel)
        t)
-      ((not (fboundp save-function))
-       (runtime-warn "Editor autosave function is missing: ~s"
-                     save-function)
-       (setf *editor-status-message* "EDITOR: AUTOSAVE MISSING")
-       nil)
-      ((funcall (symbol-function save-function))
+      ((panel-save panel)
        t)
       (t
        (setf *editor-status-message* "EDITOR: AUTOSAVE FAILED")

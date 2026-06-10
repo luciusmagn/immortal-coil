@@ -427,3 +427,19 @@ Panels register their methods next to their own start functions.")
   (if (and *editor-active-p* *state*)
       (node-add-detail (current-node))
       nil))
+
+
+;;; Panel registration
+
+(defclass editor-conversation-entry-panel (editor-panel) ())
+
+(register-editor-panel
+ (make-instance 'editor-conversation-entry-panel
+                :mode :edit-conversation-entry))
+
+(defmethod panel-update ((panel editor-conversation-entry-panel) dt)
+  (declare (ignore dt))
+  (update-editor-conversation-entry-edit))
+
+(defmethod panel-save ((panel editor-conversation-entry-panel))
+  (editor-save-conversation-entry-edit))

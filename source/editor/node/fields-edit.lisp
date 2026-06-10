@@ -557,3 +557,18 @@
       ((string-submit-pressed-p)
        (editor-save-node-fields-edit))
       (t t))))
+
+
+;;; Panel registration
+
+(defclass editor-node-fields-panel (editor-panel) ())
+
+(register-editor-panel
+ (make-instance 'editor-node-fields-panel :mode :edit-node-fields))
+
+(defmethod panel-update ((panel editor-node-fields-panel) dt)
+  (declare (ignore dt))
+  (update-editor-node-fields-edit))
+
+(defmethod panel-save ((panel editor-node-fields-panel))
+  (editor-save-node-fields-edit))

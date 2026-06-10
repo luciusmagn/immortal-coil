@@ -476,63 +476,73 @@
 (-> update-editor-controls (&optional seconds) boolean)
 (defun update-editor-controls (&optional (dt (get-frame-time)))
   (when *editor-active-p*
-    (case *editor-mode*
-      (:insert
-       (update-editor-insert-menu))
-      (:edit-text
-       (update-editor-text-edit dt))
-      (:edit-store
-       (update-editor-store-edit))
-      (:edit-choice-option
-       (update-editor-choice-option-edit))
-      (:edit-conversation-entry
-       (update-editor-conversation-entry-edit))
-      (:edit-node-target
-       (update-editor-node-target-edit))
-      (:edit-node-fields
-       (update-editor-node-fields-edit))
-      (t
-       (cond
-         ((update-editor-help-overlay-controls)
-          t)
-         ((update-editor-key-prefix-controls)
-          t)
-         ((or (is-key-pressed-p +key-page-up+)
-              (editor-control-key-pressed-p +key-b+))
-          (editor-return-to-previous-node)
-          t)
-         ((or (is-key-pressed-p +key-insert+)
-              (editor-control-key-pressed-p +key-i+))
-          (editor-open-insert-menu))
-         ((editor-control-key-pressed-p +key-r+)
-          (editor-open-replace-menu))
-         ((editor-control-key-pressed-p +key-a+)
-          (editor-add-node-detail))
-         ((editor-control-key-pressed-p +key-p+)
-          (editor-cycle-current-minigame))
-         ((editor-control-key-pressed-p +key-f+)
-          (editor-cycle-current-particles))
-         ((editor-control-key-pressed-p +key-k+)
-          (editor-cycle-current-sound))
-         ((editor-control-key-pressed-p +key-m+)
-          (editor-cycle-current-music))
-         ((editor-control-key-pressed-p +key-l+)
-          (editor-start-node-target-edit))
-         ((editor-control-key-pressed-p +key-v+)
-          (editor-toggle-choice-reveal))
-         ((or (is-key-pressed-p +key-f3+)
-              (editor-control-key-pressed-p +key-s+))
-          (editor-toggle-store-overlay))
-         ((update-editor-store-overlay-controls)
-          t)
-         ((editor-control-key-pressed-p +key-o+)
-          (editor-start-node-detail-edit))
-         ((and (or (is-key-pressed-p +key-delete+)
-                   (editor-control-key-pressed-p +key-d+))
-               (not *editor-store-overlay-p*))
-          (editor-delete-current-node))
-         ((or (is-key-pressed-p +key-f2+)
-              (editor-control-key-pressed-p +key-e+))
-          (editor-start-text-edit))
-         ((is-key-pressed-p +key-f6+)
-          (editor-cycle-insert-kind)))))))
+    (let ((panel (active-editor-panel)))
+      (cond
+        (panel
+         (panel-update panel dt))
+        ((update-editor-help-overlay-controls)
+         t)
+        ((update-editor-key-prefix-controls)
+         t)
+        ((or (is-key-pressed-p +key-page-up+)
+             (editor-control-key-pressed-p +key-b+))
+         (editor-return-to-previous-node)
+         t)
+        ((or (is-key-pressed-p +key-insert+)
+             (editor-control-key-pressed-p +key-i+))
+         (editor-open-insert-menu))
+        ((editor-control-key-pressed-p +key-r+)
+         (editor-open-replace-menu))
+        ((editor-control-key-pressed-p +key-a+)
+         (editor-add-node-detail))
+        ((editor-control-key-pressed-p +key-p+)
+         (editor-cycle-current-minigame))
+        ((editor-control-key-pressed-p +key-f+)
+         (editor-cycle-current-particles))
+        ((editor-control-key-pressed-p +key-k+)
+         (editor-cycle-current-sound))
+        ((editor-control-key-pressed-p +key-m+)
+         (editor-cycle-current-music))
+        ((editor-control-key-pressed-p +key-l+)
+         (editor-start-node-target-edit))
+        ((editor-control-key-pressed-p +key-v+)
+         (editor-toggle-choice-reveal))
+        ((or (is-key-pressed-p +key-f3+)
+             (editor-control-key-pressed-p +key-s+))
+         (editor-toggle-store-overlay))
+        ((update-editor-store-overlay-controls)
+         t)
+        ((editor-control-key-pressed-p +key-o+)
+         (editor-start-node-detail-edit))
+        ((and (or (is-key-pressed-p +key-delete+)
+                  (editor-control-key-pressed-p +key-d+))
+              (not *editor-store-overlay-p*))
+         (editor-delete-current-node))
+        ((or (is-key-pressed-p +key-f2+)
+             (editor-control-key-pressed-p +key-e+))
+         (editor-start-text-edit))
+        ((is-key-pressed-p +key-f6+)
+         (editor-cycle-insert-kind))))))
+
+
+;;; Panel registration
+
+(defclass editor-insert-panel (editor-panel) ())
+
+(register-editor-panel
+ (make-instance 'editor-insert-panel :mode :insert))
+
+(defmethod panel-update ((panel editor-insert-panel) dt)
+  (declare (ignore dt))
+  (update-editor-insert-menu))
+
+(defclass editor-text-edit-panel (editor-panel) ())
+
+(register-editor-panel
+ (make-instance 'editor-text-edit-panel :mode :edit-text))
+
+(defmethod panel-update ((panel editor-text-edit-panel) dt)
+  (update-editor-text-edit dt))
+
+(defmethod panel-save ((panel editor-text-edit-panel))
+  (editor-save-text-edit))

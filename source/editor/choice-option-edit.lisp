@@ -341,3 +341,18 @@
       ((string-submit-pressed-p)
        (editor-save-choice-option-edit))
       (t t))))
+
+
+;;; Panel registration
+
+(defclass editor-choice-option-panel (editor-panel) ())
+
+(register-editor-panel
+ (make-instance 'editor-choice-option-panel :mode :edit-choice-option))
+
+(defmethod panel-update ((panel editor-choice-option-panel) dt)
+  (declare (ignore dt))
+  (update-editor-choice-option-edit))
+
+(defmethod panel-save ((panel editor-choice-option-panel))
+  (editor-save-choice-option-edit))

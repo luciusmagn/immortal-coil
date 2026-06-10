@@ -815,19 +815,32 @@
                                 dim-color))
       (when *editor-store-overlay-p*
         (draw-editor-store-overlay color))
-      (when (eq *editor-mode* :insert)
-        (draw-editor-insert-menu color))
-      (when (eq *editor-mode* :edit-store)
-        (draw-editor-store-edit-panel color))
-      (when (eq *editor-mode* :edit-choice-option)
-        (draw-editor-choice-option-panel color))
-      (when (eq *editor-mode* :edit-conversation-entry)
-        (draw-editor-conversation-entry-panel color))
-      (when (eq *editor-mode* :edit-node-target)
-        (draw-editor-node-target-panel color))
-      (when (eq *editor-mode* :edit-node-fields)
-        (draw-editor-node-fields-panel color))
-      (when (eq *editor-mode* :edit-text)
-        (draw-editor-text-edit-panel color))
+      (let ((panel (active-editor-panel)))
+        (when panel
+          (panel-draw panel color)))
       (when *editor-help-overlay-p*
         (draw-editor-help-overlay color)))))
+
+
+;;; Panel drawing
+
+(defmethod panel-draw ((panel editor-insert-panel) color)
+  (draw-editor-insert-menu color))
+
+(defmethod panel-draw ((panel editor-store-edit-panel) color)
+  (draw-editor-store-edit-panel color))
+
+(defmethod panel-draw ((panel editor-choice-option-panel) color)
+  (draw-editor-choice-option-panel color))
+
+(defmethod panel-draw ((panel editor-conversation-entry-panel) color)
+  (draw-editor-conversation-entry-panel color))
+
+(defmethod panel-draw ((panel editor-node-target-panel) color)
+  (draw-editor-node-target-panel color))
+
+(defmethod panel-draw ((panel editor-node-fields-panel) color)
+  (draw-editor-node-fields-panel color))
+
+(defmethod panel-draw ((panel editor-text-edit-panel) color)
+  (draw-editor-text-edit-panel color))

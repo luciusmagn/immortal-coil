@@ -323,3 +323,18 @@
       ((string-submit-pressed-p)
        (editor-save-node-target-edit))
       (t t))))
+
+
+;;; Panel registration
+
+(defclass editor-node-target-panel (editor-panel) ())
+
+(register-editor-panel
+ (make-instance 'editor-node-target-panel :mode :edit-node-target))
+
+(defmethod panel-update ((panel editor-node-target-panel) dt)
+  (declare (ignore dt))
+  (update-editor-node-target-edit))
+
+(defmethod panel-save ((panel editor-node-target-panel))
+  (editor-save-node-target-edit))
