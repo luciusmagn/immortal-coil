@@ -285,7 +285,29 @@
 (dialog-say "alice/inspection-close"
             "the card judge"
             "the room passes inspection. it always does. that has begun to trouble the court, but the court's trouble is not the defendant's sentence. you may go back to bed."
-            :next "alice/thread-out")
+            :next "alice/effects")
+
+(dialog-text "alice/effects"
+             "before release, the clerk returns your effects against signature: exhibit one, the matchbook. exhibit two, the brass key. exhibit three, the paper tag, ink run, first line legible. you did not arrive with any of these. you sign anyway."
+             :next "alice/chambers")
+
+(dialog-say "alice/chambers"
+            "the card judge"
+            "a word in chambers before you go. unofficially. which is to say, pour the tea."
+            :next "alice/chambers-talk")
+
+(dialog-conversation "alice/chambers-talk"
+                     (dialog-left "the card judge"
+                                  "i have sentenced eleven defendants to keep that room. you are the first the room has kept back. the court does not know what to do with reciprocity. it is not in the rules.")
+                     (dialog-right "you"
+                                   "what happened to the other eleven?")
+                     (dialog-left "the card judge"
+                                  "they wake elsewhere now, by every account comfortably. drink your tea. you take it with both hands, i am told. that will do, where you are going.")
+                     :next "alice/garden-night")
+
+(dialog-text "alice/garden-night"
+             "the way out runs back through the garden of doors. at night the painted numbers are drying, and the gardener walks the rows blowing on them gently, one by one, like candles he has decided not to put out."
+             :next "alice/thread-out")
 
 (dialog-text "alice/thread-out"
              "the white thread is tied to your wrist now. it runs out under the courtroom door, and you follow it."
@@ -544,4 +566,64 @@
 
 (dialog-text "rogue/sleep"
              "you lie down. the white lines of the room soften as the torch goes out."
+             :next "rogue/wake-below")
+
+(dialog-text "rogue/wake-below"
+             "you wake in the dark below ground with a new torch burning in the bracket, already half spent, lit by no one you heard. dungeons keep their own housekeeping."
+             :next "rogue/identify"
+
+)
+
+(defun rogue-identify-target ()
+  (if (dialog-value "rogue-took-key")
+      "rogue/identify-key"
+      "rogue/identify-plain"))
+
+(dialog-text "rogue/identify"
+             "by torchlight you lay out what you carry on the blanket and take stock, because taking stock is the whole religion down here."
+             :next #'rogue-identify-target)
+
+(dialog-text "rogue/identify-key"
+             "the ration, the ring, and the shrine key. in this light the key's teeth match the memory of a lock you have only seen once, from very close, with your eye to the plate."
+             :next "rogue/climb")
+
+(dialog-text "rogue/identify-plain"
+             "the ration, half gone now, and the ring. the unidentified stays unidentified. some mornings that is the only mercy a cellar offers, and you take it."
+             :next "rogue/climb")
+
+(dialog-text "rogue/climb"
+             "you take the stairs up past the carved name, two floors of worn stone, and come out on the landing with the three doors. the draft has changed direction overnight."
+             :next "rogue/exit-door")
+
+(dialog-text "rogue/exit-door"
+             "a fourth door stands where the draft comes from, narrow, with a lock plate on this side. you are sure to the bone it was not here yesterday, and being sure of that is exactly what the dungeon would call being lost."
+             :next "rogue/exit-choice")
+
+(dialog-pick "rogue/exit-choice"
+             "the lock plate waits at eye height."
+             (dialog-option "try the shrine key" "rogue/key-turn"
+                            :when '(dialog-value "rogue-took-key"))
+             (dialog-option "look through the keyhole" "rogue/keyhole")
+             (dialog-option "leave it and climb on" "rogue/climb-on"))
+
+(dialog-on-enter "rogue/key-turn"
+                 '(setf (dialog-value "rogue-exit") "key"))
+
+(dialog-text "rogue/key-turn"
+             "the shrine key turns the way keys turn in locks they were cut for. the door opens on a small room: a bed, a night stand, a glass of water. warm air. you do not go in. you close it, gently, and leave the key in the plate."
+             :next "rogue/climb-on")
+
+(dialog-on-enter "rogue/keyhole"
+                 '(setf (dialog-value "rogue-exit") "looked"))
+
+(dialog-text "rogue/keyhole"
+             "you put your eye to the keyhole. on the other side, at eye height, is darkness of a particular shape, and the draft through the hole smells of pine."
+             :next "rogue/climb-on")
+
+(dialog-text "rogue/climb-on"
+             "you climb the last stair toward the white lines of the upper floor, and the dungeon does what dungeons do with those who keep moving: it lets you."
+             :next "rogue/out")
+
+(dialog-text "rogue/out"
+             "the entrance hall again. your inventory is what it always was, plus what you know now, which no slot carries. the upper exit stands open, and beyond it the dark is soft, like a room with the lamp just out."
              :next "base/awake")
