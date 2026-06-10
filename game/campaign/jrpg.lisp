@@ -480,5 +480,13 @@
              :next "jrpg/ledger-line")
 
 (dialog-text "jrpg/ledger-line"
-             "Mira writes one line in the ledger and hands you the room four key. you are asleep before the candle is out."
+             "Mira writes one line in the ledger and hands you the room four key. on the stair, {jrpg-companion} says good night the short way, which in Oakbarrow is a whole speech."
+             :next "jrpg/room-four")
+
+(dialog-text "jrpg/stair-night"
+             "on the landing, the inn holds its evening sounds the way a pot holds heat: the ledger closing, the stove settling, Oren's chain going up for the night with its own small ceremony."
+             :next "jrpg/room-four")
+
+(dialog-text "jrpg/room-four"
+             "room four: one candle, one basin, one blanket, all on credit, all earned now. the quest notice is gone from above the basin, and the nail it hung on has been polished by years of notices. you are asleep before the candle is out."
              :next "base/awake")

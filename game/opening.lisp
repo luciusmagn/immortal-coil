@@ -254,6 +254,10 @@
 
 (dialog-text "ship/aftermath"
              "the crossing holds. the board goes green deck by deck, except where it stays dark, and the bridge is very loud with no one saying anything."
+             :next "ship/aftermath-walk")
+
+(dialog-text "ship/aftermath-walk"
+             "you walk the green decks first, because the manual says presence steadies a crew, and then you stand a while outside the dark ones, because no manual has a chapter for that, and a captain writes the missing chapters with their feet."
              :next "ship/aftermath-praise")
 
 (dialog-conversation "ship/aftermath-praise"
@@ -271,7 +275,11 @@
 
 (dialog-scene "ship/next-watch"
               "the next watch."
-              :next "ship/watch-bridge")
+              :next "ship/mess")
+
+(dialog-text "ship/mess"
+             "the mess at change of watch holds the whole crew minus one, which is a kind of arithmetic a captain does without deciding to. someone has set the empty place anyway: cup, tray, fork squared. nobody talks about it and nobody clears it."
+             :next "ship/watch-bridge")
 
 (dialog-text "ship/watch-bridge"
              "the bridge runs quiet and exact. Voss recalibrates the lane tables without being asked, twice, the second time more slowly, getting the same answer and not liking it any better."
@@ -347,15 +355,24 @@
 
 (dialog-text "ship/intrusion-harrow"
              "on the way to the bunk you pass the drive trunk access, and for the length of one stride Harrow is at the panel, reading out pressure, steady, sleeve whole. the stride ends. the panel is dark and dogged shut, the way you ordered it left."
-             :next "ship/bunk")
+             :next "ship/corridor-imari")
 
 (dialog-text "ship/intrusion-okafor"
              "on the way to the bunk you pass deck seven's hatch, and for the length of one breath there is laughter behind it, three voices, the card game Okafor always claimed to be losing. the breath ends. the hatch reads SEALED in your own initials."
-             :next "ship/bunk")
+             :next "ship/corridor-imari")
 
 (dialog-text "ship/intrusion-dane"
              "on the way to the bunk you pass medbay, and for one step Dane is in the doorway with the kit over one shoulder, turning back the way Dane turned back. the step ends. the kit hangs on its peg, sealed, signed."
-             :next "ship/bunk")
+             :next "ship/corridor-imari")
+
+(dialog-conversation "ship/corridor-imari"
+                     (dialog-left "Imari"
+                                  "captain. the crew knows what the record says, and the crew knows what the record is for. nobody on this ship is confused about either.")
+                     (dialog-right "{player-name}"
+                                   "that sounds rehearsed.")
+                     (dialog-left "Imari"
+                                  "it is. we rehearsed it. good night, captain.")
+                     :next "ship/bunk")
 
 (dialog-text "ship/bunk"
              "you lie down in the bunk with your name stenciled at the foot. you are asleep before the lights dim."
@@ -366,11 +383,11 @@
               :next "ship/later-bridge")
 
 (dialog-text "ship/later-bridge"
-             "the bridge is dark except for the console light. your checklist is still taped beside it, soft at the corners. you cannot remember when you last heard another voice on board."
+             "the bridge is dark except for the console light. your checklist is still taped beside it, soft at the corners. you cannot remember when you last heard another voice on board. item nine still says count everyone twice, and you still do, both counts agreeing the way they have agreed for longer than you let yourself measure: one."
              :next "ship/later-galley")
 
 (dialog-text "ship/later-galley"
-             "in the galley there is one cup on the rack. the crossing manual lies open to the page with your name beside the procedure."
+             "in the galley there is one cup on the rack. the crossing manual lies open to the page with your name beside the procedure, and someone has underlined it, twice, in two different inks, the second time with a steadier hand, and both hands are yours."
              :next "ship/later-roster")
 
 (dialog-text "ship/later-roster"
@@ -379,10 +396,18 @@
 
 (dialog-text "ship/later-chair"
              "you sit in the captain's chair until the cup goes cold. somewhere below, a door you have stopped checking stays shut."
+             :next "ship/later-log")
+
+(dialog-text "ship/later-log"
+             "the watch log is current. it is always current. you write the date, the position held, the hail logged, in entries so alike that flipping back through them is like riffling a deck of one card, and somewhere in that sameness is a date where the handwriting steadies and never wavers again."
              :next "ship/later-walk")
 
 (dialog-text "ship/later-walk"
              "you do the rounds because the rounds are what there is. deck two: lights answer the motion sensors one section ahead of you, the way they would for anyone."
+             :next "ship/later-mess")
+
+(dialog-text "ship/later-mess"
+             "the mess is stowed except one place setting, squared away under a film of dust you do not disturb: cup, tray, fork. you stopped clearing it before you stopped remembering why it was set."
              :next "ship/later-medbay")
 
 (dialog-text "ship/later-medbay"

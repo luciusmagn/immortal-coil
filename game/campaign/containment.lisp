@@ -337,7 +337,15 @@
 (dialog-say "facility/file-after"
             "M-3"
             "filed is filed. whatever you did or did not do between the trolley and the shelf is between you and appendix two, and appendix two does not read while walking either."
-            :next "facility/rotation3-end")
+            :next "facility/kettle")
+
+(dialog-text "facility/kettle"
+             "the staff room kettle is warm. there is one mug, grey, designation stenciled, and a tin of the kind of tea that exists to be acceptable to everyone. you have your tea standing up, reading the notice board, exactly the way you would in any job, and for four minutes it works."
+             :next "facility/locker")
+
+(dialog-text "facility/locker"
+             "the staff room has one row of lockers, designations stenciled on grey doors. yours opens on a folded coat, grey, your size, smelling faintly of the corridor. behind it hangs another coat that is also yours, older, the elbows gone soft."
+             :next "facility/rotation3-end")
 
 (dialog-text "facility/rotation3-end"
              "he initials your third rotation, and under his initials, for the first time, he writes the date in full, as if some dates deserve to be found again."
@@ -357,4 +365,16 @@
                                    "is that advice or procedure?")
                      (dialog-left "M-3"
                                   "here, {facility-designation}, the difference is seniority. same time. the handle is warm.")
-                     :next "base/awake")
+                     :next "facility/walk3")
+
+(dialog-text "facility/notice-board"
+             "by the staff room door there is a notice board, mostly thumbtacks. the one notice reads: ROTATION SCHEDULES ARE POSTED IN ADVANCE. ANY STAFF MEMBER FINDING THEIR OWN NAME FURTHER DOWN THE SCHEDULE THAN EXPECTED SHOULD CONSULT APPENDIX TWO RATHER THAN THE SCHEDULE."
+             :next "facility/walk3")
+
+(dialog-text "facility/walk3"
+             "the walk out is yours alone tonight; M-3 stays with the binder. the painted line carries you past the curtained window, and you keep your eyes on the line the whole way, and the curtain stays a curtain, and that is the first rotation you would call easy."
+             :next "facility/clipboard")
+
+(dialog-text "facility/clipboard"
+             "at the desk by the door, the sign-in sheet has been replaced for the new week. the top line of the fresh page is already filled in, dated tomorrow, in handwriting you are done pretending not to recognize. you initial today instead, and leave tomorrow to whoever keeps arriving."
+             :next "base/awake")

@@ -250,21 +250,30 @@
 
 (dialog-text "alice/melody"
              "the melody is a lullaby with the intervals worn round, the kind sung by someone keeping their voice low through a door. it resolves on a note you know, and the chairs turn back."
-             :next "alice/verdict")
+             :next "alice/verdict-rise")
 
 (dialog-on-enter "alice/judge-watch"
                  '(setf (dialog-value "alice-deliberation") "watched"))
 
 (dialog-text "alice/judge-watch"
              "the judge passes the time signing blank pages, initialing each signature, and filing them in a drawer marked IN THE EVENT. he catches you watching and mouths: practice."
-             :next "alice/verdict")
+             :next "alice/verdict-rise")
 
 (dialog-on-enter "alice/juror-count"
                  '(setf (dialog-value "alice-deliberation") "counted"))
 
 (dialog-text "alice/juror-count"
              "you count the jurors twice and get two different numbers, and stop, because you know this feeling from somewhere with fewer chandeliers. the foreman, without turning, writes one more line."
-             :next "alice/verdict")
+             :next "alice/verdict-rise")
+
+(dialog-text "alice/verdict-rise"
+             "the chairs turn back. the foreman hands up the verdict folded in thirds, and the judge reads it to himself first, lips moving, the way you check a road before walking a guest onto it."
+             :next "alice/verdict-record")
+
+(dialog-say "alice/verdict-record"
+            "the card judge"
+            "for the record, before sentence. the room measures as testified, knot notwithstanding. the room smells, per the defendant, of {alice-room-smell}, and the jar agrees. the glass was full at every inspection on file. these facts are now the room's, permanently. the defendant should consider what that means about who keeps whom."
+            :next "alice/verdict")
 
 (dialog-say "alice/verdict"
             "the card judge"
@@ -311,6 +320,14 @@
 
 (dialog-text "alice/inspection-doors"
              "the doors: numbering withheld pending appeal, the appeal having been granted and denied. the jury counts them silently and writes nothing down, which from a jury is fear."
+             :next "alice/inspection-window")
+
+(dialog-text "alice/inspection-window"
+             "the window: present, sometimes a wall, currently a window, curtained from the far side. the bailiff taps it once with the gavel handle and notes for the record that something on the other side stopped tapping back years ago, and that the court misses it."
+             :next "alice/inspection-glass")
+
+(dialog-text "alice/inspection-glass"
+             "the glass of water is entered, lifted to the light, found full to the line, and set back to the millimeter. the foreman writes one word beside it. from where you stand the word is either evidence or offering, and the foreman's hand covers it before you can choose."
              :next "alice/inspection-close")
 
 (dialog-say "alice/inspection-close"
@@ -319,7 +336,7 @@
             :next "alice/effects")
 
 (dialog-text "alice/effects"
-             "before release, the clerk returns your effects against signature: exhibit one, the matchbook. exhibit two, the brass key. exhibit three, the paper tag, ink run, first line legible. you did not arrive with any of these. you sign anyway."
+             "before release, the clerk returns your effects against signature: exhibit one, the matchbook. exhibit two, the brass key. exhibit three, the paper tag, ink run, first line legible. you did not arrive with any of these, and the clerk's face says arrivals are a formality the court gave up on long before your case. you sign anyway, and the signature comes out steadier than you meant it to."
              :next "alice/chambers")
 
 (dialog-say "alice/chambers"
@@ -338,10 +355,48 @@
 
 (dialog-text "alice/garden-night"
              "the way out runs back through the garden of doors. at night the painted numbers are drying, and the gardener walks the rows blowing on them gently, one by one, like candles he has decided not to put out."
-             :next "alice/thread-out")
+             :next "alice/garden-rows")
+
+(dialog-text "alice/garden-rows"
+             "walking the rows at night you finally see what daylight crowded out: the doors are planted in family plots. a row of fives, a row of sevens, and at the end, alone in turned earth with its number still wet, one door painted with the figure you gave the foreman, whatever it was, kept now, official."
+             :next "alice/juror-gift")
+
+(dialog-text "alice/juror-gift"
+             "at the garden gate a juror is waiting, out of uniform, which for a playing card means standing with the plain side forward. they press something into your hand and leave before thanks can be arranged: the foreman's pencil, sharpened down to a thumb's length of use."
+             :next "alice/gate-gardener")
+
+(dialog-conversation "alice/gate-gardener"
+                     (dialog-left "the gardener"
+                                  "leaving by the gate. good. most defendants go over the wall, and the wall counts them, and then we have to repaint.")
+                     (dialog-right "you"
+                                   "what do i owe for the gate?")
+                     (dialog-left "the gardener"
+                                  "the gate is free. the garden was the toll, and you paid it the day you walked through without counting. not many manage. the ones who do, we leave the gate unlocked for.")
+                     :next "alice/thread-out")
 
 (dialog-text "alice/thread-out"
              "the white thread is tied to your wrist now. it runs out under the courtroom door, and you follow it."
+             :next "alice/table-again")
+
+(dialog-text "alice/table-again"
+             "the thread crosses the long table, between the upturned cups, and they are all upright now, all full, all steaming faintly, a table set for everyone who has ever been sentenced to a room. your old place is cleared."
+             :next "alice/goodbyes")
+
+(dialog-conversation "alice/goodbyes"
+                     (dialog-left "the cup"
+                                  "you will not see us again, or you will see us constantly. the distinction is administrative.")
+                     (dialog-right "you"
+                                   "which administration?")
+                     (dialog-left "the chair"
+                                  "the room's. mind the stair. it pretends to be longer going up.")
+                     :next "alice/cups-last")
+
+(dialog-text "alice/cups-last"
+             "behind you, faint and final as a clock in another room, you hear the long table being cleared: every cup turned back over, one by one, in no hurry, by someone who knows exactly how many there are."
+             :next "alice/stairwell-up")
+
+(dialog-text "alice/stairwell-up"
+             "the stairwell takes you up at exactly the length it always was, which after the chair's warning feels like a courtesy paid to you personally. at the top, the thread goes slack, its work done, and slips off your wrist on its own knot. you catch it before it falls, wind it twice around two fingers the way thread is kept, and put it in your pocket, where the court cannot enter it into anything."
              :next "base/awake")
 
 
@@ -422,7 +477,7 @@
                  '(setf (dialog-value "rogue-floor2-room") "armory"))
 
 (dialog-text "rogue/armory"
-             "an armory, racks empty except one: a short sword, oiled, recently. the whetstone beside it is worn to a wafer."
+             "an armory, racks empty except one: a short sword, oiled, recently. the whetstone beside it is worn to a wafer, and the oil rag is folded in thirds over the rack arm, damp side in, the way someone folds who expects to need it again soon and does not expect to be thanked."
              :next "rogue/armory-choice")
 
 (dialog-pick "rogue/armory-choice"
@@ -445,7 +500,7 @@
                  '(setf (dialog-value "rogue-floor2-room") "cistern"))
 
 (dialog-text "rogue/cistern"
-             "a cistern room, ankle-deep. the water is clear and perfectly still except by the far wall, where it is still in a different way."
+             "a cistern room, ankle-deep. the water is clear and perfectly still except by the far wall, where it is still in a different way: held still, the way you hold breath, and you know that kind of stillness from the inside now, from under pines, and you give it the professional courtesy of not staring."
              :next "rogue/cistern-choice")
 
 (dialog-pick "rogue/cistern-choice"
@@ -584,11 +639,11 @@
              :next "rogue/return-cell")
 
 (dialog-text "rogue/return-cell"
-             "you go back into the cell because it is the room you know, and shut the door, and there is still no lock plate on this side, and tonight that is almost a comfort."
+             "you go back into the cell because it is the room you know, and shut the door, and there is still no lock plate on this side, and tonight that is almost a comfort. you set the ration tin against the door anyway, balanced to fall and wake you, dungeon custom, older than locks and more honest about what it can promise."
              :next "rogue/sleep")
 
 (dialog-text "rogue/pillow"
-             "under the pillow there is a paper matchbook, half used."
+             "under the pillow there is a paper matchbook, half used. inside the cover is a tally in pencil, the same clerk's hand as everywhere else down here, and one struck mark has been gone over twice, the way you redraw a line you wish you had not had to make."
              :next "rogue/sleep")
 
 (dialog-text "rogue/hands"
@@ -601,9 +656,11 @@
 
 (dialog-text "rogue/wake-below"
              "you wake in the dark below ground with a new torch burning in the bracket, already half spent, lit by no one you heard. dungeons keep their own housekeeping."
-             :next "rogue/identify"
+             :next "rogue/housekeeping")
 
-)
+(dialog-text "rogue/housekeeping"
+             "beside the torch bracket, chalked low on the stone in a tidy clerk's hand, is a tally you did not notice last night: rows of four struck through with a fifth, many rows, and one fresh mark at the end, still dusty. you wipe your thumb beside it and leave the mark alone."
+             :next "rogue/identify")
 
 (defun rogue-identify-target ()
   (if (dialog-value "rogue-took-key")
@@ -640,7 +697,7 @@
              :next "rogue/landing-return")
 
 (dialog-text "rogue/landing-return"
-             "the landing with the three doors. the cistern door stands open now, and from inside comes the sound of water settling, as if something large has just finished crossing it without your permission."
+             "the landing with the three doors. the cistern door stands open now, and from inside comes the sound of water settling, as if something large has just finished crossing it without your permission. on the landing stone, wet prints lead from the cistern to the blank end wall and stop at it, unhurried to the last print."
              :next "rogue/exit-door")
 
 (dialog-text "rogue/exit-door"
@@ -673,5 +730,40 @@
              :next "rogue/out")
 
 (dialog-text "rogue/out"
-             "the entrance hall again. your inventory is what it always was, plus what you know now, which no slot carries. the upper exit stands open, and beyond it the dark is soft, like a room with the lamp just out."
+             "the entrance hall again. your inventory is what it always was, plus what you know now, which no slot carries."
+             :next "rogue/shrine-rest")
+
+(dialog-text "rogue/shrine-rest"
+             "you stop at the upper shrine on the way out, because down here you have learned to close accounts. the candles among the offered maps have burned to different heights, and one has guttered out."
+             :next "rogue/candle-choice")
+
+(dialog-pick "rogue/candle-choice"
+             "there are fresh candles in a box below the altar, and a striker."
+             (dialog-option "relight the guttered one" "rogue/relight")
+             (dialog-option "let it stay out" "rogue/let-out")
+             (dialog-option "light one of your own" "rogue/own-candle"))
+
+(dialog-on-enter "rogue/relight"
+                 '(setf (dialog-value "rogue-candle") "relit"))
+
+(dialog-text "rogue/relight"
+             "you relight it from its neighbor. the wick takes on the second try, and the map above it — older than the others, drawn on cloth — shows its faded corridor again, and the corridor has a small bed marked in it."
+             :next "rogue/hall-out")
+
+(dialog-on-enter "rogue/let-out"
+                 '(setf (dialog-value "rogue-candle") "out"))
+
+(dialog-text "rogue/let-out"
+             "you let it stay out. whoever's map it lit has either found the way or stopped needing one, and in both cases the dark over it is now correct."
+             :next "rogue/hall-out")
+
+(dialog-on-enter "rogue/own-candle"
+                 '(setf (dialog-value "rogue-candle") "own"))
+
+(dialog-text "rogue/own-candle"
+             "you take a fresh candle, light it, and stand it on the one bare patch of altar, with no map above it yet. an opening offer. the dungeon can match it or fold."
+             :next "rogue/hall-out")
+
+(dialog-text "rogue/hall-out"
+             "the upper exit stands open, and beyond it the dark is soft, like a room with the lamp just out. on the threshold you stop and listen once, professionally: water settling, a candle fizzing, and far below, patient as bookkeeping, the pacing, still keeping your hours."
              :next "base/awake")

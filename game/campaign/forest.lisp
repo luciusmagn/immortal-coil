@@ -274,7 +274,7 @@
              :next "forest/dawn-walk")
 
 (dialog-text "forest/dawn-walk"
-             "in daylight the forest is just pines and cold. you keep the road in sight through the trees and walk in the direction the cars went."
+             "in daylight the forest is just pines and cold. you keep the road in sight through the trees and walk in the direction the cars went. twice you pass markers you take at first for game trails: ribbons of surveyor's tape, faded pink, tied at shoulder height, spaced the way you would space them to find your way back in the dark."
              :next "forest/mailboxes")
 
 (dialog-text "forest/mailboxes"
@@ -349,6 +349,10 @@
 
 (dialog-text "forest/bench"
              "the bench holds the day's warmth for an hour and then gives it up. you sleep in pieces under the porch light, and nothing comes up the road all night except the road's own sounds, which you are learning."
+             :next "forest/bench-dream")
+
+(dialog-text "forest/bench-dream"
+             "in one of the pieces of sleep there is a kitchen, and bread cooling on a rack, and someone humming low through a door, and you wake from it warm, which frightens you more than the forest managed all night."
              :next "forest/bus")
 
 (dialog-text "forest/bus"
@@ -379,6 +383,10 @@
 
 (dialog-text "forest/get-off"
              "you step down at the pole. across the line the fields are fenced in wire, not plank, and the first mailbox you pass has a name on it that has never been painted over."
+             :next "forest/county-dusk")
+
+(dialog-text "forest/county-dusk"
+             "dusk on the far side of the county line looks like dusk anywhere: yard lights coming on one farm at a time, a dog reporting you to nobody, the smell of cut field. you keep waiting for the relief to arrive with it, and what arrives instead is the suspicion that you will miss the pines, which is the cruelest thing the hill has done yet."
              :next "forest/bus-end")
 
 (dialog-on-enter "forest/stay-on"
@@ -463,6 +471,10 @@
 
 (dialog-text "forest/stay-still"
              "you stand still. they finish waving, pick up the broom, and go on sweeping. they leave the door open. it is still open when the light starts to go."
+             :next "forest/door-watch")
+
+(dialog-text "forest/door-watch"
+             "you watch the open door the way you watched the hall sounds, cataloguing: lamplight, woodsmoke, the clink of one plate being laid. then a second plate. whoever sets the table sets it for two, every night, on the chance the second chair fills."
              :next "forest/dawn-end")
 
 (dialog-on-enter "forest/keep-going"
