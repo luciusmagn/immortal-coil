@@ -164,7 +164,21 @@
              :next "forest/tag")
 
 (dialog-text "forest/hide"
-             "you press in under the pine boughs. a lantern passes, stops level with you, and hangs there for ten breaths before moving on."
+             "you press in under the pine boughs. the lantern comes up the trail."
+             :next "forest/hold-still")
+
+(dialog-minigame "forest/hold-still"
+                 "space, w, or up arrow lets a breath out. stay quiet until the light moves on."
+                 :game :forest-hide
+                 :success "forest/hide-passed"
+                 :failure "forest/hide-heard")
+
+(dialog-text "forest/hide-passed"
+             "the light slides past and on up the trail. you let your breath go a little at a time."
+             :next "forest/tag")
+
+(dialog-text "forest/hide-heard"
+             "the light swings back and hangs level with you for ten breaths. then it moves on, slower than before."
              :next "forest/tag")
 
 (dialog-text "forest/look-back"
