@@ -1,81 +1,70 @@
 ;;; forest hide minigame
 ;;;
-;;; The lantern sweeps past while the player hides under the pines.
-;;; Breath pressure rises on its own; letting a breath out eases it but
-;;; makes noise. Gasping, or being noisy while the light is close, is
-;;; heard. Both outcomes continue the story; being heard only marks it.
+;;; The lantern sweeps past while the player hides. Breath pressure
+;;; rises on its own; letting a breath out eases it but makes noise.
+;;; A class-based session: per-node config can tune duration and
+;;; difficulty, and the finish reports :heard or :gasped outcomes
+;;; (falling back to the node's failure target when unmapped).
 
-(defconstant +forest-hide-duration+ 9.0)
-(defconstant +forest-hide-breath-rise+ 0.085)
-(defconstant +forest-hide-exhale+ 0.30)
-(defconstant +forest-hide-exhale-noise+ 0.34)
-(defconstant +forest-hide-noise-decay+ 0.55)
+(defclass forest-hide-session (minigame-session)
+  ((elapsed
+    :initform 0.0
+    :accessor forest-hide-elapsed)
+   (breath
+    :initform 0.25
+    :accessor forest-hide-breath)
+   (noise
+    :initform 0.0
+    :accessor forest-hide-noise)))
 
-(defvar *forest-hide* nil)
+(defun forest-hide-duration (session)
+  (session-config-value session :duration 9.0))
 
-(defstruct forest-hide
-  (node-id *runtime-fallback-node-id* :type dialog-id)
-  (elapsed 0.0 :type seconds)
-  (breath  0.25 :type scalar)
-  (noise   0.0 :type scalar))
+(defun forest-hide-breath-rise (session)
+  (session-config-value session :breath-rise 0.085))
 
-(defun make-fresh-forest-hide (node)
-  (make-forest-hide :node-id (node-id node)
-                    :elapsed 0.0
-                    :breath 0.25
-                    :noise 0.0))
-
-(defun ensure-forest-hide (node)
-  (unless (and *forest-hide*
-               (equal (forest-hide-node-id *forest-hide*)
-                      (node-id node)))
-    (setf *forest-hide* (make-fresh-forest-hide node)))
-  *forest-hide*)
+(defun forest-hide-noise-threshold (session)
+  (session-config-value session :noise-threshold 0.55))
 
 (defun forest-hide-exhale-pressed-p ()
   (or (is-key-pressed-p +key-space+)
       (is-key-pressed-p +key-up+)
       (is-key-pressed-p +key-w+)))
 
-(defun forest-hide-light-x (game)
-  (let ((progress (clamp01 (/ (forest-hide-elapsed game)
-                              +forest-hide-duration+))))
+(defun forest-hide-light-x (session)
+  (let ((progress (clamp01 (/ (forest-hide-elapsed session)
+                              (forest-hide-duration session)))))
     (+ 120.0 (* progress (- +virtual-width+ 240.0)))))
 
-(defun forest-hide-danger (game)
-  (let ((distance (abs (- (forest-hide-light-x game) +virtual-center-x+))))
+(defun forest-hide-danger (session)
+  (let ((distance (abs (- (forest-hide-light-x session)
+                          +virtual-center-x+))))
     (clamp01 (- 1.0 (/ distance 320.0)))))
 
-(defun finish-forest-hide (target)
-  (setf *forest-hide* nil)
-  (jump-to-dialog-target target))
+(defmethod minigame-session-update ((session forest-hide-session) node dt)
+  (incf (forest-hide-elapsed session) dt)
+  (incf (forest-hide-breath session)
+        (* (forest-hide-breath-rise session) dt))
+  (setf (forest-hide-noise session)
+        (max 0.0 (- (forest-hide-noise session) (* 0.55 dt))))
+  (when (forest-hide-exhale-pressed-p)
+    (setf (forest-hide-breath session)
+          (max 0.0 (- (forest-hide-breath session) 0.30)))
+    (incf (forest-hide-noise session) 0.34))
+  (cond
+    ((>= (forest-hide-breath session) 1.0)
+     (setf (dialog-value "forest-seen") t)
+     (finish-minigame-node node :gasped))
+    ((and (> (forest-hide-noise session)
+             (forest-hide-noise-threshold session))
+          (> (forest-hide-danger session) 0.35))
+     (setf (dialog-value "forest-seen") t)
+     (finish-minigame-node node :heard))
+    ((>= (forest-hide-elapsed session) (forest-hide-duration session))
+     (finish-minigame-node node :success))))
 
-(defun fail-forest-hide (node)
-  (setf (dialog-value "forest-seen") t)
-  (finish-forest-hide (node-failure-target node)))
-
-(defun update-forest-hide-node (node dt)
-  (let ((game (ensure-forest-hide node)))
-    (incf (forest-hide-elapsed game) dt)
-    (incf (forest-hide-breath game) (* +forest-hide-breath-rise+ dt))
-    (setf (forest-hide-noise game)
-          (max 0.0 (- (forest-hide-noise game)
-                      (* +forest-hide-noise-decay+ dt))))
-    (when (forest-hide-exhale-pressed-p)
-      (setf (forest-hide-breath game)
-            (max 0.0 (- (forest-hide-breath game) +forest-hide-exhale+)))
-      (incf (forest-hide-noise game) +forest-hide-exhale-noise+))
-    (cond
-      ((>= (forest-hide-breath game) 1.0)
-       (fail-forest-hide node))
-      ((and (> (forest-hide-noise game) 0.55)
-            (> (forest-hide-danger game) 0.35))
-       (fail-forest-hide node))
-      ((>= (forest-hide-elapsed game) +forest-hide-duration+)
-       (finish-forest-hide (node-success-target node))))))
-
-(defun draw-forest-hide-light (game)
-  (let ((x (forest-hide-light-x game)))
+(defun draw-forest-hide-light (session)
+  (let ((x (forest-hide-light-x session)))
     (loop for (half-width alpha) in '((90.0 26) (46.0 48) (16.0 92))
           do (claylib/ll:draw-rectangle (round (- x half-width))
                                         120
@@ -84,12 +73,12 @@
                                         (claylib::c-ptr
                                          (make-color 255 255 255 alpha))))))
 
-(defun draw-forest-hide-breath (game)
+(defun draw-forest-hide-breath (session)
   (let* ((width 320.0)
          (left (- +virtual-center-x+ (/ width 2.0)))
          (y (- +virtual-height+ 96.0))
-         (breath (clamp01 (forest-hide-breath game)))
-         (noise (clamp01 (forest-hide-noise game))))
+         (breath (clamp01 (forest-hide-breath session)))
+         (noise (clamp01 (forest-hide-noise session))))
     (draw-thick-line-between left y (+ left width) y
                              (make-color 255 255 255 80)
                              1.0)
@@ -103,17 +92,17 @@
                                (make-color 255 255 255 70)
                                2.0))))
 
-(defun draw-forest-hide-node (node color)
-  (declare (ignore color))
-  (let ((game (ensure-forest-hide node)))
-    (draw-forest-hide-light game)
-    (draw-forest-hide-breath game)
-    (draw-centered-text "space, w, or up arrow lets a breath out"
-                        +virtual-center-x+
-                        (- +virtual-height+ 42)
-                        16
-                        (make-color 255 255 255 170))))
+(defmethod minigame-session-draw ((session forest-hide-session) node color)
+  (declare (ignore node color))
+  (draw-forest-hide-light session)
+  (draw-forest-hide-breath session)
+  (draw-centered-text "space, w, or up arrow lets a breath out"
+                      +virtual-center-x+
+                      (- +virtual-height+ 42)
+                      16
+                      (make-color 255 255 255 170)))
 
-(dialog-minigame-kind :forest-hide
-                      :update #'update-forest-hide-node
-                      :draw #'draw-forest-hide-node)
+(register-minigame-session-kind :forest-hide
+                                'forest-hide-session
+                                :outcomes '(:success :failure
+                                            :heard :gasped))

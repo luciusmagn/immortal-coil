@@ -492,7 +492,8 @@
                  "space, w, or up arrow lets a breath out. stay quiet until the light moves on."
                  :game :forest-hide
                  :success "forest/ridge-passed"
-                 :failure "forest/ridge-heard")
+                 :failure "forest/ridge-heard"
+                 :config '(:duration 7.0 :breath-rise 0.11))
 
 (dialog-text "forest/ridge-passed"
              "the lantern crests the ridge two pines over, hangs a while looking at the dark you are part of, and goes down the far side. for the first time, you watched it the whole way through, and your count of your own breathing held."
