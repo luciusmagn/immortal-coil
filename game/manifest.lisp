@@ -9,6 +9,7 @@
            "flight/minigame.lisp"
            "flight/rendering.lisp"
            "war/radio.lisp"
+           "war/audit.lisp"
            "forest/hide.lisp"
            "jrpg/state.lisp"
            "jrpg/combat.lisp"

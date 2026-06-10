@@ -152,7 +152,21 @@
                      :next "war/manifests")
 
 (dialog-text "war/manifests"
-             "the manifests cover the tuesday trains. four were rerouted from the third district the night the bells began. the rerouting order is attached."
+             "the manifests cover the tuesday trains. four were rerouted from the third district the night the bells began. Sorel has paired what was loaded against what arrived."
+             :next "war/audit")
+
+(dialog-minigame "war/audit"
+                 "w/s or arrows move. space flags the line that does not match."
+                 :game :war-audit
+                 :success "war/audit-caught"
+                 :failure "war/audit-brandt")
+
+(dialog-text "war/audit-caught"
+             "car four. eight hundred short between loading and arrival, and nothing in the margin to explain it. the rerouting order is attached."
+             :next "war/signature")
+
+(dialog-text "war/audit-brandt"
+             "the figures swim. Brandt leans over and sets one finger on car four without being asked. the rerouting order is attached."
              :next "war/signature")
 
 (dialog-text "war/signature"
