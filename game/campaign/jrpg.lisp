@@ -437,9 +437,43 @@
              "the rain starts on the bridge boards. Oren has the gate chain down before you ask, and the chalk marks on the toll board have been wiped clean for the new week."
              :next "jrpg/oven-warm")
 
+(defun jrpg-terms-target ()
+  (let ((answer (jrpg-value "jrpg-vane-answer" "asked")))
+    (cond
+      ((string= answer "duel") "jrpg/terms-duel")
+      ((string= answer "terms") "jrpg/terms-terms")
+      (t "jrpg/terms-asked"))))
+
 (dialog-text "jrpg/oven-warm"
              "Toma's oven is still warm, and breakfast, one day late, is included. nobody asks about the tower at the table, which is how you know everyone wants to."
-             :next "jrpg/ledger-line")
+             :next #'jrpg-terms-target)
+
+(dialog-conversation "jrpg/terms-duel"
+                     (dialog-left "Mira"
+                                  "a visitor sword. so it went to steel. and he gave it to you after, as a receipt.")
+                     (dialog-right "{player-name}"
+                                   "he said Oakbarrow sends better every year.")
+                     (dialog-left "Mira"
+                                  "we send what we have. i'll enter the sword under deposits. it goes back up the hill with the next one, like always.")
+                     :next "jrpg/ledger-line")
+
+(dialog-conversation "jrpg/terms-terms"
+                     (dialog-left "Mira"
+                                  "no more notices, and his hill stops growing. say it back to me exactly. the ledger doesn't take approximately.")
+                     (dialog-right "{player-name}"
+                                   "Oakbarrow stops posting notices. he stops collecting broken swords.")
+                     (dialog-left "Mira"
+                                  "then it's entered, and signed, and the first quiet winter in nine years can start tomorrow. you'll want the room either way.")
+                     :next "jrpg/ledger-line")
+
+(dialog-conversation "jrpg/terms-asked"
+                     (dialog-left "Mira"
+                                  "you counted the rack. out with it.")
+                     (dialog-right "{player-name}"
+                                   "he said you keep the other ledger.")
+                     (dialog-left "Mira"
+                                  "i keep the names, the years, and who they left behind. someone has to, and the tower only keeps the swords. sit down. you can read it after breakfast.")
+                     :next "jrpg/ledger-line")
 
 (dialog-text "jrpg/ledger-line"
              "Mira writes one line in the ledger and hands you the room four key. you are asleep before the candle is out."
