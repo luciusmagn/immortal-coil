@@ -17,15 +17,45 @@
 
 (dialog-text "alice/cup"
              "the tea tastes like rainwater collected from a ceiling crack you remember."
-             :next "alice/court")
+             :next "alice/garden")
 
 (dialog-text "alice/chair"
              "the empty chair asks whether you are awake. it does not wait for your answer."
-             :next "alice/court")
+             :next "alice/garden")
 
 (dialog-text "alice/thread"
              "the white thread runs under every plate and up your sleeve."
-             :next "alice/court")
+             :next "alice/garden")
+
+(dialog-text "alice/garden"
+             "the way to the court runs through a garden of doors planted in rows, each with a number painted on it, fresh. a gardener moves down the row with a brush and a bucket of white."
+             :next "alice/gardener")
+
+(dialog-conversation "alice/gardener"
+                     (dialog-left "the gardener"
+                                  "mind the wet ones. we repaint the numbers nightly. they will not hold still otherwise.")
+                     (dialog-right "you"
+                                   "what were they before you painted them?")
+                     (dialog-left "the gardener"
+                                  "numbered. that is the trouble. a door takes whatever number you give it, and someone has been generous.")
+                     :next "alice/garden-count")
+
+(dialog-text "alice/garden-count"
+             "you pass the painted rows without counting them, which takes the kind of effort the court would call self-control and the garden would call cowardice."
+             :next "alice/queue")
+
+(dialog-text "alice/queue"
+             "outside the court there is a queue: the cup on a velvet cushion, the chair standing with its back straight, and the white thread coiled neatly on a nail, waiting to be called."
+             :next "alice/queue-talk")
+
+(dialog-conversation "alice/queue-talk"
+                     (dialog-left "the chair"
+                                  "the defendant. good. we were told you would be late, so you are exactly on time.")
+                     (dialog-right "you"
+                                   "what are you all witnesses to?")
+                     (dialog-left "the chair"
+                                  "the room, of course. everyone here is a witness to the room. you are the only one they had to send for.")
+                     :next "alice/court")
 
 (dialog-say "alice/court"
             "the card judge"
