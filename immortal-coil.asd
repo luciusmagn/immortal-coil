@@ -87,7 +87,9 @@
                  (:module "particles"
                   :serial t
                   :components
-                  ((:file "rising")
+                  ((:file "definitions")
+                   (:file "system")
+                   (:file "rising")
                    (:file "star")
                    (:file "field")))
 

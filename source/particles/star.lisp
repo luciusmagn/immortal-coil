@@ -1,7 +1,5 @@
 (in-package #:immortal-coil)
 
-(defvar *star-particles* #())
-
 (defstruct star-particle
   x
   y
@@ -25,37 +23,6 @@
         (star-particle-alpha particle) (get-random-value 90 240))
   particle)
 
-(defun current-star-particle-count ()
-  (if (realp *star-particle-count*)
-      (max 0 (round *star-particle-count*))
-      (progn
-        (runtime-warn "Invalid star particle count: ~s" *star-particle-count*)
-        0)))
-
-(defun resize-star-particles (count)
-  (let ((old-particles *star-particles*)
-        (new-particles (make-array count)))
-    (loop for i below count
-          do (setf (aref new-particles i)
-                   (if (< i (length old-particles))
-                       (aref old-particles i)
-                       (reset-star-particle (make-star-particle)
-                                            :initial-p t))))
-    (setf *star-particles* new-particles)))
-
-(defun reset-star-particles ()
-  (let ((count (current-star-particle-count)))
-    (setf *star-particles* (make-array count))
-    (loop for i below count
-          do (setf (aref *star-particles* i)
-                   (reset-star-particle (make-star-particle)
-                                        :initial-p t)))))
-
-(defun ensure-star-particle-count ()
-  (let ((count (current-star-particle-count)))
-    (unless (= (length *star-particles*) count)
-      (resize-star-particles count))))
-
 (defun wrap-star-particle (particle)
   (when (< (star-particle-x particle) -4.0)
     (setf (star-particle-x particle) (+ +virtual-width+ 4.0)))
@@ -73,10 +40,6 @@
   (incf (star-particle-y particle)
         (* (star-particle-drift-y particle) dt))
   (wrap-star-particle particle))
-
-(defun update-star-particles (dt)
-  (loop for particle across *star-particles*
-        do (update-star-particle particle dt)))
 
 (defun star-particle-visible-alpha (particle)
   (let* ((wave (* 0.5
@@ -134,6 +97,32 @@
              3
              (draw-color-ptr 255 255 255 glint-alpha))))))))
 
-(defun draw-star-particles (alpha-scale)
-  (loop for particle across *star-particles*
-        do (draw-star-particle particle alpha-scale)))
+
+;;; System
+
+(defclass star-particle-system (particle-system) ())
+
+(defmethod particle-system-count ((system star-particle-system))
+  (if (realp *star-particle-count*)
+      (max 0 (round *star-particle-count*))
+      (progn
+        (runtime-warn "Invalid star particle count: ~s" *star-particle-count*)
+        0)))
+
+(defmethod particle-system-make ((system star-particle-system))
+  (make-star-particle))
+
+(defmethod particle-system-reset-particle ((system star-particle-system)
+                                           particle
+                                           &key initial-p)
+  (reset-star-particle particle :initial-p initial-p))
+
+(defmethod particle-system-update-particle ((system star-particle-system)
+                                            particle
+                                            dt)
+  (update-star-particle particle dt))
+
+(defmethod particle-system-draw-particle ((system star-particle-system)
+                                          particle
+                                          alpha-scale)
+  (draw-star-particle particle alpha-scale))

@@ -1,7 +1,5 @@
 (in-package #:immortal-coil)
 
-(defvar *rising-particles* #())
-
 (defstruct rising-particle
   x
   y
@@ -33,37 +31,6 @@
           (rising-particle-alpha particle) (get-random-value 100 220)))
   particle)
 
-(defun current-rising-particle-count ()
-  (if (realp *particle-count*)
-      (max 0 (round *particle-count*))
-      (progn
-        (runtime-warn "Invalid particle count: ~s" *particle-count*)
-        0)))
-
-(defun resize-rising-particles (count)
-  (let ((old-particles *rising-particles*)
-        (new-particles (make-array count)))
-    (loop for i below count
-          do (setf (aref new-particles i)
-                   (if (< i (length old-particles))
-                       (aref old-particles i)
-                       (reset-rising-particle (make-rising-particle)
-                                              :initial-p t))))
-    (setf *rising-particles* new-particles)))
-
-(defun reset-rising-particles ()
-  (let ((count (current-rising-particle-count)))
-    (setf *rising-particles* (make-array count))
-    (loop for i below count
-          do (setf (aref *rising-particles* i)
-                   (reset-rising-particle (make-rising-particle)
-                                          :initial-p t)))))
-
-(defun ensure-rising-particle-count ()
-  (let ((count (current-rising-particle-count)))
-    (unless (= (length *rising-particles*) count)
-      (resize-rising-particles count))))
-
 (defun update-rising-particle (particle dt)
   (incf (rising-particle-age particle) dt)
   (if (or (< (rising-particle-y particle) -120)
@@ -81,10 +48,6 @@
         (incf (rising-particle-y particle)
               (* (rising-particle-vy particle) dt)))))
 
-(defun update-rising-particles (dt)
-  (loop for particle across *rising-particles*
-        do (update-rising-particle particle dt)))
-
 (defun rising-particle-visible-alpha (particle)
   (round (* (rising-particle-alpha particle)
             (clamp01 (/ (rising-particle-age particle) 0.8)))))
@@ -99,6 +62,32 @@
                                  +particle-size+
                                  (draw-color-ptr 255 255 255 alpha)))))
 
-(defun draw-rising-particles (alpha-scale)
-  (loop for particle across *rising-particles*
-        do (draw-rising-particle particle alpha-scale)))
+
+;;; System
+
+(defclass rising-particle-system (particle-system) ())
+
+(defmethod particle-system-count ((system rising-particle-system))
+  (if (realp *particle-count*)
+      (max 0 (round *particle-count*))
+      (progn
+        (runtime-warn "Invalid particle count: ~s" *particle-count*)
+        0)))
+
+(defmethod particle-system-make ((system rising-particle-system))
+  (make-rising-particle))
+
+(defmethod particle-system-reset-particle ((system rising-particle-system)
+                                           particle
+                                           &key initial-p)
+  (reset-rising-particle particle :initial-p initial-p))
+
+(defmethod particle-system-update-particle ((system rising-particle-system)
+                                            particle
+                                            dt)
+  (update-rising-particle particle dt))
+
+(defmethod particle-system-draw-particle ((system rising-particle-system)
+                                          particle
+                                          alpha-scale)
+  (draw-rising-particle particle alpha-scale))
