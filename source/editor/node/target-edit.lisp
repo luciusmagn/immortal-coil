@@ -102,23 +102,6 @@
               nil)))
       nil))
 
-(-> editor-node-target-move-field (integer) boolean)
-(defun editor-node-target-move-field (direction)
-  (let ((count (editor-node-target-field-count)))
-    (when (plusp count)
-      (setf *editor-node-target-field-index*
-            (mod (+ *editor-node-target-field-index* direction)
-                 count))
-      (play-choice-switch)
-      t)))
-
-(-> editor-node-target-selection-direction ()
-    (option navigation-direction))
-(defun editor-node-target-selection-direction ()
-  (cond
-    ((is-key-pressed-p +key-down+) 1)
-    ((is-key-pressed-p +key-up+) -1)))
-
 (-> editor-node-target-selected-buffer () string)
 (defun editor-node-target-selected-buffer ()
   (let ((field (editor-node-target-selected-field)))
@@ -305,7 +288,8 @@
 (-> update-editor-node-target-edit () boolean)
 (defun update-editor-node-target-edit ()
   (drain-editor-node-target-input)
-  (let ((direction (editor-node-target-selection-direction)))
+  (let ((panel (active-editor-panel))
+        (direction (editor-vertical-selection-direction)))
     (cond
       ((or (is-key-pressed-p +key-escape+)
            (editor-control-key-pressed-p +key-g+))
@@ -313,9 +297,9 @@
       ((editor-control-key-pressed-p +key-s+)
        (editor-save-node-target-edit))
       ((is-key-pressed-p +key-tab+)
-       (editor-node-target-move-field 1))
+       (panel-move-selection panel 1))
       ((and direction
-            (editor-node-target-move-field direction))
+            (panel-move-selection panel direction))
        t)
       ((or (is-key-pressed-p +key-left+)
            (is-key-pressed-p +key-right+))
@@ -338,3 +322,12 @@
 
 (defmethod panel-save ((panel editor-node-target-panel))
   (editor-save-node-target-edit))
+
+(defmethod panel-item-count ((panel editor-node-target-panel))
+  (editor-node-target-field-count))
+
+(defmethod panel-selected-index ((panel editor-node-target-panel))
+  *editor-node-target-field-index*)
+
+(defmethod (setf panel-selected-index) (value (panel editor-node-target-panel))
+  (setf *editor-node-target-field-index* value))

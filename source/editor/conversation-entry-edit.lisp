@@ -21,20 +21,6 @@
         (min (max 0 *editor-conversation-entry-field-index*)
              (1- (length *editor-conversation-entry-fields*)))))
 
-(-> editor-conversation-move-field (integer) boolean)
-(defun editor-conversation-move-field (direction)
-  (setf *editor-conversation-entry-field-index*
-        (mod (+ *editor-conversation-entry-field-index* direction)
-             (length *editor-conversation-entry-fields*)))
-  (play-choice-switch)
-  t)
-
-(-> editor-conversation-selection-direction () (option navigation-direction))
-(defun editor-conversation-selection-direction ()
-  (cond
-    ((is-key-pressed-p +key-down+) 1)
-    ((is-key-pressed-p +key-up+) -1)))
-
 (-> editor-current-conversation-entry (node)
     (values (option conversation-entry) nonnegative-integer))
 (defun editor-current-conversation-entry (node)
@@ -321,7 +307,8 @@
 (-> update-editor-conversation-entry-edit () boolean)
 (defun update-editor-conversation-entry-edit ()
   (drain-editor-conversation-input)
-  (let ((direction (editor-conversation-selection-direction)))
+  (let ((panel (active-editor-panel))
+        (direction (editor-vertical-selection-direction)))
     (cond
       ((or (is-key-pressed-p +key-escape+)
            (editor-control-key-pressed-p +key-g+))
@@ -329,9 +316,9 @@
       ((editor-control-key-pressed-p +key-s+)
        (editor-save-conversation-entry-edit))
       ((is-key-pressed-p +key-tab+)
-       (editor-conversation-move-field 1))
+       (panel-move-selection panel 1))
       ((and direction
-            (editor-conversation-move-field direction))
+            (panel-move-selection panel direction))
        t)
       ((and (eq (editor-conversation-selected-field) :side)
             (or (is-key-pressed-p +key-left+)
@@ -443,3 +430,13 @@ Panels register their methods next to their own start functions.")
 
 (defmethod panel-save ((panel editor-conversation-entry-panel))
   (editor-save-conversation-entry-edit))
+
+(defmethod panel-item-count ((panel editor-conversation-entry-panel))
+  (length *editor-conversation-entry-fields*))
+
+(defmethod panel-selected-index ((panel editor-conversation-entry-panel))
+  *editor-conversation-entry-field-index*)
+
+(defmethod (setf panel-selected-index)
+    (value (panel editor-conversation-entry-panel))
+  (setf *editor-conversation-entry-field-index* value))

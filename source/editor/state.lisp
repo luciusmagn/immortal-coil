@@ -304,6 +304,34 @@
   (:method ((panel editor-panel))
     t))
 
+(defgeneric panel-item-count (panel)
+  (:documentation "Number of selectable rows in PANEL.")
+  (:method ((panel editor-panel))
+    0))
+
+(defgeneric panel-selected-index (panel)
+  (:documentation "Selected row index for PANEL.")
+  (:method ((panel editor-panel))
+    0))
+
+(defgeneric (setf panel-selected-index) (value panel))
+
+(-> editor-vertical-selection-direction () (option navigation-direction))
+(defun editor-vertical-selection-direction ()
+  (cond
+    ((is-key-pressed-p +key-down+) 1)
+    ((is-key-pressed-p +key-up+) -1)))
+
+(-> panel-move-selection (editor-panel integer) boolean)
+(defun panel-move-selection (panel direction)
+  (let ((count (panel-item-count panel)))
+    (when (plusp count)
+      (setf (panel-selected-index panel)
+            (mod (+ (panel-selected-index panel) direction)
+                 count))
+      (play-choice-switch)
+      t)))
+
 (-> editor-autosave-active-panel () boolean)
 (defun editor-autosave-active-panel ()
   (let ((panel (active-editor-panel)))

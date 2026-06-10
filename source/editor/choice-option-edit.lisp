@@ -22,20 +22,6 @@
         (min (max 0 *editor-choice-option-field-index*)
              (1- (length *editor-choice-option-fields*)))))
 
-(-> editor-choice-option-move-field (integer) boolean)
-(defun editor-choice-option-move-field (direction)
-  (setf *editor-choice-option-field-index*
-        (mod (+ *editor-choice-option-field-index* direction)
-             (length *editor-choice-option-fields*)))
-  (play-choice-switch)
-  t)
-
-(-> editor-choice-option-selection-direction () (option navigation-direction))
-(defun editor-choice-option-selection-direction ()
-  (cond
-    ((is-key-pressed-p +key-down+) 1)
-    ((is-key-pressed-p +key-up+) -1)))
-
 (-> editor-choice-target-kind (t) editor-choice-target-kind)
 (defun editor-choice-target-kind (target)
   (if (stringp target)
@@ -322,7 +308,8 @@
 (-> update-editor-choice-option-edit () boolean)
 (defun update-editor-choice-option-edit ()
   (drain-editor-choice-option-input)
-  (let ((direction (editor-choice-option-selection-direction)))
+  (let ((panel (active-editor-panel))
+        (direction (editor-vertical-selection-direction)))
     (cond
       ((or (is-key-pressed-p +key-escape+)
            (editor-control-key-pressed-p +key-g+))
@@ -330,9 +317,9 @@
       ((editor-control-key-pressed-p +key-s+)
        (editor-save-choice-option-edit))
       ((is-key-pressed-p +key-tab+)
-       (editor-choice-option-move-field 1))
+       (panel-move-selection panel 1))
       ((and direction
-            (editor-choice-option-move-field direction))
+            (panel-move-selection panel direction))
        t)
       ((and (eq (editor-choice-option-selected-field) :target-kind)
             (or (is-key-pressed-p +key-left+)
@@ -356,3 +343,12 @@
 
 (defmethod panel-save ((panel editor-choice-option-panel))
   (editor-save-choice-option-edit))
+
+(defmethod panel-item-count ((panel editor-choice-option-panel))
+  (length *editor-choice-option-fields*))
+
+(defmethod panel-selected-index ((panel editor-choice-option-panel))
+  *editor-choice-option-field-index*)
+
+(defmethod (setf panel-selected-index) (value (panel editor-choice-option-panel))
+  (setf *editor-choice-option-field-index* value))

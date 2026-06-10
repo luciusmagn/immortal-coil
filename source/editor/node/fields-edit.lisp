@@ -190,23 +190,6 @@
 (defmethod node-start-detail-edit ((node minigame-node))
   (editor-start-node-fields-edit))
 
-(-> editor-node-fields-move-field (integer) boolean)
-(defun editor-node-fields-move-field (direction)
-  (let ((count (editor-node-fields-count)))
-    (when (plusp count)
-      (setf *editor-node-fields-field-index*
-            (mod (+ *editor-node-fields-field-index* direction)
-                 count))
-      (play-choice-switch)
-      t)))
-
-(-> editor-node-fields-selection-direction ()
-    (option navigation-direction))
-(defun editor-node-fields-selection-direction ()
-  (cond
-    ((is-key-pressed-p +key-down+) 1)
-    ((is-key-pressed-p +key-up+) -1)))
-
 (-> editor-node-field-trim (string) string)
 (defun editor-node-field-trim (text)
   (string-trim '(#\Space #\Tab #\Newline #\Return) text))
@@ -538,7 +521,8 @@
 (-> update-editor-node-fields-edit () boolean)
 (defun update-editor-node-fields-edit ()
   (drain-editor-node-fields-input)
-  (let ((direction (editor-node-fields-selection-direction)))
+  (let ((panel (active-editor-panel))
+        (direction (editor-vertical-selection-direction)))
     (cond
       ((or (is-key-pressed-p +key-escape+)
            (editor-control-key-pressed-p +key-g+))
@@ -546,9 +530,9 @@
       ((editor-control-key-pressed-p +key-s+)
        (editor-save-node-fields-edit))
       ((is-key-pressed-p +key-tab+)
-       (editor-node-fields-move-field 1))
+       (panel-move-selection panel 1))
       ((and direction
-            (editor-node-fields-move-field direction))
+            (panel-move-selection panel direction))
        t)
       ((is-key-pressed-p +key-left+)
        (editor-node-fields-adjust-selected -1))
@@ -572,3 +556,12 @@
 
 (defmethod panel-save ((panel editor-node-fields-panel))
   (editor-save-node-fields-edit))
+
+(defmethod panel-item-count ((panel editor-node-fields-panel))
+  (editor-node-fields-count))
+
+(defmethod panel-selected-index ((panel editor-node-fields-panel))
+  *editor-node-fields-field-index*)
+
+(defmethod (setf panel-selected-index) (value (panel editor-node-fields-panel))
+  (setf *editor-node-fields-field-index* value))
