@@ -30,6 +30,13 @@ paths — the same future-shapes-past method applied to a whole path's reality r
 than a single object. It should still feel like it was always so, not like the world
 changed.
 
+Every major path should eventually hold 20 to 30 minutes of content at the
+typewriter pace, minigames included. `scripts/content-report.lisp` measures
+this per path family. As of the cabinet-arc commit the typed-pace standings
+were: jrpg 13.8, war 12.1, ship 5.8, forest 5.5, rogue 3.3, facility 2.2,
+alice 1.8. Each path should also keep growing its own minigames, not only
+prose.
+
 The "future shapes the past" effect only works when transitions are gentle
 enough that a player on a single playthrough would not recognize them as
 transitions. A branch entry should feel like the next ordinary detail in the
@@ -104,6 +111,18 @@ Current surface:
   is paid by people the player never sees.
 - `war/radio` is the tuning minigame: the quiet band can be found, but it is
   reading numbers too. Either outcome turns the radio down, not off.
+- The path is Suzerain-inspired: conspiracy and intrigue carried by cabinet
+  conversations and stored choices rather than action. Day two opens with the
+  rerouting order signed in the player's own hand, dated the night the bells
+  began, unremembered — the path's memory-gap motif made political.
+- The cabinet: Vey (interior, trades silence for emergency powers), Sorel
+  (supply, follows the manifests), Olen (army, heard the order dictated
+  through a door). `war-confidant`, `war-decree`, and `war-km-nine` store who
+  the player trusted, what the decree became, and what they did about
+  kilometer nine. The sealed car at kilometer nine stays unopened for now.
+- Planned: a manifest-audit minigame (flag the line that does not match), a
+  third-day arc where the decree's consequences arrive, and the numbers the
+  player wrote down beginning to mean something.
 
 ## Ship Captain
 
