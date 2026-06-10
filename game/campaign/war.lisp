@@ -465,6 +465,10 @@
 
 (dialog-text "war/day4-table"
              "at the table, Vey is courteous, Olen is punctual, and Sorel has a new ledger with the first page already ruled. the map has moved again overnight, one tape line, toward the river."
+             :next "war/day4-sorel")
+
+(dialog-text "war/day4-sorel"
+             "Sorel slides you the morning supply sheet to initial. at the bottom, in pencil, small enough to be a stray mark: K9 EMPTY. CAR NOT EMPTY WHEN IT LEFT. you initial the sheet and keep the pencil."
              :next "war/day4-end")
 
 (dialog-text "war/day4-end"
