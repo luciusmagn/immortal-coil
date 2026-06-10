@@ -340,5 +340,21 @@
             :next "facility/rotation3-end")
 
 (dialog-text "facility/rotation3-end"
-             "he initials your third rotation, and under his initials, for the first time, he writes the date in full, as if some dates deserve to be found again. same time. the handle is warm."
-             :next "base/awake")
+             "he initials your third rotation, and under his initials, for the first time, he writes the date in full, as if some dates deserve to be found again."
+             :next "facility/appendix-one")
+
+(dialog-say "facility/appendix-one"
+            "M-3"
+            "before you go. appendix one, in full, since you have earned it: the subject is whoever is in the room when you look. that is the whole text. i have been here long enough to add a sentence, if i wanted."
+            :next "facility/appendix-ask")
+
+(dialog-conversation "facility/appendix-ask"
+                     (dialog-right "you"
+                                   "what sentence would you add?")
+                     (dialog-left "M-3"
+                                  "look less.")
+                     (dialog-right "you"
+                                   "is that advice or procedure?")
+                     (dialog-left "M-3"
+                                  "here, {facility-designation}, the difference is seniority. same time. the handle is warm.")
+                     :next "base/awake")
