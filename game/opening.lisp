@@ -205,6 +205,22 @@
 
 (dialog-text "ship/bunk"
              "you lie down in the bunk with your name stenciled at the foot. you are asleep before the lights dim."
+             :next "ship/later")
+
+(dialog-scene "ship/later"
+              "the same ship. later."
+              :next "ship/later-bridge")
+
+(dialog-text "ship/later-bridge"
+             "the bridge is dark except for the console light. your checklist is still taped beside it, soft at the corners. you cannot remember when you last heard another voice on board."
+             :next "ship/later-galley")
+
+(dialog-text "ship/later-galley"
+             "in the galley there is one cup on the rack. the crossing manual lies open to the page with your name beside the procedure."
+             :next "ship/later-chair")
+
+(dialog-text "ship/later-chair"
+             "you sit in the captain's chair until the cup goes cold. somewhere below, a door you have stopped checking stays shut."
              :next "base/awake")
 
 (dialog-on-enter "ship/crash-return"
