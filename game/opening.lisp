@@ -322,6 +322,39 @@
 
 (dialog-text "ship/watch-voss"
              "at end of watch, Voss leaves a cup at your elbow without a word. it is exactly too hot to drink, which means she timed it to outlast the paperwork."
+             :next "ship/checklist")
+
+(dialog-conversation "ship/checklist"
+                     (dialog-left "Voss"
+                                  "next crossing window is in nine hours. i can push it to eleven if you want the lane tables re-run a third time.")
+                     (dialog-right "{player-name}"
+                                   "run them a third time. not for the tables.")
+                     (dialog-left "Voss"
+                                  "understood. for the nine hours.")
+                     :next "ship/checklist-read")
+
+(defun ship-intrusion-target ()
+  (let ((lost (dialog-value "ship-lost-name" "")))
+    (cond
+      ((string= lost "Harrow") "ship/intrusion-harrow")
+      ((string= lost "Okafor") "ship/intrusion-okafor")
+      ((string= lost "Dane") "ship/intrusion-dane")
+      (t "ship/bunk"))))
+
+(dialog-text "ship/checklist-read"
+             "before lights-down you read the taped checklist on the console, every line, the way some people read letters they know by heart. item nine is in handwriting older than the tape over it. item nine says: count everyone twice."
+             :next #'ship-intrusion-target)
+
+(dialog-text "ship/intrusion-harrow"
+             "on the way to the bunk you pass the drive trunk access, and for the length of one stride Harrow is at the panel, reading out pressure, steady, sleeve whole. the stride ends. the panel is dark and dogged shut, the way you ordered it left."
+             :next "ship/bunk")
+
+(dialog-text "ship/intrusion-okafor"
+             "on the way to the bunk you pass deck seven's hatch, and for the length of one breath there is laughter behind it, three voices, the card game Okafor always claimed to be losing. the breath ends. the hatch reads SEALED in your own initials."
+             :next "ship/bunk")
+
+(dialog-text "ship/intrusion-dane"
+             "on the way to the bunk you pass medbay, and for one step Dane is in the doorway with the kit over one shoulder, turning back the way Dane turned back. the step ends. the kit hangs on its peg, sealed, signed."
              :next "ship/bunk")
 
 (dialog-text "ship/bunk"
@@ -366,6 +399,14 @@
 
 (dialog-text "ship/later-hail"
              "once per watch, the board hails the lane and listens. tonight, like every night you can remember, the lane answers with carrier tone: a clean, patient signal with nobody on it."
+             :next "ship/later-beacon")
+
+(dialog-text "ship/later-beacon"
+             "under the carrier, on the old port band, the beacon repeats its one recorded sentence: HOLD POSITION. RETRIEVAL FOLLOWS. the recording gives its own date each cycle, and the date does not bear thinking about, so you log the hail and do not think about it."
+             :next "ship/later-hold")
+
+(dialog-text "ship/later-hold"
+             "you hold position. the ship is good at holding position. it is the one order left that you can carry out perfectly, every watch, with no one to lose."
              :next "ship/later-bunk")
 
 (dialog-text "ship/later-bunk"
