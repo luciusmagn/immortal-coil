@@ -92,6 +92,9 @@
              "the scroll is a scroll of identification. it names the ring: silver, old, and cursed."
              :next "rogue/unfinished")
 
+(dialog-on-enter "rogue/ring"
+                 '(setf (dialog-value "rogue-ring-worn") t))
+
 (dialog-text "rogue/ring"
              "the ring fits. your hands fade from view, fingers first."
              :next "rogue/unfinished")
@@ -102,4 +105,40 @@
 
 (dialog-text "rogue/unfinished"
              "at the corridor's end, a staircase leads down. your name is carved into the first step."
+             :next "rogue/stairs")
+
+(dialog-pick "rogue/stairs"
+             "the carving is older than the dust on it."
+             (dialog-option "take the stairs down" "rogue/floor-two")
+             (dialog-option "go back the way you came" "rogue/back"))
+
+(dialog-text "rogue/back"
+             "you walk back. the door you came through is locked from the other side. the stairs are the way that is open."
+             :next "rogue/floor-two")
+
+(dialog-text "rogue/floor-two"
+             "the steps are worn smooth in the middle, the way stone wears under years of feet. they end in a small room drawn in the same white lines: a bed, a small table, a door."
+             :next "rogue/cell")
+
+(dialog-text "rogue/cell"
+             "the door has no lock plate on this side."
+             :next "rogue/bed")
+
+(dialog-pick "rogue/bed"
+             "the torch is low."
+             (dialog-option "search the bed" "rogue/pillow")
+             (dialog-option "look at your hands" "rogue/hands"
+                            :when '(dialog-value "rogue-ring-worn"))
+             (dialog-option "lie down" "rogue/sleep"))
+
+(dialog-text "rogue/pillow"
+             "under the pillow there is a paper matchbook, half used."
+             :next "rogue/sleep")
+
+(dialog-text "rogue/hands"
+             "they are coming back, fingers last."
+             :next "rogue/sleep")
+
+(dialog-text "rogue/sleep"
+             "you lie down. the white lines of the room soften as the torch goes out."
              :next "base/awake")
