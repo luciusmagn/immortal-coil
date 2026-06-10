@@ -53,7 +53,7 @@
     :initarg :enter-effects
     :initform nil
     :accessor node-enter-effects
-    :type (list-of dialog-effect))))
+    :type list)))
 
 (defclass linear-node (node)
   ((next
