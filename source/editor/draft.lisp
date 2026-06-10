@@ -127,143 +127,187 @@
 (defun editor-write-delete-node-form (stream node-id)
   (format stream "~&(dialog-delete-node ~s)~2%" node-id))
 
-(-> editor-write-text-form (t dialog-id string (option dialog-target)) t)
-(defun editor-write-text-form (stream node-id text next-id)
-  (format stream "~&(dialog-text ~s~%             ~s" node-id text)
-  (when next-id
-    (format stream "~%             :next ")
-    (editor-write-target stream next-id))
-  (format stream ")~2%"))
-
 (-> editor-write-set-text-form (t dialog-id string) t)
 (defun editor-write-set-text-form (stream node-id text)
   (format stream "~&(dialog-set-text ~s~%                 ~s)~2%"
           node-id
           text))
 
-(-> editor-write-say-form
-    (t dialog-id string string (option dialog-target))
-    t)
-(defun editor-write-say-form (stream node-id speaker text next-id)
-  (format stream "~&(dialog-say ~s~%            ~s~%            ~s"
-          node-id
-          speaker
-          text)
-  (when next-id
-    (format stream "~%            :next ")
-    (editor-write-target stream next-id))
-  (format stream ")~2%"))
-
-(-> editor-write-choice-form
-    (t dialog-id string string (option dialog-target))
-    t)
-(defun editor-write-choice-form (stream node-id text label target-id)
-  (format stream "~&(dialog-pick ~s~%             ~s~%             "
-          node-id
-          text)
-  (format stream "~s"
-          `(dialog-option ,label
-                          ,(editor-target-form
-                            (or target-id *runtime-fallback-node-id*))))
-  (format stream ")~2%"))
-
-(-> editor-write-conversation-form
-    (t dialog-id (option dialog-target))
-    t)
-(defun editor-write-conversation-form (stream node-id next-id)
-  (format stream "~&(dialog-conversation ~s" node-id)
-  (when next-id
-    (format stream "~%  :next ")
-    (editor-write-target stream next-id))
-  (format stream "~%  (dialog-left ~s ~s)~%  (dialog-right ~s ~s))~2%"
-          "left"
-          "new line."
-          "right"
-          "answer."))
-
-(-> editor-write-number-form
-    (t dialog-id string dialog-id (option dialog-target))
-    t)
-(defun editor-write-number-form (stream node-id text response-key target-id)
-  (format stream "~&(dialog-number ~s~%               ~s~%               :response-key ~s~%               :target "
-          node-id
-          text
-          response-key)
-  (editor-write-target stream (or target-id *runtime-fallback-node-id*))
-  (format stream ")~2%"))
-
-(-> editor-write-string-form
-    (t dialog-id string dialog-id (option dialog-target))
-    t)
-(defun editor-write-string-form (stream node-id text response-key target-id)
-  (format stream "~&(dialog-string ~s~%               ~s~%               :response-key ~s~%               :target "
-          node-id
-          text
-          response-key)
-  (editor-write-target stream (or target-id *runtime-fallback-node-id*))
-  (format stream ")~2%"))
-
 (-> editor-default-minigame-id () minigame-id)
 (defun editor-default-minigame-id ()
   (or (first (registered-minigame-ids))
       :unknown))
 
-(-> editor-write-minigame-form
-    (t dialog-id string minigame-id (option dialog-target))
-    t)
-(defun editor-write-minigame-form (stream node-id text game-id next-id)
+
+;;; Insert templates
+;;;
+;;; Templates are the single source of editor defaults for new nodes;
+;;; the in-memory insert and the draft script form both come from them.
+
+(defgeneric node-insert-template (kind node-id next-id)
+  (:documentation "Fresh unregistered node with editor placeholder content."))
+
+(defmethod node-insert-template (kind node-id next-id)
+  (declare (ignore kind))
+  (make-node :kind :text
+             :id node-id
+             :text *editor-placeholder-text*
+             :next next-id))
+
+(defmethod node-insert-template ((kind (eql :say)) node-id next-id)
+  (make-node :kind :say
+             :id node-id
+             :speaker "speaker"
+             :text *editor-placeholder-text*
+             :next next-id))
+
+(defmethod node-insert-template ((kind (eql :choice)) node-id next-id)
+  (make-node :kind :choice
+             :id node-id
+             :text "new choice prompt."
+             :layout :vertical
+             :choices (vector (dialog-option "continue"
+                                             (or next-id
+                                                 *runtime-fallback-node-id*)))))
+
+(defmethod node-insert-template ((kind (eql :conversation)) node-id next-id)
+  (make-node :kind :conversation
+             :id node-id
+             :next next-id
+             :conversation (vector (dialog-left "left" "new line.")
+                                   (dialog-right "right" "answer."))))
+
+(defmethod node-insert-template ((kind (eql :number)) node-id next-id)
+  (make-node :kind :number
+             :id node-id
+             :text "enter a number."
+             :response-key (format nil "~a/value" node-id)
+             :target (or next-id *runtime-fallback-node-id*)))
+
+(defmethod node-insert-template ((kind (eql :string)) node-id next-id)
+  (make-node :kind :string
+             :id node-id
+             :text "enter text."
+             :max-length 32
+             :response-key (format nil "~a/value" node-id)
+             :target (or next-id *runtime-fallback-node-id*)))
+
+(defmethod node-insert-template ((kind (eql :minigame)) node-id next-id)
   (let ((target (or next-id *runtime-fallback-node-id*)))
-    (format stream "~&(dialog-minigame ~s~%                 ~s~%                 :game ~s~%                 :success "
-            node-id
-            text
-            game-id)
-    (editor-write-target stream target)
-    (format stream "~%                 :failure ")
-    (editor-write-target stream target)
-    (format stream ")~2%")))
+    (make-node :kind :minigame
+               :id node-id
+               :text "play the minigame."
+               :minigame (editor-default-minigame-id)
+               :success-target target
+               :failure-target target)))
+
+
+;;; Script serialization
+;;;
+;;; Writes any node as the primitive dialog-* form the draft scripts use.
+;;; Choice conditions are not persisted here; editor-created choices are
+;;; unconditional, and predicate edits write their own setter forms.
+
+(defgeneric node-write-script-form (node stream)
+  (:documentation "Write NODE as a primitive dialog-* script form."))
+
+(defmethod node-write-script-form ((node node) stream)
+  (format stream "~&(dialog-text ~s~%             ~s"
+          (node-id node)
+          (node-text node))
+  (when (node-next node)
+    (format stream "~%             :next ")
+    (editor-write-target stream (node-next node)))
+  (format stream ")~2%"))
+
+(defmethod node-write-script-form ((node say-node) stream)
+  (format stream "~&(dialog-say ~s~%            ~s~%            ~s"
+          (node-id node)
+          (or (node-speaker node) "")
+          (node-text node))
+  (when (node-next node)
+    (format stream "~%            :next ")
+    (editor-write-target stream (node-next node)))
+  (format stream ")~2%"))
+
+(-> editor-choice-layout-constructor ((option choice-layout)) symbol)
+(defun editor-choice-layout-constructor (layout)
+  (case layout
+    (:horizontal 'dialog-choice)
+    (:list 'dialog-list)
+    (t 'dialog-pick)))
+
+(defmethod node-write-script-form ((node choice-node) stream)
+  (format stream "~&(~(~a~) ~s~%             ~s"
+          (editor-choice-layout-constructor (node-layout node))
+          (node-id node)
+          (node-text node))
+  (loop for choice across (node-choices node)
+        do (format stream "~%             ~s"
+                   `(dialog-option ,(choice-label choice)
+                                   ,(editor-target-form
+                                     (or (choice-target choice)
+                                         *runtime-fallback-node-id*)))))
+  (format stream ")~2%"))
+
+(defmethod node-write-script-form ((node conversation-node) stream)
+  (format stream "~&(dialog-conversation ~s" (node-id node))
+  (when (node-next node)
+    (format stream "~%  :next ")
+    (editor-write-target stream (node-next node)))
+  (loop for entry across (node-conversation node)
+        do (format stream "~%  (~(~a~) ~s ~s)"
+                   (if (eq (conversation-entry-side entry) :right)
+                       'dialog-right
+                       'dialog-left)
+                   (conversation-entry-speaker entry)
+                   (conversation-entry-text entry)))
+  (format stream ")~2%"))
+
+(defmethod node-write-script-form ((node number-input-node) stream)
+  (format stream "~&(dialog-number ~s~%               ~s~%               :response-key ~s~%               :target "
+          (node-id node)
+          (node-text node)
+          (node-response-key node))
+  (editor-write-target stream (or (node-target node)
+                                  *runtime-fallback-node-id*))
+  (when (node-min-value node)
+    (format stream "~%               :min ~s" (node-min-value node)))
+  (when (node-max-value node)
+    (format stream "~%               :max ~s" (node-max-value node)))
+  (format stream ")~2%"))
+
+(defmethod node-write-script-form ((node string-input-node) stream)
+  (format stream "~&(dialog-string ~s~%               ~s~%               :response-key ~s~%               :target "
+          (node-id node)
+          (node-text node)
+          (node-response-key node))
+  (editor-write-target stream (or (node-target node)
+                                  *runtime-fallback-node-id*))
+  (unless (= (node-max-length node) 32)
+    (format stream "~%               :max-length ~d" (node-max-length node)))
+  (when (node-allow-empty-p node)
+    (format stream "~%               :allow-empty t"))
+  (format stream ")~2%"))
+
+(defmethod node-write-script-form ((node minigame-node) stream)
+  (format stream "~&(dialog-minigame ~s~%                 ~s~%                 :game ~s~%                 :success "
+          (node-id node)
+          (node-text node)
+          (node-minigame node))
+  (editor-write-target stream (or (node-success-target node)
+                                  *runtime-fallback-node-id*))
+  (format stream "~%                 :failure ")
+  (editor-write-target stream (or (node-failure-target node)
+                                  *runtime-fallback-node-id*))
+  (format stream ")~2%"))
 
 (-> editor-write-insert-node-form
     (t editor-insert-kind dialog-id (option dialog-target))
     t)
 (defun editor-write-insert-node-form (stream kind node-id next-id)
-  (case kind
-    (:say
-     (editor-write-say-form stream
-                            node-id
-                            "speaker"
-                            *editor-placeholder-text*
-                            next-id))
-    (:choice
-     (editor-write-choice-form stream
-                               node-id
-                               "new choice prompt."
-                               "continue"
-                               next-id))
-    (:conversation
-     (editor-write-conversation-form stream node-id next-id))
-    (:number
-     (editor-write-number-form stream
-                               node-id
-                               "enter a number."
-                               (format nil "~a/value" node-id)
-                               next-id))
-    (:string
-     (editor-write-string-form stream
-                               node-id
-                               "enter text."
-                               (format nil "~a/value" node-id)
-                               next-id))
-    (:minigame
-     (editor-write-minigame-form stream
-                                 node-id
-                                 "play the minigame."
-                                 (editor-default-minigame-id)
-                                 next-id))
-    (t
-     (editor-write-text-form stream
-                             node-id
-                             *editor-placeholder-text*
-                             next-id))))
+  (node-write-script-form (node-insert-template kind node-id next-id)
+                          stream))
 
 (-> editor-append-linear-insert
     (dialog-id dialog-id editor-insert-kind (option dialog-target))
@@ -421,38 +465,8 @@
     (editor-insert-kind dialog-id (option dialog-target))
     dialog-id)
 (defun editor-add-insert-node (kind node-id next-id)
-  (case kind
-    (:say
-     (dialog-say node-id "speaker" *editor-placeholder-text* :next next-id))
-    (:choice
-     (dialog-pick node-id
-                  "new choice prompt."
-                  (dialog-option "continue"
-                                 (or next-id *runtime-fallback-node-id*))))
-    (:conversation
-     (dialog-conversation node-id
-                          :next next-id
-                          (dialog-left "left" "new line.")
-                          (dialog-right "right" "answer.")))
-    (:number
-     (dialog-number node-id
-                    "enter a number."
-                    :response-key (format nil "~a/value" node-id)
-                    :target (or next-id *runtime-fallback-node-id*)))
-    (:string
-     (dialog-string node-id
-                    "enter text."
-                    :response-key (format nil "~a/value" node-id)
-                    :target (or next-id *runtime-fallback-node-id*)))
-    (:minigame
-     (let ((target (or next-id *runtime-fallback-node-id*)))
-       (dialog-minigame node-id
-                        "play the minigame."
-                        :game (editor-default-minigame-id)
-                        :success target
-                        :failure target)))
-    (t
-     (dialog-text node-id *editor-placeholder-text* :next next-id))))
+  (add-node (node-insert-template kind node-id next-id))
+  node-id)
 
 (-> editor-apply-linear-insert (node dialog-id editor-insert-kind) t)
 (defun editor-apply-linear-insert (node child-id kind)
