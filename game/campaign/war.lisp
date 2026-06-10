@@ -319,4 +319,129 @@
 
 (dialog-text "war/day-end"
              "you sleep at the desk, over the folder, in your clothes."
+             :next "war/day3")
+
+
+;;; Day three: what the decree bought, and what the numbers count.
+
+(defun war-day3-decree-target ()
+  (let ((decree (dialog-value "war-decree" "vote")))
+    (cond
+      ((string= decree "signed") "war/decree-cost-signed")
+      ((string= decree "refused") "war/decree-cost-refused")
+      (t "war/decree-cost-vote"))))
+
+(defun war-numbers-target ()
+  (if (dialog-value "war-found-band")
+      "war/numbers-yours"
+      "war/numbers-sorel"))
+
+(dialog-scene "war/day3"
+              "the third morning."
+              :next #'war-day3-decree-target)
+
+(dialog-text "war/decree-cost-signed"
+             "the district police wear new armbands by eight. your morning mail arrives opened and re-gummed, with a slip that reads INSPECTED FOR YOUR SAFETY. the slip is signed by no one."
+             :next "war/day3-brandt")
+
+(dialog-text "war/decree-cost-refused"
+             "the decree returns countersigned by four ministers. a clerk asks, politely, on whose authority Brandt enters this wing. Brandt has worked here for nine years."
+             :next "war/day3-brandt")
+
+(dialog-text "war/decree-cost-vote"
+             "the table that passed the decree met again last night, without you. the minutes list you as absent with apologies. you sent no apologies."
+             :next "war/day3-brandt")
+
+(dialog-conversation "war/day3-brandt"
+                     (dialog-left "Brandt"
+                                  "Sorel is waiting in the map room. she has been there since five.")
+                     (dialog-right "you"
+                                   "with the ledger?")
+                     (dialog-left "Brandt"
+                                  "with the ledger, and with yesterday's broadcast log. chancellor, she found what the numbers are.")
+                     :next #'war-numbers-target)
+
+(dialog-text "war/numbers-yours"
+             "you bring the page you wrote at the night office. Sorel sets it beside the kilometer nine manifest, and the columns agree: car weights, head counts, departure times. the station has been reading inventory."
+             :next "war/numbers-after")
+
+(dialog-text "war/numbers-sorel"
+             "Sorel transcribed last night's broadcast herself. set against the kilometer nine manifest, the columns agree: car weights, head counts, departure times. the station has been reading inventory."
+             :next "war/numbers-after")
+
+(dialog-conversation "war/numbers-after"
+                     (dialog-left "Sorel"
+                                  "head counts, chancellor. the cars are not carrying coats.")
+                     (dialog-right "you"
+                                   "whose counts?")
+                     (dialog-left "Sorel"
+                                  "the third district's. the bells have been ringing exactly as long as the broadcasts. i checked twice.")
+                     :next "war/day3-choice")
+
+(dialog-pick "war/day3-choice"
+             "Sorel closes the ledger and waits. the map room has one door."
+             (dialog-option "put it to Vey at the table" "war/accuse")
+             (dialog-option "have Olen seal kilometer nine" "war/seal")
+             (dialog-option "say nothing yet" "war/wait-move"))
+
+(dialog-on-enter "war/accuse"
+                 '(setf (dialog-value "war-day3") "accused"))
+
+(dialog-conversation "war/accuse"
+                     (dialog-left "Vey"
+                                  "an inventory broadcast. yes. continuity of government requires knowing what the districts hold.")
+                     (dialog-right "you"
+                                   "the cars hold people.")
+                     (dialog-left "Vey"
+                                  "the cars hold the district's contribution, chancellor, ordered over your signature. shall i read it to the table?")
+                     :next "war/day3-close")
+
+(dialog-on-enter "war/seal"
+                 '(setf (dialog-value "war-day3") "sealed"))
+
+(dialog-conversation "war/seal"
+                     (dialog-left "Olen"
+                                  "i can put a company on the siding by noon. they will need a written order.")
+                     (dialog-right "you"
+                                   "you will have it in my hand.")
+                     (dialog-left "Olen"
+                                  "in your hand, chancellor. watch it being written, and so will i.")
+                     :next "war/day3-close")
+
+(dialog-on-enter "war/wait-move"
+                 '(setf (dialog-value "war-day3") "waited"))
+
+(dialog-text "war/wait-move"
+             "you say nothing yet. Sorel copies the matched columns into her own ledger, in pencil, and gives you the original. some evidence survives better when it appears to be lost."
+             :next "war/day3-close")
+
+(dialog-text "war/day3-close"
+             "the eight o'clock bell rings. the cabinet takes its seats around the map, and whatever else is true, the war is still there, asking to be lost more slowly."
+             :next "war/day3-night")
+
+(defun war-day3-night-target ()
+  (let ((day3 (dialog-value "war-day3" "waited")))
+    (cond
+      ((string= day3 "accused") "war/night-accused")
+      ((string= day3 "sealed") "war/night-sealed")
+      (t "war/night-waited"))))
+
+(dialog-scene "war/day3-night"
+              "the fourth night."
+              :next #'war-day3-night-target)
+
+(dialog-text "war/night-accused"
+             "no one mentions the morning again. at dusk a clerk you have never seen replaces the lock on your office door, for your safety, and hands you the new key with a bow."
+             :next "war/arc-end")
+
+(dialog-text "war/night-sealed"
+             "Olen's company reports the siding empty. fence, gate, chalk marks, no car. the gate log's last page has been torn out, and the sentry remembers nobody."
+             :next "war/arc-end")
+
+(dialog-text "war/night-waited"
+             "the broadcast resumes at midnight. you take down the new numbers beside the old. the head counts are smaller tonight. you are learning to read it, and you wish you were not."
+             :next "war/arc-end")
+
+(dialog-text "war/arc-end"
+             "you sleep badly, in your clothes, with the pencil copy under the blotter."
              :next "base/awake")
