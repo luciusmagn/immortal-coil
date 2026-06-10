@@ -250,3 +250,22 @@
                         :cursor-p nil)
     (when (story-text-visible-p node)
       (draw-string-input-field color))))
+
+
+;;; Node behavior
+
+(defmethod node-update ((node number-input-node) dt)
+  (declare (ignore dt))
+  (advance-typewriter node)
+  (update-number-node node))
+
+(defmethod node-update ((node string-input-node) dt)
+  (declare (ignore dt))
+  (advance-typewriter node)
+  (update-string-node node))
+
+(defmethod node-draw ((node number-input-node))
+  (draw-number-node node))
+
+(defmethod node-draw ((node string-input-node))
+  (draw-string-node node))

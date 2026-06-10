@@ -23,3 +23,13 @@
           (draw-minigame-definition definition
                                     node
                                     (make-color 255 255 255 230)))))))
+
+
+;;; Node behavior
+
+(defmethod node-update ((node minigame-node) dt)
+  (advance-typewriter node)
+  (update-minigame-node node dt))
+
+(defmethod node-draw ((node minigame-node))
+  (draw-minigame-node node))

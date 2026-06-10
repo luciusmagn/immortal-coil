@@ -269,3 +269,14 @@
       (:vertical (draw-vertical-choice-node node color))
       (:list (draw-list-choice-node node color))
       (t (draw-horizontal-choice-node node color)))))
+
+
+;;; Node behavior
+
+(defmethod node-update ((node choice-node) dt)
+  (declare (ignore dt))
+  (advance-typewriter node)
+  (update-choice-node node))
+
+(defmethod node-draw ((node choice-node))
+  (draw-choice-node node))

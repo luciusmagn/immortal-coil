@@ -133,3 +133,17 @@
                                   size
                                   color)
       (draw-cursor x y width size color))))
+
+
+;;; Node behavior
+;;;
+;;; The base methods cover text and say nodes and act as the fallback
+;;; for any future node class without its own behavior.
+
+(defmethod node-update ((node node) dt)
+  (declare (ignore dt))
+  (advance-typewriter node)
+  (update-text-node node))
+
+(defmethod node-draw ((node node))
+  (draw-opening-text-node node))

@@ -38,25 +38,172 @@
   (new-source      :unknown :type dialog-source)
   (resolution      :latest-wins :type dialog-conflict-resolution))
 
-(defstruct node
-  (id             *runtime-fallback-node-id* :type dialog-id)
-  (kind           :text :type node-kind)
-  (speaker        nil :type (option string))
-  (text           "" :type string)
-  (next           nil :type (option dialog-target))
-  (choices        #() :type vector)
-  (conversation   #() :type vector)
-  (layout         nil :type (option choice-layout))
-  (target         nil :type (option dialog-target))
-  (response-key   nil :type (option dialog-id))
-  (min-value      nil :type (option number))
-  (max-value      nil :type (option number))
-  (max-length     0 :type nonnegative-integer)
-  (allow-empty-p  nil :type boolean)
-  (minigame       nil :type (option minigame-id))
-  (success-target nil :type (option dialog-target))
-  (failure-target nil :type (option dialog-target))
-  (enter-effects  nil :type (list-of dialog-effect)))
+(defclass node ()
+  ((id
+    :initarg :id
+    :initform *runtime-fallback-node-id*
+    :accessor node-id
+    :type dialog-id)
+   (text
+    :initarg :text
+    :initform ""
+    :accessor node-text
+    :type string)
+   (enter-effects
+    :initarg :enter-effects
+    :initform nil
+    :accessor node-enter-effects
+    :type (list-of dialog-effect))))
+
+(defclass linear-node (node)
+  ((next
+    :initarg :next
+    :initform nil
+    :accessor node-next
+    :type (option dialog-target))))
+
+(defclass text-node (linear-node)
+  ())
+
+(defclass say-node (text-node)
+  ((speaker
+    :initarg :speaker
+    :initform nil
+    :accessor node-speaker
+    :type (option string))))
+
+(defclass conversation-node (linear-node)
+  ((conversation
+    :initarg :conversation
+    :initform #()
+    :accessor node-conversation
+    :type vector)))
+
+(defclass choice-node (node)
+  ((choices
+    :initarg :choices
+    :initform #()
+    :accessor node-choices
+    :type vector)
+   (layout
+    :initarg :layout
+    :initform nil
+    :accessor node-layout
+    :type (option choice-layout))))
+
+(defclass input-node (node)
+  ((target
+    :initarg :target
+    :initform nil
+    :accessor node-target
+    :type (option dialog-target))
+   (response-key
+    :initarg :response-key
+    :initform nil
+    :accessor node-response-key
+    :type (option dialog-id))))
+
+(defclass number-input-node (input-node)
+  ((min-value
+    :initarg :min-value
+    :initform nil
+    :accessor node-min-value
+    :type (option number))
+   (max-value
+    :initarg :max-value
+    :initform nil
+    :accessor node-max-value
+    :type (option number))))
+
+(defclass string-input-node (input-node)
+  ((max-length
+    :initarg :max-length
+    :initform 0
+    :accessor node-max-length
+    :type nonnegative-integer)
+   (allow-empty-p
+    :initarg :allow-empty-p
+    :initform nil
+    :accessor node-allow-empty-p
+    :type boolean)))
+
+(defclass minigame-node (node)
+  ((minigame
+    :initarg :minigame
+    :initform nil
+    :accessor node-minigame
+    :type (option minigame-id))
+   (success-target
+    :initarg :success-target
+    :initform nil
+    :accessor node-success-target
+    :type (option dialog-target))
+   (failure-target
+    :initarg :failure-target
+    :initform nil
+    :accessor node-failure-target
+    :type (option dialog-target))))
+
+
+;;; Kind tags
+
+(defgeneric node-kind (node)
+  (:documentation "Keyword tag for NODE, used by saves, drafts, and editor menus."))
+
+(defmethod node-kind ((node text-node)) :text)
+(defmethod node-kind ((node say-node)) :say)
+(defmethod node-kind ((node conversation-node)) :conversation)
+(defmethod node-kind ((node choice-node)) :choice)
+(defmethod node-kind ((node number-input-node)) :number)
+(defmethod node-kind ((node string-input-node)) :string)
+(defmethod node-kind ((node minigame-node)) :minigame)
+
+(-> node-kind-class (node-kind) symbol)
+(defun node-kind-class (kind)
+  (ecase kind
+    (:text 'text-node)
+    (:say 'say-node)
+    (:conversation 'conversation-node)
+    (:choice 'choice-node)
+    (:number 'number-input-node)
+    (:string 'string-input-node)
+    (:minigame 'minigame-node)))
+
+(-> make-node (&rest t) node)
+(defun make-node (&rest initargs &key (kind :text) &allow-other-keys)
+  (let ((args (copy-list initargs)))
+    (remf args :kind)
+    (apply #'make-instance (node-kind-class kind) args)))
+
+
+;;; Cross-kind reader defaults
+;;;
+;;; Editor overlays and runtime fallbacks read kind-specific slots on
+;;; arbitrary nodes; these defaults preserve the permissive reads.
+
+(defmethod node-speaker ((node node)) nil)
+(defmethod node-next ((node node)) nil)
+(defmethod node-conversation ((node node)) #())
+(defmethod node-choices ((node node)) #())
+(defmethod node-layout ((node node)) nil)
+(defmethod node-target ((node node)) nil)
+(defmethod node-response-key ((node node)) nil)
+(defmethod node-min-value ((node node)) nil)
+(defmethod node-max-value ((node node)) nil)
+(defmethod node-max-length ((node node)) 0)
+(defmethod node-allow-empty-p ((node node)) nil)
+(defmethod node-minigame ((node node)) nil)
+(defmethod node-success-target ((node node)) nil)
+(defmethod node-failure-target ((node node)) nil)
+
+
+;;; Node behavior
+
+(defgeneric node-update (node dt)
+  (:documentation "Per-frame gameplay update while NODE is current."))
+
+(defgeneric node-draw (node)
+  (:documentation "Draw NODE as the current gameplay scene."))
 
 
 ;;; Conflict tracking

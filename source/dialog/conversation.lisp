@@ -209,3 +209,13 @@
                          +conversation-text-size+
                          color))))
       (incf y (getf data :height)))))
+
+
+;;; Node behavior
+
+(defmethod node-update ((node conversation-node) dt)
+  (declare (ignore dt))
+  (update-conversation-node node))
+
+(defmethod node-draw ((node conversation-node))
+  (draw-conversation-node node))
