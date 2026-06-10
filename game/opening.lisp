@@ -26,6 +26,11 @@
       ((string= exit "right") "dream/right-exit")
       (t "dream/maze-lost"))))
 
+(defun ship-galley-target ()
+  (if (plusp (dialog-value "ship-failures" 0))
+      "ship/galley-remembered"
+      "ship/galley"))
+
 
 ;;; Base room
 
@@ -156,7 +161,55 @@
                  :failure "ship/crash-return")
 
 (dialog-text "ship/threaded"
-             "you thread the line. for one second, the ship is quiet.")
+             "you thread the line. for one second, the ship is quiet."
+             :next "ship/bridge")
+
+(dialog-text "ship/bridge"
+             "on the bridge, Imari logs the crossing without looking up. Voss is already plotting the next lane. someone has taped your old checklist to the console."
+             :next "ship/praise")
+
+(dialog-conversation "ship/praise"
+                     (dialog-left "Imari"
+                                  "eighty-one seconds, captain. cleanest crossing on record.")
+                     (dialog-right "{player-name}"
+                                   "log it and stand down.")
+                     (dialog-left "Imari"
+                                  "you make it look rehearsed.")
+                     :next #'ship-galley-target)
+
+(dialog-text "ship/galley"
+             "in the galley, Voss pours two cups and slides one across."
+             :next "ship/voss-question")
+
+(dialog-text "ship/galley-remembered"
+             "in the galley, Voss pours two cups. mid-pour, her sleeve is burned to the elbow and the cup is in pieces on the floor. you blink. she hands you the cup, whole, and you hold it with both hands."
+             :next "ship/voss-question")
+
+(dialog-pick "ship/voss-question"
+             "Voss asks how you knew the lane would hold."
+             (dialog-option "tell her you read the drift" "ship/doctrine")
+             (dialog-option "say you got lucky" "ship/luck")
+             (dialog-option "say nothing and drink" "ship/quiet"))
+
+(dialog-text "ship/doctrine"
+             "she nods and writes it into the crossing manual. it is procedure now, with your name beside it."
+             :next "ship/bunk")
+
+(dialog-text "ship/luck"
+             "she laughs and lets it go. from the doorway, Imari says the record speaks for itself."
+             :next "ship/bunk")
+
+(dialog-text "ship/quiet"
+             "the cup is hot, then warm, then empty. Voss takes the silence as modesty."
+             :next "ship/bunk")
+
+(dialog-text "ship/bunk"
+             "you lie down in the bunk with your name stenciled at the foot. you are asleep before the lights dim."
+             :next "base/awake")
+
+(dialog-on-enter "ship/crash-return"
+                 '(setf (dialog-value "ship-failures")
+                        (1+ (dialog-value "ship-failures" 0))))
 
 (dialog-text "ship/crash-return"
              "white lines fill your eyes. when you blink them away, the alarm is still sounding."
