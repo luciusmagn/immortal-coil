@@ -540,9 +540,11 @@
                      &key
                      (:game (option minigame-id))
                      (:success (option dialog-target))
-                     (:failure (option dialog-target)))
+                     (:failure (option dialog-target))
+                     (:config list)
+                     (:outcomes list))
     dialog-id)
-(defun dialog-minigame (id text &key game success failure)
+(defun dialog-minigame (id text &key game success failure config outcomes)
   (unless game
     (runtime-warn "Minigame node needs a game: ~a" id))
   (add-node (make-node
@@ -550,15 +552,45 @@
              :kind :minigame
              :text text
              :minigame game
-             :success-target (dialog-required-link
-                              success
-                              id
-                              "Minigame node needs a success target")
-             :failure-target (dialog-required-link
-                              failure
-                              id
-                              "Minigame node needs a failure target")))
+             :config config
+             :outcomes outcomes
+             :success-target (if (and (null success) outcomes)
+                                 nil
+                                 (dialog-required-link
+                                  success
+                                  id
+                                  "Minigame node needs a success target"))
+             :failure-target (if (and (null failure) outcomes)
+                                 nil
+                                 (dialog-required-link
+                                  failure
+                                  id
+                                  "Minigame node needs a failure target"))))
   id)
+
+(defgeneric node-set-minigame-config (node config)
+  (:method ((node minigame-node) config)
+    (setf (node-minigame-config node) config))
+  (:method ((node node) config)
+    (declare (ignore config))
+    (dialog-setter-warn node "minigame config")))
+
+(-> dialog-set-minigame-config (dialog-id list) dialog-id)
+(defun dialog-set-minigame-config (node-id config)
+  (node-set-minigame-config (find-node node-id) config)
+  node-id)
+
+(defgeneric node-set-minigame-outcomes (node outcomes)
+  (:method ((node minigame-node) outcomes)
+    (setf (node-minigame-outcomes node) outcomes))
+  (:method ((node node) outcomes)
+    (declare (ignore outcomes))
+    (dialog-setter-warn node "minigame outcomes")))
+
+(-> dialog-set-minigame-outcomes (dialog-id list) dialog-id)
+(defun dialog-set-minigame-outcomes (node-id outcomes)
+  (node-set-minigame-outcomes (find-node node-id) outcomes)
+  node-id)
 
 (defgeneric node-set-minigame (node game-id)
   (:method ((node minigame-node) game-id)

@@ -314,6 +314,15 @@
   (format stream "~%                 :failure ")
   (editor-write-target stream (or (node-failure-target node)
                                   *runtime-fallback-node-id*))
+  (when (node-minigame-config node)
+    (format stream "~%                 :config '~s"
+            (node-minigame-config node)))
+  (when (node-minigame-outcomes node)
+    (format stream "~%                 :outcomes (list")
+    (loop for (outcome target) on (node-minigame-outcomes node) by #'cddr
+          do (format stream " ~s " outcome)
+             (editor-write-target stream target))
+    (format stream ")"))
   (format stream ")~2%"))
 
 (-> editor-write-insert-node-form

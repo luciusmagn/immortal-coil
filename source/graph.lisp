@@ -146,7 +146,17 @@
     :initarg :failure-target
     :initform nil
     :accessor node-failure-target
-    :type (option dialog-target))))
+    :type (option dialog-target))
+   (config
+    :initarg :config
+    :initform nil
+    :accessor node-minigame-config
+    :type list)
+   (outcomes
+    :initarg :outcomes
+    :initform nil
+    :accessor node-minigame-outcomes
+    :type list)))
 
 
 ;;; Kind tags
@@ -201,6 +211,8 @@
 (defmethod node-minigame ((node node)) nil)
 (defmethod node-success-target ((node node)) nil)
 (defmethod node-failure-target ((node node)) nil)
+(defmethod node-minigame-config ((node node)) nil)
+(defmethod node-minigame-outcomes ((node node)) nil)
 
 
 ;;; Node behavior

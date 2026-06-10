@@ -22,7 +22,12 @@
     :initarg :source
     :initform :unknown
     :accessor minigame-definition-source
-    :type dialog-source)))
+    :type dialog-source)
+   (possible-outcomes
+    :initarg :possible-outcomes
+    :initform '(:success :failure)
+    :accessor minigame-definition-possible-outcomes
+    :type list)))
 
 (defclass function-minigame-definition (minigame-definition)
   ((update-function
@@ -159,16 +164,20 @@
                    *minigame-definitions*)
           definition)))
 
-(-> dialog-minigame-kind (t &key (:update t) (:draw t)) minigame-id)
-(defun dialog-minigame-kind (id &key update draw)
+(-> dialog-minigame-kind (t &key (:update t) (:draw t) (:outcomes list))
+    minigame-id)
+(defun dialog-minigame-kind (id &key update draw
+                                     (outcomes '(:success :failure)))
   (let ((minigame-id (normalize-minigame-id id))
         (update-function (minigame-handler-function update "update handler"))
         (draw-function (minigame-handler-function draw "draw handler")))
     (if (and update-function draw-function)
-        (register-minigame-definition
-         (make-function-minigame-definition minigame-id
-                                            update-function
-                                            draw-function))
+        (let ((definition (make-function-minigame-definition
+                           minigame-id
+                           update-function
+                           draw-function)))
+          (setf (minigame-definition-possible-outcomes definition) outcomes)
+          (register-minigame-definition definition))
         (runtime-warn "Could not register minigame: ~a" minigame-id))
     minigame-id))
 
@@ -183,6 +192,116 @@
     definition))
 
 
+;;; Config and outcomes
+;;;
+;;; A minigame node may carry a config plist the minigame reads, and an
+;;; outcomes plist mapping outcome keywords to dialog targets. Minigames
+;;; finish with any outcome keyword they like, chosen by whatever code
+;;; they like, but their definition declares the possible outcomes so
+;;; authoring tools can check coverage. :success and :failure resolve
+;;; through the classic target slots when no outcome entry exists.
+
+(defgeneric minigame-possible-outcomes (definition)
+  (:documentation "Outcome keywords DEFINITION may finish with.")
+  (:method ((definition minigame-definition))
+    (minigame-definition-possible-outcomes definition)))
+
+(-> minigame-config-value (node t &optional t) t)
+(defun minigame-config-value (node key &optional default)
+  (getf (node-minigame-config node) key default))
+
+(-> minigame-outcome-target (node t &optional t) dialog-target)
+(defun minigame-outcome-target (node outcome &optional (fallback :failure))
+  (or (getf (node-minigame-outcomes node) outcome)
+      (case outcome
+        (:success (node-success-target node))
+        (:failure (node-failure-target node)))
+      (unless (eq fallback outcome)
+        (getf (node-minigame-outcomes node) fallback))
+      (case fallback
+        (:success (node-success-target node))
+        (:failure (node-failure-target node)))
+      (progn
+        (runtime-warn "Minigame ~a has no target for outcome ~s."
+                      (node-id node)
+                      outcome)
+        (node-success-target node))
+      *runtime-fallback-node-id*))
+
+
+;;; Sessions
+;;;
+;;; A session owns one play-through's state for a class-based minigame.
+;;; The shared cache replaces the per-game global-and-ensure scaffolding.
+
+(defclass minigame-session ()
+  ((node-id
+    :initarg :node-id
+    :initform *runtime-fallback-node-id*
+    :reader minigame-session-node-id
+    :type dialog-id)
+   (config
+    :initarg :config
+    :initform nil
+    :reader minigame-session-config
+    :type list)))
+
+(defclass session-minigame-definition (minigame-definition)
+  ((session-class
+    :initarg :session-class
+    :reader minigame-definition-session-class
+    :type symbol)))
+
+(defgeneric make-minigame-session (definition node)
+  (:documentation "Fresh session for DEFINITION at NODE.")
+  (:method ((definition session-minigame-definition) node)
+    (make-instance (minigame-definition-session-class definition)
+                   :node-id (node-id node)
+                   :config (node-minigame-config node))))
+
+(defgeneric minigame-session-update (session node dt))
+
+(defgeneric minigame-session-draw (session node color))
+
+(defvar *minigame-session* nil)
+
+(-> session-config-value (minigame-session t &optional t) t)
+(defun session-config-value (session key &optional default)
+  (getf (minigame-session-config session) key default))
+
+(-> clear-minigame-session () null)
+(defun clear-minigame-session ()
+  (setf *minigame-session* nil))
+
+(register-minigame-reset-hook 'clear-minigame-session)
+
+(-> ensure-minigame-session (session-minigame-definition node)
+    minigame-session)
+(defun ensure-minigame-session (definition node)
+  (unless (and *minigame-session*
+               (equal (minigame-session-node-id *minigame-session*)
+                      (node-id node)))
+    (setf *minigame-session* (make-minigame-session definition node)))
+  *minigame-session*)
+
+(defmethod minigame-update ((definition session-minigame-definition) node dt)
+  (minigame-session-update (ensure-minigame-session definition node) node dt))
+
+(defmethod minigame-draw ((definition session-minigame-definition) node color)
+  (minigame-session-draw (ensure-minigame-session definition node) node color))
+
+(-> register-minigame-session-kind (t symbol &key (:outcomes list))
+    minigame-definition)
+(defun register-minigame-session-kind (id session-class
+                                       &key (outcomes '(:success :failure)))
+  (register-minigame-definition
+   (make-instance 'session-minigame-definition
+                  :id (normalize-minigame-id id)
+                  :session-class session-class
+                  :possible-outcomes outcomes
+                  :source (current-dialog-source-name))))
+
+
 ;;; Runtime dispatch
 
 (-> minigame-fallback-target (node) dialog-target)
@@ -191,8 +310,14 @@
       (node-success-target node)
       *runtime-fallback-node-id*))
 
+(-> finish-minigame-node (node t &optional t) t)
+(defun finish-minigame-node (node outcome &optional (fallback :failure))
+  (clear-minigame-session)
+  (jump-to-dialog-target (minigame-outcome-target node outcome fallback)))
+
 (-> fail-minigame-node (node) t)
 (defun fail-minigame-node (node)
+  (clear-minigame-session)
   (jump-to-dialog-target (minigame-fallback-target node)))
 
 (-> update-minigame-definition (minigame-definition node seconds) t)
