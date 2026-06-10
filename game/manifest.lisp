@@ -8,6 +8,7 @@
            "maze/rendering.lisp"
            "flight/minigame.lisp"
            "flight/rendering.lisp"
+           "rogue/delve.lisp"
            "war/radio.lisp"
            "war/audit.lisp"
            "forest/hide.lisp"

@@ -477,7 +477,8 @@
              "choose a door."
              (dialog-option "north: oiled metal" "rogue/armory")
              (dialog-option "east: standing water" "rogue/cistern")
-             (dialog-option "west: old wax" "rogue/shrine"))
+             (dialog-option "west: old wax" "rogue/shrine")
+             (dialog-option "south: a long stair" "rogue/delve-entry"))
 
 (dialog-on-enter "rogue/armory"
                  '(setf (dialog-value "rogue-floor2-room") "armory"))
@@ -558,6 +559,78 @@
 (dialog-text "rogue/leave-keys"
              "you leave them. on the way out you count the nails, lose the count, and decide the count was not yours to make."
              :next "rogue/far-hall")
+
+(dialog-text "rogue/delve-entry"
+             "the south door opens on a stair that keeps going past where stairs stop being furniture and start being terrain. cold air climbs it slowly, like something pacing itself."
+             :next "rogue/delve")
+
+(defun rogue-delve-bottom-target ()
+  (if (>= (dialog-value "delve-marks" 0) 3)
+      "rogue/delve-bottom-marked"
+      "rogue/delve-bottom"))
+
+(dialog-minigame "rogue/delve"
+                 "wasd or arrow keys step. find the bottom."
+                 :game :rogue-delve
+                 :success #'rogue-delve-bottom-target
+                 :failure "rogue/delve-left"
+                 :config (list :save-prefix "delve"
+                               :caught-target "rogue/delve-caught"
+                               :leave-target "rogue/delve-left"
+                               :maps
+                               (list (list "#############"
+                                           "#<....#..*..#"
+                                           "#.###.#.###.#"
+                                           "#.#...#...#.#"
+                                           "#.#.#####.#.#"
+                                           "#@..*...#.#.#"
+                                           "#.######..#.#"
+                                           "#........#>.#"
+                                           "#############")
+                                     (list "#############"
+                                           "#<......#..*#"
+                                           "###.###.#.###"
+                                           "#...#.#.#...#"
+                                           "#.###.#.###.#"
+                                           "#.#...m...#.#"
+                                           "#.#.#####.#.#"
+                                           "#*..#...#..>#"
+                                           "#############")
+                                     (list "#############"
+                                           "#<..#.....#.#"
+                                           "##.##.###.#.#"
+                                           "#..#..#.#.#.#"
+                                           "#.##.##.#.#.#"
+                                           "#.#..#..*.#.#"
+                                           "#.#.##.####.#"
+                                           "#...#......$#"
+                                           "#############"))))
+
+(dialog-on-enter "rogue/delve-bottom"
+                 '(setf (dialog-value "rogue-delve-done") t))
+
+(dialog-text "rogue/delve-bottom"
+             "past the last door the stair gives out into a small room you know by furniture: a bed, a small table, a door. on the bed, made flat and square, lies one paper tag, ink fresh, first line legible."
+             :next "rogue/delve-after")
+
+(dialog-on-enter "rogue/delve-bottom-marked"
+                 '(setf (dialog-value "rogue-delve-done") t))
+
+(dialog-text "rogue/delve-bottom-marked"
+             "past the last door the stair gives out into a small room you know by furniture: a bed, a small table, a door. the chalk marks you gathered on the way down have the same tidy strokes as the wall tally. on the bed lies one paper tag, ink fresh."
+             :next "rogue/delve-after")
+
+(dialog-text "rogue/delve-after"
+             "you do not take the tag. you close the door on it, quietly, the way you would on someone sleeping, and climb until the stair becomes furniture again."
+             :next "rogue/landing-return")
+
+(dialog-text "rogue/delve-caught"
+             "the pacing closes its distance all at once, from the one direction you were not counting. you wake on the landing with the torch relit and your hours kept for you. nothing is missing except the going down."
+             :next "rogue/landing-return")
+
+(dialog-text "rogue/delve-left"
+             "you climb back to the landing, and the cold climbs with you as far as the door, where it stops, well-mannered."
+             :next "rogue/landing-return")
 
 (dialog-text "rogue/far-hall"
              "the far hall narrows. along it, something keeps pace with you one wall away, matching your steps so well that stopping feels like an agreement."
