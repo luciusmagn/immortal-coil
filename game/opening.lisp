@@ -151,11 +151,11 @@
                :target "ship/alarm")
 
 (dialog-text "ship/alarm"
-             "captain {player-name}, the wireframe lane is collapsing."
+             "captain {player-name} to the bridge. the crossing is closing early."
              :next "ship/flight")
 
 (dialog-minigame "ship/flight"
-                 "use w/a/s/d or arrow keys to steer. keep the ship inside the open wireframe gates."
+                 "w/a/s/d or arrow keys steer. hold the ship in the open gates."
                  :game :wire-flight
                  :success "ship/threaded"
                  :failure "ship/crash-return")
