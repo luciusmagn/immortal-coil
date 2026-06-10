@@ -21,6 +21,9 @@ The brass key path leads to the dark forest survival story.
 - =forest/porch= places the house alone in a black pine forest.
 - =forest/tag= shows the wrist tag and begins the confinement reveal.
 - =forest/pursuer= names the player like misplaced property.
+- =forest/hold-still= is the hiding minigame: breath rises on its own and
+  letting it out makes noise. Being heard sets =forest-seen= and the lantern
+  leaves slower; both outcomes continue to the wrist tag.
 - The three refuges store =forest-refuge= and deepen the reveal:
   - =forest/culvert=: a road, passing cars, the lantern turning back at the
     tree line.

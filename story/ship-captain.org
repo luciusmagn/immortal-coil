@@ -18,12 +18,26 @@ The glass of water path leads into the hard-sci-fi ship captain story.
   result.
 - Hallucinations are memory intrusions from previous failures, not ghosts,
   prophecies, or reality changing in front of the player.
+- Register: between dark Star Trek and outright space horror, mostly
+  psychological. The crew is unaware of the horrors; the captain knows them
+  and the gore and carnage they would cause, because in failed attempts they
+  happened.
+- Plan impossible choices where no option saves every crew member; store the
+  result so later scenes remember who was lost.
+- The ship's civilization is branch-relative canon: dystopic vestige of
+  humanity, thriving empire, or a republic/alliance of planets, per route.
+- Time-switch to an unknown future where the captain is alone aboard and does
+  not remember why: all dead, all dropped off safely, or in between. Keep the
+  ambiguity. Scene cuts use the =:scene= lower-third node.
 
 * Current surface
 
 - =ship/wake= reveals restraint straps and indicator lights in reflection.
 - =ship/name= collects the name stenciled on the frame at the foot of the bed.
-- =ship/flight= runs the wireframe flight minigame.
+- =ship/flight= runs the crossing minigame; the fiction says crossing, not
+  wireframe. The hull is a true 3d model that pitches and banks with input.
+- =ship/later= opens the lonely-future interlude behind a lower-third scene
+  shift.
 - Failure returns to the same alarm without explaining the mechanism, and
   silently counts in =ship-failures=.
 - =ship/bridge= and =ship/praise= introduce Imari (logs) and Voss (lanes);

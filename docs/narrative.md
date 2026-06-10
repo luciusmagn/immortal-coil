@@ -102,7 +102,8 @@ Current surface:
 - `war/briefing` and `war/decision` are the first abstract command beats; the
   bridge/rail-yard/delay choice is stored in `war-first-order`, and each cost
   is paid by people the player never sees.
-- `war/return` ends through sleeping in your clothes.
+- `war/radio` is the tuning minigame: the quiet band can be found, but it is
+  reading numbers too. Either outcome turns the radio down, not off.
 
 ## Ship Captain
 
@@ -118,12 +119,30 @@ Author truth:
   result.
 - Hallucinations are memory intrusions from previous failures, not ghosts,
   prophecies, or reality changing in front of the player.
+- The register sits between dark Star Trek and outright space horror, and the
+  horror is mostly psychological: the crew is unaware of the horrors around
+  them, while the captain knows both the horrors and the gore and carnage they
+  would cause — known naturally, because in failed attempts they happened.
+- Plan for impossible choices where no option saves every crew member. The
+  result belongs in the shared store so later scenes remember who was lost.
+- What civilization the ship belongs to is branch-relative canon: one route
+  may establish a dystopic vestige of humanity, another a thriving empire,
+  another a republic or alliance of planets. Each is that route's own truth.
+- The path also time-switches to an unknown future where the captain is alone
+  on the ship and does not remember why — everyone died, or everyone was
+  dropped off safely somewhere, or something in between. Keep that ambiguity.
+- Scene shifts use the `:scene` lower-third node (`dialog-scene`), which marks
+  a cut with a small label instead of an announcing title card.
 
 Current surface:
 
 - `ship/wake` reveals restraint straps and indicator lights in reflection.
 - `ship/name` collects the name stenciled on the frame at the foot of the bed.
-- `ship/flight` is the wireframe flight minigame.
+- `ship/flight` is the crossing minigame; the fiction calls it the crossing,
+  never the wireframe.
+- `ship/later` opens the lonely-future interlude with a lower-third scene
+  shift: dark bridge, one cup on the rack, the manual open to the player's
+  procedure.
 - Failure loops back into the same alarm without explaining the loop, and
   silently counts in the `ship-failures` store key.
 - `ship/bridge` and `ship/praise` introduce Imari (logs) and Voss (lanes);
@@ -150,6 +169,9 @@ Current surface:
 - `forest/porch` places the house alone in a black pine forest.
 - `forest/tag` shows the wrist tag and begins the confinement reveal.
 - `forest/pursuer` names the player like misplaced property.
+- `forest/hold-still` is the hiding minigame: breath rises on its own,
+  letting it out makes noise. Being heard only sets `forest-seen` and slows
+  the lantern; both outcomes continue.
 - The three refuges deepen the reveal and store `forest-refuge`:
   `forest/culvert` reaches a road where cars pass and the lantern turns back,
   `forest/gate` finds the property sign facing inward, and

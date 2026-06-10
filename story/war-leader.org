@@ -34,7 +34,8 @@ nation-leader-in-war story.
 - =war/doors= reuses =door-count= as the cabinet room number.
 - Olen runs the map. =war/decision= stores bridge/rail-yard/delay in
   =war-first-order=; each option's cost lands on unseen people.
-- =war/return= exits through sleeping in your clothes.
+- =war/radio= is the tuning minigame: the quiet band exists and is reading
+  numbers too. Either outcome turns the radio down, not off, and sleeps.
 
 * TODO
 

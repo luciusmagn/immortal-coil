@@ -104,6 +104,15 @@ Spoken text node:
             :next "my-mod/next")
 ```
 
+Scene shift, drawn as a small lower-third label instead of centered text.
+Use it to cut between places or times without an announcing title card:
+
+```lisp
+(dialog-scene "my-mod/later"
+              "the same ship. later."
+              :next "my-mod/next")
+```
+
 Patch a node's next link:
 
 ```lisp
