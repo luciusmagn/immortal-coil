@@ -442,6 +442,52 @@ Handlers:
 - update handler receives the dialog node and frame delta in seconds.
 - draw handler receives the dialog node and a white Claylib color object.
 
+### Config and outcomes
+
+A minigame node can carry a config plist for the minigame to read, and an
+outcomes plist mapping outcome keywords to targets. The minigame finishes
+with any outcome keyword its code chooses; the node decides where each one
+leads. A kind declares the outcomes it can finish with so tools can check
+coverage. `:success` and `:failure` resolve through the classic target
+slots when no outcomes entry exists, and unmapped outcomes fall back to
+the failure target.
+
+```lisp
+(dialog-minigame-kind :my-mod/maze
+                      :update #'update-my-maze
+                      :draw #'draw-my-maze
+                      :outcomes '(:left :right :success :failure))
+
+(dialog-minigame "my-mod/crossroads"
+                 "w/s move. a/d turn. find a way out."
+                 :game :my-mod/maze
+                 :failure "my-mod/lost"
+                 :config '(:fog 0.5)
+                 :outcomes (list :left "my-mod/meadow"
+                                 :right "my-mod/cliff"))
+```
+
+Inside the minigame, read config with `(minigame-config-value node :fog 0.0)`
+and finish with `(finish-minigame-node node :left)`. An optional third
+argument names the fallback outcome, `:failure` by default.
+
+Class-based minigames can skip the global-state scaffolding entirely:
+subclass `minigame-session`, specialize `minigame-session-update` and
+`minigame-session-draw`, and register with
+`(register-minigame-session-kind :my-mod/maze 'my-maze-session
+                                 :outcomes '(:left :right :success :failure))`.
+The engine creates one session per node visit with the node's config inside
+(`session-config-value`), and `finish-minigame-node` clears it.
+
+Patch config and outcomes on existing nodes:
+
+```lisp
+(dialog-set-minigame-config "my-mod/crossroads" '(:fog 0.8))
+(dialog-set-minigame-outcomes "my-mod/crossroads"
+                              (list :left "my-mod/meadow"
+                                    :right "my-mod/cliff"))
+```
+
 The update handler is responsible for calling `jump-to-node` when the minigame
 ends. Use the node's success or failure targets:
 

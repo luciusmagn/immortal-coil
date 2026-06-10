@@ -54,7 +54,7 @@ should avoid looking like a genre picker or a symbolic object menu:
 - `base/thirst`, `base/match`, and `base/unlock-door`: route through actions
   discovered while exploring the room.
 - `base/sleep`: enters the dream maze.
-- `dream/maze-exit`: routes by maze exit value.
+- `dream/maze`: routes by minigame outcome map (:left, :upper, :right).
 
 This is acceptable for proving the graph, minigame, music, particle, and mod
 surfaces. Future versions should keep making these events subtler and easier
