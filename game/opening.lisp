@@ -290,13 +290,22 @@
              (dialog-option "say you got lucky" "ship/luck")
              (dialog-option "say nothing and drink" "ship/quiet"))
 
+(dialog-on-enter "ship/doctrine"
+                 '(setf (dialog-value "ship-voss-answer") "doctrine"))
+
 (dialog-text "ship/doctrine"
              "she nods and writes it into the crossing manual. it is procedure now, with your name beside it."
              :next "ship/second-alarm")
 
+(dialog-on-enter "ship/luck"
+                 '(setf (dialog-value "ship-voss-answer") "luck"))
+
 (dialog-text "ship/luck"
              "she laughs and lets it go. from the doorway, Imari says the record speaks for itself."
              :next "ship/second-alarm")
+
+(dialog-on-enter "ship/quiet"
+                 '(setf (dialog-value "ship-voss-answer") "quiet"))
 
 (dialog-text "ship/quiet"
              "the cup is hot, then warm, then empty. Voss takes the silence as modesty."
@@ -373,12 +382,21 @@
               "the next watch."
               :next "ship/mess")
 
+(defun ship-watch-bridge-target ()
+  (if (equal (dialog-value "ship-voss-answer" "") "doctrine")
+      "ship/watch-bridge-doctrine"
+      "ship/watch-bridge"))
+
 (dialog-text "ship/mess"
              "the mess at change of watch holds the whole crew minus one, which is a kind of arithmetic a captain does without deciding to. someone has set the empty place anyway: cup, tray, fork squared. nobody talks about it and nobody clears it."
-             :next "ship/watch-bridge")
+             :next #'ship-watch-bridge-target)
 
 (dialog-text "ship/watch-bridge"
              "the bridge runs quiet and exact. Voss recalibrates the lane tables without being asked, twice, the second time more slowly, getting the same answer and not liking it any better."
+             :next "ship/log-sign")
+
+(dialog-text "ship/watch-bridge-doctrine"
+             "the bridge runs quiet and exact. the crossing manual lies open at Voss's station, and your guess about the drift sits in it as procedure, printed, consulted twice tonight already. she catches you looking and does not look away first."
              :next "ship/log-sign")
 
 (dialog-conversation "ship/log-sign"
@@ -523,11 +541,34 @@
              :next "ship/later-beacon")
 
 (dialog-text "ship/later-beacon"
-             "under the carrier, on the old port band, the beacon repeats its one recorded sentence: HOLD POSITION. RETRIEVAL FOLLOWS. the recording gives its own date each cycle, and the date does not bear thinking about, so you log the hail and do not think about it."
-             :next "ship/later-hold")
+             "under the carrier, on the old port band, the beacon repeats its one recorded sentence: HOLD POSITION. RETRIEVAL FOLLOWS. the recording gives its own date each cycle, and the date does not bear thinking about."
+             :next "ship/later-answer")
+
+(dialog-pick "ship/later-answer"
+             "the beacon finishes its sentence and waits out its own pause."
+             (dialog-option "hail back, voice" "ship/later-voice")
+             (dialog-option "hold position, log it" "ship/later-hold")
+             (dialog-option "switch the board off" "ship/later-dark"))
+
+(dialog-on-enter "ship/later-voice"
+                 '(setf (dialog-value "ship-future-answer") "voice"))
+
+(dialog-text "ship/later-voice"
+             "you key the channel and say the ship's name, and yours, and that you are holding as instructed. your voice comes back off the lane a half second late, in your own voice, the way a call comes back from a hall. you log the hail as answered. you do not write by whom."
+             :next "ship/later-bunk")
+
+(dialog-on-enter "ship/later-hold"
+                 '(setf (dialog-value "ship-future-answer") "held"))
 
 (dialog-text "ship/later-hold"
              "you hold position. the ship is good at holding position. it is the one order left that you can carry out perfectly, every watch, with no one to lose."
+             :next "ship/later-bunk")
+
+(dialog-on-enter "ship/later-dark"
+                 '(setf (dialog-value "ship-future-answer") "dark"))
+
+(dialog-text "ship/later-dark"
+             "you switch the board off. the silence afterward has a shape, and the shape is the mess hall with one place set: something kept ready for a return nobody schedules. you switch it back on before the next sweep. item nine. count everyone twice."
              :next "ship/later-bunk")
 
 (dialog-text "ship/later-bunk"
