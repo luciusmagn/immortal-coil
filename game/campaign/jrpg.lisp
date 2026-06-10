@@ -13,6 +13,8 @@
 (dialog-sound "jrpg/demon-fight" "audio/jrpg/sword.wav" :volume 0.34)
 (dialog-sound "jrpg/demon-chest" "audio/jrpg/coin.wav" :volume 0.28)
 (dialog-sound "jrpg/chapter-end" "audio/jrpg/bell.wav" :volume 0.26)
+(dialog-sound "jrpg/duel" "audio/jrpg/sword.wav" :volume 0.34)
+(dialog-sound "jrpg/ledger-line" "audio/jrpg/ledger.wav" :volume 0.24)
 
 (defun jrpg-combat-result-target ()
   (let ((result (jrpg-value "jrpg-last-battle" "victory")))
@@ -350,4 +352,59 @@
              :next "jrpg/chapter-end")
 
 (dialog-text "jrpg/chapter-end"
-             "Pell's handbell rings below. Vane takes one visitor sword from the rack and sets it on the carpet between you.")
+             "Pell's handbell rings below. Vane takes one visitor sword from the rack and sets it on the carpet between you."
+             :next "jrpg/sword-choice")
+
+(dialog-pick "jrpg/sword-choice"
+             "the visitor sword lies on the carpet."
+             (dialog-option "take it up" "jrpg/duel")
+             (dialog-option "leave it where it lies" "jrpg/refuse")
+             (dialog-option "ask about the broken swords" "jrpg/swords"))
+
+(dialog-on-enter "jrpg/duel"
+                 '(setf (jrpg-value "jrpg-vane-answer") "duel"))
+
+(dialog-text "jrpg/duel"
+             "you take it up. Vane sets his feet, and the first exchange knocks dust from the carpet. {jrpg-companion} counts the passes out loud."
+             :next "jrpg/duel-end")
+
+(dialog-conversation "jrpg/duel-end"
+                     (dialog-left "Vane"
+                                  "good. Oakbarrow sends better every year.")
+                     (dialog-right "{player-name}"
+                                   "is it over?")
+                     (dialog-left "Vane"
+                                  "for this year. take the sword. it counts as a receipt.")
+                     :next "jrpg/inn-return")
+
+(dialog-on-enter "jrpg/refuse"
+                 '(setf (jrpg-value "jrpg-vane-answer") "terms"))
+
+(dialog-conversation "jrpg/refuse"
+                     (dialog-left "Vane"
+                                  "then we talk. talking settles it too. it just takes longer than swords.")
+                     (dialog-right "{player-name}"
+                                   "Mira wants the notices to stop.")
+                     (dialog-left "Vane"
+                                  "and i want the hill to stop growing. tell her we are agreed.")
+                     :next "jrpg/inn-return")
+
+(dialog-on-enter "jrpg/swords"
+                 '(setf (jrpg-value "jrpg-vane-answer") "asked"))
+
+(dialog-conversation "jrpg/swords"
+                     (dialog-left "Vane"
+                                  "one for every visitor who took the sword up and lost. i mark the rack for each.")
+                     (dialog-right "{player-name}"
+                                   "how many marks?")
+                     (dialog-left "Vane"
+                                  "count them on your way out. bring the number to Mira. she keeps the other ledger.")
+                     :next "jrpg/inn-return")
+
+(dialog-text "jrpg/inn-return"
+             "the walk back to Oakbarrow takes the evening. Toma's oven is still warm, and breakfast, one day late, is included."
+             :next "jrpg/ledger-line")
+
+(dialog-text "jrpg/ledger-line"
+             "Mira writes one line in the ledger and hands you the room four key. you are asleep before the candle is out."
+             :next "base/awake")
