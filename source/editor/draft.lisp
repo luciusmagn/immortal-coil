@@ -6,6 +6,13 @@
 (defun editor-draft-script-pathname ()
   (project-pathname *editor-draft-script-path*))
 
+(-> editor-append-pathname (dialog-id) pathname)
+(defun editor-append-pathname (anchor-id)
+  "File that should receive an editor edit anchored at ANCHOR-ID: the
+script the node came from, or the draft file for orphans."
+  (or (node-source-pathname anchor-id)
+      (editor-draft-script-pathname)))
+
 (-> editor-linear-next-node-p (node) boolean)
 (defun editor-linear-next-node-p (node)
   (typep node 'linear-node))
@@ -337,18 +344,19 @@
     boolean)
 (defun editor-append-linear-insert (parent-id child-id kind old-next-id)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname parent-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; insert after ~s~%" parent-id)
+          (format stream "~&;; editor-generated: insert after ~s~%" parent-id)
           (editor-write-set-next-form stream parent-id child-id)
           (editor-write-insert-node-form stream
                                          kind
                                          child-id
                                          old-next-id))
+        (setf (node-source-pathname child-id) path)
         t)
     (error (condition)
       (runtime-warn "Could not append editor draft: ~a" condition)
@@ -359,13 +367,13 @@
     boolean)
 (defun editor-append-choice-insert (parent-id choice-index child-id kind old-target-id)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname parent-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; insert for option ~d in ~s~%"
+          (format stream "~&;; editor-generated: insert for option ~d in ~s~%"
                   choice-index
                   parent-id)
           (editor-write-set-choice-target-form stream
@@ -376,6 +384,7 @@
                                          kind
                                          child-id
                                          old-target-id))
+        (setf (node-source-pathname child-id) path)
         t)
     (error (condition)
       (runtime-warn "Could not append editor choice insert: ~a" condition)
@@ -386,15 +395,16 @@
     boolean)
 (defun editor-append-choice-add (parent-id label child-id kind)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname parent-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; add option in ~s~%" parent-id)
+          (format stream "~&;; editor-generated: add option in ~s~%" parent-id)
           (editor-write-add-choice-form stream parent-id label child-id)
           (editor-write-insert-node-form stream kind child-id nil))
+        (setf (node-source-pathname child-id) path)
         t)
     (error (condition)
       (runtime-warn "Could not append editor choice add: ~a" condition)
@@ -405,13 +415,13 @@
     boolean)
 (defun editor-append-node-replace (node-id kind next-id)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; replace node ~s~%" node-id)
+          (format stream "~&;; editor-generated: replace node ~s~%" node-id)
           (editor-write-insert-node-form stream kind node-id next-id))
         t)
     (error (condition)
@@ -421,13 +431,13 @@
 (-> editor-append-minigame-edit (dialog-id minigame-id) boolean)
 (defun editor-append-minigame-edit (node-id game-id)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; minigame edit for ~s~%" node-id)
+          (format stream "~&;; editor-generated: minigame edit for ~s~%" node-id)
           (editor-write-set-minigame-form stream node-id game-id))
         t)
     (error (condition)
@@ -437,13 +447,13 @@
 (-> editor-append-particles-edit (dialog-id particle-field-mode) boolean)
 (defun editor-append-particles-edit (node-id mode)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; particle edit for ~s~%" node-id)
+          (format stream "~&;; editor-generated: particle edit for ~s~%" node-id)
           (editor-write-set-particles-form stream node-id mode))
         t)
     (error (condition)
@@ -453,13 +463,13 @@
 (-> editor-append-text-rewrite (dialog-id string) boolean)
 (defun editor-append-text-rewrite (node-id text)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; text rewrite for ~s~%" node-id)
+          (format stream "~&;; editor-generated: text rewrite for ~s~%" node-id)
           (editor-write-set-text-form stream node-id text))
         t)
     (error (condition)
@@ -470,13 +480,13 @@
     boolean)
 (defun editor-append-linear-delete (parent-id node-id next-id)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname parent-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; delete ~s after ~s~%" node-id parent-id)
+          (format stream "~&;; editor-generated: delete ~s after ~s~%" node-id parent-id)
           (editor-write-set-next-form stream parent-id next-id)
           (editor-write-delete-node-form stream node-id))
         t)

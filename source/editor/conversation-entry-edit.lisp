@@ -178,13 +178,13 @@
                                               speaker
                                               text)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; conversation entry edit ~d in ~s~%"
+          (format stream "~&;; editor-generated: conversation entry edit ~d in ~s~%"
                   entry-index
                   node-id)
           (editor-write-set-conversation-entry-form stream
@@ -207,13 +207,13 @@
                                                 speaker
                                                 text)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; conversation entry insert ~d in ~s~%"
+          (format stream "~&;; editor-generated: conversation entry insert ~d in ~s~%"
                   entry-index
                   node-id)
           (editor-write-insert-conversation-entry-form stream

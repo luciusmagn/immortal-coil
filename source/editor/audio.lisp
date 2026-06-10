@@ -169,13 +169,13 @@
 (-> editor-append-music-edit (dialog-id t) boolean)
 (defun editor-append-music-edit (node-id selection)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; music edit for ~s~%" node-id)
+          (format stream "~&;; editor-generated: music edit for ~s~%" node-id)
           (editor-write-set-music-form stream node-id selection))
         t)
     (error (condition)
@@ -193,13 +193,13 @@
 (-> editor-append-sound-edit (dialog-id t) boolean)
 (defun editor-append-sound-edit (node-id selection)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; sound edit for ~s~%" node-id)
+          (format stream "~&;; editor-generated: sound edit for ~s~%" node-id)
           (editor-write-set-sound-form stream node-id selection))
         t)
     (error (condition)

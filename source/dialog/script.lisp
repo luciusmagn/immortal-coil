@@ -83,7 +83,8 @@
         (with-open-file (stream script-path)
           (let ((*package* (find-package "IMMORTAL-COIL"))
                 (*current-dialog-source* (dialog-script-source-label script))
-                (*current-dialog-bundle* (dialog-script-bundle script)))
+                (*current-dialog-bundle* (dialog-script-bundle script))
+                (*current-dialog-script-pathname* script-path))
             (loop for form = (read stream nil eof)
                   until (eq form eof)
                   do (handler-case

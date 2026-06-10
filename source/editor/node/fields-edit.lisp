@@ -551,13 +551,13 @@
 (-> editor-append-node-fields-edit (dialog-id node) boolean)
 (defun editor-append-node-fields-edit (node-id node)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; detail edit for ~s~%" node-id)
+          (format stream "~&;; editor-generated: detail edit for ~s~%" node-id)
           (node-write-fields-edit node stream))
         t)
     (error (condition)

@@ -205,13 +205,13 @@
     boolean)
 (defun editor-append-node-target-edit (node-id node)
   (handler-case
-      (let ((path (editor-draft-script-pathname)))
+      (let ((path (editor-append-pathname node-id)))
         (ensure-directories-exist path)
         (with-open-file (stream path
                                 :direction :output
                                 :if-exists :append
                                 :if-does-not-exist :create)
-          (format stream "~&;;; link edit for ~s~%" node-id)
+          (format stream "~&;; editor-generated: link edit for ~s~%" node-id)
           (loop for field across (editor-node-target-fields node)
                 do (editor-write-set-node-target-field-form
                     stream

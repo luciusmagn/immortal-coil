@@ -4,6 +4,8 @@
 
 (defvar *nodes* (make-hash-table :test #'equal))
 (defvar *node-sources* (make-hash-table :test #'equal))
+(defvar *node-source-paths* (make-hash-table :test #'equal))
+(defvar *current-dialog-script-pathname* nil)
 (defvar *pending-node-enter-effects* (make-hash-table :test #'equal))
 (defvar *story-start-node* nil)
 (defvar *last-dialog-node-id* nil)
@@ -16,6 +18,7 @@
 (defun reset-nodes ()
   (clrhash *nodes*)
   (clrhash *node-sources*)
+  (clrhash *node-source-paths*)
   (clrhash *pending-node-enter-effects*))
 
 
@@ -381,7 +384,10 @@
     (when (and previous-source
                (not (dialog-source-same-p previous-source new-source)))
       (record-dialog-conflict id previous-source new-source))
-    (setf (gethash id *node-sources*) new-source))
+    (setf (gethash id *node-sources*) new-source)
+    (when *current-dialog-script-pathname*
+      (setf (gethash id *node-source-paths*)
+            *current-dialog-script-pathname*)))
   (setf (node-enter-effects node)
         (combine-node-enter-effects node))
   (remhash (node-id node) *pending-node-enter-effects*)
@@ -485,11 +491,19 @@
        (retarget-node-links old-id new-id)
        t))))
 
+(-> node-source-pathname (dialog-id) (option pathname))
+(defun node-source-pathname (id)
+  (gethash id *node-source-paths*))
+
+(defun (setf node-source-pathname) (path id)
+  (setf (gethash id *node-source-paths*) path))
+
 (-> delete-node (dialog-id) boolean)
 (defun delete-node (id)
   (let ((existed-p (node-exists-p id)))
     (remhash id *nodes*)
     (remhash id *node-sources*)
+    (remhash id *node-source-paths*)
     (remhash id *pending-node-enter-effects*)
     (when (equal *last-dialog-node-id* id)
       (setf *last-dialog-node-id* nil))
