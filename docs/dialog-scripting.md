@@ -62,7 +62,7 @@ Conditions work like normal choices:
 ("hinges"
  :when #'(lambda ()
            (>= (dialog-value "door-count" 0) 5))
- "the hinges count themselves out loud.")
+ "hinges, one after another, as every door down the hall is opened and shut.")
 ```
 
 `:when` and `:unless` hide a choice option. Use `:enabled-when` or

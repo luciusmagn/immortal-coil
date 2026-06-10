@@ -2,15 +2,15 @@
 (dialog-music "alice/fall" "audio/alice-lyria-drone.mp3" :volume 0.24)
 
 (dialog-text "alice/fall"
-             "the left exit descends as a stairwell pretending to be a rabbit hole."
+             "the left exit descends as a stairwell."
              :next "alice/table")
 
 (dialog-text "alice/table"
-             "at the bottom waits a table set for too many people. every cup is turned upside down except yours."
+             "at the bottom waits a table set for many people. every cup is turned upside down except one."
              :next "alice/choice")
 
 (dialog-pick "alice/choice"
-             "which impossible courtesy do you accept?"
+             "which courtesy do you accept?"
              (dialog-option "drink from the right cup" "alice/cup")
              (dialog-option "answer the empty chair" "alice/chair")
              (dialog-option "follow the white thread" "alice/thread"))
@@ -20,7 +20,7 @@
              :next "alice/court")
 
 (dialog-text "alice/chair"
-             "the empty chair asks whether you are awake. it sounds offended by either answer."
+             "the empty chair asks whether you are awake. it does not wait for your answer."
              :next "alice/court")
 
 (dialog-text "alice/thread"
@@ -33,7 +33,7 @@
             :next "alice/unfinished")
 
 (dialog-text "alice/unfinished"
-             "the jury writes down the room before you describe it."
+             "the jury writes down the room before you finish describing it."
              :next "base/awake")
 
 
@@ -45,7 +45,7 @@
              :next "rogue/inventory")
 
 (dialog-text "rogue/inventory"
-             "you have a ration, a ring you cannot identify, and a memory of stairs going the wrong way."
+             "you have a ration, a ring you cannot identify, and no memory of which stairs brought you to this floor."
              :next "rogue/door")
 
 (dialog-list "rogue/door"
@@ -63,7 +63,7 @@
              :next "rogue/loot")
 
 (dialog-text "rogue/west"
-             "the altar offers you a blessing in exchange for your map. it already knows you will accept later."
+             "the altar offers a blessing in exchange for your map. older maps are already nailed beneath the candles."
              :next "rogue/loot")
 
 (dialog-pick "rogue/loot"
@@ -73,11 +73,11 @@
              (dialog-option "eat the ration" "rogue/ration"))
 
 (dialog-text "rogue/scroll"
-             "the scroll identifies itself as a scroll of identification. it refuses to elaborate."
+             "the scroll is a scroll of identification. it names the ring: silver, old, and cursed."
              :next "rogue/unfinished")
 
 (dialog-text "rogue/ring"
-             "the ring makes the room forget you for one breath."
+             "the ring fits. your hands fade from view, fingers first."
              :next "rogue/unfinished")
 
 (dialog-text "rogue/ration"
@@ -85,5 +85,5 @@
              :next "rogue/unfinished")
 
 (dialog-text "rogue/unfinished"
-             "somewhere below, a staircase waits with your name carved into the first step."
+             "at the corridor's end, a staircase leads down. your name is carved into the first step."
              :next "base/awake")

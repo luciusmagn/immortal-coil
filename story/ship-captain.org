@@ -22,7 +22,7 @@ The glass of water path leads into the hard-sci-fi ship captain story.
 * Current surface
 
 - =ship/wake= reveals restraint straps and indicator lights in reflection.
-- =ship/name= collects what the room calls the captain.
+- =ship/name= collects the name stenciled on the frame at the foot of the bed.
 - =ship/flight= runs the wireframe flight minigame.
 - Failure returns to the same alarm without explaining the mechanism.
 

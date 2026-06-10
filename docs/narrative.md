@@ -111,7 +111,7 @@ Author truth:
 Current surface:
 
 - `ship/wake` reveals restraint straps and indicator lights in reflection.
-- `ship/name` collects what the room calls the captain.
+- `ship/name` collects the name stenciled on the frame at the foot of the bed.
 - `ship/flight` is the wireframe flight minigame.
 - Failure loops back into the same alarm without explaining the loop.
 
@@ -226,7 +226,7 @@ Author truth:
 Current surface:
 
 - `rogue/entrance` opens onto hard white dungeon lines.
-- `rogue/inventory` gives a ration, ring, and stair memory.
+- `rogue/inventory` gives a ration, a ring, and no memory of the stairs.
 - `rogue/door` chooses a door by list.
 - `rogue/loot` chooses scroll, ring, or ration.
 
@@ -248,6 +248,12 @@ Author truth:
   while remaining Immortal Coil's own institution.
 - Transitions must be gradual. The player should first notice forms, symbols,
   protocols, and repeated room details before understanding the role.
+
+Current surface:
+
+- `dream/right-exit` shows a straightened corridor with a painted line down the
+  middle of the floor and a familiar door handle. The painted line is the first
+  institutional seed for this path.
 
 Visual note:
 

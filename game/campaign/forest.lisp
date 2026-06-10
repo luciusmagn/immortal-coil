@@ -143,7 +143,7 @@
                  '(setf (dialog-value "forest-door-locked") t))
 
 (dialog-text "forest/call"
-             "your voice returns from the hall in the house. it is careful to sound like you."
+             "your call comes back from inside the house, in your own voice, half a second late."
              :next "forest/trail")
 
 (dialog-on-enter "forest/call"
@@ -154,7 +154,7 @@
              :next "forest/sound")
 
 (dialog-pick "forest/sound"
-             "the forest moves behind you."
+             "behind you, branches snap, each one closer than the last."
              (dialog-option "run for the creek" "forest/creek")
              (dialog-option "hide under the pines" "forest/hide")
              (dialog-option "turn around" "forest/look-back"))
@@ -164,11 +164,11 @@
              :next "forest/tag")
 
 (dialog-text "forest/hide"
-             "the pine needles close over your shoulders. a lantern passes. it pauses at the place where your breathing should be."
+             "you press in under the pine boughs. a lantern passes, stops level with you, and hangs there for ten breaths before moving on."
              :next "forest/tag")
 
 (dialog-text "forest/look-back"
-             "the house is farther away than a house should be after twelve steps. one window is bright. one window has bars on the inside."
+             "the house is already small behind you, and you do not remember walking that far. one window is bright. one window has bars on the inside."
              :next "forest/tag")
 
 (dialog-text "forest/tag"
@@ -186,7 +186,7 @@
              :next "forest/choice")
 
 (dialog-pick "forest/choice"
-             "the pines give you three dark spaces."
+             "there are three dark gaps in the pines ahead."
              (dialog-option "the dry creek bed" "forest/creek-bed")
              (dialog-option "the deer fence" "forest/fence")
              (dialog-option "the root cellar" "forest/cellar"))
@@ -204,5 +204,5 @@
              :next "forest/unfinished")
 
 (dialog-text "forest/unfinished"
-             "for now, you keep moving. the forest has not decided whether it is hiding you or returning you."
+             "for now, you keep moving. you cannot tell if you are walking away from the house or circling back to it."
              :next "base/awake")

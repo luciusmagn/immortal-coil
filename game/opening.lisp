@@ -90,11 +90,11 @@
                :target #'base-door-count-target)
 
 (dialog-text "base/too-many-doors"
-             "you decide the room is lying about the number."
+             "you count again and get a different number. you stop counting."
              :next "base/choose-door")
 
 (dialog-pick "base/choose-door"
-             "which one feels least hostile?"
+             "which door do you try?"
              (dialog-option "left" "base/listen")
              (dialog-option "center" "base/listen")
              (dialog-option "right" "base/listen"))
@@ -102,27 +102,27 @@
 (dialog-list-path "base/listen"
                   "select a sound from the hall."
                   ("breathing"
-                   "the breathing stops when you notice it.")
+                   "slow, even breathing, just on the other side of the door.")
                   ("static"
-                   "under the static, a voice has been waiting.")
+                   "static, and under it a voice reading out numbers.")
                   ("water"
-                   "the water runs uphill behind the door.")
+                   "water knocking through pipes above the door frame.")
                   ("glass"
-                   "glass shifts in the wall like teeth.")
+                   "glass rattling in a window frame, keeping time with far-off thuds.")
                   ("keys"
-                   "the keys turn by themselves.")
+                   "a ring of keys, and one lock after another being tried.")
                   ("bells"
-                   "the bells are too distant to be outside.")
+                   "bells, far away, ringing on without stopping.")
                   ("steps"
                    "the steps stop one pace from the threshold.")
                   ("wood"
-                   "wood creaks where no wood should be.")
+                   "floorboards creaking overhead, one at a time, crossing the ceiling.")
                   ("silence"
-                   "the silence notices you first.")
+                   "nothing at all. the quiet of a door much thicker than it looks.")
                   ("hinges"
                    :when #'(lambda ()
                              (>= (dialog-value "door-count" 0) 5))
-                   "the hinges count themselves out loud."))
+                   "hinges, one after another, as every door down the hall is opened and shut."))
 
 (dialog-text "base/sleep"
              "you rolled over and went back to sleep, nothing of interest happened..."
@@ -136,7 +136,7 @@
              :next "ship/name")
 
 (dialog-string "ship/name"
-               "what does the room call you?"
+               "a name is stenciled on the frame at the foot of the bed. what does it say?"
                :response-key "player-name"
                :max-length 24
                :target "ship/alarm")
@@ -152,24 +152,22 @@
                  :failure "ship/crash-return")
 
 (dialog-text "ship/threaded"
-             "you thread the line. for one impossible second, the ship is quiet.")
+             "you thread the line. for one second, the ship is quiet.")
 
 (dialog-text "ship/crash-return"
-             "white lines fill your eyes. the next breath catches in the same alarm."
+             "white lines fill your eyes. when you blink them away, the alarm is still sounding."
              :next "ship/alarm")
 
 
 ;;; Dream maze
 
-(dialog-say "dream/start"
-            "the room"
-            "a few moments later, you fall asleep"
-            :next "dream/falling")
+(dialog-text "dream/start"
+             "a few moments later, you fall asleep"
+             :next "dream/falling")
 
-(dialog-say "dream/falling"
-            "the dark"
-            "you feel a falling sensation."
-            :next "dream/maze")
+(dialog-text "dream/falling"
+             "you feel a falling sensation."
+             :next "dream/maze")
 
 (dialog-minigame "dream/maze"
                  "w/s or up/down move. a/d or left/right turn. find an exit."
@@ -177,10 +175,9 @@
                  :success #'dream-maze-exit-target
                  :failure "dream/maze-lost")
 
-(dialog-say "dream/right-exit"
-            "the hall"
-            "past the right exit, the handle matches the door that was behind you."
-            :next "base/awake")
+(dialog-text "dream/right-exit"
+             "past the right exit, the corridor straightens, and a painted line runs down the middle of the floor. the door at the end has the same handle as the one that was behind you."
+             :next "base/awake")
 
 (dialog-text "dream/maze-lost"
              "you lose the thread of which corridor came first."

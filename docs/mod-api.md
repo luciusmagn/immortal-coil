@@ -232,7 +232,7 @@ Ask for a string:
 
 ```lisp
 (dialog-string "my-mod/name"
-               "what does the room call you?"
+               "what name does the file list?"
                :response-key "player-name"
                :max-length 24
                :target "my-mod/after-name")
