@@ -1,10 +1,10 @@
 ;;; Graph lint for the bundled story graph.
 ;;;
 ;;; Loads the full graph through the real loader, then checks that every
-;;; string target resolves to a node, that minigame outcome maps point at
-;;; real nodes, and that outcome maps only name outcomes their minigame
-;;; declares as possible. The same checks are the seed for future orphan
-;;; detection.
+;;; string target resolves to a node, including each id in a minigame
+;;; node's declared outcomes list. The outcomes list is what makes
+;;; minigame destinations visible to tools; it is also the seed for
+;;; future orphan detection.
 ;;;
 ;;; Run headless:
 ;;;   sbcl --eval '(require :asdf)' \
@@ -20,24 +20,8 @@
   problems)
 
 (defun lint-minigame-outcomes (problems id node)
-  (let ((definition (find-minigame-definition (node-minigame node)
-                                              :warn-p nil)))
-    (loop for (outcome target) on (node-minigame-outcomes node) by #'cddr
-          do (setf problems (lint-check-target problems id outcome target))
-             (when (and definition
-                        (not (member outcome
-                                     (minigame-possible-outcomes definition))))
-              (push (format nil "~s maps ~s, which ~s never finishes with"
-                            id outcome (node-minigame node))
-                    problems)))
-    (when (and definition
-               (null (node-minigame-outcomes node))
-               (set-difference (minigame-possible-outcomes definition)
-                               '(:success :failure))
-               (null (node-failure-target node)))
-      (push (format nil "~s leaves ~s outcomes unmapped with no failure target"
-                    id (node-minigame node))
-            problems)))
+  (dolist (target (node-minigame-outcomes node))
+    (setf problems (lint-check-target problems id :outcome target)))
   problems)
 
 (defun lint-dialog-graph ()

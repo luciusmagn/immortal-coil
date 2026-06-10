@@ -319,9 +319,9 @@
             (node-minigame-config node)))
   (when (node-minigame-outcomes node)
     (format stream "~%                 :outcomes (list")
-    (loop for (outcome target) on (node-minigame-outcomes node) by #'cddr
-          do (format stream " ~s " outcome)
-             (editor-write-target stream target))
+    (dolist (target (node-minigame-outcomes node))
+      (format stream " ")
+      (editor-write-target stream target))
     (format stream ")"))
   (format stream ")~2%"))
 

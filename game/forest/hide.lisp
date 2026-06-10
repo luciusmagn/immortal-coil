@@ -3,8 +3,8 @@
 ;;; The lantern sweeps past while the player hides. Breath pressure
 ;;; rises on its own; letting a breath out eases it but makes noise.
 ;;; A class-based session: per-node config can tune duration and
-;;; difficulty, and the finish reports :heard or :gasped outcomes
-;;; (falling back to the node's failure target when unmapped).
+;;; difficulty, and supply :heard-target and :gasped-target outcome ids;
+;;; without them, both finishes use the node's failure target.
 
 (defclass forest-hide-session (minigame-session)
   ((elapsed
@@ -53,15 +53,19 @@
     (incf (forest-hide-noise session) 0.34))
   (cond
     ((>= (forest-hide-breath session) 1.0)
-     (setf (dialog-value "forest-seen") t)
-     (finish-minigame-node node :gasped))
+     (setf (session-store-value session "forest-seen") t)
+     (finish-minigame-node node
+                           (or (session-config-value session :gasped-target)
+                               (node-failure-target node))))
     ((and (> (forest-hide-noise session)
              (forest-hide-noise-threshold session))
           (> (forest-hide-danger session) 0.35))
-     (setf (dialog-value "forest-seen") t)
-     (finish-minigame-node node :heard))
+     (setf (session-store-value session "forest-seen") t)
+     (finish-minigame-node node
+                           (or (session-config-value session :heard-target)
+                               (node-failure-target node))))
     ((>= (forest-hide-elapsed session) (forest-hide-duration session))
-     (finish-minigame-node node :success))))
+     (finish-minigame-node node (node-success-target node)))))
 
 (defun draw-forest-hide-light (session)
   (let ((x (forest-hide-light-x session)))
@@ -102,7 +106,4 @@
                       16
                       (make-color 255 255 255 170)))
 
-(register-minigame-session-kind :forest-hide
-                                'forest-hide-session
-                                :outcomes '(:success :failure
-                                            :heard :gasped))
+(register-minigame-session-kind :forest-hide 'forest-hide-session)

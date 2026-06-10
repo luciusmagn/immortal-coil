@@ -11,8 +11,7 @@
 
 (dialog-minigame-kind :dream-maze
                       :update #'update-dream-maze-minigame-node
-                      :draw #'draw-dream-maze-minigame
-                      :outcomes '(:left :upper :right :success :failure))
+                      :draw #'draw-dream-maze-minigame)
 
 (defun base-door-count-target ()
   (if (>= (dialog-value "door-count" 0) 5)
@@ -453,11 +452,14 @@
 (dialog-minigame "dream/maze"
                  "w/s or up/down move. a/d or left/right turn. find an exit."
                  :game :dream-maze
+                 :success "dream/maze-lost"
                  :failure "dream/maze-lost"
-                 :outcomes (list :left "alice/fall"
-                                 :upper "rogue/entrance"
-                                 :right "dream/right-exit"
-                                 :success "dream/maze-lost"))
+                 :config (list :left "alice/fall"
+                               :upper "rogue/entrance"
+                               :right "dream/right-exit")
+                 :outcomes (list "alice/fall"
+                                 "rogue/entrance"
+                                 "dream/right-exit"))
 
 (dialog-text "dream/right-exit"
              "past the right exit, the corridor straightens, and a painted line runs down the middle of the floor. the door at the end has the same handle as the one that was behind you."

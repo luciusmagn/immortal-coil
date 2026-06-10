@@ -22,12 +22,7 @@
     :initarg :source
     :initform :unknown
     :accessor minigame-definition-source
-    :type dialog-source)
-   (possible-outcomes
-    :initarg :possible-outcomes
-    :initform '(:success :failure)
-    :accessor minigame-definition-possible-outcomes
-    :type list)))
+    :type dialog-source)))
 
 (defclass function-minigame-definition (minigame-definition)
   ((update-function
@@ -164,20 +159,16 @@
                    *minigame-definitions*)
           definition)))
 
-(-> dialog-minigame-kind (t &key (:update t) (:draw t) (:outcomes list))
-    minigame-id)
-(defun dialog-minigame-kind (id &key update draw
-                                     (outcomes '(:success :failure)))
+(-> dialog-minigame-kind (t &key (:update t) (:draw t)) minigame-id)
+(defun dialog-minigame-kind (id &key update draw)
   (let ((minigame-id (normalize-minigame-id id))
         (update-function (minigame-handler-function update "update handler"))
         (draw-function (minigame-handler-function draw "draw handler")))
     (if (and update-function draw-function)
-        (let ((definition (make-function-minigame-definition
-                           minigame-id
-                           update-function
-                           draw-function)))
-          (setf (minigame-definition-possible-outcomes definition) outcomes)
-          (register-minigame-definition definition))
+        (register-minigame-definition
+         (make-function-minigame-definition minigame-id
+                                            update-function
+                                            draw-function))
         (runtime-warn "Could not register minigame: ~a" minigame-id))
     minigame-id))
 
@@ -195,38 +186,16 @@
 ;;; Config and outcomes
 ;;;
 ;;; A minigame node may carry a config plist the minigame reads, and an
-;;; outcomes plist mapping outcome keywords to dialog targets. Minigames
-;;; finish with any outcome keyword they like, chosen by whatever code
-;;; they like, but their definition declares the possible outcomes so
-;;; authoring tools can check coverage. :success and :failure resolve
-;;; through the classic target slots when no outcome entry exists.
-
-(defgeneric minigame-possible-outcomes (definition)
-  (:documentation "Outcome keywords DEFINITION may finish with.")
-  (:method ((definition minigame-definition))
-    (minigame-definition-possible-outcomes definition)))
+;;; outcomes list of the node ids the minigame may finish at, beyond the
+;;; classic success and failure targets. The engine never interprets
+;;; either: the minigame is a black box that takes outcome ids in through
+;;; its config (or keeps static ones) and returns the outcome id it
+;;; finished with. The outcomes list exists so authoring tools can see
+;;; every possible destination without understanding the minigame.
 
 (-> minigame-config-value (node t &optional t) t)
 (defun minigame-config-value (node key &optional default)
   (getf (node-minigame-config node) key default))
-
-(-> minigame-outcome-target (node t &optional t) dialog-target)
-(defun minigame-outcome-target (node outcome &optional (fallback :failure))
-  (or (getf (node-minigame-outcomes node) outcome)
-      (case outcome
-        (:success (node-success-target node))
-        (:failure (node-failure-target node)))
-      (unless (eq fallback outcome)
-        (getf (node-minigame-outcomes node) fallback))
-      (case fallback
-        (:success (node-success-target node))
-        (:failure (node-failure-target node)))
-      (progn
-        (runtime-warn "Minigame ~a has no target for outcome ~s."
-                      (node-id node)
-                      outcome)
-        (node-success-target node))
-      *runtime-fallback-node-id*))
 
 
 ;;; Sessions
@@ -269,6 +238,15 @@
 (defun session-config-value (session key &optional default)
   (getf (minigame-session-config session) key default))
 
+(-> session-store-value (minigame-session dialog-store-key &optional t) t)
+(defun session-store-value (session key &optional default)
+  (declare (ignore session))
+  (dialog-value key default))
+
+(defun (setf session-store-value) (value session key)
+  (declare (ignore session))
+  (setf (dialog-value key) value))
+
 (-> clear-minigame-session () null)
 (defun clear-minigame-session ()
   (setf *minigame-session* nil))
@@ -290,15 +268,12 @@
 (defmethod minigame-draw ((definition session-minigame-definition) node color)
   (minigame-session-draw (ensure-minigame-session definition node) node color))
 
-(-> register-minigame-session-kind (t symbol &key (:outcomes list))
-    minigame-definition)
-(defun register-minigame-session-kind (id session-class
-                                       &key (outcomes '(:success :failure)))
+(-> register-minigame-session-kind (t symbol) minigame-definition)
+(defun register-minigame-session-kind (id session-class)
   (register-minigame-definition
    (make-instance 'session-minigame-definition
                   :id (normalize-minigame-id id)
                   :session-class session-class
-                  :possible-outcomes outcomes
                   :source (current-dialog-source-name))))
 
 
@@ -310,10 +285,10 @@
       (node-success-target node)
       *runtime-fallback-node-id*))
 
-(-> finish-minigame-node (node t &optional t) t)
-(defun finish-minigame-node (node outcome &optional (fallback :failure))
+(-> finish-minigame-node (node (option dialog-target)) t)
+(defun finish-minigame-node (node target)
   (clear-minigame-session)
-  (jump-to-dialog-target (minigame-outcome-target node outcome fallback)))
+  (jump-to-dialog-target (or target (minigame-fallback-target node))))
 
 (-> fail-minigame-node (node) t)
 (defun fail-minigame-node (node)

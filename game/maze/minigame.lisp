@@ -189,8 +189,10 @@
     (setf (dialog-value "dream-maze-exit") exit-name
           *dream-maze-minigame* nil)
     (finish-minigame-node node
-                          (intern (string-upcase exit-name) :keyword)
-                          :success)))
+                          (or (minigame-config-value
+                               node
+                               (intern (string-upcase exit-name) :keyword))
+                              (node-success-target node)))))
 
 (-> check-dream-maze-exit (node dream-maze-minigame) t)
 (defun check-dream-maze-exit (node game)
