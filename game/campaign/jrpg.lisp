@@ -402,7 +402,43 @@
                      :next "jrpg/inn-return")
 
 (dialog-text "jrpg/inn-return"
-             "the walk back to Oakbarrow takes the evening. Toma's oven is still warm, and breakfast, one day late, is included."
+             "the tower door closes behind you with a sound like a ledger shutting. from the toll hut, Pell signs you out on the slate and points down the hill: weather coming, and the bridge before it."
+             :next "jrpg/road-home")
+
+(dialog-text "jrpg/road-home"
+             "the walk back runs ahead of the rain. at the mile marker, the ditch grass is shaking again, and not with wind."
+             :next "jrpg/home-ambush")
+
+(dialog-minigame "jrpg/home-ambush"
+                 "choose a command. arrows or wasd move. enter or space confirms."
+                 :game :jrpg-combat
+                 :success "jrpg/home-clear"
+                 :failure "jrpg/home-limp")
+
+(dialog-conversation "jrpg/home-clear"
+                     (dialog-left "{jrpg-companion}"
+                                  "you fight differently than this morning. slower. like you're counting something.")
+                     (dialog-right "{player-name}"
+                                   "why did you come with me, really?")
+                     (dialog-left "{jrpg-companion}"
+                                  "because everyone who goes up that hill comes back changed or doesn't come back. i wanted you to come back to something.")
+                     :next "jrpg/bridge-home")
+
+(dialog-conversation "jrpg/home-limp"
+                     (dialog-left "{jrpg-companion}"
+                                  "lean on me. it's not far and i'm not telling anyone.")
+                     (dialog-right "{player-name}"
+                                   "you've done this before.")
+                     (dialog-left "{jrpg-companion}"
+                                  "my father went up the hill once. i carried him back from this same ditch. walk now, talk never.")
+                     :next "jrpg/bridge-home")
+
+(dialog-text "jrpg/bridge-home"
+             "the rain starts on the bridge boards. Oren has the gate chain down before you ask, and the chalk marks on the toll board have been wiped clean for the new week."
+             :next "jrpg/oven-warm")
+
+(dialog-text "jrpg/oven-warm"
+             "Toma's oven is still warm, and breakfast, one day late, is included. nobody asks about the tower at the table, which is how you know everyone wants to."
              :next "jrpg/ledger-line")
 
 (dialog-text "jrpg/ledger-line"
