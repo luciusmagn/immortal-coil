@@ -659,12 +659,21 @@
              "they are coming back, fingers last."
              :next "rogue/sleep")
 
+(defun rogue-wake-below-target ()
+  (if (dialog-value "rogue-drank")
+      "rogue/wake-below-drank"
+      "rogue/wake-below"))
+
 (dialog-text "rogue/sleep"
              "you lie down. the white lines of the room soften as the torch goes out."
-             :next "rogue/wake-below")
+             :next #'rogue-wake-below-target)
 
 (dialog-text "rogue/wake-below"
              "you wake in the dark below ground with a new torch burning in the bracket, already half spent, lit by no one you heard. dungeons keep their own housekeeping."
+             :next "rogue/housekeeping")
+
+(dialog-text "rogue/wake-below-drank"
+             "you wake in the dark below ground with a new torch burning in the bracket, and the taste of the cistern still in your mouth: cold, mineral, and exactly the taste of the glass on the night stand. dungeons keep their own housekeeping."
              :next "rogue/housekeeping")
 
 (dialog-on-enter "rogue/housekeeping"

@@ -459,12 +459,26 @@
              "you put it back the way evidence goes back: exactly, and with the sick sense of having signed for it anyway. the box closes on the first try, which boxes out here do not."
              :next "forest/road-back")
 
+(defun forest-porch-again-target ()
+  (cond
+    ((dialog-value "forest-called-out") "forest/porch-again-call")
+    ((dialog-value "forest-door-locked") "forest/porch-again-lock")
+    (t "forest/porch-again")))
+
 (dialog-text "forest/road-back"
              "the road bends with the hill, and every branch of it climbs. by noon you understand what the driver could have told you: out here all the lanes are the hill's lanes, and the hill has one house."
-             :next "forest/porch-again")
+             :next #'forest-porch-again-target)
 
 (dialog-text "forest/porch-again"
              "you come out of the trees above the house. on the porch, someone is sweeping. they stop, shade their eyes toward your stretch of woods, and wave, unhurried, the way you wave at family."
+             :next "forest/porch-choice")
+
+(dialog-text "forest/porch-again-call"
+             "you come out of the trees above the house. on the porch, someone is sweeping, humming two notes over and over, low and patient. they are the two notes of your own call into the hall. they stop, shade their eyes toward your stretch of woods, and wave."
+             :next "forest/porch-choice")
+
+(dialog-text "forest/porch-again-lock"
+             "you come out of the trees above the house. the front door you locked stands open, the key in the outside of the lock, turned. on the porch, someone is sweeping. they stop, shade their eyes toward your stretch of woods, and wave."
              :next "forest/porch-choice")
 
 (dialog-pick "forest/porch-choice"
