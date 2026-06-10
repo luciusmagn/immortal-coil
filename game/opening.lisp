@@ -291,6 +291,30 @@
 
 (dialog-text "ship/later-chair"
              "you sit in the captain's chair until the cup goes cold. somewhere below, a door you have stopped checking stays shut."
+             :next "ship/later-walk")
+
+(dialog-text "ship/later-walk"
+             "you do the rounds because the rounds are what there is. deck two: lights answer the motion sensors one section ahead of you, the way they would for anyone."
+             :next "ship/later-medbay")
+
+(dialog-text "ship/later-medbay"
+             "medbay is stowed and clean. Dane's kit hangs on its peg, sealed, inventory tag signed off in Dane's hand. the date on the tag is not one you can place against anything."
+             :next "ship/later-quarters")
+
+(dialog-text "ship/later-quarters"
+             "the crew quarters are made up like the morning of an inspection. in Imari's there is a logbook of personal entries, and you stand in the doorway and do not read it, and are proud of that for the rest of the watch."
+             :next "ship/later-comms")
+
+(dialog-text "ship/later-comms"
+             "the comms board holds one message in the outbound queue, flagged unsent. it is addressed to {ship-lost-name}'s family. it has four sentences. you do not remember writing the fourth."
+             :next "ship/later-hail")
+
+(dialog-text "ship/later-hail"
+             "once per watch, the board hails the lane and listens. tonight, like every night you can remember, the lane answers with carrier tone: a clean, patient signal with nobody on it."
+             :next "ship/later-bunk")
+
+(dialog-text "ship/later-bunk"
+             "you turn in at the bunk with the stenciled name. the stencil is worn now, repainted at least once, the letters traced over themselves a little off true."
              :next "base/awake")
 
 (dialog-on-enter "ship/crash-return"
