@@ -31,67 +31,80 @@
         (runtime-warn "~a: ~a" warning-text id)
         *runtime-fallback-node-id*)))
 
+(-> dialog-setter-warn (node string) null)
+(defun dialog-setter-warn (node what)
+  (runtime-warn "Cannot set ~a on ~a node: ~a"
+                what
+                (node-kind node)
+                (node-id node))
+  nil)
+
+(defgeneric node-set-next (node next)
+  (:method ((node linear-node) next)
+    (setf (node-next node) next))
+  (:method ((node node) next)
+    (declare (ignore next))
+    (dialog-setter-warn node "next")))
+
 (-> dialog-set-next (dialog-id (option dialog-target)) dialog-id)
 (defun dialog-set-next (node-id next-id)
-  (setf (node-next (find-node node-id)) next-id)
+  (node-set-next (find-node node-id) next-id)
   node-id)
 
-(-> dialog-node-kind-p (dialog-id list string) (option node))
-(defun dialog-node-kind-p (node-id kinds warning-text)
-  (let ((node (find-node node-id)))
-    (if (member (node-kind node) kinds)
-        node
-        (progn
-          (runtime-warn "~a on ~a node: ~a"
-                        warning-text
-                        (node-kind node)
-                        node-id)
-          nil))))
+(defgeneric node-set-target (node target)
+  (:method ((node input-node) target)
+    (setf (node-target node) target))
+  (:method ((node node) target)
+    (declare (ignore target))
+    (dialog-setter-warn node "target")))
 
 (-> dialog-set-target (dialog-id dialog-target) dialog-id)
 (defun dialog-set-target (node-id target)
-  (let ((node (dialog-node-kind-p node-id
-                                  '(:number :string)
-                                  "Cannot set target")))
-    (when node
-      (setf (node-target node) target)))
+  (node-set-target (find-node node-id) target)
   node-id)
+
+(defgeneric node-set-minigame-success (node target)
+  (:method ((node minigame-node) target)
+    (setf (node-success-target node) target))
+  (:method ((node node) target)
+    (declare (ignore target))
+    (dialog-setter-warn node "minigame success target")))
 
 (-> dialog-set-minigame-success (dialog-id dialog-target) dialog-id)
 (defun dialog-set-minigame-success (node-id target)
-  (let ((node (dialog-node-kind-p node-id
-                                  '(:minigame)
-                                  "Cannot set minigame success target")))
-    (when node
-      (setf (node-success-target node) target)))
+  (node-set-minigame-success (find-node node-id) target)
   node-id)
+
+(defgeneric node-set-minigame-failure (node target)
+  (:method ((node minigame-node) target)
+    (setf (node-failure-target node) target))
+  (:method ((node node) target)
+    (declare (ignore target))
+    (dialog-setter-warn node "minigame failure target")))
 
 (-> dialog-set-minigame-failure (dialog-id dialog-target) dialog-id)
 (defun dialog-set-minigame-failure (node-id target)
-  (let ((node (dialog-node-kind-p node-id
-                                  '(:minigame)
-                                  "Cannot set minigame failure target")))
-    (when node
-      (setf (node-failure-target node) target)))
+  (node-set-minigame-failure (find-node node-id) target)
   node-id)
+
+(defgeneric node-choice-at (node choice-index warning-text)
+  (:method ((node choice-node) choice-index warning-text)
+    (if (< choice-index (length (node-choices node)))
+        (aref (node-choices node) choice-index)
+        (progn
+          (runtime-warn "~a index ~d out of range for node: ~a"
+                        warning-text
+                        choice-index
+                        (node-id node))
+          nil)))
+  (:method ((node node) choice-index warning-text)
+    (declare (ignore choice-index))
+    (runtime-warn "~a on non-choice node: ~a" warning-text (node-id node))
+    nil))
 
 (-> dialog-choice-at (dialog-id nonnegative-integer string) (option choice))
 (defun dialog-choice-at (node-id choice-index warning-text)
-  (let ((node (find-node node-id)))
-    (cond
-      ((not (eq (node-kind node) :choice))
-       (runtime-warn "~a on non-choice node: ~a"
-                     warning-text
-                     node-id)
-       nil)
-      ((>= choice-index (length (node-choices node)))
-       (runtime-warn "~a index ~d out of range for node: ~a"
-                     warning-text
-                     choice-index
-                     node-id)
-       nil)
-      (t
-       (aref (node-choices node) choice-index)))))
+  (node-choice-at (find-node node-id) choice-index warning-text))
 
 (-> dialog-set-choice-target (dialog-id nonnegative-integer dialog-target)
     dialog-id)
@@ -143,57 +156,72 @@
   (setf (node-text (find-node node-id)) text)
   node-id)
 
+(defgeneric node-set-speaker (node speaker)
+  (:method ((node say-node) speaker)
+    (setf (node-speaker node) speaker))
+  (:method ((node node) speaker)
+    (declare (ignore speaker))
+    (dialog-setter-warn node "speaker")))
+
 (-> dialog-set-speaker (dialog-id (option string)) dialog-id)
 (defun dialog-set-speaker (node-id speaker)
-  (let ((node (dialog-node-kind-p node-id
-                                  '(:say)
-                                  "Cannot set speaker")))
-    (when node
-      (setf (node-speaker node) speaker)))
+  (node-set-speaker (find-node node-id) speaker)
   node-id)
+
+(defgeneric node-set-response-key (node response-key)
+  (:method ((node input-node) response-key)
+    (setf (node-response-key node) response-key))
+  (:method ((node node) response-key)
+    (declare (ignore response-key))
+    (dialog-setter-warn node "response key")))
 
 (-> dialog-set-response-key (dialog-id dialog-id) dialog-id)
 (defun dialog-set-response-key (node-id response-key)
-  (let ((node (dialog-node-kind-p node-id
-                                  '(:number :string)
-                                  "Cannot set response key")))
-    (when node
-      (setf (node-response-key node) response-key)))
+  (node-set-response-key (find-node node-id) response-key)
   node-id)
+
+(defgeneric node-set-number-bounds (node min-value max-value)
+  (:method ((node number-input-node) min-value max-value)
+    (if (and min-value max-value (> min-value max-value))
+        (runtime-warn "Cannot set inverted number bounds on ~a: ~a > ~a"
+                      (node-id node)
+                      min-value
+                      max-value)
+        (setf (node-min-value node) min-value
+              (node-max-value node) max-value)))
+  (:method ((node node) min-value max-value)
+    (declare (ignore min-value max-value))
+    (dialog-setter-warn node "number bounds")))
 
 (-> dialog-set-number-bounds
     (dialog-id (option number) (option number))
     dialog-id)
 (defun dialog-set-number-bounds (node-id min-value max-value)
-  (let ((node (dialog-node-kind-p node-id
-                                  '(:number)
-                                  "Cannot set number bounds")))
-    (when node
-      (if (and min-value max-value (> min-value max-value))
-          (runtime-warn "Cannot set inverted number bounds on ~a: ~a > ~a"
-                        node-id
-                        min-value
-                        max-value)
-          (setf (node-min-value node) min-value
-                (node-max-value node) max-value))))
+  (node-set-number-bounds (find-node node-id) min-value max-value)
   node-id)
+
+(defgeneric node-set-string-max-length (node max-length)
+  (:method ((node string-input-node) max-length)
+    (setf (node-max-length node) max-length))
+  (:method ((node node) max-length)
+    (declare (ignore max-length))
+    (dialog-setter-warn node "string max length")))
 
 (-> dialog-set-string-max-length (dialog-id nonnegative-integer) dialog-id)
 (defun dialog-set-string-max-length (node-id max-length)
-  (let ((node (dialog-node-kind-p node-id
-                                  '(:string)
-                                  "Cannot set string max length")))
-    (when node
-      (setf (node-max-length node) max-length)))
+  (node-set-string-max-length (find-node node-id) max-length)
   node-id)
+
+(defgeneric node-set-string-allow-empty (node allow-empty-p)
+  (:method ((node string-input-node) allow-empty-p)
+    (setf (node-allow-empty-p node) allow-empty-p))
+  (:method ((node node) allow-empty-p)
+    (declare (ignore allow-empty-p))
+    (dialog-setter-warn node "string emptiness")))
 
 (-> dialog-set-string-allow-empty (dialog-id boolean) dialog-id)
 (defun dialog-set-string-allow-empty (node-id allow-empty-p)
-  (let ((node (dialog-node-kind-p node-id
-                                  '(:string)
-                                  "Cannot set string emptiness")))
-    (when node
-      (setf (node-allow-empty-p node) allow-empty-p)))
+  (node-set-string-allow-empty (find-node node-id) allow-empty-p)
   node-id)
 
 
@@ -302,21 +330,23 @@
                                ((:unless unless-condition) nil)
                                ((:enabled-when enabled-when-condition) t)
                                ((:enabled-unless enabled-unless-condition) nil))
-  (let ((node (find-node node-id)))
-    (if (eq (node-kind node) :choice)
-        (setf (node-choices node)
-              (concatenate 'vector
-                           (node-choices node)
-                           (vector (dialog-option label
-                                                  target
-                                                  :when when-condition
-                                                  :unless unless-condition
-                                                  :enabled-when
-                                                  enabled-when-condition
-                                                  :enabled-unless
-                                                  enabled-unless-condition))))
-        (runtime-warn "Cannot add a choice to non-choice node: ~a" node-id)))
+  (node-add-choice (find-node node-id)
+                   (dialog-option label
+                                  target
+                                  :when when-condition
+                                  :unless unless-condition
+                                  :enabled-when enabled-when-condition
+                                  :enabled-unless enabled-unless-condition))
   node-id)
+
+(defgeneric node-add-choice (node choice)
+  (:method ((node choice-node) choice)
+    (setf (node-choices node)
+          (concatenate 'vector (node-choices node) (vector choice))))
+  (:method ((node node) choice)
+    (declare (ignore choice))
+    (runtime-warn "Cannot add a choice to non-choice node: ~a"
+                  (node-id node))))
 
 
 ;;; Conversation nodes
@@ -385,16 +415,19 @@
                                      'vector))))
   id)
 
+(defgeneric node-conversation-or-warn (node warning-text)
+  (:method ((node conversation-node) warning-text)
+    (declare (ignore warning-text))
+    node)
+  (:method ((node node) warning-text)
+    (runtime-warn "~a on non-conversation node: ~a"
+                  warning-text
+                  (node-id node))
+    nil))
+
 (-> dialog-conversation-node (dialog-id string) (option node))
 (defun dialog-conversation-node (node-id warning-text)
-  (let ((node (find-node node-id)))
-    (if (eq (node-kind node) :conversation)
-        node
-        (progn
-          (runtime-warn "~a on non-conversation node: ~a"
-                        warning-text
-                        node-id)
-          nil))))
+  (node-conversation-or-warn (find-node node-id) warning-text))
 
 (-> dialog-conversation-entry
     (t string string)
@@ -513,13 +546,16 @@
                               "Minigame node needs a failure target")))
   id)
 
+(defgeneric node-set-minigame (node game-id)
+  (:method ((node minigame-node) game-id)
+    (setf (node-minigame node) game-id))
+  (:method ((node node) game-id)
+    (declare (ignore game-id))
+    (dialog-setter-warn node "minigame")))
+
 (-> dialog-set-minigame (dialog-id minigame-id) dialog-id)
 (defun dialog-set-minigame (node-id game-id)
-  (let ((node (find-node node-id)))
-    (if (eq (node-kind node) :minigame)
-        (setf (node-minigame node) game-id)
-        (runtime-warn "Cannot set minigame on non-minigame node: ~a"
-                      node-id)))
+  (node-set-minigame (find-node node-id) game-id)
   node-id)
 
 
