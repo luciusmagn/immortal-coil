@@ -15,6 +15,7 @@
            "campaign/forest.lisp"
            "campaign/jrpg.lisp"
            "campaign/dream-worlds.lisp"
+           "campaign/war.lisp"
            "editor-drafts.lisp")
  :assets "../assets/"
  :title-logo "logo/title-logo.png"
