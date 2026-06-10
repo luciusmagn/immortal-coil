@@ -448,7 +448,61 @@
              (dialog-option "search the bed" "rogue/pillow")
              (dialog-option "look at your hands" "rogue/hands"
                             :when '(dialog-value "rogue-ring-worn"))
+             (dialog-option "open the door" "rogue/cell-door")
              (dialog-option "lie down" "rogue/sleep"))
+
+(dialog-on-enter "rogue/cell-door"
+                 '(setf (dialog-value "rogue-opened-cell") t))
+
+(dialog-text "rogue/cell-door"
+             "the door opens away from you, which doors here do not. beyond it the corridor runs both directions, lined with doors at even spacing, all shut."
+             :next "rogue/cell-row")
+
+(dialog-text "rogue/cell-row"
+             "you try the nearest. inside: a bed, a small table, a door. the next: a bed, a small table, a door. the beds are all made. one of them has been slept in and remade badly."
+             :next "rogue/row-choice")
+
+(dialog-pick "rogue/row-choice"
+             "the torch will not last the row."
+             (dialog-option "check the badly made bed" "rogue/bad-bed")
+             (dialog-option "listen at the shut doors" "rogue/row-listen")
+             (dialog-option "find the stairs back" "rogue/stair-hunt"))
+
+(dialog-on-enter "rogue/bad-bed"
+                 '(setf (dialog-value "rogue-floor3") "bed"))
+
+(dialog-text "rogue/bad-bed"
+             "under the badly remade blanket the sheet is still warm. on the small table, a glass of water, half gone. whoever sleeps here left in the middle of drinking it, or in the middle of the night, or both."
+             :next "rogue/stair-hunt")
+
+(dialog-on-enter "rogue/row-listen"
+                 '(setf (dialog-value "rogue-floor3") "listened"))
+
+(dialog-text "rogue/row-listen"
+             "you go down the row with your ear to the wood. nothing. nothing. nothing. breathing, slow and even. nothing. you do not go back to the fourth door, and you are careful counting so you never have to wonder which it was."
+             :next "rogue/stair-hunt")
+
+(dialog-text "rogue/stair-hunt"
+             "the stair you came down is not where you left it, which in a dungeon means you are remembering wrong, and you prefer the dungeon's explanation. you walk the corridor to find it."
+             :next "rogue/stair-maze")
+
+(dialog-minigame "rogue/stair-maze"
+                 "w/s or up/down move. a/d or left/right turn. find the stairs."
+                 :game :dream-maze
+                 :success "rogue/stair-found"
+                 :failure "rogue/stair-lost")
+
+(dialog-text "rogue/stair-found"
+             "the stairs are where stairs are: at the end you had not tried yet. going up, the carved name on the first step reads the same from below, which carved names should not."
+             :next "rogue/return-cell")
+
+(dialog-text "rogue/stair-lost"
+             "the corridor gives out before the torch does, barely. when you stop, you are outside a door you know by the bar leaning beside it, lifted often."
+             :next "rogue/return-cell")
+
+(dialog-text "rogue/return-cell"
+             "you go back into the cell because it is the room you know, and shut the door, and there is still no lock plate on this side, and tonight that is almost a comfort."
+             :next "rogue/sleep")
 
 (dialog-text "rogue/pillow"
              "under the pillow there is a paper matchbook, half used."
