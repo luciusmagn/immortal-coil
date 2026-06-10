@@ -455,7 +455,7 @@
                                    "he said Oakbarrow sends better every year.")
                      (dialog-left "Mira"
                                   "we send what we have. i'll enter the sword under deposits. it goes back up the hill with the next one, like always.")
-                     :next "jrpg/ledger-line")
+                     :next "jrpg/evening-table")
 
 (dialog-conversation "jrpg/terms-terms"
                      (dialog-left "Mira"
@@ -464,7 +464,7 @@
                                    "Oakbarrow stops posting notices. he stops collecting broken swords.")
                      (dialog-left "Mira"
                                   "then it's entered, and signed, and the first quiet winter in nine years can start tomorrow. you'll want the room either way.")
-                     :next "jrpg/ledger-line")
+                     :next "jrpg/evening-table")
 
 (dialog-conversation "jrpg/terms-asked"
                      (dialog-left "Mira"
@@ -473,7 +473,11 @@
                                    "he said you keep the other ledger.")
                      (dialog-left "Mira"
                                   "i keep the names, the years, and who they left behind. someone has to, and the tower only keeps the swords. sit down. you can read it after breakfast.")
-                     :next "jrpg/ledger-line")
+                     :next "jrpg/evening-table")
+
+(dialog-text "jrpg/evening-table"
+             "supper is barley and the travel loaf's cousin, eaten at the long table with the stove ticking down. Oren tells the slime count wrong on purpose so Toma can correct him, which is how Oakbarrow says it is glad you are back."
+             :next "jrpg/ledger-line")
 
 (dialog-text "jrpg/ledger-line"
              "Mira writes one line in the ledger and hands you the room four key. you are asleep before the candle is out."
