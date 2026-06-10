@@ -34,6 +34,22 @@
 
 (dialog-text "alice/unfinished"
              "the jury writes down the room before you finish describing it."
+             :next "alice/doors")
+
+(dialog-number "alice/doors"
+               "the foreman asks: how many doors did the room have?"
+               :response-key "door-count"
+               :min 0
+               :max 9
+               :target "alice/verdict")
+
+(dialog-say "alice/verdict"
+            "the card judge"
+            "the court finds the room was yours all along. the sentence is that you go back and keep it."
+            :next "alice/thread-out")
+
+(dialog-text "alice/thread-out"
+             "the white thread is tied to your wrist now. it runs out under the courtroom door, and you follow it."
              :next "base/awake")
 
 
