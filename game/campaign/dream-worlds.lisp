@@ -11,8 +11,8 @@
 
 (dialog-pick "alice/choice"
              "which courtesy do you accept?"
-             (dialog-option "drink from the right cup" "alice/cup")
-             (dialog-option "answer the empty chair" "alice/chair")
+             (dialog-option "drink from the cup" "alice/cup")
+             (dialog-option "answer the chair" "alice/chair")
              (dialog-option "follow the white thread" "alice/thread"))
 
 (dialog-text "alice/cup"

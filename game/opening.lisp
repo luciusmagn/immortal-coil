@@ -56,7 +56,7 @@
              :next "base/thirst")
 
 (dialog-choice "base/thirst"
-               "your throat is dry. drink from the glass on your night stand?"
+               "drink from the glass on your night stand?"
                (dialog-option "yes" "ship/wake")
                (dialog-option "no"  "base/drawer"))
 
@@ -66,8 +66,12 @@
 
 (dialog-choice "base/match"
                "strike a match?"
-               (dialog-option "yes" "jrpg/inn")
+               (dialog-option "yes" "base/match/option-1/edit-1")
                (dialog-option "no"  "base/door-shadow"))
+
+(dialog-text "base/match/option-1/edit-1"
+             "the match lights up, you spot a lantern that you can light with the match."
+             :next "jrpg/inn")
 
 (dialog-text "base/door-shadow"
              "close to the door, you can make out a lock plate."
@@ -126,7 +130,7 @@
 
 (dialog-text "base/sleep"
              "you rolled over and went back to sleep, nothing of interest happened..."
-             :next "dream/start")
+             :next "base/sleep/edit-1")
 
 
 ;;; Ship captain
@@ -161,12 +165,12 @@
 
 ;;; Dream maze
 
-(dialog-text "dream/start"
+(dialog-text "base/sleep/edit-1"
              "a few moments later, you fall asleep"
-             :next "dream/falling")
+             :next "base/sleep/edit-1/edit-1")
 
-(dialog-text "dream/falling"
-             "you feel a falling sensation."
+(dialog-text "base/sleep/edit-1/edit-1"
+             "you feel a falling sensation"
              :next "dream/maze")
 
 (dialog-minigame "dream/maze"

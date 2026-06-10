@@ -43,7 +43,11 @@
              :next "jrpg/notice")
 
 (dialog-text "jrpg/notice"
-             "BRAVE ONE: THE DEMON LORD WAITS IN THE NORTH TOWER. BREAKFAST INCLUDED."
+             " THE DEMON LORD WAITS IN THE NORTH TOWER. BREAKFAST INCLUDED."
+             :next "jrpg/notice/edit-1")
+
+(dialog-text "jrpg/notice/edit-1"
+             "67"
              :next "jrpg/name")
 
 (dialog-string "jrpg/name"
