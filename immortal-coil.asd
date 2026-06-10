@@ -18,6 +18,11 @@
                  (:file "company-label")
                  (:file "selection")
 
+                 (:module "ui"
+                  :serial t
+                  :components
+                  ((:file "list-panel")))
+
                  (:module "dialog-base"
                   :pathname "dialog"
                   :serial t

@@ -5,6 +5,7 @@
 (defparameter *menu-selection*
   (make-command-selection :new-game "NEW GAME"
                           :continue "CONTINUE"
+                          :load-game "LOAD GAME"
                           :options "OPTIONS"
                           :mods "MODS"
                           :exit "EXIT"))
@@ -18,6 +19,14 @@
 
 (defvar *menu-status-message* nil)
 (defvar *mods-menu-active-p* nil)
+(defvar *load-menu-active-p* nil)
+(defvar *menu-pending-slot* nil)
+
+(defparameter *load-menu-panel*
+  (make-instance 'list-panel
+                 :title "LOAD GAME"
+                 :empty-text "no saved games yet"
+                 :width 620))
 
 (defconstant +mods-menu-panel-width+ 560)
 (defconstant +mods-menu-panel-height+ 440)
@@ -68,7 +77,9 @@
         *menu-start-state* :idle
         *menu-start-elapsed* 0.0
         *menu-status-message* (current-mod-status-text)
-        *mods-menu-active-p* nil)
+        *mods-menu-active-p* nil
+        *load-menu-active-p* nil
+        *menu-pending-slot* nil)
   (selection-reset *mods-menu-selection*)
   (selection-reset *menu-selection*))
 
@@ -76,6 +87,7 @@
 (defun menu-action-available-p (action)
   (case action
     (:continue (save-game-exists-p))
+    (:load-game (not (null (list-save-slots))))
     (t t)))
 
 (-> selected-menu-action-available-p () boolean)
@@ -201,6 +213,10 @@
     (:continue
      (unless (continue-game)
        (return-to-idle-menu)))
+    (:load-slot
+     (unless (and *menu-pending-slot*
+                  (load-slot-game *menu-pending-slot*))
+       (return-to-idle-menu)))
     (t
      (return-to-idle-menu))))
 
@@ -219,6 +235,66 @@
             "MODS: UNAVAILABLE"))
   (load-title-logo)
   (play-choice-switch))
+
+(-> open-load-menu () t)
+(defun open-load-menu ()
+  (list-panel-set-items *load-menu-panel*
+                        (loop for entry in (list-save-slots)
+                              collect (cons (getf entry :slot)
+                                            (save-slot-label entry))))
+  (setf *load-menu-active-p* t)
+  (play-choice-switch))
+
+(-> close-load-menu () t)
+(defun close-load-menu ()
+  (setf *load-menu-active-p* nil)
+  (play-choice-switch))
+
+(-> load-slot-game (string) boolean)
+(defun load-slot-game (slot)
+  (reset-editor-state)
+  (load-dialog-graph)
+  (reset-particles)
+  (when (load-game-slot slot)
+    (stop-title-music)
+    (stop-story-music)
+    (setf *save-current-game-p* t
+          *load-menu-active-p* nil
+          *mode* :game
+          *game-fade-elapsed* 0.0
+          *menu-start-state* :idle
+          *menu-start-action* nil
+          *menu-start-elapsed* 0.0)
+    t))
+
+(-> update-load-menu () t)
+(defun update-load-menu ()
+  (cond
+    ((is-key-pressed-p +key-escape+)
+     (close-load-menu))
+    ((or (is-key-pressed-p +key-down+) (is-key-pressed-p +key-s+))
+     (when (list-panel-move *load-menu-panel* 1)
+       (play-choice-switch)))
+    ((or (is-key-pressed-p +key-up+) (is-key-pressed-p +key-w+))
+     (when (list-panel-move *load-menu-panel* -1)
+       (play-choice-switch)))
+    ((confirm-pressed-p)
+     (let ((slot (list-panel-selected-value *load-menu-panel*)))
+       (if slot
+           (progn
+             (setf *menu-pending-slot* slot
+                   *load-menu-active-p* nil)
+             (begin-start-transition :load-slot))
+           (close-load-menu))))))
+
+(-> draw-load-menu () t)
+(defun draw-load-menu ()
+  (draw-list-panel *load-menu-panel*
+                   188
+                   (make-color 255
+                               255
+                               255
+                               (round (* 238 (menu-alpha-scale))))))
 
 (-> open-mods-menu () t)
 (defun open-mods-menu ()
@@ -283,6 +359,10 @@
        (setf *quit-requested-p* t))
       (:mods
        (open-mods-menu))
+      (:load-game
+       (if (menu-action-available-p :load-game)
+           (open-load-menu)
+           (play-choice-switch)))
       (:options
        (open-options-menu))
       (t
@@ -532,6 +612,8 @@
      (draw-mod-editor))
     (*mods-menu-active-p*
      (draw-mods-menu))
+    (*load-menu-active-p*
+     (draw-load-menu))
     (t
      (draw-menu-arrows)
      (draw-menu-option)
@@ -552,6 +634,8 @@
         (update-options-menu))
        (*mods-menu-active-p*
         (update-mods-menu))
+       (*load-menu-active-p*
+        (update-load-menu))
        (t
         (move-menu-selection (menu-selection-direction))
         (when (menu-option-pressed-p)

@@ -178,6 +178,39 @@
            :input-buffer (save-data-string data :input-buffer)))
     (restore-particle-field-state (getf data :particle-field))))
 
+(defparameter *save-month-names*
+  #("JAN" "FEB" "MAR" "APR" "MAY" "JUN"
+    "JUL" "AUG" "SEP" "OCT" "NOV" "DEC"))
+
+(-> save-slot-label (list) string)
+(defun save-slot-label (entry)
+  (multiple-value-bind (second minute hour day month year)
+      (decode-universal-time (max 0 (getf entry :saved-at 0)))
+    (declare (ignore second))
+    (let* ((playtime (getf entry :playtime 0))
+           (name (string-upcase (or (getf entry :player-name) ""))))
+      (format nil "~a ~2,'0d ~d  ~2,'0d:~2,'0d  ~dH ~2,'0dM~@[  ~a~]"
+              (aref *save-month-names* (1- month))
+              day
+              year
+              hour
+              minute
+              (floor playtime 3600)
+              (floor (mod playtime 3600) 60)
+              (when (plusp (length name))
+                (subseq name 0 (min 14 (length name))))))))
+
+(-> load-game-slot (string) boolean)
+(defun load-game-slot (slot)
+  (handler-case
+      (progn
+        (setf *active-save-slot* slot)
+        (let ((data (read-save-data)))
+          (when (valid-save-data-p data)
+            (restore-play-state-from-save data)
+            t)))
+    (error () nil)))
+
 (-> load-current-game-save () boolean)
 (defun load-current-game-save ()
   (handler-case
