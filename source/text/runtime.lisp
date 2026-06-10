@@ -147,3 +147,16 @@
 
 (defmethod node-draw ((node node))
   (draw-opening-text-node node))
+
+(defmethod node-draw ((node scene-node))
+  (let* ((alpha (current-alpha))
+         (color (make-color 255 255 255 alpha))
+         (rule-color (make-color 255 255 255 (round (* alpha 0.5))))
+         (x 132.0)
+         (rule-y (- +virtual-height+ 196.0)))
+    (draw-thick-line-between x rule-y (+ x 236.0) rule-y rule-color 1.0)
+    (draw-text-at (visible-node-text node)
+                  (round x)
+                  (round (+ rule-y 16.0))
+                  17
+                  color)))

@@ -24,6 +24,15 @@
                        :next next))
   id)
 
+(-> dialog-scene (dialog-id string &key (:next (option dialog-target)))
+    dialog-id)
+(defun dialog-scene (id text &key next)
+  (add-node (make-node :id id
+                       :kind :scene
+                       :text text
+                       :next next))
+  id)
+
 (-> dialog-required-link ((option dialog-target) dialog-id string) dialog-target)
 (defun dialog-required-link (target id warning-text)
   (or target

@@ -160,6 +160,12 @@
              :text *editor-placeholder-text*
              :next next-id))
 
+(defmethod node-insert-template ((kind (eql :scene)) node-id next-id)
+  (make-node :kind :scene
+             :id node-id
+             :text "somewhere. later."
+             :next next-id))
+
 (defmethod node-insert-template ((kind (eql :choice)) node-id next-id)
   (make-node :kind :choice
              :id node-id
@@ -226,6 +232,15 @@
           (node-text node))
   (when (node-next node)
     (format stream "~%            :next ")
+    (editor-write-target stream (node-next node)))
+  (format stream ")~2%"))
+
+(defmethod node-write-script-form ((node scene-node) stream)
+  (format stream "~&(dialog-scene ~s~%              ~s"
+          (node-id node)
+          (node-text node))
+  (when (node-next node)
+    (format stream "~%              :next ")
     (editor-write-target stream (node-next node)))
   (format stream ")~2%"))
 

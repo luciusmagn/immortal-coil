@@ -65,6 +65,10 @@
 (defclass text-node (linear-node)
   ())
 
+(defclass scene-node (text-node)
+  ()
+  (:documentation "A scene shift shown as a lower-third label."))
+
 (defclass say-node (text-node)
   ((speaker
     :initarg :speaker
@@ -152,6 +156,7 @@
 
 (defmethod node-kind ((node text-node)) :text)
 (defmethod node-kind ((node say-node)) :say)
+(defmethod node-kind ((node scene-node)) :scene)
 (defmethod node-kind ((node conversation-node)) :conversation)
 (defmethod node-kind ((node choice-node)) :choice)
 (defmethod node-kind ((node number-input-node)) :number)
@@ -163,6 +168,7 @@
   (ecase kind
     (:text 'text-node)
     (:say 'say-node)
+    (:scene 'scene-node)
     (:conversation 'conversation-node)
     (:choice 'choice-node)
     (:number 'number-input-node)

@@ -268,6 +268,7 @@
   (:documentation "Insert menu blurb for a node kind.")
   (:method (kind) (declare (ignore kind)) "TEXT")
   (:method ((kind (eql :say))) "SPEAKER LINE")
+  (:method ((kind (eql :scene))) "LOWER THIRD")
   (:method ((kind (eql :choice))) "CHOICE PROMPT")
   (:method ((kind (eql :conversation))) "TWO-SIDED TALK")
   (:method ((kind (eql :number))) "NUMBER INPUT")

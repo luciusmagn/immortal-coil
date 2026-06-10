@@ -95,7 +95,7 @@
 
   (deftype node-kind ()
     "Dialog node behavior handled by the runtime."
-    '(member :text :say :choice :conversation :number :string :minigame))
+    '(member :text :say :scene :choice :conversation :number :string :minigame))
 
   (deftype editor-mode ()
     "Transient editor input mode."
@@ -110,7 +110,7 @@
 
   (deftype editor-insert-kind ()
     "Dialog node skeleton types created by the in-game editor."
-    '(member :text :say :choice :conversation :number :string :minigame))
+    '(member :text :say :scene :choice :conversation :number :string :minigame))
 
   (deftype editor-insert-action ()
     "What the insert-kind menu will do when confirmed."
