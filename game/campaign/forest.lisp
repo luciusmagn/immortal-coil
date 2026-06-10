@@ -193,16 +193,41 @@
 
 (dialog-text "forest/creek-bed"
              "you crawl beneath roots and old glass bottles. above you, the lantern follows the trail perfectly."
+             :next "forest/culvert")
+
+(dialog-on-enter "forest/culvert"
+                 '(setf (dialog-value "forest-refuge") "culvert"))
+
+(dialog-text "forest/culvert"
+             "the creek bed runs under a road through a concrete culvert. you wait in it while two cars pass overhead. neither slows. the lantern light stops at the tree line and turns back."
              :next "forest/unfinished")
 
 (dialog-text "forest/fence"
              "the fence is high and new. every post has the same carved mark as the house key."
+             :next "forest/gate")
+
+(dialog-on-enter "forest/gate"
+                 '(setf (dialog-value "forest-refuge") "gate"))
+
+(dialog-text "forest/gate"
+             "you follow the fence to a gate. the chain on it is new. the sign bolted to the bars faces you: PRIVATE PROPERTY. KEEP OUT."
              :next "forest/unfinished")
 
 (dialog-text "forest/cellar"
              "the cellar door is half buried. someone oiled the hinges recently."
+             :next "forest/cellar-dark")
+
+(dialog-on-enter "forest/cellar-dark"
+                 '(setf (dialog-value "forest-refuge") "cellar"))
+
+(dialog-text "forest/cellar-dark"
+             "you pull the door shut over your head. there is a box of matches on the second step. the first match shows a cot, a water jug, and four paper tags hanging on a nail."
+             :next "forest/cellar-overhead")
+
+(dialog-text "forest/cellar-overhead"
+             "boards creak overhead, one set of steps, taking their time. dust comes down through the cracks with each pass."
              :next "forest/unfinished")
 
 (dialog-text "forest/unfinished"
-             "for now, you keep moving. you cannot tell if you are walking away from the house or circling back to it."
+             "you wait out the dark in short stretches, never long in one place. by the time the sky greys, you cannot tell if you have moved away from the house or in a circle around it."
              :next "base/awake")
