@@ -138,7 +138,8 @@
 
   (deftype editor-node-field ()
     "Editable non-text fields on a node."
-    '(member :speaker
+    '(member :id
+             :speaker
              :response-key
              :min-value
              :max-value

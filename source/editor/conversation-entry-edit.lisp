@@ -388,9 +388,13 @@
   (:documentation "Open the detail editor panel that fits NODE.
 Panels register their methods next to their own start functions.")
   (:method ((node node))
-    (setf *editor-status-message* "EDITOR: NO NODE DETAILS")
-    (play-choice-switch)
-    nil)
+    (declare (ignore node))
+    (if (fboundp 'editor-start-node-fields-edit)
+        (funcall (symbol-function 'editor-start-node-fields-edit))
+        (progn
+          (setf *editor-status-message* "EDITOR: NO NODE DETAILS")
+          (play-choice-switch)
+          nil)))
   (:method ((node conversation-node))
     (editor-start-conversation-entry-edit))
   (:method ((node choice-node))

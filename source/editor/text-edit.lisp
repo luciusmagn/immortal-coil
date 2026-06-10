@@ -507,6 +507,8 @@
          (editor-start-node-target-edit))
         ((editor-control-key-pressed-p +key-v+)
          (editor-toggle-choice-reveal))
+        ((editor-control-key-pressed-p +key-y+)
+         (editor-start-node-fields-edit))
         ((or (is-key-pressed-p +key-f3+)
              (editor-control-key-pressed-p +key-s+))
          (editor-toggle-store-overlay))

@@ -607,7 +607,7 @@
                                            (+ left 58)
                                            (+ top 78 (* index 34))
                                            color)))
-    (draw-editor-right-text "LEFT/RIGHT ADJUST  C-s SAVE  C-g CANCEL"
+    (draw-editor-right-text "TYPE/ADJUST  C-s SAVE  C-g CANCEL"
                             (+ top panel-height 14)
                             12
                             color)))
@@ -740,6 +740,7 @@
                  ("C-m" "cycle the current node music")
                  ("C-l" "edit current node destinations")
                  ("C-v" "show or hide predicate-filtered choices")
+                 ("C-y" "edit current node id and details")
                  ("C-o" "edit node details or highlighted item")
                  ("C-e" "edit the current node text")
                  ("C-s" "show shared state or save active panel")

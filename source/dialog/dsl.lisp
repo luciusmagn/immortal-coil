@@ -151,6 +151,11 @@
     (runtime-warn "Cannot delete missing dialog node: ~a" node-id))
   node-id)
 
+(-> dialog-rename-node (dialog-id dialog-id) dialog-id)
+(defun dialog-rename-node (old-id new-id)
+  (rename-node old-id new-id)
+  new-id)
+
 (-> dialog-set-text (dialog-id string) dialog-id)
 (defun dialog-set-text (node-id text)
   (setf (node-text (find-node node-id)) text)

@@ -66,10 +66,10 @@
 
 (dialog-choice "base/match"
                "strike a match?"
-               (dialog-option "yes" "base/match/option-1/edit-1")
+               (dialog-option "yes" "base/light-lantern")
                (dialog-option "no"  "base/door-shadow"))
 
-(dialog-text "base/match/option-1/edit-1"
+(dialog-text "base/light-lantern"
              "the match lights up, you spot a lantern that you can light with the match."
              :next "jrpg/inn")
 
@@ -130,7 +130,7 @@
 
 (dialog-text "base/sleep"
              "you rolled over and went back to sleep, nothing of interest happened..."
-             :next "base/sleep/edit-1")
+             :next "dream/drift")
 
 
 ;;; Ship captain
@@ -165,11 +165,11 @@
 
 ;;; Dream maze
 
-(dialog-text "base/sleep/edit-1"
+(dialog-text "dream/drift"
              "a few moments later, you fall asleep"
-             :next "base/sleep/edit-1/edit-1")
+             :next "dream/fall")
 
-(dialog-text "base/sleep/edit-1/edit-1"
+(dialog-text "dream/fall"
              "you feel a falling sensation"
              :next "dream/maze")
 

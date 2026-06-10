@@ -44,9 +44,9 @@
 
 (dialog-text "jrpg/notice"
              " THE DEMON LORD WAITS IN THE NORTH TOWER. BREAKFAST INCLUDED."
-             :next "jrpg/notice/edit-1")
+             :next "jrpg/notice-number")
 
-(dialog-text "jrpg/notice/edit-1"
+(dialog-text "jrpg/notice-number"
              "67"
              :next "jrpg/name")
 

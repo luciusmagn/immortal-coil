@@ -383,6 +383,90 @@
 (defun node-exists-p (id)
   (not (null (gethash id *nodes*))))
 
+(-> retarget-dialog-target (t dialog-id dialog-id) t)
+(defun retarget-dialog-target (target old-id new-id)
+  (if (and (stringp target)
+           (string= target old-id))
+      new-id
+      target))
+
+(defgeneric node-retarget-links (node old-id new-id)
+  (:documentation "Retarget direct string links from OLD-ID to NEW-ID inside NODE.")
+  (:method ((node node) old-id new-id)
+    (declare (ignore old-id new-id))
+    node)
+  (:method ((node linear-node) old-id new-id)
+    (setf (node-next node)
+          (retarget-dialog-target (node-next node) old-id new-id))
+    node)
+  (:method ((node choice-node) old-id new-id)
+    (loop for choice across (node-choices node)
+          do (setf (choice-target choice)
+                   (retarget-dialog-target (choice-target choice)
+                                           old-id
+                                           new-id)))
+    node)
+  (:method ((node input-node) old-id new-id)
+    (setf (node-target node)
+          (retarget-dialog-target (node-target node) old-id new-id))
+    node)
+  (:method ((node minigame-node) old-id new-id)
+    (setf (node-success-target node)
+          (retarget-dialog-target (node-success-target node) old-id new-id)
+          (node-failure-target node)
+          (retarget-dialog-target (node-failure-target node) old-id new-id))
+    node))
+
+(-> retarget-node-links (dialog-id dialog-id) t)
+(defun retarget-node-links (old-id new-id)
+  (loop for node being the hash-values of *nodes*
+        do (node-retarget-links node old-id new-id))
+  t)
+
+(-> rename-node (dialog-id dialog-id) boolean)
+(defun rename-node (old-id new-id)
+  (cond
+    ((not (and (stringp old-id)
+               (stringp new-id)
+               (plusp (length new-id))))
+     (runtime-warn "Cannot rename dialog node with invalid id: ~s -> ~s"
+                   old-id
+                   new-id)
+     nil)
+    ((string= old-id new-id)
+     (node-exists-p old-id))
+    ((string= old-id *runtime-fallback-node-id*)
+     (runtime-warn "Cannot rename runtime fallback dialog node.")
+     nil)
+    ((not (node-exists-p old-id))
+     (runtime-warn "Cannot rename missing dialog node: ~a" old-id)
+     nil)
+    ((node-exists-p new-id)
+     (runtime-warn "Cannot rename dialog node ~a to existing id ~a."
+                   old-id
+                   new-id)
+     nil)
+    (t
+     (let ((node (gethash old-id *nodes*))
+           (source (gethash old-id *node-sources*))
+           (pending-effects (gethash old-id *pending-node-enter-effects*)))
+       (remhash old-id *nodes*)
+       (remhash old-id *node-sources*)
+       (remhash old-id *pending-node-enter-effects*)
+       (setf (node-id node) new-id
+             (gethash new-id *nodes*) node)
+       (when source
+         (setf (gethash new-id *node-sources*) source))
+       (when pending-effects
+         (setf (gethash new-id *pending-node-enter-effects*)
+               pending-effects))
+       (when (equal *last-dialog-node-id* old-id)
+         (setf *last-dialog-node-id* new-id))
+       (when (equal *story-start-node* old-id)
+         (setf *story-start-node* new-id))
+       (retarget-node-links old-id new-id)
+       t))))
+
 (-> delete-node (dialog-id) boolean)
 (defun delete-node (id)
   (let ((existed-p (node-exists-p id)))
