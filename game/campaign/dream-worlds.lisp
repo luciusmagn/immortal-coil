@@ -622,12 +622,29 @@
              "the ration, half gone now, and the ring. the unidentified stays unidentified. some mornings that is the only mercy a cellar offers, and you take it."
              :next "rogue/climb")
 
+(defun rogue-companion-wall-target ()
+  (if (dialog-value "rogue-sword")
+      "rogue/wall-sword"
+      "rogue/wall-bare"))
+
 (dialog-text "rogue/climb"
-             "you take the stairs up past the carved name, two floors of worn stone, and come out on the landing with the three doors. the draft has changed direction overnight."
+             "you take the stairs up past the carved name, two floors of worn stone. on the second landing, the thing in the wall picks you up again, matching steps, patient as bookkeeping."
+             :next #'rogue-companion-wall-target)
+
+(dialog-text "rogue/wall-sword"
+             "you draw the armory sword and rap the flat of it once against the stone, the way you would knock. the pacing stops, considers, and falls in again half a step farther off. an arrangement, then. dungeons run on arrangements."
+             :next "rogue/landing-return")
+
+(dialog-text "rogue/wall-bare"
+             "you have nothing to knock with but knuckles, so you knock with knuckles. the wall is warmer than stone should be at this depth. the pacing keeps its distance the rest of the climb, and you choose to call that an answer."
+             :next "rogue/landing-return")
+
+(dialog-text "rogue/landing-return"
+             "the landing with the three doors. the cistern door stands open now, and from inside comes the sound of water settling, as if something large has just finished crossing it without your permission."
              :next "rogue/exit-door")
 
 (dialog-text "rogue/exit-door"
-             "a fourth door stands where the draft comes from, narrow, with a lock plate on this side. you are sure to the bone it was not here yesterday, and being sure of that is exactly what the dungeon would call being lost."
+             "a fourth door stands where the draft comes from, narrow, with a lock plate on this side. the dust at its foot shows the door has been opened many times, always toward you, never away."
              :next "rogue/exit-choice")
 
 (dialog-pick "rogue/exit-choice"
