@@ -233,7 +233,38 @@
                :response-key "door-count"
                :min 0
                :max 9
-               :target "alice/verdict")
+               :target "alice/deliberation")
+
+(dialog-text "alice/deliberation"
+             "the jury retires to deliberate, which here means turning their chairs around in place and whispering with their backs to the room. the whispering has a melody. you have until it resolves."
+             :next "alice/deliberation-watch")
+
+(dialog-pick "alice/deliberation-watch"
+             "the foreman's pencil is the only one still moving."
+             (dialog-option "listen for the melody's end" "alice/melody")
+             (dialog-option "watch the judge instead" "alice/judge-watch")
+             (dialog-option "count the jurors" "alice/juror-count"))
+
+(dialog-on-enter "alice/melody"
+                 '(setf (dialog-value "alice-deliberation") "listened"))
+
+(dialog-text "alice/melody"
+             "the melody is a lullaby with the intervals worn round, the kind sung by someone keeping their voice low through a door. it resolves on a note you know, and the chairs turn back."
+             :next "alice/verdict")
+
+(dialog-on-enter "alice/judge-watch"
+                 '(setf (dialog-value "alice-deliberation") "watched"))
+
+(dialog-text "alice/judge-watch"
+             "the judge passes the time signing blank pages, initialing each signature, and filing them in a drawer marked IN THE EVENT. he catches you watching and mouths: practice."
+             :next "alice/verdict")
+
+(dialog-on-enter "alice/juror-count"
+                 '(setf (dialog-value "alice-deliberation") "counted"))
+
+(dialog-text "alice/juror-count"
+             "you count the jurors twice and get two different numbers, and stop, because you know this feeling from somewhere with fewer chandeliers. the foreman, without turning, writes one more line."
+             :next "alice/verdict")
 
 (dialog-say "alice/verdict"
             "the card judge"
