@@ -181,6 +181,15 @@
               nil)))
       nil))
 
+(defmethod node-start-detail-edit ((node say-node))
+  (editor-start-node-fields-edit))
+
+(defmethod node-start-detail-edit ((node input-node))
+  (editor-start-node-fields-edit))
+
+(defmethod node-start-detail-edit ((node minigame-node))
+  (editor-start-node-fields-edit))
+
 (-> editor-node-fields-move-field (integer) boolean)
 (defun editor-node-fields-move-field (direction)
   (let ((count (editor-node-fields-count)))

@@ -264,16 +264,15 @@
                             12
                             color)))
 
-(-> editor-insert-kind-description (editor-insert-kind) string)
-(defun editor-insert-kind-description (kind)
-  (case kind
-    (:say "SPEAKER LINE")
-    (:choice "CHOICE PROMPT")
-    (:conversation "TWO-SIDED TALK")
-    (:number "NUMBER INPUT")
-    (:string "TEXT INPUT")
-    (:minigame "MINIGAME NODE")
-    (t "TEXT")))
+(defgeneric editor-insert-kind-description (kind)
+  (:documentation "Insert menu blurb for a node kind.")
+  (:method (kind) (declare (ignore kind)) "TEXT")
+  (:method ((kind (eql :say))) "SPEAKER LINE")
+  (:method ((kind (eql :choice))) "CHOICE PROMPT")
+  (:method ((kind (eql :conversation))) "TWO-SIDED TALK")
+  (:method ((kind (eql :number))) "NUMBER INPUT")
+  (:method ((kind (eql :string))) "TEXT INPUT")
+  (:method ((kind (eql :minigame))) "MINIGAME NODE"))
 
 (-> draw-editor-insert-kind-row (editor-insert-kind nonnegative-integer scalar scalar t) t)
 (defun draw-editor-insert-kind-row (kind index x y color)

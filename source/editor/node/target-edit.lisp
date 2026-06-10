@@ -12,16 +12,16 @@
   (clrhash *editor-node-target-kind-buffers*)
   t)
 
+(defgeneric node-target-fields (node)
+  (:documentation "Editable link fields for NODE in the target editor.")
+  (:method ((node node)) #())
+  (:method ((node linear-node)) #(:next))
+  (:method ((node input-node)) #(:target))
+  (:method ((node minigame-node)) #(:success :failure)))
+
 (-> editor-node-target-fields (node) vector)
 (defun editor-node-target-fields (node)
-  (case (node-kind node)
-    ((:text :say :conversation)
-     #(:next))
-    ((:number :string)
-     #(:target))
-    (:minigame
-     #(:success :failure))
-    (t #())))
+  (node-target-fields node))
 
 (-> editor-node-target-field-count () nonnegative-integer)
 (defun editor-node-target-field-count ()

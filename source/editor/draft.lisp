@@ -8,8 +8,7 @@
 
 (-> editor-linear-next-node-p (node) boolean)
 (defun editor-linear-next-node-p (node)
-  (not (null (member (node-kind node)
-                     '(:text :say :conversation)))))
+  (typep node 'linear-node))
 
 (-> editor-generated-child-id-with-prefix (dialog-id) dialog-id)
 (defun editor-generated-child-id-with-prefix (prefix)
@@ -481,29 +480,31 @@
 (-> editor-selected-choice-link (node)
     (values (option choice) (option nonnegative-integer)))
 (defun editor-selected-choice-link (node)
-  (when (eq (node-kind node) :choice)
+  (when (typep node 'choice-node)
     (let ((choice (selected-active-choice node)))
       (when choice
         (values choice
                 (position choice (node-choices node) :test #'eq))))))
 
+(defgeneric node-primary-target (node)
+  (:documentation "The target the editor treats as NODE's main link.")
+  (:method ((node node))
+    nil)
+  (:method ((node linear-node))
+    (node-next node))
+  (:method ((node input-node))
+    (node-target node))
+  (:method ((node choice-node))
+    (let ((choice (editor-selected-choice-link node)))
+      (when choice
+        (choice-target choice))))
+  (:method ((node minigame-node))
+    (or (node-success-target node)
+        (node-failure-target node))))
+
 (-> editor-node-primary-target (node) (option dialog-target))
 (defun editor-node-primary-target (node)
-  (case (node-kind node)
-    ((:text :say :conversation)
-     (node-next node))
-    ((:number :string)
-     (node-target node))
-    (:choice
-     (multiple-value-bind (choice choice-index)
-         (editor-selected-choice-link node)
-       (declare (ignore choice-index))
-       (when choice
-         (choice-target choice))))
-    (:minigame
-     (or (node-success-target node)
-         (node-failure-target node)))
-    (t nil)))
+  (node-primary-target node))
 
 (-> editor-choice-insert-target-label (choice) string)
 (defun editor-choice-insert-target-label (choice)

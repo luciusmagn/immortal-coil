@@ -353,18 +353,22 @@
           (dialog-target-label (node-success-target node))
           (dialog-target-label (node-failure-target node))))
 
+(defgeneric node-next-label (node)
+  (:documentation "Editor overlay label for where NODE leads.")
+  (:method ((node node))
+    nil)
+  (:method ((node linear-node))
+    (editor-target-next-label (node-next node)))
+  (:method ((node choice-node))
+    (editor-choice-next-label node))
+  (:method ((node input-node))
+    (editor-target-next-label (node-target node)))
+  (:method ((node minigame-node))
+    (editor-minigame-next-label node)))
+
 (-> editor-next-label (node) (option string))
 (defun editor-next-label (node)
-  (case (node-kind node)
-    ((:text :say :conversation)
-     (editor-target-next-label (node-next node)))
-    (:choice
-     (editor-choice-next-label node))
-    ((:number :string)
-     (editor-target-next-label (node-target node)))
-    (:minigame
-     (editor-minigame-next-label node))
-    (t nil)))
+  (node-next-label node))
 
 (-> editor-insert-kind-label (&optional editor-insert-kind) string)
 (defun editor-insert-kind-label (&optional (kind *editor-insert-kind*))

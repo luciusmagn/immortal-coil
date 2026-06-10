@@ -397,34 +397,33 @@
               nil)))
       nil))
 
+(defgeneric node-start-detail-edit (node)
+  (:documentation "Open the detail editor panel that fits NODE.
+Panels register their methods next to their own start functions.")
+  (:method ((node node))
+    (setf *editor-status-message* "EDITOR: NO NODE DETAILS")
+    (play-choice-switch)
+    nil)
+  (:method ((node conversation-node))
+    (editor-start-conversation-entry-edit))
+  (:method ((node choice-node))
+    (editor-start-choice-option-edit)))
+
 (-> editor-start-node-detail-edit () boolean)
 (defun editor-start-node-detail-edit ()
   (if (and *editor-active-p* *state*)
-      (case (node-kind (current-node))
-        (:conversation
-         (editor-start-conversation-entry-edit))
-        (:choice
-         (editor-start-choice-option-edit))
-        ((:say :number :string :minigame)
-         (if (fboundp 'editor-start-node-fields-edit)
-             (funcall (symbol-function 'editor-start-node-fields-edit))
-             (progn
-               (setf *editor-status-message*
-                     "EDITOR: NODE DETAIL EDITOR UNAVAILABLE")
-               (play-choice-switch)
-               nil)))
-        (t
-         (setf *editor-status-message* "EDITOR: NO NODE DETAILS")
-         (play-choice-switch)
-         nil))
+      (node-start-detail-edit (current-node))
       nil))
+
+(defgeneric node-add-detail (node)
+  (:documentation "Add the natural detail row for NODE.")
+  (:method ((node node))
+    (editor-add-choice-option-to-current))
+  (:method ((node conversation-node))
+    (editor-add-conversation-entry-after-current)))
 
 (-> editor-add-node-detail () boolean)
 (defun editor-add-node-detail ()
   (if (and *editor-active-p* *state*)
-      (case (node-kind (current-node))
-        (:conversation
-         (editor-add-conversation-entry-after-current))
-        (t
-         (editor-add-choice-option-to-current)))
+      (node-add-detail (current-node))
       nil))
