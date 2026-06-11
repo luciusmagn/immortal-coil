@@ -1,5 +1,4 @@
 (defparameter *forest-wind-count* 84)
-(defvar *forest-wind-particles* #())
 
 (defstruct forest-wind-particle
   x
@@ -29,18 +28,6 @@
         (get-random-value 2 9))
   particle)
 
-(defun reset-forest-wind-particles ()
-  (setf *forest-wind-particles* (make-array *forest-wind-count*))
-  (loop for i below *forest-wind-count*
-        do (setf (aref *forest-wind-particles* i)
-                 (reset-forest-wind-particle
-                  (make-forest-wind-particle)
-                  :initial-p t))))
-
-(defun ensure-forest-wind-particles ()
-  (unless (= (length *forest-wind-particles*) *forest-wind-count*)
-    (reset-forest-wind-particles)))
-
 (defun update-forest-wind-particle (particle dt)
   (incf (forest-wind-particle-phase particle) (* dt 1.7))
   (incf (forest-wind-particle-x particle)
@@ -53,11 +40,6 @@
             (< (forest-wind-particle-y particle) -20.0)
             (> (forest-wind-particle-y particle) (+ +virtual-height+ 20.0)))
     (reset-forest-wind-particle particle)))
-
-(defun update-forest-wind-particles (dt)
-  (ensure-forest-wind-particles)
-  (loop for particle across *forest-wind-particles*
-        do (update-forest-wind-particle particle dt)))
 
 (defun draw-forest-wind-particle (particle alpha-scale)
   (let ((alpha (round (* (forest-wind-particle-alpha particle)
@@ -106,16 +88,35 @@
                              scale
                              (round (* 58 alpha-scale)))))
 
-(defun draw-forest-wind (alpha-scale)
-  (draw-forest-pines alpha-scale)
-  (loop for particle across *forest-wind-particles*
-        do (draw-forest-wind-particle particle alpha-scale)))
+(defclass forest-wind-system (particle-system) ())
 
-(dialog-particle-field-kind :forest-wind
-                            :reset #'reset-forest-wind-particles
-                            :ensure #'ensure-forest-wind-particles
-                            :update #'update-forest-wind-particles
-                            :draw #'draw-forest-wind)
+(defmethod particle-system-count ((system forest-wind-system))
+  *forest-wind-count*)
+
+(defmethod particle-system-make ((system forest-wind-system))
+  (make-forest-wind-particle))
+
+(defmethod particle-system-reset-particle ((system forest-wind-system)
+                                           particle
+                                           &key initial-p)
+  (reset-forest-wind-particle particle :initial-p initial-p))
+
+(defmethod particle-system-update-particle ((system forest-wind-system)
+                                            particle
+                                            dt)
+  (update-forest-wind-particle particle dt))
+
+(defmethod particle-field-draw :before ((system forest-wind-system)
+                                        alpha-scale)
+  (draw-forest-pines alpha-scale))
+
+(defmethod particle-system-draw-particle ((system forest-wind-system)
+                                          particle
+                                          alpha-scale)
+  (draw-forest-wind-particle particle alpha-scale))
+
+(register-particle-field-definition
+ (make-instance 'forest-wind-system :id :forest-wind))
 
 
 (dialog-particles "forest/threshold" :forest-wind :fade-seconds 4.0)
