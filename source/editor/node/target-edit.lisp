@@ -41,19 +41,25 @@
               (min (max 0 *editor-node-target-field-index*)
                    (1- count)))))))
 
-(-> editor-node-target-field-value (node editor-node-target-field) (option t))
-(defun editor-node-target-field-value (node field)
-  (case field
-    (:next (node-next node))
-    (:target (node-target node))
-    (:success (node-success-target node))
-    (:failure (node-failure-target node))))
+(defgeneric editor-node-target-field-value (node field)
+  (:documentation "Read the link FIELD from NODE.")
+  (:method (node (field (eql :next)))
+    (node-next node))
+  (:method (node (field (eql :target)))
+    (node-target node))
+  (:method (node (field (eql :success)))
+    (node-success-target node))
+  (:method (node (field (eql :failure)))
+    (node-failure-target node)))
 
-(-> editor-node-target-field-required-p (node editor-node-target-field)
-    boolean)
-(defun editor-node-target-field-required-p (node field)
-  (declare (ignore node))
-  (not (eq field :next)))
+(defgeneric editor-node-target-field-required-p (node field)
+  (:documentation "True when FIELD may not be cleared on NODE.")
+  (:method (node (field (eql :next)))
+    (declare (ignore node))
+    nil)
+  (:method (node field)
+    (declare (ignore node field))
+    t))
 
 (-> editor-node-target-buffer-value (editor-node-target-field) string)
 (defun editor-node-target-buffer-value (field)
@@ -180,25 +186,25 @@
   (or (not (editor-node-target-field-required-p node field))
       (not (null (editor-node-target-field-target-value field)))))
 
-(-> editor-write-set-node-target-field-form
-    (t dialog-id editor-node-target-field (option dialog-target))
-    t)
-(defun editor-write-set-node-target-field-form (stream node-id field target)
-  (case field
-    (:next
-     (editor-write-set-next-form stream node-id target))
-    (:target
-     (format stream "~&(dialog-set-target ~s " node-id)
-     (editor-write-target stream target)
-     (format stream ")~2%"))
-    (:success
-     (format stream "~&(dialog-set-minigame-success ~s " node-id)
-     (editor-write-target stream target)
-     (format stream ")~2%"))
-    (:failure
-     (format stream "~&(dialog-set-minigame-failure ~s " node-id)
-     (editor-write-target stream target)
-     (format stream ")~2%"))))
+(defun editor-write-setter-call-form (stream setter node-id target)
+  (format stream "~&(~(~a~) ~s " setter node-id)
+  (editor-write-target stream target)
+  (format stream ")~2%"))
+
+(defgeneric editor-write-set-node-target-field-form
+    (stream node-id field target)
+  (:documentation "Write the draft setter form for one link FIELD.")
+  (:method (stream node-id (field (eql :next)) target)
+    (editor-write-set-next-form stream node-id target))
+  (:method (stream node-id (field (eql :target)) target)
+    (editor-write-setter-call-form stream 'dialog-set-target
+                                   node-id target))
+  (:method (stream node-id (field (eql :success)) target)
+    (editor-write-setter-call-form stream 'dialog-set-minigame-success
+                                   node-id target))
+  (:method (stream node-id (field (eql :failure)) target)
+    (editor-write-setter-call-form stream 'dialog-set-minigame-failure
+                                   node-id target)))
 
 (-> editor-append-node-target-edit
     (dialog-id node)

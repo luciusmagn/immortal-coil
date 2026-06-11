@@ -613,14 +613,13 @@
                             12
                             color)))
 
-(-> editor-node-target-field-label (editor-node-target-field) string)
-(defun editor-node-target-field-label (field)
-  (case field
-    (:next "NEXT")
-    (:target "TARGET")
-    (:success "SUCCESS")
-    (:failure "FAILURE")
-    (t "")))
+(defgeneric editor-node-target-field-label (field)
+  (:documentation "Row label for a link field in the target editor.")
+  (:method ((field (eql :next))) "NEXT")
+  (:method ((field (eql :target))) "TARGET")
+  (:method ((field (eql :success))) "SUCCESS")
+  (:method ((field (eql :failure))) "FAILURE")
+  (:method (field) (declare (ignore field)) ""))
 
 (-> editor-node-target-kind-label (editor-node-target-field) string)
 (defun editor-node-target-kind-label (field)
