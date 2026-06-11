@@ -526,22 +526,31 @@
         (runtime-warn "Unknown story node: ~a" id)
         (node-id (ensure-runtime-fallback-node)))))
 
+(defgeneric resolve-target-delegate (target)
+  (:documentation "Resolve a dialog target designator to its value.")
+  (:method ((target string))
+    target)
+  (:method ((target function))
+    (funcall target))
+  (:method ((target symbol))
+    (if (fboundp target)
+        (funcall target)
+        target))
+  (:method ((target cons))
+    (cond
+      ((lambda-expression-p target)
+       (funcall (compile nil target)))
+      ((function-expression-p target)
+       (funcall (eval target)))
+      (t
+       (eval target))))
+  (:method (target)
+    target))
+
 (-> eval-dialog-target (t) t)
 (defun eval-dialog-target (target)
   (handler-case
-      (cond
-        ((functionp target)
-         (funcall target))
-        ((lambda-expression-p target)
-         (funcall (compile nil target)))
-        ((function-expression-p target)
-         (funcall (eval target)))
-        ((and (symbolp target) (fboundp target))
-         (funcall target))
-        ((consp target)
-         (eval target))
-        (t
-         target))
+      (resolve-target-delegate target)
     (error (condition)
       (runtime-warn "Dialog target delegate failed: ~s (~a)"
                     target
