@@ -50,6 +50,18 @@
     (merge-pathnames (princ-to-string path)
                      (project-root-pathname))))
 
+(defgeneric normalize-keyword-designator (value)
+  (:documentation "Coerce a keyword designator to a keyword, else nil.")
+  (:method ((value symbol))
+    (if (keywordp value)
+        value
+        (intern (string-upcase (symbol-name value)) "KEYWORD")))
+  (:method ((value string))
+    (intern (string-upcase value) "KEYWORD"))
+  (:method (value)
+    (declare (ignore value))
+    nil))
+
 (defgeneric resolve-function-designator (handler)
   (:documentation "Resolve a function designator to a function, else nil.")
   (:method ((handler function))

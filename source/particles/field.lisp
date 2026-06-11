@@ -12,13 +12,10 @@
 
 (-> particle-field-mode-keyword (t) particle-field-mode)
 (defun particle-field-mode-keyword (mode)
-  (typecase mode
-    (keyword mode)
-    (symbol (intern (symbol-name mode) "KEYWORD"))
-    (string (intern (string-upcase mode) "KEYWORD"))
-    (t
-     (runtime-warn "Expected a particle field mode, got: ~s" mode)
-     :rising)))
+  (or (normalize-keyword-designator mode)
+      (progn
+        (runtime-warn "Expected a particle field mode, got: ~s" mode)
+        :rising)))
 
 (-> particle-field-handler-function (t string runtime-function) runtime-function)
 (defun particle-field-handler-function (handler description fallback-function)
