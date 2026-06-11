@@ -56,19 +56,10 @@
   (pushnew hook *minigame-reset-hooks* :test #'equal)
   hook)
 
-(-> minigame-reset-hook-function (t) (option runtime-function))
-(defun minigame-reset-hook-function (hook)
-  (cond
-    ((functionp hook)
-     hook)
-    ((and (symbolp hook)
-          (fboundp hook))
-     (symbol-function hook))))
-
 (-> run-minigame-reset-hooks () t)
 (defun run-minigame-reset-hooks ()
   (dolist (hook *minigame-reset-hooks*)
-    (let ((function (minigame-reset-hook-function hook)))
+    (let ((function (resolve-function-designator hook)))
       (when function
         (handler-case
             (funcall function)
