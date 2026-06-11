@@ -23,26 +23,12 @@
 (-> particle-field-handler-function (t string runtime-function) runtime-function)
 (defun particle-field-handler-function (handler description fallback-function)
   (handler-case
-      (cond
-        ((functionp handler)
-         handler)
-        ((and (symbolp handler)
-              (fboundp handler))
-         (symbol-function handler))
-        ((consp handler)
-         (let ((value (eval handler)))
-           (if (functionp value)
-               value
-               (progn
-                 (runtime-warn "Particle field ~a did not evaluate to a function: ~s"
-                               description
-                               handler)
-                 fallback-function))))
-        (t
-         (runtime-warn "Particle field ~a is not a function designator: ~s"
-                       description
-                       handler)
-         fallback-function))
+      (or (resolve-function-designator handler)
+          (progn
+            (runtime-warn "Particle field ~a is not a function designator: ~s"
+                          description
+                          handler)
+            fallback-function))
     (error (condition)
       (runtime-warn "Particle field ~a failed to resolve: ~s (~a)"
                     description
