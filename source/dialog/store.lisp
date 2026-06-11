@@ -228,20 +228,29 @@ long minigames that keep their progress in the store survive restarts."
     (t
      (eval condition))))
 
+(defgeneric test-dialog-condition (condition)
+  (:documentation "Evaluate a condition designator to a raw truth value.")
+  (:method ((condition null))
+    nil)
+  (:method ((condition (eql t)))
+    t)
+  (:method ((condition function))
+    (funcall condition))
+  (:method ((condition cons))
+    (eval-dialog-condition-form condition))
+  (:method ((condition symbol))
+    (cond
+      ((fboundp condition) (funcall condition))
+      ((boundp condition) (symbol-value condition))
+      (t t)))
+  (:method (condition)
+    (declare (ignore condition))
+    t))
+
 (-> dialog-condition-true-p (t) boolean)
 (defun dialog-condition-true-p (condition)
   (handler-case
-      (cond
-        ((null condition) nil)
-        ((eq condition t) t)
-        ((functionp condition) (not (null (funcall condition))))
-        ((consp condition) (not (null (eval-dialog-condition-form condition))))
-        ((and (symbolp condition) (fboundp condition))
-         (not (null (funcall condition))))
-        ((and (symbolp condition) (boundp condition))
-         (not (null (symbol-value condition))))
-        (t
-         t))
+      (not (null (test-dialog-condition condition)))
     (error (runtime-error)
       (runtime-warn "Dialog condition failed: ~s (~a)"
                     condition
