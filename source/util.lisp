@@ -28,22 +28,27 @@
           control
           arguments))
 
-(-> source-designator-name (t) string)
-(defun source-designator-name (source)
-  (typecase source
-    (pathname (namestring source))
-    (string source)
-    (symbol (string-downcase (symbol-name source)))
-    (t (princ-to-string source))))
+(defgeneric source-designator-name (source)
+  (:documentation "Display name for a script or bundle source designator.")
+  (:method ((source pathname))
+    (namestring source))
+  (:method ((source string))
+    source)
+  (:method ((source symbol))
+    (string-downcase (symbol-name source)))
+  (:method (source)
+    (princ-to-string source)))
 
-(defun project-pathname (path)
-  (typecase path
-    (pathname path)
-    (string (merge-pathnames path (project-root-pathname)))
-    (t
-     (runtime-warn "Expected pathname designator, got: ~s" path)
-     (merge-pathnames (princ-to-string path)
-                      (project-root-pathname)))))
+(defgeneric project-pathname (path)
+  (:documentation "Resolve a path designator against the project root.")
+  (:method ((path pathname))
+    path)
+  (:method ((path string))
+    (merge-pathnames path (project-root-pathname)))
+  (:method (path)
+    (runtime-warn "Expected pathname designator, got: ~s" path)
+    (merge-pathnames (princ-to-string path)
+                     (project-root-pathname))))
 
 (-> estimated-text-width (string nonnegative-integer) nonnegative-integer)
 (defun estimated-text-width (text size)
