@@ -347,22 +347,29 @@
             (node-pending-enter-effects id)
             (node-enter-effects node))))
 
+(defgeneric run-dialog-effect (effect)
+  (:documentation "Execute one node enter effect according to its shape.")
+  (:method ((effect function))
+    (funcall effect))
+  (:method ((effect symbol))
+    (if (fboundp effect)
+        (funcall effect)
+        (runtime-warn "Unknown dialog enter effect: ~s" effect)))
+  (:method ((effect cons))
+    (cond
+      ((lambda-expression-p effect)
+       (funcall (compile nil effect)))
+      ((function-expression-p effect)
+       (funcall (eval effect)))
+      (t
+       (eval effect))))
+  (:method (effect)
+    (runtime-warn "Unknown dialog enter effect: ~s" effect)))
+
 (-> eval-dialog-effect (dialog-effect) t)
 (defun eval-dialog-effect (effect)
   (handler-case
-      (cond
-        ((functionp effect)
-         (funcall effect))
-        ((lambda-expression-p effect)
-         (funcall (compile nil effect)))
-        ((function-expression-p effect)
-         (funcall (eval effect)))
-        ((consp effect)
-         (eval effect))
-        ((and (symbolp effect) (fboundp effect))
-         (funcall effect))
-        (t
-         (runtime-warn "Unknown dialog enter effect: ~s" effect)))
+      (run-dialog-effect effect)
     (error (condition)
       (runtime-warn "Dialog enter effect failed: ~s (~a)"
                     effect
