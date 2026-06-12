@@ -30,6 +30,7 @@
            "campaign/festival.lisp"
            "campaign/ledger.lisp"
            "campaign/bellfall.lisp"
+           "campaign/kept.lisp"
            "editor-drafts.lisp")
  :assets "../assets/"
  :title-logo "logo/title-logo.png"

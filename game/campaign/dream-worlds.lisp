@@ -284,7 +284,8 @@
              "the gavel hovers."
              (dialog-option "accept the sentence" "alice/accept")
              (dialog-option "appeal" "alice/appeal")
-             (dialog-option "ask what keeping means" "alice/keeping"))
+             (dialog-option "ask what keeping means" "alice/keeping")
+             (dialog-option "refuse the sentence" "kept/refused"))
 
 (dialog-on-enter "alice/accept"
                  '(setf (dialog-value "alice-sentence") "accepted"))
