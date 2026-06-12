@@ -288,7 +288,8 @@
              "Voss asks how you knew the lane would hold."
              (dialog-option "tell her you read the drift" "ship/doctrine")
              (dialog-option "say you got lucky" "ship/luck")
-             (dialog-option "say nothing and drink" "ship/quiet"))
+             (dialog-option "say nothing and drink" "ship/quiet")
+             (dialog-option "tell her the truth" "mutiny/truth"))
 
 (dialog-on-enter "ship/doctrine"
                  '(setf (dialog-value "ship-voss-answer") "doctrine"))

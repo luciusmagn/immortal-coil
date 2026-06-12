@@ -22,6 +22,7 @@
            "campaign/war.lisp"
            "campaign/containment.lisp"
            "campaign/husk.lisp"
+           "campaign/mutiny.lisp"
            "editor-drafts.lisp")
  :assets "../assets/"
  :title-logo "logo/title-logo.png"
