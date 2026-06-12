@@ -235,6 +235,10 @@
 
 (dialog-text "kept/summon"
              "you ask the room to come in, and the court holds its breath, and the back wall of the courtroom becomes a wall with a window in it, curtained from the far side, and then a door, and then the room is there, fitting inside the court the way the court once fit inside it, and you walk in, and it closes around you like a verdict going your way."
+             :next "kept/cups-row")
+
+(dialog-text "kept/cups-row"
+             "as the court empties, the cups file past you in a row, each pausing at your shoulder for the length of a steep, which from cups is an embrace, and the last one in line is yours, the witness, who says nothing, having testified enough for one lifetime, and steams."
              :next "kept/corridor-last")
 
 (dialog-text "kept/corridor-last"
