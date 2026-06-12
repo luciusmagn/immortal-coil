@@ -473,7 +473,7 @@
                                    "he said you keep the other ledger.")
                      (dialog-left "Mira"
                                   "i keep the names, the years, and who they left behind. someone has to, and the tower only keeps the swords. sit down. you can read it after breakfast.")
-                     :next "jrpg/evening-table")
+                     :next "ledger/breakfast")
 
 (dialog-text "jrpg/evening-table"
              "supper is barley and the travel loaf's cousin, eaten at the long table with the stove ticking down. Oren tells the slime count wrong on purpose so Toma can correct him, which is how Oakbarrow says it is glad you are back."
