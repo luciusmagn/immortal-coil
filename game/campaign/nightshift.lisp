@@ -281,7 +281,7 @@
 
 (dialog-text "nightshift/stay-room-2"
              "through the wall, a new pencil takes up the log, unschooled, careful, and you drink before 0603, and spare them the report, and the room breathes its disputed figure around you, honest as ever."
-             :next "nightshift/end")
+             :next "nightshift/end-glass")
 
 (dialog-on-enter "nightshift/take-coat"
                  '(setf (dialog-value "nightshift-end") "coat"))
@@ -296,7 +296,7 @@
 
 (dialog-text "nightshift/take-coat-2"
              "you initial the line M-3 initialed for years, and under it, for the first time, you write the date in full. some dates deserve to be found again. you understand the sentence now from the inside of the hand that writes it."
-             :next "nightshift/end")
+             :next "nightshift/end-glass")
 
 (dialog-on-enter "nightshift/walk-out"
                  '(setf (dialog-value "nightshift-end") "out"))
@@ -307,6 +307,10 @@
 
 (dialog-text "nightshift/walk-out-2"
              "on the other side of the door someone has just let go of it, the way someone always has, and you go through anyway, which is the one move the facility never files, because it cannot see past its own doors."
+             :next "nightshift/end-glass")
+
+(dialog-text "nightshift/end-glass"
+             "and last, wherever the choice has put you, there is a glass of water, full to its line, and you stand it where it goes, to the millimeter, because the keeping of it was never the facility's. it was always the room's, and the room's people's, and you are one of them now, whichever side of the glass you kept."
              :next "nightshift/end")
 
 (dialog-text "nightshift/end"
