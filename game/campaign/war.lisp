@@ -391,7 +391,8 @@
              "Sorel closes the ledger and waits. the map room has one door."
              (dialog-option "put it to Vey at the table" "war/accuse")
              (dialog-option "have Olen seal kilometer nine" "war/seal")
-             (dialog-option "say nothing yet" "war/wait-move"))
+             (dialog-option "say nothing yet" "war/wait-move")
+             (dialog-option "go to the third district tonight" "district/advice"))
 
 (dialog-on-enter "war/accuse"
                  '(setf (dialog-value "war-day3") "accused"))
