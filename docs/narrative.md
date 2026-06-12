@@ -407,7 +407,7 @@ across playthroughs), via target delegates reading the seed.
 - ship: `liberty/` — real shore leave at a good port: the crew at
   liberty, the captain talked into joining, nothing goes wrong.
 - war: `armistice/` — the morning the bell does not ring, told as joy:
-  corridors, windows opening, Brandt laughing for the first time.
+  corridors, windows opening, Brandt laughing. DONE (13.6 min).
 - rogue: `haul/` — the genuinely good delve: a clean haul, the tally
   generous, and an evening spending it well in town.
 

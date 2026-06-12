@@ -57,3 +57,11 @@ nation-leader-in-war story.
   gallery recognizes the chancellor if =district-train= is set. Verdict
   varies on =tribunal-signature=. Keys: =tribunal-signature=,
   =tribunal-statement=.
+
+* Bright branch
+
+- =armistice/= (done, 13.6 min): the morning the eight o'clock bell does
+  not ring, told as joy. Tape off the windows, the casualty column ruled
+  closed, Brandt's first laugh, the numbers station saying go home, the
+  city one kitchen. Entered from =armistice/offer-choice= after the fourth
+  day. Key: =armistice-first=.

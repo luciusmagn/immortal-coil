@@ -29,11 +29,19 @@
              :next "armistice/tape")
 
 (dialog-text "armistice/tape"
-             "the tape comes off the glass in long ribbons. it leaves its crosses behind in gum and dust, pale Xs over every view, and the clerks polish at them with their sleeves, laughing now, properly, because the crosses come away and the city is behind them. it was behind them the whole time."
+             "the tape comes off the glass in long ribbons."
+             :next "armistice/tape-2")
+
+(dialog-text "armistice/tape-2"
+             "it leaves its crosses behind in gum and dust, pale Xs over every view, and the clerks polish at them with their sleeves, laughing now, properly, because the crosses come away and the city is behind them. it was behind them the whole time."
              :next "armistice/map-room")
 
 (dialog-text "armistice/map-room"
-             "in the map room, the tape line at the river has stopped. not advancing slower. stopped, with the morning's date pinned beside it in Sorel's hand. Olen stands at the map at attention, punctual to the last morning, and he is weeping, without noise, without moving, the way a wall sheds rain."
+             "in the map room, the tape line at the river has stopped. not advancing slower. stopped, with the morning's date pinned beside it in Sorel's hand."
+             :next "armistice/map-room-2")
+
+(dialog-text "armistice/map-room-2"
+             "Olen stands at the map at attention, punctual to the last morning, and he is weeping, without noise, without moving, the way a wall sheds rain."
              :next "armistice/sorel-line")
 
 (dialog-conversation "armistice/sorel-line"
@@ -55,7 +63,11 @@
                      :next "armistice/brandt-laugh")
 
 (dialog-text "armistice/brandt-laugh"
-             "and Brandt laughs. you have never heard it. nine years in this building and you have never once heard it, and it is terrible, honking, entirely without administrative value, and the clerks in the corridor catch it like weather, and it goes down the stairwell ahead of him, opening doors."
+             "and Brandt laughs. you have never heard it."
+             :next "armistice/brandt-laugh-2")
+
+(dialog-text "armistice/brandt-laugh-2"
+             "nine years in this building and you have never once heard it, and it is terrible, honking, entirely without administrative value, and the clerks in the corridor catch it like weather, and it goes down the stairwell ahead of him, opening doors."
              :next "armistice/radio")
 
 (dialog-text "armistice/radio"
@@ -76,7 +88,11 @@
                      :next "armistice/vey")
 
 (dialog-text "armistice/vey"
-             "you pass Vey's office. he is at his desk, composing, in his even hand, a memorandum on the orderly administration of peacetime, dated today, addressed to whom it may concern. some men are weather vanes, and the wind has changed, and there is a real and surprising comfort in watching the vane swing true."
+             "you pass Vey's office. he is at his desk, composing, in his even hand, a memorandum on the orderly administration of peacetime, dated today, addressed to whom it may concern."
+             :next "armistice/vey-2")
+
+(dialog-text "armistice/vey-2"
+             "some men are weather vanes, and the wind has changed, and there is a real and surprising comfort in watching the vane swing true."
              :next "armistice/coat")
 
 (dialog-text "armistice/coat"
@@ -84,11 +100,19 @@
              :next "armistice/sentry-cap")
 
 (dialog-text "armistice/sentry-cap"
-             "the older sentry, the one still helmeted, catches your eye and very slowly, with full ceremony, takes the helmet off, holds it out at arm's length, and drops it. it rolls. neither of you picks it up. it is the most insubordinate thing you have ever been glad to witness, and you return his salute, which he has not given."
+             "the older sentry, the one still helmeted, catches your eye and very slowly, with full ceremony, takes the helmet off, holds it out at arm's length, and drops it. it rolls. neither of you picks it up."
+             :next "armistice/sentry-cap-2")
+
+(dialog-text "armistice/sentry-cap-2"
+             "it is the most insubordinate thing you have ever been glad to witness, and you return his salute, which he has not given."
              :next "armistice/street")
 
 (dialog-text "armistice/street"
-             "the street is full. nobody is going anywhere. everyone is handing everyone things: bread, news, babies, the same three facts over and over. a woman you have never met hands you a cup of something hot and keeps moving, supplying the crowd by instinct, the whole city one kitchen."
+             "the street is full. nobody is going anywhere. everyone is handing everyone things: bread, news, babies, the same three facts over and over."
+             :next "armistice/street-2")
+
+(dialog-text "armistice/street-2"
+             "a woman you have never met hands you a cup of something hot and keeps moving, supplying the crowd by instinct, the whole city one kitchen."
              :next "armistice/unrecognized")
 
 (dialog-text "armistice/unrecognized"
@@ -96,19 +120,39 @@
              :next "armistice/bells-other")
 
 (dialog-text "armistice/bread-queue"
-             "outside the baker's, the queue has stopped being a queue and become a party that happens to be shaped like one. the baker is giving the morning's second batch away, loudly, over his wife's arithmetic, and his wife is letting him, doing the arithmetic anyway out of love, and laughing at the total."
+             "outside the baker's, the queue has stopped being a queue and become a party that happens to be shaped like one."
+             :next "armistice/bread-queue-2")
+
+(dialog-text "armistice/bread-queue-2"
+             "the baker is giving the morning's second batch away, loudly, over his wife's arithmetic, and his wife is letting him, doing the arithmetic anyway out of love, and laughing at the total."
              :next "armistice/cups")
 
 (dialog-text "armistice/bells-other"
-             "from the third district, across the canal, bells. not the slow count. struck fast, bright, in relays, and you can hear the relays changing: children, taking turns, lifted to the rope by grown hands, ringing nothing into the record at all. ringing because rope and bell make a noise, and the noise is allowed."
+             "from the third district, across the canal, bells. not the slow count."
+             :next "armistice/bells-other-2")
+
+(dialog-text "armistice/bells-other-2"
+             "struck fast, bright, in relays, and you can hear the relays changing: children, taking turns, lifted to the rope by grown hands, ringing nothing into the record at all."
+             :next "armistice/bells-other-3")
+
+(dialog-text "armistice/bells-other-3"
+             "ringing because rope and bell make a noise, and the noise is allowed."
              :next "armistice/bread-queue")
 
 (dialog-text "armistice/cups"
-             "the borrowed cup, when you finally look at it, is good china, somebody's sunday best, brought out into the street with its eleven brothers and handed to strangers. all over the city the kept things are coming out: the good plates, the saved sugar, the bottle at the back of the cupboard with a date on its mind. nothing is being saved anymore. saving is over."
+             "the borrowed cup, when you finally look at it, is good china, somebody's sunday best, brought out into the street with its eleven brothers and handed to strangers."
+             :next "armistice/cups-2")
+
+(dialog-text "armistice/cups-2"
+             "all over the city the kept things are coming out: the good plates, the saved sugar, the bottle at the back of the cupboard with a date on its mind. nothing is being saved anymore. saving is over."
              :next "armistice/table")
 
 (dialog-text "armistice/table"
-             "in the cabinet room, at some point in the afternoon, the map is folded. it takes four people and it folds badly, the way maps do, and under it the table is just a table: wood, scarred, a century of pencil marks and cup rings, the ordinary furniture of an ordinary room, returned to service."
+             "in the cabinet room, at some point in the afternoon, the map is folded."
+             :next "armistice/table-2")
+
+(dialog-text "armistice/table-2"
+             "it takes four people and it folds badly, the way maps do, and under it the table is just a table: wood, scarred, a century of pencil marks and cup rings, the ordinary furniture of an ordinary room, returned to service."
              :next "armistice/first-choice")
 
 (dialog-pick "armistice/first-choice"
@@ -121,25 +165,41 @@
                  '(setf (dialog-value "armistice-first") "windows"))
 
 (dialog-text "armistice/windows"
-             "you go floor by floor with Brandt and a master key, opening windows. it takes hours. the building exhales four years of paper and blackout cloth and kept breath, and the drafts run the corridors like children, and by the top floor the two of you are racing, and he wins, and you contest the result, and lose the appeal."
+             "you go floor by floor with Brandt and a master key, opening windows. it takes hours."
+             :next "armistice/windows-2")
+
+(dialog-text "armistice/windows-2"
+             "the building exhales four years of paper and blackout cloth and kept breath, and the drafts run the corridors like children, and by the top floor the two of you are racing, and he wins, and you contest the result, and lose the appeal."
              :next "armistice/evening")
 
 (dialog-on-enter "armistice/walk-district"
                  '(setf (dialog-value "armistice-first") "district"))
 
 (dialog-text "armistice/walk-district"
-             "you walk to the third district in your shirtsleeves, across the canal, against the remembered grain of every night you did it in a borrowed coat. the lists are coming down off the doors. not torn: taken down, folded, kept, the way you keep a thing you intend to be done with on your own terms."
+             "you walk to the third district in your shirtsleeves, across the canal, against the remembered grain of every night you did it in a borrowed coat. the lists are coming down off the doors."
+             :next "armistice/walk-district-2")
+
+(dialog-text "armistice/walk-district-2"
+             "not torn: taken down, folded, kept, the way you keep a thing you intend to be done with on your own terms."
              :next "armistice/district-bell")
 
 (dialog-text "armistice/district-bell"
-             "at the parish hall they are still ringing, relay after relay, and the ringer with the fingerless gloves stands aside from the rope entirely, resting his arm forever, supervising joy. he does not know you without the coat. he hands you the rope anyway, because everyone gets a turn today, and you ring."
+             "at the parish hall they are still ringing, relay after relay, and the ringer with the fingerless gloves stands aside from the rope entirely, resting his arm forever, supervising joy."
+             :next "armistice/district-bell-2")
+
+(dialog-text "armistice/district-bell-2"
+             "he does not know you without the coat. he hands you the rope anyway, because everyone gets a turn today, and you ring."
              :next "armistice/evening")
 
 (dialog-on-enter "armistice/bed"
                  '(setf (dialog-value "armistice-first") "slept"))
 
 (dialog-text "armistice/bed"
-             "you go home, to the flat that has technically been yours all along, and sleep in a bed, in daylight, with the window open and the street noise coming in like surf, and nobody wakes you, because there is nothing that cannot wait, and there has never once been nothing that cannot wait, and there is now."
+             "you go home, to the flat that has technically been yours all along, and sleep in a bed, in daylight, with the window open and the street noise coming in like surf."
+             :next "armistice/bed-2")
+
+(dialog-text "armistice/bed-2"
+             "nobody wakes you, because there is nothing that cannot wait, and there has never once been nothing that cannot wait, and there is now."
              :next "armistice/evening")
 
 (dialog-text "armistice/evening"
@@ -147,7 +207,11 @@
              :next "armistice/last")
 
 (dialog-text "armistice/last"
-             "you stand at an open window with the day ending and let yourself have it, all of it, the one morning, the version with the all-clear in it, and somewhere below, faint, Brandt is still laughing about something, and the sound carries in the open air, because everything does now. that is what open means."
+             "you stand at an open window with the day ending and let yourself have it, all of it, the one morning, the version with the all-clear in it."
+             :next "armistice/last-2")
+
+(dialog-text "armistice/last-2"
+             "somewhere below, faint, Brandt is still laughing about something, and the sound carries in the open air, because everything does now. that is what open means."
              :next "armistice/wake")
 
 (dialog-text "armistice/wake"
