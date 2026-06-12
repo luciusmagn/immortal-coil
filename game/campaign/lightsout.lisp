@@ -191,6 +191,10 @@
 
 (dialog-text "lightsout/bracket-relit"
              "at the row's end, behind you, a bracket catches: the lamplighter, on the rota, restoring your stretch of corridor to the menu. the light reaches you at the ankles like tidewater and stops there, respectful. your eyes hurt at even this much, which is the dark's parting gift: proof of how far in you went."
+             :next "lightsout/goodbye")
+
+(dialog-text "lightsout/goodbye"
+             "the lamplighter does not say goodbye, exactly. the taper dips once in your direction, the smallest light in the building acknowledging you over the new torch's shoulder, and the round goes on, bracket by bracket, into the dark it keeps, which keeps it back."
              :next "lightsout/rota-board")
 
 (dialog-text "lightsout/rota-board"
