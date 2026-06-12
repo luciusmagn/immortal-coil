@@ -25,7 +25,8 @@
     (:jrpg-combat . 120)
     (:war-radio . 40)
     (:forest-hide . 25)
-    (:one-pace/brace . 30)))
+    (:one-pace/brace . 30)
+    (:rogue-delve . 240)))
 
 (defun report-path-prefix (id)
   (let ((slash (position #\/ id)))
