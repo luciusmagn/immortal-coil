@@ -377,11 +377,11 @@
                                    "is that advice or procedure?")
                      (dialog-left "M-3"
                                   "here, {facility-designation}, the difference is seniority. same time. the handle is warm.")
-                     :next "facility/walk3")
+                     :next "facility/notice-board")
 
 (dialog-text "facility/notice-board"
              "by the staff room door there is a notice board, mostly thumbtacks. the one notice reads: ROTATION SCHEDULES ARE POSTED IN ADVANCE. ANY STAFF MEMBER FINDING THEIR OWN NAME FURTHER DOWN THE SCHEDULE THAN EXPECTED SHOULD CONSULT APPENDIX TWO RATHER THAN THE SCHEDULE."
-             :next "facility/walk3")
+             :next "release/second-notice")
 
 (dialog-text "facility/walk3"
              "the walk out is yours alone tonight; M-3 stays with the binder. the painted line carries you past the curtained window, and you keep your eyes on the line the whole way, and the curtain stays a curtain, and that is the first rotation you would call easy."
