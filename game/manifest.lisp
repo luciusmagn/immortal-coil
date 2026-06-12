@@ -26,6 +26,7 @@
            "campaign/district.lisp"
            "campaign/tribunal.lisp"
            "campaign/house.lisp"
+           "campaign/winter.lisp"
            "editor-drafts.lisp")
  :assets "../assets/"
  :title-logo "logo/title-logo.png"

@@ -372,7 +372,12 @@
 
 (dialog-text "forest/bus"
              "the bus comes at six, most days, and this is one of them. the doors fold open before you stand up, the way they do for people the driver has already decided about."
-             :next "forest/fare")
+             :next "forest/board-choice")
+
+(dialog-pick "forest/board-choice"
+             "the doors stand open. the engine idles. the driver does not hurry you, which is its own kind of question."
+             (dialog-option "get on" "forest/fare")
+             (dialog-option "stay on the bench" "winter/doors"))
 
 (dialog-conversation "forest/fare"
                      (dialog-left "the driver"
