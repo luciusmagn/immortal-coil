@@ -491,4 +491,4 @@
 
 (dialog-text "war/day4-end"
              "you take your seat. whatever the third district is counting tonight, the war is still there in front of everyone, asking to be lost more slowly, and you are still the one they ask."
-             :next "base/awake")
+             :next "armistice/offer")

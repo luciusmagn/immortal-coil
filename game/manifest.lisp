@@ -36,6 +36,7 @@
            "campaign/lightsout.lisp"
            "campaign/nightshift.lisp"
            "campaign/release.lisp"
+           "campaign/armistice.lisp"
            "editor-drafts.lisp")
  :assets "../assets/"
  :title-logo "logo/title-logo.png"
