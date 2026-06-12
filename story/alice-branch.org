@@ -34,3 +34,16 @@ The left dream maze exit leads to an Alice-like impossible courtesy path.
 
 - Add concrete recurring characters.
 - Avoid pure whimsy; make social rules matter.
+
+* Dark branches
+
+- =kept/= (done, 20.8 min): refusing the sentence, so the court keeps the
+  defendant instead. A cell that is the room, visiting hours on thursdays
+  the corridor announces, annual appeals denied with courtesy, and the
+  room's writ at the end. Entered from the fourth option on
+  =alice/appeal-choice=. Keys: =kept-end=.
+- =seam/= (done, 20.1 min): following the white thread down under the long
+  table to the compost of doors, where rooms go when nobody keeps them. The
+  seamstress, the spool wall, the stray child's room, and the garden's
+  supply chain confirmed. Entered from =alice/thread-fork=. Key:
+  =seam-stray=.

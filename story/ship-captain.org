@@ -57,3 +57,15 @@ The glass of water path leads into the hard-sci-fi ship captain story.
 - Give Imari and Voss duties in a second crisis.
 - Let a memory intrusion contradict the log in a way only the player notices.
 - Vary the alarm scene subtly with =ship-failures= without announcing it.
+
+* Dark branches
+
+- =husk/= (done, 20.5 min): boarding a dead sister ship of the same class.
+  Same hand in the log, same manifest as the crew. Entered inline from
+  =ship/watch-voss=; wire-flight launch and rogue-delve deck crawl; exits
+  to =base/awake=. Keys: =husk-boarded=, =husk-decision=.
+- =mutiny/= (done, 20.7 min): the captain tells Voss the truth and the crew
+  answers with loving procedure: relief for rest, the gentlest sentence the
+  regulations contain. Entered from the fourth option on
+  =ship/voss-question=; sector inspector arc; crossing minigame as the
+  proof-of-fitness confession. Keys: =mutiny-answer=, =mutiny-inspector=.

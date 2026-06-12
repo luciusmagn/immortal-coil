@@ -43,3 +43,17 @@ card.
 - Define the institution name.
 - Decide whether the player is researcher, subject-handler, or observer.
 - Give the path its own drone.
+
+* Dark branches
+
+- =nightshift/= (done, 20.2 min): reassigned to the room side of the glass.
+  The log read from inside through the wall, the predecessor's palimpsest
+  notes in the night stand drawer, recurrence ridden out under the card's
+  promise, and the succession offered at the end. Entered by initialing
+  tomorrow's line at =facility/clipboard-choice=. Key: =nightshift-end=.
+- =release/= (done, 20.7 min): decommissioning. Files burned on schedule
+  (CROSSING, HILL HOUSE, THIRD DISTRICT, OAKBARROW), rooms released door by
+  door, the painted line scrubbed up behind the last walk, and the player
+  signs the surplus form for the bed. ROOM is not processed; ROOM is
+  released. Entered from the decommissioning notice at
+  =release/notice-choice=. Keys: =release-burn=, =release-signed=.

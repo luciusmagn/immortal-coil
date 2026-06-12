@@ -376,21 +376,21 @@ each parent path's section and org file.
 - forest: `winter/` — letting the bus go and staying: the store closes,
   food appears on stumps, the hill keeps its own. DONE (21.9 min).
 - jrpg: `ledger/` — Mira's other ledger read after breakfast: the names,
-  the years, the economy that farms heroes. Breakfast included.
+  the years, the economy that farms heroes. DONE (20.0 min).
 - jrpg: `bellfall/` — the midnight bell and the year the notices stop
-  working: a funeral pastoral, the party aging, terms breaking.
+  working: a funeral pastoral, terms breaking. DONE (20.1 min).
 - alice: `kept/` — the court keeps the defendant instead: the cell that
-  is the room, visiting hours, appeals denied annually with courtesy.
+  is the room, visiting hours, courteous appeals. DONE (20.8 min).
 - alice: `seam/` — following the white thread down under the table to
-  the compost of doors: where rooms go when nobody keeps them.
+  the compost of doors, where unkept rooms go. DONE (20.1 min).
 - rogue: `below/` — the bookkeeping floors beneath the tally, and the
-  clerk met in person. A darker, longer delve with two hunters.
+  clerk met in person. Two-hunter delve. DONE (20.3 min).
 - rogue: `lightsout/` — the torch economy fails: a sight-starved delve
-  and the etiquette of feeding the dark.
+  and the etiquette of feeding the dark. DONE (20.4 min).
 - facility: `nightshift/` — reassigned to the room side of the glass:
-  the log read from inside, the predecessor's notes in the night stand.
+  the log from inside, the predecessor's notes. DONE (20.2 min).
 - facility: `release/` — decommissioning: files burned on schedule,
-  rooms released, and the player signs for the bed.
+  rooms released, the player signs for the bed. DONE (20.7 min).
 
 ## Bright Branches
 
@@ -402,8 +402,8 @@ rolled once into the dialog store (stable across save/load, different
 across playthroughs), via target delegates reading the seed.
 
 - jrpg: `festival/` — the midsummer fair at the inn crossing: game
-  stalls, prizes, lantern launch. SEEDED: stall order, prize table, and
-  several scene beats derive from `festival-seed` rolled on entry.
+  stalls, prizes, lantern launch. SEEDED via `festival-seed` +
+  `festival-roll` avalanche hash. DONE (17.5 min).
 - ship: `liberty/` — real shore leave at a good port: the crew at
   liberty, the captain talked into joining, nothing goes wrong.
 - war: `armistice/` — the morning the bell does not ring, told as joy:

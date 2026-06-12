@@ -40,3 +40,16 @@ The brass key path leads to the dark forest survival story.
 - Soften the branch trigger so the key does not scream "forest route".
 - Add concrete survival choices and pursuit pressure.
 - Add reusable wind/trees/forest particle effects if needed.
+
+* Dark branches
+
+- =house/= (done, 21.4 min): going down to the porch and inside. Rooms that
+  match the bedroom, a second cot recently used, the keeper's kindness as
+  the trap stated plainly. Extends =forest/go-down= inline (no new fan).
+  The grace varies if the mailbox letter was read. Keys: =house-night=,
+  =house-day=.
+- =winter/= (done, 21.9 min): letting the six o'clock bus go. The store
+  closes for the season, plates appear on the chopping stump, the lantern
+  circles the store at midwinter, and the spring bus does not stop for
+  fixtures. Entered from =forest/board-choice=; forest-hide reused for the
+  lantern night. Keys: =winter-thursday=, =winter-plates=, =winter-spring=.

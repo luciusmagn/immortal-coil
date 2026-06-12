@@ -281,3 +281,25 @@ Current SFX:
 - Give each companion a real non-joke beat before Vane.
 - Keep early Vane material concrete and local; do not foreshadow the
   player-from-another-path idea yet.
+
+* Dark branches
+
+- =ledger/= (done, 20.0 min): Mira's other ledger read after breakfast as
+  promised: names, years, left-behind, and the closed circle that farms
+  heroes. Entered inline from =jrpg/terms-asked=; a traveler arrives for
+  notice sixty-seven mid-read; rejoins at =jrpg/evening-table=. Keys:
+  =ledger-question=, =ledger-decision= (jrpg store).
+- =bellfall/= (done, 20.1 min): nine quiet years after the terms, the
+  midnight bell, Vane's funeral on the hill, and the year the notices must
+  start again. Gated on =jrpg-vane-answer= = terms via
+  =jrpg-room-four-target=; jrpg-combat reused for the ditch; ends in the
+  posting, the succession, or the hold. Key: =bellfall-choice=.
+
+* Bright branch
+
+- =festival/= (done, 17.5 min): the midsummer fair, with Vane down from the
+  tower in a plain grey coat. Carries the seeded-random mechanic:
+  =festival-seed= is rolled once into the store on entry and
+  =festival-roll= (an avalanche hash, save-stable, version-stable) derives
+  stall order, ring-toss prize, loaf guess, cup game, fortune, and whose
+  lantern snags the oak. Entered from =jrpg/fair-choice=.

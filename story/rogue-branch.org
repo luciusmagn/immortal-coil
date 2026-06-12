@@ -59,3 +59,17 @@ device.
   beyond marks.
 - Track inventory facts in the dialog store.
 - Keep prose terse and concrete.
+
+* Dark branches
+
+- =below/= (done, 20.3 min): the bookkeeping floors beneath the tally and
+  the clerk met in person. The carved name is a spine label; the delve is
+  audited in pairs; rogue-delve reused with two hunters per map. Entered
+  through the bottom room's far door at =rogue/bottom-choice=; rejoins at
+  =rogue/landing-return=. Key: =below-asked=.
+- =lightsout/= (done, 20.4 min): the torch economy fails and the delve goes
+  sight-starved. Torches are fodder, the lamplighter walks a feeding rota
+  from the clerk's mother flame, and the etiquette of feeding the dark is
+  learned by touch. Entered from the fourth option on =rogue/row-choice=;
+  forest-hide reused in absolute dark; rejoins at =rogue/stair-hunt=. Key:
+  =lightsout-fed=.

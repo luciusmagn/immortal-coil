@@ -42,3 +42,18 @@ nation-leader-in-war story.
 - Give the path its own drone and ambient sound.
 - Add a second briefing that remembers =war-first-order=.
 - Decide what the numbers station is reading.
+
+* Dark branches
+
+- =district/= (done, 20.7 min): the third district walked at night against
+  all advice. Bells rung per name, pencil lists, the coat depot, the warm
+  sealed train, the luggage shed of unreclaimed receipts. Entered from the
+  fourth option on =war/day3-choice=; dream-maze curfew streets; rejoins at
+  =war/day4=. Keys: =district-train=, =district-decision=.
+- =tribunal/= (done, 21.4 min): three years after the armistice the
+  signature returns as exhibit one and the number transcripts are read into
+  the record for hours. Entered by keeping a private record at
+  =war/pencil-choice=; war-audit reused as open-court reconciliation; the
+  gallery recognizes the chancellor if =district-train= is set. Verdict
+  varies on =tribunal-signature=. Keys: =tribunal-signature=,
+  =tribunal-statement=.
