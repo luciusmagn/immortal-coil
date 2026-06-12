@@ -29,6 +29,7 @@
            "campaign/winter.lisp"
            "campaign/festival.lisp"
            "campaign/ledger.lisp"
+           "campaign/bellfall.lisp"
            "editor-drafts.lisp")
  :assets "../assets/"
  :title-logo "logo/title-logo.png"
