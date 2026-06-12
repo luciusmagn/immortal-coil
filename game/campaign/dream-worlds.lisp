@@ -694,7 +694,8 @@
              "the torch will not last the row."
              (dialog-option "check the badly made bed" "rogue/bad-bed")
              (dialog-option "listen at the shut doors" "rogue/row-listen")
-             (dialog-option "find the stairs back" "rogue/stair-hunt"))
+             (dialog-option "find the stairs back" "rogue/stair-hunt")
+             (dialog-option "press on past the torch's reach" "lightsout/press"))
 
 (dialog-on-enter "rogue/bad-bed"
                  '(setf (dialog-value "rogue-floor3") "bed"))

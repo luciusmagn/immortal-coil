@@ -33,6 +33,7 @@
            "campaign/kept.lisp"
            "campaign/seam.lisp"
            "campaign/below.lisp"
+           "campaign/lightsout.lisp"
            "editor-drafts.lisp")
  :assets "../assets/"
  :title-logo "logo/title-logo.png"
