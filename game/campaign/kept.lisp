@@ -61,7 +61,11 @@
              :next "kept/chair-cushion")
 
 (dialog-text "kept/chair-cushion"
-             "the chair cannot visit. chairs hold their ground, that is the whole law of chairs. it sends a cushion instead, embroidered with a wall and a window, and the window is rendered in thread that catches the light only from where you sit. chairs know about sitting. it is their one subject, held deeply."
+             "the chair cannot visit. chairs hold their ground, that is the whole law of chairs."
+             :next "kept/chair-cushion-2")
+
+(dialog-text "kept/chair-cushion-2"
+             "it sends a cushion instead, embroidered with a wall and a window, and the window is rendered in thread that catches the light only from where you sit. chairs know about sitting. it is their one subject, held deeply."
              :next "kept/gardener-visit")
 
 (dialog-conversation "kept/gardener-visit"
@@ -86,11 +90,19 @@
              :next "kept/smell-jar")
 
 (dialog-text "kept/smell-jar"
-             "once a season the clerk comes with the sealed jar, exhibit in trust, and lets you lift the lid for the length of one breath. the room smells of {alice-room-smell}, still, exactly, and you put the lid back yourself, because the clerk learned the first time not to be the one who ends it."
+             "once a season the clerk comes with the sealed jar, exhibit in trust, and lets you lift the lid for the length of one breath."
+             :next "kept/smell-jar-2")
+
+(dialog-text "kept/smell-jar-2"
+             "the room smells of {alice-room-smell}, still, exactly, and you put the lid back yourself, because the clerk learned the first time not to be the one who ends it."
              :next "kept/jar-after")
 
 (dialog-text "kept/jar-after"
-             "after the jar, the cell is hardest. it has the furniture right and the smell wrong, the way a portrait has the face right and the breathing wrong, and you sit with that until the corridor brings you its evening sounds, and the cell, to its credit, does not pretend the jar did not happen."
+             "after the jar, the cell is hardest."
+             :next "kept/jar-after-2")
+
+(dialog-text "kept/jar-after-2"
+             "it has the furniture right and the smell wrong, the way a portrait has the face right and the breathing wrong, and you sit with that until the corridor brings you its evening sounds, and the cell, to its credit, does not pretend the jar did not happen."
              :next "kept/first-appeal")
 
 (dialog-scene "kept/first-appeal"
@@ -115,7 +127,11 @@
              :next "kept/frames-read")
 
 (dialog-text "kept/frames-read"
-             "on the appeal walks you learn the corridor by heart. eleven verdicts, eleven hands. the early ones are florid, all whereases. the late ones get shorter, as if the court were learning what mattered. the eleventh says only: the room was theirs all along. they have gone back to keep it. kept."
+             "on the appeal walks you learn the corridor by heart. eleven verdicts, eleven hands. the early ones are florid, all whereases. the late ones get shorter, as if the court were learning what mattered."
+             :next "kept/frames-read-2")
+
+(dialog-text "kept/frames-read-2"
+             "the eleventh says only: the room was theirs all along. they have gone back to keep it. kept."
              :next "kept/twelfth-frame")
 
 (dialog-text "kept/twelfth-frame"
@@ -148,7 +164,11 @@
              :next "kept/tap-one")
 
 (dialog-text "kept/tap-one"
-             "one night, low on the window glass, you tap once. it is not a plan. it is a hand doing what hands do at windows that are sometimes walls. nothing answers. you do it again the next night, once, the same place, and the night after, and it becomes the day's last entry, logged on glass."
+             "one night, low on the window glass, you tap once. it is not a plan. it is a hand doing what hands do at windows that are sometimes walls. nothing answers."
+             :next "kept/tap-one-2")
+
+(dialog-text "kept/tap-one-2"
+             "you do it again the next night, once, the same place, and the night after, and it becomes the day's last entry, logged on glass."
              :next "kept/foreman-visit")
 
 (dialog-conversation "kept/foreman-visit"
@@ -161,7 +181,11 @@
                      :next "kept/pencil")
 
 (dialog-text "kept/pencil"
-             "later, alone, you find it in the coat you did not arrive with: the foreman's pencil, sharpened to a thumb of use. there is one word in your hand on the cell wall by morning, low, behind the night stand, where inspections do not bend: KEPT. and under it, smaller: BY WHOM."
+             "later, alone, you find it in the coat you did not arrive with: the foreman's pencil, sharpened to a thumb of use."
+             :next "kept/pencil-2")
+
+(dialog-text "kept/pencil-2"
+             "there is one word in your hand on the cell wall by morning, low, behind the night stand, where inspections do not bend: KEPT. and under it, smaller: BY WHOM."
              :next "kept/eleven")
 
 (dialog-text "kept/eleven"
@@ -169,15 +193,27 @@
              :next "kept/second-courtesy")
 
 (dialog-text "kept/second-courtesy"
-             "the appeals grow courtlier by the year. the third is denied with courtesy and biscuits. the fifth, the judge reads a short poem he has written about the case, which rhymes kept with except and apologizes for it. the denying never wavers. the court would miss you. that is the verdict under all of them."
+             "the appeals grow courtlier by the year. the third is denied with courtesy and biscuits."
+             :next "kept/second-courtesy-2")
+
+(dialog-text "kept/second-courtesy-2"
+             "the fifth, the judge reads a short poem he has written about the case, which rhymes kept with except and apologizes for it. the denying never wavers. the court would miss you. that is the verdict under all of them."
              :next "kept/tap-answer")
 
 (dialog-text "kept/tap-answer"
-             "and one night, a winter's worth of taps in, the glass taps back. once. low. level with your hand. you sit very still in the dark, and your eyes are wet before you have decided anything about it, and you tap once more, and it answers once more, and then the window is a wall until morning, out of tact."
+             "and one night, a winter's worth of taps in, the glass taps back. once. low. level with your hand."
+             :next "kept/tap-answer-2")
+
+(dialog-text "kept/tap-answer-2"
+             "you sit very still in the dark, and your eyes are wet before you have decided anything about it, and you tap once more, and it answers once more, and then the window is a wall until morning, out of tact."
              :next "kept/drawer-opens")
 
 (dialog-text "kept/drawer-opens"
-             "in the year of the tapping, the desk drawer unlocks itself, contents no longer withheld. inside: eleven envelopes, sealed, addressed in eleven hands to THE NEXT ONE. you read them over eleven nights. they are thank-you notes. every one of them thanks the room. not the court. the room."
+             "in the year of the tapping, the desk drawer unlocks itself, contents no longer withheld. inside: eleven envelopes, sealed, addressed in eleven hands to THE NEXT ONE. you read them over eleven nights."
+             :next "kept/drawer-opens-2")
+
+(dialog-text "kept/drawer-opens-2"
+             "they are thank-you notes. every one of them thanks the room. not the court. the room."
              :next "kept/drawer-after")
 
 (dialog-text "kept/drawer-after"
@@ -189,7 +225,11 @@
              :next "kept/window-curtain")
 
 (dialog-text "kept/window-curtain"
-             "one night, late in some year, the curtain on the far side of the window moves. not weather. a hand's worth of movement, testing, the way you move a curtain when you are deciding about a room. you sit up in the dark and do not breathe, and it does not move again. for now."
+             "one night, late in some year, the curtain on the far side of the window moves. not weather. a hand's worth of movement, testing, the way you move a curtain when you are deciding about a room."
+             :next "kept/window-curtain-2")
+
+(dialog-text "kept/window-curtain-2"
+             "you sit up in the dark and do not breathe, and it does not move again. for now."
              :next "kept/writ")
 
 (dialog-scene "kept/writ"
@@ -197,7 +237,11 @@
               :next "kept/writ-arrives")
 
 (dialog-text "kept/writ-arrives"
-             "it arrives at the next appeal, before the judge can deny you: a paper the bailiff carries at arm's length because it is warm. a writ, filed by the room. the room has engaged the long table as counsel. the cups stand in a row at the back of the court, upright, steaming, formal."
+             "it arrives at the next appeal, before the judge can deny you: a paper the bailiff carries at arm's length because it is warm. a writ, filed by the room. the room has engaged the long table as counsel."
+             :next "kept/writ-arrives-2")
+
+(dialog-text "kept/writ-arrives-2"
+             "the cups stand in a row at the back of the court, upright, steaming, formal."
              :next "kept/writ-read")
 
 (dialog-say "kept/writ-read"
@@ -227,14 +271,26 @@
                  '(setf (dialog-value "kept-end") "stayed"))
 
 (dialog-text "kept/stay"
-             "you refuse twice in one lifetime, which the court enters with something like pride. the writ is held in abeyance. the room sends, through counsel, one item for the cell: the glass from the night stand, full to the line. its line, not the cell's. you keep them both filled now. you keep two rooms. that is the spite, and the sentence, and in the end, quietly, the title."
+             "you refuse twice in one lifetime, which the court enters with something like pride. the writ is held in abeyance."
+             :next "kept/stay-2")
+
+(dialog-text "kept/stay-2"
+             "the room sends, through counsel, one item for the cell: the glass from the night stand, full to the line. its line, not the cell's. you keep them both filled now. you keep two rooms."
+             :next "kept/stay-3")
+
+(dialog-text "kept/stay-3"
+             "that is the spite, and the sentence, and in the end, quietly, the title."
              :next "kept/corridor-last")
 
 (dialog-on-enter "kept/summon"
                  '(setf (dialog-value "kept-end") "summoned"))
 
 (dialog-text "kept/summon"
-             "you ask the room to come in, and the court holds its breath, and the back wall of the courtroom becomes a wall with a window in it, curtained from the far side, and then a door, and then the room is there, fitting inside the court the way the court once fit inside it, and you walk in, and it closes around you like a verdict going your way."
+             "you ask the room to come in, and the court holds its breath, and the back wall of the courtroom becomes a wall with a window in it, curtained from the far side, and then a door."
+             :next "kept/summon-2")
+
+(dialog-text "kept/summon-2"
+             "then the room is there, fitting inside the court the way the court once fit inside it, and you walk in, and it closes around you like a verdict going your way."
              :next "kept/cups-row")
 
 (dialog-text "kept/cups-row"

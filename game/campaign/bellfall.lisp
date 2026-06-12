@@ -107,7 +107,11 @@
              :next "bellfall/first-sword")
 
 (dialog-text "bellfall/first-sword"
-             "the oldest sword in the rows is pitted to lace, the blade more absence than iron. Oren reads the maker's mark with his thumb and says a name out of his grandmother's stories, quietly, and puts his hand back at his side. the post is older than the village. the village is the post's."
+             "the oldest sword in the rows is pitted to lace, the blade more absence than iron."
+             :next "bellfall/first-sword-2")
+
+(dialog-text "bellfall/first-sword-2"
+             "Oren reads the maker's mark with his thumb and says a name out of his grandmother's stories, quietly, and puts his hand back at his side. the post is older than the village. the village is the post's."
              :next "bellfall/grave")
 
 (dialog-text "bellfall/grave"
@@ -150,7 +154,11 @@
              :next "bellfall/winter-comes")
 
 (dialog-text "bellfall/ambush-carried"
-             "your knee goes where Oren's would have, and it is sixty-six's child, your companion of the old road, who carries you up out of the ditch, the way they carried their father, the way this ditch has always been paid. walk now, talk never, they say, and their voice is not steady."
+             "your knee goes where Oren's would have, and it is sixty-six's child, your companion of the old road, who carries you up out of the ditch, the way they carried their father, the way this ditch has always been paid."
+             :next "bellfall/ambush-carried-2")
+
+(dialog-text "bellfall/ambush-carried-2"
+             "walk now, talk never, they say, and their voice is not steady."
              :next "bellfall/winter-comes")
 
 (dialog-scene "bellfall/winter-comes"
@@ -219,7 +227,11 @@
              :next "bellfall/take-years")
 
 (dialog-text "bellfall/take-years"
-             "years on, a young visitor from Oakbarrow climbs the hill with a notice in their pocket and Toma's loaf in their pack, and you take a visitor sword down from the rack, and set it on the carpet between you, and hope, the way Vane must have hoped, that this one asks about terms."
+             "years on, a young visitor from Oakbarrow climbs the hill with a notice in their pocket and Toma's loaf in their pack."
+             :next "bellfall/take-years-2")
+
+(dialog-text "bellfall/take-years-2"
+             "you take a visitor sword down from the rack, and set it on the carpet between you, and hope, the way Vane must have hoped, that this one asks about terms."
              :next "bellfall/end")
 
 (dialog-on-enter "bellfall/hold"

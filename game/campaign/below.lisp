@@ -8,7 +8,11 @@
              :next "below/stairs")
 
 (dialog-text "below/stairs"
-             "the white lines of the dungeon run down the stairwell with you and, somewhere in the dark, change their minds: by the first turning they are ruled lines, faint blue, margin-red at the left hand. the dungeon is drawn on graph paper down here. it always was. upstairs is just the cover."
+             "the white lines of the dungeon run down the stairwell with you and, somewhere in the dark, change their minds: by the first turning they are ruled lines, faint blue, margin-red at the left hand."
+             :next "below/stairs-2")
+
+(dialog-text "below/stairs-2"
+             "the dungeon is drawn on graph paper down here. it always was. upstairs is just the cover."
              :next "below/shelves")
 
 (dialog-text "below/shelves"
@@ -32,7 +36,11 @@
              :next "below/reading-stand")
 
 (dialog-text "below/reading-stand"
-             "farther down the row, a reading stand holds another book open mid-line, ink wet on that one too. the spine chalk is nobody you know. somewhere overhead, right now, a stranger is lifting a bar, or counting doors, or balancing a tin, and the line is arriving here as they do it."
+             "farther down the row, a reading stand holds another book open mid-line, ink wet on that one too. the spine chalk is nobody you know."
+             :next "below/reading-stand-2")
+
+(dialog-text "below/reading-stand-2"
+             "somewhere overhead, right now, a stranger is lifting a bar, or counting doors, or balancing a tin, and the line is arriving here as they do it."
              :next "below/active-accounts")
 
 (dialog-text "below/active-accounts"
@@ -89,11 +97,19 @@
                                            "#############"))))
 
 (dialog-text "below/audited"
-             "one of the pair steps out of its wall, which is not a thing you see so much as a thing the torch declines to contradict, and the floor files you. you wake one ramp up, sitting against your own shelf, your book back in its place, one line newer: audited. found correct. carried up."
+             "one of the pair steps out of its wall, which is not a thing you see so much as a thing the torch declines to contradict, and the floor files you."
+             :next "below/audited-2")
+
+(dialog-text "below/audited-2"
+             "you wake one ramp up, sitting against your own shelf, your book back in its place, one line newer: audited. found correct. carried up."
              :next "below/lamp-floor")
 
 (dialog-text "below/turned-back"
-             "the ramps refuse to add up and you fetch back against the tally wall twice, which down here is how a building says no. when you stop, the lamp smell is closer anyway. the floors move the destination instead of the traveler when the traveler is wanted. it is more efficient."
+             "the ramps refuse to add up and you fetch back against the tally wall twice, which down here is how a building says no. when you stop, the lamp smell is closer anyway."
+             :next "below/turned-back-2")
+
+(dialog-text "below/turned-back-2"
+             "the floors move the destination instead of the traveler when the traveler is wanted. it is more efficient."
              :next "below/lamp-floor")
 
 (dialog-text "below/lamp-floor"
@@ -149,7 +165,11 @@
                      :next "below/unlogged-hour")
 
 (dialog-text "below/unlogged-hour"
-             "you stand, and the pen stops, and the walls go silent, both of them, total, and you walk the stacks unkept. no pacing. no pen. your steps land and are not received. it is the loneliest sound you have ever made, footfall on a floor that is not counting, and you last, by your own count, eleven minutes."
+             "you stand, and the pen stops, and the walls go silent, both of them, total, and you walk the stacks unkept. no pacing. no pen. your steps land and are not received."
+             :next "below/unlogged-hour-2")
+
+(dialog-text "below/unlogged-hour-2"
+             "it is the loneliest sound you have ever made, footfall on a floor that is not counting, and you last, by your own count, eleven minutes."
              :next "below/resume")
 
 (dialog-text "below/resume"
@@ -180,15 +200,27 @@
              :next "below/take-book-2")
 
 (dialog-text "below/take-book-2"
-             "you stand in the unreceived silence with your own account dead-weight in your arms, and you carry it one more step, just to have done, and then you put it back on the desk, and the pen resumes, and the clerk rules off the incident with one clean line and no comment, which is the kindest entry in the whole book."
+             "you stand in the unreceived silence with your own account dead-weight in your arms, and you carry it one more step, just to have done, and then you put it back on the desk."
+             :next "below/take-book-2-2")
+
+(dialog-text "below/take-book-2-2"
+             "the pen resumes, and the clerk rules off the incident with one clean line and no comment, which is the kindest entry in the whole book."
              :next "below/margin")
 
 (dialog-text "below/margin"
-             "while the clerk rules the visit off, you look once more at your page, at the margin, which is wider than the entries need. the margin is where the clerk keeps what the totals do not see: slept well, for once. left the mark alone. asked the honorable thing. the totals run the building. the margin is for the people in it."
+             "while the clerk rules the visit off, you look once more at your page, at the margin, which is wider than the entries need."
+             :next "below/margin-2")
+
+(dialog-text "below/margin-2"
+             "the margin is where the clerk keeps what the totals do not see: slept well, for once. left the mark alone. asked the honorable thing. the totals run the building. the margin is for the people in it."
              :next "below/receipt")
 
 (dialog-text "below/receipt"
-             "the clerk writes you a slip and folds it once: a receipt, in the tidy hand. CARRIED OUT: WHAT THEY KNOW NOW. no weight entered, no slot named. keep it or lose it, the clerk says. it is honored either way. it is the only receipt this desk issues, and everyone leaves with one."
+             "the clerk writes you a slip and folds it once: a receipt, in the tidy hand. CARRIED OUT: WHAT THEY KNOW NOW. no weight entered, no slot named. keep it or lose it, the clerk says."
+             :next "below/receipt-2")
+
+(dialog-text "below/receipt-2"
+             "it is honored either way. it is the only receipt this desk issues, and everyone leaves with one."
              :next "below/escort")
 
 (dialog-text "below/escort"
@@ -200,7 +232,11 @@
              :next "below/stand-closed")
 
 (dialog-text "below/stand-closed"
-             "passing the reading stands you count without meaning to: eight books open now. the ninth stands closed, ribbon fresh and grey, and the pair slows by it for the length of one step, which from auditors is a flag at half mast, and then the pen, somewhere, keeps writing yours."
+             "passing the reading stands you count without meaning to: eight books open now."
+             :next "below/stand-closed-2")
+
+(dialog-text "below/stand-closed-2"
+             "the ninth stands closed, ribbon fresh and grey, and the pair slows by it for the length of one step, which from auditors is a flag at half mast, and then the pen, somewhere, keeps writing yours."
              :next "below/tag-truth")
 
 (dialog-text "below/tag-truth"
