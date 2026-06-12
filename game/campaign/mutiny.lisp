@@ -35,7 +35,11 @@
                      :next "mutiny/physical")
 
 (dialog-text "mutiny/physical"
-             "Dane's hands are warm and the instruments are cold and the questions are very slightly wrong: how long have you felt the crossings repeat, captain, rather than do they. you answer the questions that were asked and not the ones that were meant, and Dane writes the same amount either way."
+             "Dane's hands are warm and the instruments are cold and the questions are very slightly wrong: how long have you felt the crossings repeat, captain, rather than do they."
+             :next "mutiny/physical-2")
+
+(dialog-text "mutiny/physical-2"
+             "you answer the questions that were asked and not the ones that were meant, and Dane writes the same amount either way."
              :next "mutiny/bridge-day")
 
 (dialog-text "mutiny/bridge-day"
@@ -52,7 +56,11 @@
                      :next "mutiny/file")
 
 (dialog-text "mutiny/file"
-             "the file is thin and devastating. every perfect crossing, dated. every correct call, logged. the record you thought protected you, kept faithfully by the person who loves you most professionally, reading now as the chart of someone who cannot be what the record says, and so must be something else."
+             "the file is thin and devastating. every perfect crossing, dated. every correct call, logged."
+             :next "mutiny/file-2")
+
+(dialog-text "mutiny/file-2"
+             "the record you thought protected you, kept faithfully by the person who loves you most professionally, reading now as the chart of someone who cannot be what the record says, and so must be something else."
              :next "mutiny/meeting-call")
 
 (dialog-text "mutiny/meeting-call"
@@ -87,7 +95,11 @@
                  '(setf (dialog-value "mutiny-answer") "refused"))
 
 (dialog-text "mutiny/refuse"
-             "you refuse. the crew accepts it the way a tide accepts a fence post. the meeting adjourns with warmth and apologies, and over the next three watches every duty you hold is rotated, for training purposes, into other hands, until the only thing left assigned to you is rest."
+             "you refuse. the crew accepts it the way a tide accepts a fence post."
+             :next "mutiny/refuse-2")
+
+(dialog-text "mutiny/refuse-2"
+             "the meeting adjourns with warmth and apologies, and over the next three watches every duty you hold is rotated, for training purposes, into other hands, until the only thing left assigned to you is rest."
              :next "mutiny/quarters")
 
 (dialog-on-enter "mutiny/last-crossing"
@@ -108,11 +120,19 @@
              :next "mutiny/quarters")
 
 (dialog-text "mutiny/crossing-failed"
-             "the lane closes early and you scrub the run, hands correct, voice level, abort textbook. it is the first imperfect thing the crew has ever watched you do, and from the helm you hear Voss exhale, and you understand that for them, the scrub was the most reassuring flying of your life. the relief signs itself after that."
+             "the lane closes early and you scrub the run, hands correct, voice level, abort textbook."
+             :next "mutiny/crossing-failed-2")
+
+(dialog-text "mutiny/crossing-failed-2"
+             "it is the first imperfect thing the crew has ever watched you do, and from the helm you hear Voss exhale, and you understand that for them, the scrub was the most reassuring flying of your life. the relief signs itself after that."
              :next "mutiny/quarters")
 
 (dialog-text "mutiny/quarters"
-             "your quarters have been improved while you were elsewhere. a better blanket. your books returned from the wardroom. the desk cleared of lane tables and dressed with the photographs you never put up. the door closes with its old sound, and the new sound is the one it does not make after: the bolt is gone, swapped for a latch that opens from both sides, for your safety."
+             "your quarters have been improved while you were elsewhere. a better blanket. your books returned from the wardroom. the desk cleared of lane tables and dressed with the photographs you never put up."
+             :next "mutiny/quarters-2")
+
+(dialog-text "mutiny/quarters-2"
+             "the door closes with its old sound, and the new sound is the one it does not make after: the bolt is gone, swapped for a latch that opens from both sides, for your safety."
              :next "mutiny/days")
 
 (dialog-scene "mutiny/days"
@@ -120,7 +140,11 @@
               :next "mutiny/routine")
 
 (dialog-text "mutiny/routine"
-             "rest has a schedule. walks at change of watch, accompanied, conversational. meals brought warm and on time. Dane twice a day, listening to your heart and the wall. the crew greets you by rank, every time, with a gentleness that would be mockery from anyone who loved you less."
+             "rest has a schedule. walks at change of watch, accompanied, conversational. meals brought warm and on time. Dane twice a day, listening to your heart and the wall."
+             :next "mutiny/routine-2")
+
+(dialog-text "mutiny/routine-2"
+             "the crew greets you by rank, every time, with a gentleness that would be mockery from anyone who loved you less."
              :next "mutiny/observations")
 
 (dialog-text "mutiny/observations"
@@ -163,14 +187,26 @@
                  '(setf (dialog-value "mutiny-inspector") "backed"))
 
 (dialog-text "mutiny/back-crew"
-             "you tell her the relief was right, in the level voice, with the reasons in order, and you watch yourself defend the cage from inside it because the people who built it are yours. she caps her list. exemplary, she says, and means the crew, and looks at you a half second too long while she says it."
+             "you tell her the relief was right, in the level voice, with the reasons in order, and you watch yourself defend the cage from inside it because the people who built it are yours. she caps her list."
+             :next "mutiny/back-crew-2")
+
+(dialog-text "mutiny/back-crew-2"
+             "exemplary, she says, and means the crew, and looks at you a half second too long while she says it."
              :next "mutiny/inspector-leaves")
 
 (dialog-on-enter "mutiny/tell-inspector"
                  '(setf (dialog-value "mutiny-inspector") "told"))
 
 (dialog-text "mutiny/tell-inspector"
-             "you tell her everything. she listens the way Dane listens, to you and to the wall, and writes nothing, and when you finish she says, gently, that what you have described is in the file, captain, in the annex, in your own statement, dated the night you told your navigator. you ask to see the annex. your signature is on it. you keep your face still while the floor moves."
+             "you tell her everything."
+             :next "mutiny/tell-inspector-2")
+
+(dialog-text "mutiny/tell-inspector-2"
+             "she listens the way Dane listens, to you and to the wall, and writes nothing, and when you finish she says, gently, that what you have described is in the file, captain, in the annex, in your own statement, dated the night you told your navigator."
+             :next "mutiny/tell-inspector-3")
+
+(dialog-text "mutiny/tell-inspector-3"
+             "you ask to see the annex. your signature is on it. you keep your face still while the floor moves."
              :next "mutiny/inspector-leaves")
 
 (dialog-on-enter "mutiny/say-nothing"
@@ -181,11 +217,23 @@
              :next "mutiny/inspector-leaves")
 
 (dialog-text "mutiny/inspector-leaves"
-             "she undocks at end of watch. the crew exhales by sections. that night the corridor lights warm by two points an hour early, and there is cake from somewhere, real cake, and a slice arrives at your quarters on the good tray with two forks, in case you wanted company, the note says, and the note is in Voss's hand."
+             "she undocks at end of watch. the crew exhales by sections."
+             :next "mutiny/inspector-leaves-2")
+
+(dialog-text "mutiny/inspector-leaves-2"
+             "that night the corridor lights warm by two points an hour early, and there is cake from somewhere, real cake, and a slice arrives at your quarters on the good tray with two forks, in case you wanted company, the note says, and the note is in Voss's hand."
              :next "mutiny/wardroom")
 
 (dialog-text "mutiny/wardroom"
-             "you take the second fork to the wardroom. they make room the way crews do, a half shuffle outward around the table, and for one hour over cake the rank dissolves and you are just the person who has been aboard longest, telling the story of the bad refit at dock nine, and they laugh in the right places, and it is the finest hour of the month, and it costs them nothing, and you understand at last that it never did."
+             "you take the second fork to the wardroom."
+             :next "mutiny/wardroom-2")
+
+(dialog-text "mutiny/wardroom-2"
+             "they make room the way crews do, a half shuffle outward around the table, and for one hour over cake the rank dissolves and you are just the person who has been aboard longest."
+             :next "mutiny/wardroom-3")
+
+(dialog-text "mutiny/wardroom-3"
+             "you tell the story of the bad refit at dock nine, and they laugh in the right places. it is the finest hour of the month, and it costs them nothing, and you understand at last that it never did."
              :next "mutiny/night-bridge-choice")
 
 (dialog-pick "mutiny/night-bridge-choice"
@@ -198,15 +246,31 @@
              :next "mutiny/succession")
 
 (dialog-text "mutiny/night-bridge"
-             "they let you onto the bridge at night the way a family lets a grandfather into a workshop. the watch greets you by rank. someone fetches coffee. the jump seat is already out. nobody offers you the boards and nobody would stop you, and between those two facts there is a fence higher than any door."
+             "they let you onto the bridge at night the way a family lets a grandfather into a workshop. the watch greets you by rank. someone fetches coffee. the jump seat is already out."
+             :next "mutiny/night-bridge-2")
+
+(dialog-text "mutiny/night-bridge-2"
+             "nobody offers you the boards and nobody would stop you, and between those two facts there is a fence higher than any door."
              :next "mutiny/succession")
 
 (dialog-text "mutiny/succession"
-             "you are in the jump seat when the next crossing comes. Voss flies it. she is good, then better than good, and the board goes green deck by deck, and Imari says eighty-three seconds, cleanest of the quarter, and you watch the praise land on her face and find nothing there to hold onto. her eyes are already on the next lane. her hand stays curled around the cup long after it is empty."
+             "you are in the jump seat when the next crossing comes. Voss flies it."
+             :next "mutiny/succession-2")
+
+(dialog-text "mutiny/succession-2"
+             "she is good, then better than good, and the board goes green deck by deck, and Imari says eighty-three seconds, cleanest of the quarter, and you watch the praise land on her face and find nothing there to hold onto."
+             :next "mutiny/succession-3")
+
+(dialog-text "mutiny/succession-3"
+             "her eyes are already on the next lane. her hand stays curled around the cup long after it is empty."
              :next "mutiny/succession-after")
 
 (dialog-text "mutiny/succession-after"
-             "nobody else saw it. you saw it, because you have stood where she is standing, behind that exact stillness. you open your mouth to say something across the bridge, and close it, because there is nothing to say that the file would not absorb, and because she would say it back to you in a year, level-voiced, over a washed cup."
+             "nobody else saw it. you saw it, because you have stood where she is standing, behind that exact stillness."
+             :next "mutiny/succession-after-2")
+
+(dialog-text "mutiny/succession-after-2"
+             "you open your mouth to say something across the bridge, and close it, because there is nothing to say that the file would not absorb, and because she would say it back to you in a year, level-voiced, over a washed cup."
              :next "mutiny/letter")
 
 (dialog-text "mutiny/letter"
@@ -233,5 +297,9 @@
              :next "base/awake")
 
 (dialog-text "mutiny/sleep-bargained"
-             "you lie down with the last crossing still in your hands, the way a final cigarette stays in the lungs. whatever the log says of it, it was flying, and it was yours, and they gave it to you because they loved you, and they took everything else for the same reason, and you sleep."
+             "you lie down with the last crossing still in your hands, the way a final cigarette stays in the lungs."
+             :next "mutiny/sleep-bargained-2")
+
+(dialog-text "mutiny/sleep-bargained-2"
+             "whatever the log says of it, it was flying, and it was yours, and they gave it to you because they loved you, and they took everything else for the same reason, and you sleep."
              :next "base/awake")

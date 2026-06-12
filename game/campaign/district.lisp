@@ -69,7 +69,11 @@
                      :next "district/lists")
 
 (dialog-text "district/lists"
-             "the lists are everywhere once you know their shape. nailed to doors, slid behind window glass, chalked on the school gate and half washed off. names in ink, and against the names, in pencil, single words: REROUTED. HELD. ASK. the pencil hand is always the same. someone walks this district every day, keeping the lists agreeing."
+             "the lists are everywhere once you know their shape. nailed to doors, slid behind window glass, chalked on the school gate and half washed off."
+             :next "district/lists-2")
+
+(dialog-text "district/lists-2"
+             "names in ink, and against the names, in pencil, single words: REROUTED. HELD. ASK. the pencil hand is always the same. someone walks this district every day, keeping the lists agreeing."
              :next "district/woman")
 
 (dialog-conversation "district/woman"
@@ -82,7 +86,11 @@
                      :next "district/vasik")
 
 (dialog-text "district/vasik"
-             "at the parish hall, while the ringer rests his arm, Brandt runs a finger down the bell list by candlelight. Vasik, Anders, with two s's, struck once eleven days ago. Vasik, Anders, with two s's again, struck once last night. one man, misspelled into two, and both of them rung for, and neither of them him."
+             "at the parish hall, while the ringer rests his arm, Brandt runs a finger down the bell list by candlelight. Vasik, Anders, with two s's, struck once eleven days ago."
+             :next "district/vasik-2")
+
+(dialog-text "district/vasik-2"
+             "Vasik, Anders, with two s's again, struck once last night. one man, misspelled into two, and both of them rung for, and neither of them him."
              :next "district/school")
 
 (dialog-text "district/school"
@@ -94,7 +102,11 @@
              :next "district/depot")
 
 (dialog-text "district/depot"
-             "the coat depot is the old tram barn, lit inside by storm lamps. through the inspection door: rails of coats, hundreds, hung in order of size, each with a tag wired to the collar. the tags are stamped REROUTED and then a date. the coats have not gone anywhere. only the dates have."
+             "the coat depot is the old tram barn, lit inside by storm lamps. through the inspection door: rails of coats, hundreds, hung in order of size, each with a tag wired to the collar."
+             :next "district/depot-2")
+
+(dialog-text "district/depot-2"
+             "the tags are stamped REROUTED and then a date. the coats have not gone anywhere. only the dates have."
              :next "district/coats")
 
 (dialog-text "district/coats"
@@ -102,7 +114,11 @@
              :next "district/counting-room")
 
 (dialog-text "district/counting-room"
-             "at the back of the barn, a lit office. through the glass: a clerk at a telephone, reading from a ledger in a clear, exhausted voice. numbers, in groups, with the receiver lying on the desk beside a tin clock. nobody is on the other end at this hour. the protocol does not say the line must be answered. it says the count must be read."
+             "at the back of the barn, a lit office. through the glass: a clerk at a telephone, reading from a ledger in a clear, exhausted voice."
+             :next "district/counting-room-2")
+
+(dialog-text "district/counting-room-2"
+             "numbers, in groups, with the receiver lying on the desk beside a tin clock. nobody is on the other end at this hour. the protocol does not say the line must be answered. it says the count must be read."
              :next "district/counting")
 
 (dialog-conversation "district/counting"
@@ -149,7 +165,15 @@
                  '(setf (dialog-value "district-train") "opened"))
 
 (dialog-text "district/opened"
-             "the sentry breaks the seal without hurry and rolls the door a hand's width. you stand in the gap of it for as long as you can make yourself, which is not long, and what is in the car is people, quiet, awake, arranged, looking back at you with the particular patience of the counted. nobody asks you for anything. that is the worst of it. they know a list face too."
+             "the sentry breaks the seal without hurry and rolls the door a hand's width."
+             :next "district/opened-2")
+
+(dialog-text "district/opened-2"
+             "you stand in the gap of it for as long as you can make yourself, which is not long, and what is in the car is people, quiet, awake, arranged, looking back at you with the particular patience of the counted."
+             :next "district/opened-3")
+
+(dialog-text "district/opened-3"
+             "nobody asks you for anything. that is the worst of it. they know a list face too."
              :next "district/resealed")
 
 (dialog-text "district/resealed"
@@ -171,7 +195,15 @@
              :next "district/shed")
 
 (dialog-text "district/shed"
-             "beside the siding stands the lamp shed, except it is not a lamp shed anymore. inside, floor to roof, luggage. cases, bundles, a pram, each with a paper receipt wired on, numbered in the fair clerk's hand. the receipts say RECLAIM ON RETURN. the shed is full and the train is twelve cars and the arithmetic of that stands in the doorway with you."
+             "beside the siding stands the lamp shed, except it is not a lamp shed anymore. inside, floor to roof, luggage."
+             :next "district/shed-2")
+
+(dialog-text "district/shed-2"
+             "cases, bundles, a pram, each with a paper receipt wired on, numbered in the fair clerk's hand. the receipts say RECLAIM ON RETURN."
+             :next "district/shed-3")
+
+(dialog-text "district/shed-3"
+             "the shed is full and the train is twelve cars and the arithmetic of that stands in the doorway with you."
              :next "district/receipts")
 
 (dialog-conversation "district/receipts"
@@ -188,7 +220,11 @@
              :next "district/canal")
 
 (dialog-text "district/canal"
-             "you recross the canal as the early shift comes the other way, men with tins and women with kerchiefs, walking to work past the chalked gates without turning their heads. it is not that they do not see the lists. it is that the lists are now weather, and you do not stare at rain."
+             "you recross the canal as the early shift comes the other way, men with tins and women with kerchiefs, walking to work past the chalked gates without turning their heads."
+             :next "district/canal-2")
+
+(dialog-text "district/canal-2"
+             "it is not that they do not see the lists. it is that the lists are now weather, and you do not stare at rain."
              :next "district/dawn")
 
 (dialog-scene "district/dawn"
@@ -200,7 +236,15 @@
              :next "district/boots")
 
 (dialog-text "district/boots"
-             "you leave your boots outside the office door, district mud to the laces, and when you look again at half past six they are back, cleaned, dressed, the laces pressed flat, and the mud is gone wherever mud goes in this building. it is the same everywhere you look now. the building digests. that is what it is for. you put on the clean boots and they fit exactly as well as they did yesterday, which this morning feels like an accusation."
+             "you leave your boots outside the office door, district mud to the laces, and when you look again at half past six they are back, cleaned, dressed, the laces pressed flat, and the mud is gone wherever mud goes in this building."
+             :next "district/boots-2")
+
+(dialog-text "district/boots-2"
+             "it is the same everywhere you look now. the building digests. that is what it is for."
+             :next "district/boots-3")
+
+(dialog-text "district/boots-3"
+             "you put on the clean boots and they fit exactly as well as they did yesterday, which this morning feels like an accusation."
              :next "district/vey")
 
 (dialog-conversation "district/vey"
@@ -231,7 +275,15 @@
                  '(setf (dialog-value "district-decision") "table"))
 
 (dialog-text "district/to-table"
-             "you will say it at the table, plainly, with the carbon in front of you: i went, i saw, the cars are not carrying coats. Vey will be courteous, Olen will be punctual, and the minutes will record that the chancellor reported on district morale. you know all this, and you will say it anyway, because the saying is now the only signature you trust."
+             "you will say it at the table, plainly, with the carbon in front of you: i went, i saw, the cars are not carrying coats."
+             :next "district/to-table-2")
+
+(dialog-text "district/to-table-2"
+             "Vey will be courteous, Olen will be punctual, and the minutes will record that the chancellor reported on district morale."
+             :next "district/to-table-3")
+
+(dialog-text "district/to-table-3"
+             "you know all this, and you will say it anyway, because the saying is now the only signature you trust."
              :next "district/rejoin")
 
 (dialog-on-enter "district/to-record"
@@ -245,7 +297,11 @@
                  '(setf (dialog-value "district-decision") "ash"))
 
 (dialog-text "district/to-ash"
-             "you burn the carbon over the basin and wash the ash down. it changes nothing. the gate log's original is wherever originals are kept, one floor under your office, with the big list, growing. but your hands needed something to do that felt like an answer, and now they have had it."
+             "you burn the carbon over the basin and wash the ash down. it changes nothing. the gate log's original is wherever originals are kept, one floor under your office, with the big list, growing."
+             :next "district/to-ash-2")
+
+(dialog-text "district/to-ash-2"
+             "but your hands needed something to do that felt like an answer, and now they have had it."
              :next "district/rejoin")
 
 (dialog-text "district/rejoin"

@@ -14,11 +14,19 @@
              :next "house/clock")
 
 (dialog-text "house/clock"
-             "the hall clock is stopped at six. it was stopped at six when you came down the stairs the first night, you think, and then you correct yourself: when you came in the door just now. the keeper winds it every evening anyway, eight turns, so the winding gets done. the hands never move. nothing here needs them to."
+             "the hall clock is stopped at six. it was stopped at six when you came down the stairs the first night, you think, and then you correct yourself: when you came in the door just now."
+             :next "house/clock-2")
+
+(dialog-text "house/clock-2"
+             "the keeper winds it every evening anyway, eight turns, so the winding gets done. the hands never move. nothing here needs them to."
              :next "house/kitchen")
 
 (dialog-text "house/kitchen"
-             "in the kitchen there is bread cooling on a rack, and someone humming low through a door, two notes, patient. you have been in this kitchen before. you were in it on the store bench, in one of the pieces of sleep, and you woke from it warm and frightened, and here is the warmth, keeping its side of the bargain."
+             "in the kitchen there is bread cooling on a rack, and someone humming low through a door, two notes, patient. you have been in this kitchen before."
+             :next "house/kitchen-2")
+
+(dialog-text "house/kitchen-2"
+             "you were in it on the store bench, in one of the pieces of sleep, and you woke from it warm and frightened, and here is the warmth, keeping its side of the bargain."
              :next "house/keeper")
 
 (dialog-conversation "house/keeper"
@@ -48,7 +56,15 @@
              :next "house/upstairs")
 
 (dialog-text "house/grace-known"
-             "the garden came in, the keeper says. and the dog found her way home, in the end, thinner but unworried. word for word. the round patient hand, eleven years sealed in a mailbox, speaking out of a living mouth at the stove. either the letter was dictation, or the news in this house does not change, and you cannot decide which is worse, and you keep eating."
+             "the garden came in, the keeper says. and the dog found her way home, in the end, thinner but unworried. word for word."
+             :next "house/grace-known-2")
+
+(dialog-text "house/grace-known-2"
+             "the round patient hand, eleven years sealed in a mailbox, speaking out of a living mouth at the stove."
+             :next "house/grace-known-3")
+
+(dialog-text "house/grace-known-3"
+             "either the letter was dictation, or the news in this house does not change, and you cannot decide which is worse, and you keep eating."
              :next "house/upstairs")
 
 (dialog-text "house/upstairs"
@@ -56,11 +72,19 @@
              :next "house/room")
 
 (dialog-text "house/room"
-             "the room is your room. the bed under the window. the night stand, with a glass of water already poured. the desk, with its one drawer. you know what the drawer sounds like before it is opened. it is the room you wake up in, the one you always wake up in, rebuilt here out of plank and quilt, or the other way around, and the keeper says, supper's at the bell, and leaves you with it."
+             "the room is your room. the bed under the window. the night stand, with a glass of water already poured. the desk, with its one drawer. you know what the drawer sounds like before it is opened."
+             :next "house/room-2")
+
+(dialog-text "house/room-2"
+             "it is the room you wake up in, the one you always wake up in, rebuilt here out of plank and quilt, or the other way around, and the keeper says, supper's at the bell, and leaves you with it."
              :next "house/cot")
 
 (dialog-text "house/cot"
-             "against the far wall, where your room has nothing, this one has a cot. the blankets are thrown back in a hurry's shape. the pillow still holds the dent of a head. on the floor beside it, one boot lace, broken, and a wrist tag, chewed soft at the corner the way paper goes when it is worried at for months."
+             "against the far wall, where your room has nothing, this one has a cot. the blankets are thrown back in a hurry's shape. the pillow still holds the dent of a head."
+             :next "house/cot-2")
+
+(dialog-text "house/cot-2"
+             "on the floor beside it, one boot lace, broken, and a wrist tag, chewed soft at the corner the way paper goes when it is worried at for months."
              :next "house/cot-tag")
 
 (dialog-text "house/cot-tag"
@@ -89,26 +113,50 @@
                  '(setf (dialog-value "house-night") "quiet"))
 
 (dialog-text "house/quiet-night"
-             "you say nothing. supper is set for two, and the second place stays empty, and the keeper serves it anyway, a full plate, covered with a cloth at the end and set on the windowsill, where the cold will keep it. for the one on the hill, the keeper says, in case. you sleep in the bed because the bed is yours, and that is the fact you take down into sleep like a stone."
+             "you say nothing."
+             :next "house/quiet-night-2")
+
+(dialog-text "house/quiet-night-2"
+             "supper is set for two, and the second place stays empty, and the keeper serves it anyway, a full plate, covered with a cloth at the end and set on the windowsill, where the cold will keep it."
+             :next "house/quiet-night-3")
+
+(dialog-text "house/quiet-night-3"
+             "for the one on the hill, the keeper says, in case. you sleep in the bed because the bed is yours, and that is the fact you take down into sleep like a stone."
              :next "house/listening")
 
 (dialog-text "house/listening"
-             "you lie awake first, cataloguing, because cataloguing is what you have instead of a door that locks from your side: the stove ticking down, the wind keeping to the pines, the two notes moving once through the rooms below, unhurried, and then the house's silence, which is not the absence of sound but the sound of a thing holding still around you, breathing when you breathe."
+             "you lie awake first, cataloguing, because cataloguing is what you have instead of a door that locks from your side: the stove ticking down, the wind keeping to the pines."
+             :next "house/listening-2")
+
+(dialog-text "house/listening-2"
+             "the two notes move once through the rooms below, unhurried. then the house's silence, which is not the absence of sound but the sound of a thing holding still around you, breathing when you breathe."
              :next "house/morning")
 
 (dialog-on-enter "house/search"
                  '(setf (dialog-value "house-night") "searched"))
 
 (dialog-text "house/search"
-             "you lie still until the house settles, then walk it in sock feet. the first door on the landing: a room that matches the bedroom. the third door: a room that matches the bedroom. four doors, one room, repeated patiently, each with its bed under its window and its glass poured, two of them slept-in tonight, and you stop counting cots."
+             "you lie still until the house settles, then walk it in sock feet. the first door on the landing: a room that matches the bedroom. the third door: a room that matches the bedroom."
+             :next "house/search-2")
+
+(dialog-text "house/search-2"
+             "four doors, one room, repeated patiently, each with its bed under its window and its glass poured, two of them slept-in tonight, and you stop counting cots."
              :next "house/under-stairs")
 
 (dialog-text "house/under-stairs"
-             "under the stairs there is a low door, half height, and you know it before your hand reaches it: plank for plank it is the root cellar door, the one in the woods, the one with the oiled hinges and the matches on the second step. it is here and it is out there, the way the bedroom is here and is wherever you wake. you do not open it. some doors you only need to recognize."
+             "under the stairs there is a low door, half height, and you know it before your hand reaches it: plank for plank it is the root cellar door, the one in the woods, the one with the oiled hinges and the matches on the second step."
+             :next "house/under-stairs-2")
+
+(dialog-text "house/under-stairs-2"
+             "it is here and it is out there, the way the bedroom is here and is wherever you wake. you do not open it. some doors you only need to recognize."
              :next "house/album")
 
 (dialog-text "house/album"
-             "downstairs, in the dresser the lamp keeps lit, a photograph album. the porch, summer and winter, decades of coats and haircuts, and the keeper in every photograph, unchanged, holding the broom. in the oldest one, cracked and brown, a thin figure stands at the porch rail, not looking at the camera, looking at the woods, and the figure has your way of standing in it, and under the photograph, in pencil: came back."
+             "downstairs, in the dresser the lamp keeps lit, a photograph album. the porch, summer and winter, decades of coats and haircuts, and the keeper in every photograph, unchanged, holding the broom."
+             :next "house/album-2")
+
+(dialog-text "house/album-2"
+             "in the oldest one, cracked and brown, a thin figure stands at the porch rail, not looking at the camera, looking at the woods, and the figure has your way of standing in it, and under the photograph, in pencil: came back."
              :next "house/album-after")
 
 (dialog-text "house/album-after"
@@ -125,7 +173,11 @@
                      :next "house/washing")
 
 (dialog-text "house/washing"
-             "after supper you dry while the keeper washes, because the cloth was put in your hand, and the two of you stand at the basin in the lamplight passing plates like any kitchen anywhere, and your dread does not go, it just changes state, the way water does, from weather into something standing in a glass."
+             "after supper you dry while the keeper washes, because the cloth was put in your hand, and the two of you stand at the basin in the lamplight passing plates like any kitchen anywhere."
+             :next "house/washing-2")
+
+(dialog-text "house/washing-2"
+             "your dread does not go. it just changes state, the way water does, from weather into something standing in a glass."
              :next "house/morning")
 
 (dialog-scene "house/morning"
@@ -133,7 +185,11 @@
               :next "house/round")
 
 (dialog-text "house/round"
-             "the keeper is up before the frost is off, making the morning round: stove, lamps, porch, sill. the covered plate on the windowsill is gone, cloth and all. taken, or weathered, or worse, and the keeper does not check which, and you understand that not checking is the discipline that keeps the giving clean."
+             "the keeper is up before the frost is off, making the morning round: stove, lamps, porch, sill. the covered plate on the windowsill is gone, cloth and all."
+             :next "house/round-2")
+
+(dialog-text "house/round-2"
+             "taken, or weathered, or worse, and the keeper does not check which, and you understand that not checking is the discipline that keeps the giving clean."
              :next "house/breakfast")
 
 (dialog-text "house/breakfast"
@@ -150,11 +206,19 @@
                      :next "house/woodpile")
 
 (dialog-text "house/woodpile"
-             "you split wood until noon because your hands wanted it. the maul is the right weight. the rounds stand the right height. the work takes your thinking the way the soup took your hunger, cleanly, completely, and that is the trap, and naming it does not spring you from it. nothing about this house lies. that is what makes it the hill's."
+             "you split wood until noon because your hands wanted it. the maul is the right weight. the rounds stand the right height."
+             :next "house/woodpile-2")
+
+(dialog-text "house/woodpile-2"
+             "the work takes your thinking the way the soup took your hunger, cleanly, completely, and that is the trap, and naming it does not spring you from it. nothing about this house lies. that is what makes it the hill's."
              :next "house/bread")
 
 (dialog-text "house/bread"
-             "at noon the keeper sets the sponge for tomorrow's bread and puts your hands in the bowl without asking, fold and quarter-turn, fold and quarter-turn, and your hands take the rhythm before your head consents to it. hands remember faster than heads, the keeper says, watching yours. and yours are quick. they have done this. you fold, and quarter-turn, and do not ask when."
+             "at noon the keeper sets the sponge for tomorrow's bread and puts your hands in the bowl without asking, fold and quarter-turn, fold and quarter-turn, and your hands take the rhythm before your head consents to it."
+             :next "house/bread-2")
+
+(dialog-text "house/bread-2"
+             "hands remember faster than heads, the keeper says, watching yours. and yours are quick. they have done this. you fold, and quarter-turn, and do not ask when."
              :next "house/far-field")
 
 (dialog-text "house/far-field"
@@ -171,26 +235,50 @@
                  '(setf (dialog-value "house-day") "left"))
 
 (dialog-text "house/leave"
-             "you walk out the open door and down the road and nobody stops you, because nobody has ever needed to. you make the mailboxes by dusk. it is at the mailboxes, reaching for nothing, that your hand finds the house key in your coat pocket, the brass one, warm, and you do not remember taking it, and you stand there a long time learning what it weighs."
+             "you walk out the open door and down the road and nobody stops you, because nobody has ever needed to. you make the mailboxes by dusk."
+             :next "house/leave-2")
+
+(dialog-text "house/leave-2"
+             "it is at the mailboxes, reaching for nothing, that your hand finds the house key in your coat pocket, the brass one, warm, and you do not remember taking it, and you stand there a long time learning what it weighs."
              :next "house/leave-count")
 
 (dialog-text "house/leave-count"
-             "five boxes on the rack. four names weathered off, one readable. four tags on the nail in the hall, and a fifth nail, empty, polished. four coats on the pegs, and a fifth peg, worn pale, at your height. you stand at the boxes doing the arithmetic the hill has been setting out for you in fives since the first night, and the answer is the same every way you run it: the set is complete when you are in it."
+             "five boxes on the rack. four names weathered off, one readable. four tags on the nail in the hall, and a fifth nail, empty, polished."
+             :next "house/leave-count-2")
+
+(dialog-text "house/leave-count-2"
+             "four coats on the pegs, and a fifth peg, worn pale, at your height."
+             :next "house/leave-count-3")
+
+(dialog-text "house/leave-count-3"
+             "you stand at the boxes doing the arithmetic the hill has been setting out for you in fives since the first night, and the answer is the same every way you run it: the set is complete when you are in it."
              :next "house/leave-night")
 
 (dialog-text "house/leave-night"
-             "you sleep that night in the tree line within sight of the boxes, and it can be told plainly: you sleep facing the hill. in the morning there is frost, and on the flat of the newest mailbox, the one with the readable name, someone has stood a covered plate, still faintly warm."
+             "you sleep that night in the tree line within sight of the boxes, and it can be told plainly: you sleep facing the hill."
+             :next "house/leave-night-2")
+
+(dialog-text "house/leave-night-2"
+             "in the morning there is frost, and on the flat of the newest mailbox, the one with the readable name, someone has stood a covered plate, still faintly warm."
              :next "house/last-notes")
 
 (dialog-on-enter "house/stay"
                  '(setf (dialog-value "house-day") "stayed"))
 
 (dialog-text "house/stay"
-             "you stay the day. you sweep the porch because the broom was there. at dusk you set the table, two plates, and cover one, and put it on the windowsill for the one on the hill, and the keeper comes down from the far field and looks at the sill and then at you, and says nothing, and the nothing is a welcome, and you eat your supper in the warm."
+             "you stay the day. you sweep the porch because the broom was there. at dusk you set the table, two plates, and cover one, and put it on the windowsill for the one on the hill."
+             :next "house/stay-2")
+
+(dialog-text "house/stay-2"
+             "the keeper comes down from the far field and looks at the sill and then at you, and says nothing. the nothing is a welcome, and you eat your supper in the warm."
              :next "house/stay-bell")
 
 (dialog-text "house/stay-bell"
-             "it is only after the meal, drying plates, that you run the day backward and find the seam in it: the bell rang at dusk, one soft stroke, and you came in from the yard and washed your hands, and there was no moment of deciding to. the bell rang and you were already moving. you stand with the cloth in your hands until the keeper takes it from you, gently, and finishes the plate."
+             "it is only after the meal, drying plates, that you run the day backward and find the seam in it: the bell rang at dusk, one soft stroke, and you came in from the yard and washed your hands, and there was no moment of deciding to."
+             :next "house/stay-bell-2")
+
+(dialog-text "house/stay-bell-2"
+             "the bell rang and you were already moving. you stand with the cloth in your hands until the keeper takes it from you, gently, and finishes the plate."
              :next "house/stay-night")
 
 (dialog-text "house/stay-night"
@@ -201,7 +289,11 @@
                  '(setf (dialog-value "house-day") "followed"))
 
 (dialog-text "house/follow"
-             "you take the trail up, past the far field, into the pines, walking the way the keeper walks, unhurried, and it works: where the creek cuts under the roots you find him, the cot's owner, grey-faced, tag on his wrist, pressed into the dark under the boughs exactly where you pressed yourself two nights ago."
+             "you take the trail up, past the far field, into the pines, walking the way the keeper walks, unhurried, and it works."
+             :next "house/follow-2")
+
+(dialog-text "house/follow-2"
+             "where the creek cuts under the roots you find him: the cot's owner, grey-faced, tag on his wrist, pressed into the dark under the boughs exactly where you pressed yourself two nights ago."
              :next "house/mirror")
 
 (dialog-conversation "house/mirror"
@@ -214,15 +306,27 @@
                      :next "house/mirror-after")
 
 (dialog-text "house/mirror-after"
-             "he goes off through the pines, quiet and practiced, and does not look back, and you stand by the creek with your scrubbed hands out from your sides like things you are carrying for someone else. the worst of it is the relief you feel when the cold starts working into you, as if the cold were a character witness."
+             "he goes off through the pines, quiet and practiced, and does not look back, and you stand by the creek with your scrubbed hands out from your sides like things you are carrying for someone else."
+             :next "house/mirror-after-2")
+
+(dialog-text "house/mirror-after-2"
+             "the worst of it is the relief you feel when the cold starts working into you, as if the cold were a character witness."
              :next "house/mirror-walk")
 
 (dialog-text "house/mirror-walk"
-             "you walk back down at dusk because down is where the warm is, and you say it to yourself that flatly on purpose, to feel the size of it. at the porch the keeper has left the lamp lit and the door open and your plate covered, and has gone to bed, which is the kindest and most terrible possible argument."
+             "you walk back down at dusk because down is where the warm is, and you say it to yourself that flatly on purpose, to feel the size of it."
+             :next "house/mirror-walk-2")
+
+(dialog-text "house/mirror-walk-2"
+             "at the porch the keeper has left the lamp lit and the door open and your plate covered, and has gone to bed, which is the kindest and most terrible possible argument."
              :next "house/last-notes")
 
 (dialog-text "house/last-notes"
-             "last of all, wherever the day has put you, bed or needles or tree line, the two notes come, faint, from the house or from your own keeping of them, you can no longer say which, and they find the level of your breathing and settle there, patient, the way a thing settles that has nowhere else it needs to be."
+             "last of all, wherever the day has put you, bed or needles or tree line, the two notes come, faint, from the house or from your own keeping of them, you can no longer say which."
+             :next "house/last-notes-2")
+
+(dialog-text "house/last-notes-2"
+             "they find the level of your breathing and settle there, patient, the way a thing settles that has nowhere else it needs to be."
              :next "house/end")
 
 (dialog-text "house/end"

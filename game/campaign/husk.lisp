@@ -126,7 +126,11 @@
              :next "husk/sleep")
 
 (dialog-text "husk/records"
-             "the records deck door is dogged from inside. it takes the pry bar and your whole back, and then you are in a room you know with your eyes shut: same desk, same rack, same drawer that sticks. the log binder lies open on the desk, faced away, as if someone reading it had just stood up."
+             "the records deck door is dogged from inside. it takes the pry bar and your whole back, and then you are in a room you know with your eyes shut: same desk, same rack, same drawer that sticks."
+             :next "husk/records-2")
+
+(dialog-text "husk/records-2"
+             "the log binder lies open on the desk, faced away, as if someone reading it had just stood up."
              :next "husk/log")
 
 (dialog-text "husk/log"
@@ -164,11 +168,23 @@
              :next "husk/galley")
 
 (dialog-text "husk/galley"
-             "in her galley the rack holds one cup, and the cup holds a ring of something long evaporated, a tide line at the level of two swallows left. on the shelf above it the crossing manual lies open, and you do not need the lamp to know which page, and you check with the lamp anyway, and it is that page."
+             "in her galley the rack holds one cup, and the cup holds a ring of something long evaporated, a tide line at the level of two swallows left."
+             :next "husk/galley-2")
+
+(dialog-text "husk/galley-2"
+             "on the shelf above it the crossing manual lies open, and you do not need the lamp to know which page, and you check with the lamp anyway, and it is that page."
              :next "husk/bunk")
 
 (dialog-text "husk/bunk"
-             "you go one deck down because you have stopped pretending you are not going there. the bunk is made. the name at the foot is stenciled, worn, repainted at least once, the letters traced over themselves a little off true. you do not read it. you stand in the hatch and do not read it, and that takes everything you have."
+             "you go one deck down because you have stopped pretending you are not going there. the bunk is made."
+             :next "husk/bunk-2")
+
+(dialog-text "husk/bunk-2"
+             "the name at the foot is stenciled, worn, repainted at least once, the letters traced over themselves a little off true. you do not read it."
+             :next "husk/bunk-3")
+
+(dialog-text "husk/bunk-3"
+             "you stand in the hatch and do not read it, and that takes everything you have."
              :next "husk/decision")
 
 (dialog-pick "husk/decision"
@@ -195,7 +211,15 @@
                  '(setf (dialog-value "husk-decision") "scuttled"))
 
 (dialog-text "husk/scuttle"
-             "the charges are where charges are kept, which no longer surprises you. from the launch, the flash is small and white and brief, a struck match at a kilometer, and then the lane is empty on the sweep for the first time all watch. Voss exhales. you count the seconds of the silence afterward and stop at eighty-one."
+             "the charges are where charges are kept, which no longer surprises you."
+             :next "husk/scuttle-2")
+
+(dialog-text "husk/scuttle-2"
+             "from the launch, the flash is small and white and brief, a struck match at a kilometer, and then the lane is empty on the sweep for the first time all watch. Voss exhales."
+             :next "husk/scuttle-3")
+
+(dialog-text "husk/scuttle-3"
+             "you count the seconds of the silence afterward and stop at eighty-one."
              :next "husk/ride-home")
 
 (dialog-text "husk/ride-home"
