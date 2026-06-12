@@ -129,6 +129,10 @@
 
 (dialog-text "bellfall/walk-down"
              "the village walks down quieter than it walked up. at the mile marker, Oren stops, and measures the road with his eye, and says nothing, and his nothing carries: the marker has moved. the hill grew in the night. one marker's worth."
+             :next "bellfall/no-bell")
+
+(dialog-text "bellfall/no-bell"
+             "that evening the supper bell does not ring. nobody decided it. the village simply eats unrung, one night, in honor of a ringer, and the silence at the usual hour is the loudest the bell has ever been."
              :next "bellfall/ditch")
 
 (dialog-text "bellfall/ditch"
