@@ -209,7 +209,11 @@
                                    "she says she sews straight.")
                      (dialog-left "the gardener"
                                   "she does. tell nobody up here i agreed. compost and seed, you understand. the thread manages the relationship.")
-                     :next "seam/thread-slack")
+                     :next "seam/gate-look-back")
+
+(dialog-text "seam/gate-look-back"
+             "at the gate you look back once, which is allowed from gates, and the garden at night is doing what it always does: rows of doors asleep on their feet, numbers drying, and under all of it, faint as a needle through cloth, the lullaby, going around, keeping the whole place company from below."
+             :next "seam/thread-slack")
 
 (dialog-text "seam/thread-slack"
              "at the gate the white thread goes slack, its work done twice over, and slips off your wrist on its own knot. you wind it twice around two fingers, the way thread is kept, and put it in your pocket, where the seam cannot wind it, and the court cannot enter it, and only you know its length."
