@@ -364,17 +364,17 @@ recontextualization as the engine of the horror. Status notes live with
 each parent path's section and org file.
 
 - ship: `husk/` — boarding a dead sister ship whose logs are in the
-  captain's hand and whose manifest is the crew's. DONE marker: none yet.
+  captain's hand and whose manifest is the crew's. DONE (20.5 min).
 - ship: `mutiny/` — the crew's kind, loving removal of a captain they
-  have concluded is no longer the one they serve. Every kindness a cell.
+  have concluded is no longer the one they serve. DONE (20.7 min).
 - war: `tribunal/` — years later, the trial: the signature returns as
-  evidence, the numbers transcripts are read into the record.
+  evidence, the transcripts read into the record. DONE (21.4 min).
 - war: `district/` — the third district visited at night, against all
-  advice: bells, lists, empty coats, the loaded train. Restrained.
+  advice: bells, lists, coats, the loaded train. DONE (20.7 min).
 - forest: `house/` — going back inside through the open door: rooms that
-  match the bedroom, a second cot recently used, the keeper's kindness.
-- forest: `winter/` — letting the bus go and staying: the store closes
-  for the season, food appears on stumps, and the hill keeps its own.
+  match the bedroom, a recently used cot, the keeper. DONE (21.4 min).
+- forest: `winter/` — letting the bus go and staying: the store closes,
+  food appears on stumps, the hill keeps its own. DONE (21.9 min).
 - jrpg: `ledger/` — Mira's other ledger read after breakfast: the names,
   the years, the economy that farms heroes. Breakfast included.
 - jrpg: `bellfall/` — the midnight bell and the year the notices stop
@@ -391,6 +391,25 @@ each parent path's section and org file.
   the log read from inside, the predecessor's notes in the night stand.
 - facility: `release/` — decommissioning: files burned on schedule,
   rooms released, and the player signs for the bed.
+
+## Bright Branches
+
+Counterweights to the dark branches: genuinely warm, up-beat branches
+with their own id prefixes. Same gentle-entry rules, no minute floor,
+but they should feel substantial. One of them carries the seeded-random
+mechanic: a branch whose beat order and outcomes derive from a seed
+rolled once into the dialog store (stable across save/load, different
+across playthroughs), via target delegates reading the seed.
+
+- jrpg: `festival/` — the midsummer fair at the inn crossing: game
+  stalls, prizes, lantern launch. SEEDED: stall order, prize table, and
+  several scene beats derive from `festival-seed` rolled on entry.
+- ship: `liberty/` — real shore leave at a good port: the crew at
+  liberty, the captain talked into joining, nothing goes wrong.
+- war: `armistice/` — the morning the bell does not ring, told as joy:
+  corridors, windows opening, Brandt laughing for the first time.
+- rogue: `haul/` — the genuinely good delve: a clean haul, the tally
+  generous, and an evening spending it well in town.
 
 ## Hook Direction
 
