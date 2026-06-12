@@ -354,6 +354,44 @@ Visual note:
   could be a strong beat if used sparingly. Treat it as a brief visual memory or
   institutional mark, not as an explanatory title card.
 
+## Dark Branches
+
+Every major path is growing two darker, more twisted branches, each with
+its own id prefix (measurable in `scripts/content-report.lisp`) and a 20
+typed-minute floor. Entries obey the gentle-branching rules: in-scene,
+padded, one-of-N choices inside the parent narrative, with
+recontextualization as the engine of the horror. Status notes live with
+each parent path's section and org file.
+
+- ship: `husk/` — boarding a dead sister ship whose logs are in the
+  captain's hand and whose manifest is the crew's. DONE marker: none yet.
+- ship: `mutiny/` — the crew's kind, loving removal of a captain they
+  have concluded is no longer the one they serve. Every kindness a cell.
+- war: `tribunal/` — years later, the trial: the signature returns as
+  evidence, the numbers transcripts are read into the record.
+- war: `district/` — the third district visited at night, against all
+  advice: bells, lists, empty coats, the loaded train. Restrained.
+- forest: `house/` — going back inside through the open door: rooms that
+  match the bedroom, a second cot recently used, the keeper's kindness.
+- forest: `winter/` — letting the bus go and staying: the store closes
+  for the season, food appears on stumps, and the hill keeps its own.
+- jrpg: `ledger/` — Mira's other ledger read after breakfast: the names,
+  the years, the economy that farms heroes. Breakfast included.
+- jrpg: `bellfall/` — the midnight bell and the year the notices stop
+  working: a funeral pastoral, the party aging, terms breaking.
+- alice: `kept/` — the court keeps the defendant instead: the cell that
+  is the room, visiting hours, appeals denied annually with courtesy.
+- alice: `seam/` — following the white thread down under the table to
+  the compost of doors: where rooms go when nobody keeps them.
+- rogue: `below/` — the bookkeeping floors beneath the tally, and the
+  clerk met in person. A darker, longer delve with two hunters.
+- rogue: `lightsout/` — the torch economy fails: a sight-starved delve
+  and the etiquette of feeding the dark.
+- facility: `nightshift/` — reassigned to the room side of the glass:
+  the log read from inside, the predecessor's notes in the night stand.
+- facility: `release/` — decommissioning: files burned on schedule,
+  rooms released, and the player signs for the bed.
+
 ## Hook Direction
 
 Future hook points should be ordinary nodes and facts that mods can append to:
