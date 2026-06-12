@@ -209,4 +209,8 @@
 
 (dialog-text "below/close-door"
              "you close the far door behind you until the latch takes, and then the room's other door, quietly, the way you would on someone sleeping, and climb until the stair becomes furniture again, with your hours kept the whole way, in good hands, in the margin."
+             :next "below/receipt-pocket")
+
+(dialog-text "below/receipt-pocket"
+             "on the landing you check your pocket once, professionally. the receipt is there, folded, weightless, taking up no slot, and you leave your hand on it a moment the way you would on a banister, and climb on."
              :next "rogue/landing-return")
