@@ -617,14 +617,19 @@
 
 (dialog-text "rogue/delve-bottom"
              "past the last door the stair gives out into a small room you know by furniture: a bed, a small table, a door. on the bed, made flat and square, lies one paper tag, ink fresh, first line legible."
-             :next "rogue/delve-after")
+             :next "rogue/bottom-choice")
 
 (dialog-on-enter "rogue/delve-bottom-marked"
                  '(setf (dialog-value "rogue-delve-done") t))
 
 (dialog-text "rogue/delve-bottom-marked"
              "past the last door the stair gives out into a small room you know by furniture: a bed, a small table, a door. the chalk marks you gathered on the way down have the same tidy strokes as the wall tally. on the bed lies one paper tag, ink fresh."
-             :next "rogue/delve-after")
+             :next "rogue/bottom-choice")
+
+(dialog-pick "rogue/bottom-choice"
+             "the tag lies on the bed. across the room, the far door stands ajar, and the air through the gap is warm, and smells of paper."
+             (dialog-option "close the door on it and climb" "rogue/delve-after")
+             (dialog-option "go through the far door" "below/door"))
 
 (dialog-text "rogue/delve-after"
              "you do not take the tag. you close the door on it, quietly, the way you would on someone sleeping, and climb until the stair becomes furniture again."
