@@ -248,6 +248,7 @@
 
 (-> glfw-monitor-pointer (nonnegative-integer) t)
 (defun glfw-monitor-pointer (monitor)
+  (declare (ignorable monitor))
   #+linux
   (when (load-glfw-library)
     (cffi:with-foreign-object (count-ptr :int)
@@ -258,9 +259,7 @@
                    (valid-monitor-index-p monitor count))
           (cffi:mem-aref monitors :pointer monitor)))))
   #-linux
-  (progn
-    (declare (ignore monitor))
-    nil))
+  nil)
 
 #+linux
 (defun glfw-pointer-null-p (pointer)
@@ -275,6 +274,7 @@
     (nonnegative-integer integer integer integer)
     boolean)
 (defun glfw-enter-fullscreen-monitor (monitor width height refresh-rate)
+  (declare (ignorable monitor width height refresh-rate))
   #+linux
   (let ((window (claylib/ll:get-window-handle))
         (glfw-monitor (glfw-monitor-pointer monitor)))
@@ -292,9 +292,7 @@
                                    refresh-rate)
           t)))
   #-linux
-  (progn
-    (declare (ignore monitor width height refresh-rate))
-    nil))
+  nil)
 
 (-> raylib-enter-fullscreen-monitor
     (nonnegative-integer integer integer)
