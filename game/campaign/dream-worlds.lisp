@@ -380,7 +380,12 @@
 
 (dialog-text "alice/thread-out"
              "the white thread is tied to your wrist now. it runs out under the courtroom door, and you follow it."
-             :next "alice/table-again")
+             :next "alice/thread-fork")
+
+(dialog-pick "alice/thread-fork"
+             "at the long table's leg, the thread forks: one strand runs up across the table toward the stair, and one runs down under the cloth, into the dark below the boards."
+             (dialog-option "follow it up, across the table" "alice/table-again")
+             (dialog-option "follow it down, under the table" "seam/under"))
 
 (dialog-text "alice/table-again"
              "the thread crosses the long table, between the upturned cups, and they are all upright now, all full, all steaming faintly, a table set for everyone who has ever been sentenced to a room. your old place is cleared."

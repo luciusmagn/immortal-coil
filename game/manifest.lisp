@@ -31,6 +31,7 @@
            "campaign/ledger.lisp"
            "campaign/bellfall.lisp"
            "campaign/kept.lisp"
+           "campaign/seam.lisp"
            "editor-drafts.lisp")
  :assets "../assets/"
  :title-logo "logo/title-logo.png"
