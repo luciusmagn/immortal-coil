@@ -310,7 +310,11 @@
              :next "nightshift/end-glass")
 
 (dialog-text "nightshift/end-glass"
-             "and last, wherever the choice has put you, there is a glass of water, full to its line, and you stand it where it goes, to the millimeter, because the keeping of it was never the facility's. it was always the room's, and the room's people's, and you are one of them now, whichever side of the glass you kept."
+             "and last, wherever the choice has put you, there is a glass of water, full to its line, and you stand it where it goes, to the millimeter, because the keeping of it was never the facility's."
+             :next "nightshift/end-glass-2")
+
+(dialog-text "nightshift/end-glass-2"
+             "it was always the room's, and the room's people's, and you are one of them now, whichever side of the glass you kept."
              :next "nightshift/end")
 
 (dialog-text "nightshift/end"

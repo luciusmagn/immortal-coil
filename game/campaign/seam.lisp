@@ -280,7 +280,11 @@
              :next "seam/pocket-hum")
 
 (dialog-text "seam/pocket-hum"
-             "on the stairs up, the kept thread hums once in your pocket, low, the held-breath hum of the spool wall, settling. it knows where it has been. so do you. that is the difference between a souvenir and a length of thread: the thread is still attached at the far end, and always will be."
+             "on the stairs up, the kept thread hums once in your pocket, low, the held-breath hum of the spool wall, settling. it knows where it has been. so do you."
+             :next "seam/pocket-hum-2")
+
+(dialog-text "seam/pocket-hum-2"
+             "that is the difference between a souvenir and a length of thread: the thread is still attached at the far end, and always will be."
              :next "seam/sleep")
 
 (dialog-text "seam/sleep"
