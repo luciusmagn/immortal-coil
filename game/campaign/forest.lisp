@@ -493,7 +493,7 @@
 
 (dialog-text "forest/go-down"
              "you walk down. they hold the door the way it has always been held for you, and the warmth inside smells like every winter you can remember, which is the problem with it."
-             :next "forest/dawn-end")
+             :next "house/inside")
 
 (dialog-on-enter "forest/stay-still"
                  '(setf (dialog-value "forest-porch") "stood"))
