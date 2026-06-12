@@ -388,5 +388,14 @@
              :next "facility/clipboard")
 
 (dialog-text "facility/clipboard"
-             "at the desk by the door, the sign-in sheet has been replaced for the new week. the top line of the fresh page is already filled in, dated tomorrow, in handwriting you are done pretending not to recognize. you initial today instead, and leave tomorrow to whoever keeps arriving."
+             "at the desk by the door, the sign-in sheet has been replaced for the new week. the top line of the fresh page is already filled in, dated tomorrow, in handwriting you are done pretending not to recognize."
+             :next "facility/clipboard-choice")
+
+(dialog-pick "facility/clipboard-choice"
+             "the pen hangs on its chain. tomorrow's line waits, already claimed by a hand that writes ahead of you."
+             (dialog-option "initial today and go" "facility/clipboard-today")
+             (dialog-option "initial tomorrow's line as well" "nightshift/initialed"))
+
+(dialog-text "facility/clipboard-today"
+             "you initial today instead, and leave tomorrow to whoever keeps arriving."
              :next "base/awake")
