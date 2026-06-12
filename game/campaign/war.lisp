@@ -482,7 +482,12 @@
 
 (dialog-text "war/day4-sorel"
              "Sorel slides you the morning supply sheet to initial. at the bottom, in pencil, small enough to be a stray mark: K9 EMPTY. CAR NOT EMPTY WHEN IT LEFT. you initial the sheet and keep the pencil."
-             :next "war/day4-end")
+             :next "war/pencil-choice")
+
+(dialog-pick "war/pencil-choice"
+             "the pencil sits in your breast pocket through the morning session. the war will write its own version of these years. the question is whether anyone keeps yours."
+             (dialog-option "let the building keep the records" "war/day4-end")
+             (dialog-option "keep your own record, against the day" "tribunal/keep"))
 
 (dialog-text "war/day4-end"
              "you take your seat. whatever the third district is counting tonight, the war is still there in front of everyone, asking to be lost more slowly, and you are still the one they ask."
