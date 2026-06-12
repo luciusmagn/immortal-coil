@@ -444,7 +444,7 @@
 
 (dialog-text "ship/watch-voss"
              "at end of watch, Voss leaves a cup at your elbow without a word. it is exactly too hot to drink, which means she timed it to outlast the paperwork."
-             :next "ship/checklist")
+             :next "husk/contact")
 
 (dialog-conversation "ship/checklist"
                      (dialog-left "Voss"
