@@ -481,7 +481,21 @@
 
 (dialog-text "jrpg/ledger-line"
              "Mira writes one line in the ledger and hands you the room four key. on the stair, {jrpg-companion} says good night the short way, which in Oakbarrow is a whole speech."
-             :next "jrpg/room-four")
+             :next "jrpg/fair-word")
+
+(dialog-conversation "jrpg/fair-word"
+                     (dialog-left "Mira"
+                                  "one more thing. tomorrow is midsummer. the fair goes up at dawn, and the ledger takes its one holiday.")
+                     (dialog-right "{player-name}"
+                                   "a fair, the day after the tower?")
+                     (dialog-left "Mira"
+                                  "especially the day after the tower. that is when fairs work.")
+                     :next "jrpg/fair-choice")
+
+(dialog-pick "jrpg/fair-choice"
+             "the room four key is warm in your hand."
+             (dialog-option "stay for the fair" "festival/stay")
+             (dialog-option "take the road at first light" "jrpg/room-four"))
 
 (dialog-text "jrpg/stair-night"
              "on the landing, the inn holds its evening sounds the way a pot holds heat: the ledger closing, the stove settling, Oren's chain going up for the night with its own small ceremony."
