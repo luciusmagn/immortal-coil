@@ -270,6 +270,33 @@
 
 (dialog-text "jrpg/tower-road"
              "by late afternoon, the North Tower rises from a bare hill. a small toll hut stands beside the front path."
+             :next "jrpg/hill-overworld")
+
+(dialog-minigame "jrpg/hill-overworld"
+                 "arrows or wasd move. follow the hill road to the tower."
+                 :game :jrpg-overworld
+                 :success "jrpg/tower-hill-arrival"
+                 :failure "jrpg/tower-hill-arrival"
+                 :config (list :map '("................"
+                                      ".....^^^^....T.."
+                                      "....^....^......"
+                                      "..R.^....^..!!.."
+                                      "....^....^......"
+                                      ".............!.."
+                                      "................")
+                               :start '(2 3)
+                               :finish-glyphs '(#\T)
+                               :store-prefix "jrpg-tower-hill"
+                               :start-message "the bridge is behind you. the hill road bends upward."
+                               :legend "+ road sign  T tower  \" rough grass  ^ hill"
+                               :tile-messages
+                               '((#\R . "the road sign says NORTH TOWER, NO WAGONS.")
+                                 (#\T . "the tower path ends at Pell's toll hut.")
+                                 (#\! . "the rough grass twitches at your boots.")
+                                 (#\. . "the hill road is pale with dust."))))
+
+(dialog-text "jrpg/tower-hill-arrival"
+             "the last switchback ends at the toll hut. the tower door is still higher up, behind Pell's barrel, ledger slate, and handbell."
              :next "jrpg/tower-steward")
 
 (dialog-conversation "jrpg/tower-steward"
@@ -340,7 +367,25 @@
                                    "you know Mira?")
                      (dialog-left "Vane"
                                   "everyone on the north road knows Mira.")
-                     :next "jrpg/demon-choice")
+                     :next "jrpg/vane-questions")
+
+(dialog-interrogation "jrpg/vane-questions"
+                      "Vane waits by the visitor sword rack with his hands open."
+                      (:next "jrpg/demon-choice")
+                      (:continue-label "decide what to do")
+                      (:require-all t)
+                      ("ask about Oakbarrow"
+                       :id "oakbarrow"
+                       :speaker "Vane"
+                       "Oakbarrow sends notices because notices are cheaper than soldiers, and soldiers are cheaper than admitting nobody remembers who started this.")
+                      ("ask about the visitor swords"
+                       :id "visitor-swords"
+                       :speaker "Vane"
+                       "they belong to the people who carried them here. if the people cannot carry them home, the hill keeps the iron until someone asks properly.")
+                      ("ask about breakfast"
+                       :id "breakfast"
+                       :speaker "Vane"
+                       "Mira added that line after the fifth year. she said a quest notice should promise at least one thing it can keep. i did not argue."))
 
 (dialog-pick "jrpg/demon-choice"
              "what do you do?"

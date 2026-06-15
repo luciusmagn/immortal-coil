@@ -32,12 +32,12 @@ changed.
 
 Every major path should eventually hold 20 to 30 minutes of content at the
 typewriter pace, minigames included. `scripts/content-report.lisp` measures
-this per path family. After the third expansion round all seven major
-paths measure at the 20-minute floor (war 20.2, facility 20.3, jrpg 20.2,
-forest 20.1, ship 20.0, alice 20.0, rogue 20.0); growth toward 30 continues. Each path should also keep growing its own
-minigames, not only prose. The war path is Suzerain-inspired: conspiracy and
-intrigue through cabinet politics, with the player's unremembered signature
-at the center.
+this per path family. After the current expansion round the seven major
+families all measure above the 20-minute floor, with Rogue and JRPG now the
+largest current surfaces. Growth toward 30 continues. Each path should also
+keep growing its own minigames, not only prose. The war path is
+Suzerain-inspired: conspiracy and intrigue through cabinet politics, with the
+player's unremembered signature at the center.
 
 The "future shapes the past" effect only works when transitions are gentle
 enough that a player on a single playthrough would not recognize them as
@@ -242,13 +242,16 @@ Current surface:
 - `jrpg/village-errand` records whether the player dealt with Mira, Toma, or
   Oren before leaving.
 - `jrpg/overworld` is a small overworld-walk minigame leading to companion
-  road dialogue.
+  road dialogue; `jrpg/hill-overworld` reuses it for the final tower approach.
 - `jrpg/slime-combat` is an early-Final-Fantasy-style turn combat minigame.
 - `jrpg/tower-choice` records the tower approach.
 - Pell, the tower steward, introduces the tower approach choices.
 - `jrpg/pell-questions` is the first dogfooded interrogation helper: a
   question menu that asks Pell about the front door, side stair, and morning
   bell before approach selection.
+- `jrpg/vane-questions` reuses the interrogation helper on first meeting Vane,
+  keeping the demon-lord material concrete and local before the player decides
+  what to do.
 - `jrpg/demon-choice` records how the player approaches Vane.
 - `jrpg/sword-choice` settles the visit (duel, terms, or asking about the
   broken swords) into `jrpg-vane-answer`. Vane's hill of broken swords stays

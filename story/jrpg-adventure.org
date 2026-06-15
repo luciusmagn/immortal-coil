@@ -46,8 +46,8 @@ Concrete elements:
 
 ** North road
 
-Implemented through =jrpg/overworld=, =jrpg/road-mile-marker=, and the return
-road =jrpg/home-overworld=.
+Implemented through =jrpg/overworld=, =jrpg/road-mile-marker=, the hill-road
+approach =jrpg/hill-overworld=, and the return road =jrpg/home-overworld=.
 
 Concrete elements:
 
@@ -55,6 +55,8 @@ Concrete elements:
 - mile marker reading =OAKBARROW 1, NORTH TOWER 3=
 - ditch mud
 - slime tracks
+- pale hill road
+- switchback to Pell's toll hut
 - rain on the return road
 
 ** North Tower
@@ -153,6 +155,7 @@ local system, not as abstract evil.
 Current nodes:
 
 - =jrpg/demon-lord=
+- =jrpg/vane-questions=
 - =jrpg/demon-choice=
 - =jrpg/demon-terms=
 - =jrpg/sword-choice=
@@ -183,12 +186,15 @@ demon-lord idea.
 - =jrpg/slime-combat=
 - result branch: =jrpg/slime-retreat=, =jrpg/slime-defeat=, =jrpg/road-clear=
 - =jrpg/tower-road=
+- =jrpg/hill-overworld=
+- =jrpg/tower-hill-arrival=
 - =jrpg/tower-steward=
 - =jrpg/pell-questions=
 - =jrpg/tower-choice=
 - tower branch: =jrpg/tower-front=, =jrpg/tower-side=, =jrpg/tower-wait=
 - =jrpg/demon-hall=
 - =jrpg/demon-lord=
+- =jrpg/vane-questions=
 - =jrpg/demon-choice=
 - demon branch: =jrpg/demon-fight=, =jrpg/demon-terms=, =jrpg/demon-chest=
 - =jrpg/chapter-end=
@@ -231,10 +237,14 @@ demon-lord idea.
 - =jrpg-saw-tower=
 - =jrpg-last-terrain=
 - =jrpg-overworld-steps=
+- =jrpg-tower-hill-steps=
 - =jrpg-home-road-steps=
 - =jrpg/pell-questions/asked/front-door=
 - =jrpg/pell-questions/asked/side-stair=
 - =jrpg/pell-questions/asked/morning-bell=
+- =jrpg/vane-questions/asked/oakbarrow=
+- =jrpg/vane-questions/asked/visitor-swords=
+- =jrpg/vane-questions/asked/breakfast=
 - =jrpg-last-battle=
 - =jrpg-tower-approach=
 - =jrpg-demon-approach=
@@ -251,13 +261,14 @@ Current behavior:
 - WASD/arrows movement.
 - Small map with village, bridge, sign, tower, grass.
 - Reaching grass advances to the road mile marker.
-- The same minigame is configured and reused for the return road.
+- The same minigame is configured and reused for the hill road and the return
+  road.
 - Movement stores route/landmark facts and per-road step counts.
 
 Expansion direction:
 
 - Larger Oakbarrow-to-tower map.
-- More landmarks: shrine, pond, roadside camp, old bridge, toll hut.
+- More landmarks: shrine, pond, roadside camp, old bridge.
 - More walking is now viable because the path has ambience and short cues.
 
 ** Turn combat
@@ -283,9 +294,10 @@ Helper: =dialog-interrogation=
 Current behavior:
 
 - Pell has the first JRPG question menu at =jrpg/pell-questions=.
+- Vane has a second question menu at =jrpg/vane-questions=.
 - Questions are hidden after being asked by store flags.
-- =:require-all t= holds the approach choice until all three practical
-  questions have been asked.
+- =:require-all t= holds the next choice until all questions in that menu have
+  been asked.
 
 * Audio
 
