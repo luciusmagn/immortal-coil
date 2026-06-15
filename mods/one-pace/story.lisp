@@ -278,6 +278,30 @@
 
 (dialog-text "one-pace/dawn"
   "either way, the house is quiet by morning. you go back to the room you have made yours."
+  :next "one-pace/dawn-landing")
+
+(dialog-text "one-pace/dawn-landing"
+  "the landing smells of wet wool and old snow. the boards outside your door have dried in two dark boot-shaped islands, each one a little smaller than a foot."
+  :next "one-pace/dawn-stairs")
+
+(dialog-text "one-pace/dawn-stairs"
+  "down the stairwell, every step has one bead of meltwater caught at the lip. you count them without meaning to and lose the count at the same place the voice stood."
+  :next "one-pace/dawn-coat")
+
+(dialog-text "one-pace/dawn-coat"
+  "the coat is still on the hook, or it is gone, or it is yours now in the way things become yours after a night spent deciding about them. the laundry tag is turned inward."
+  :next "one-pace/dawn-room")
+
+(dialog-text "one-pace/dawn-room"
+  "inside, the bed is under the window because you put it there. the chair is where you left it. the lamp cord lies across the floor like a line somebody forgot to follow."
+  :next "one-pace/dawn-window")
+
+(dialog-text "one-pace/dawn-window"
+  "outside the window, the street has no opinion. roofs, parked cars, the railings by the steps: all of them carry the same thin snow, giving no special weight to your door."
+  :next "one-pace/dawn-key")
+
+(dialog-text "one-pace/dawn-key"
+  "you check the key in your palm, or the mark it left there, and understand that possession is not proof. it is only a thing a hand can close around while the question waits."
   :next "base/awake")
 
 (dialog-stop-music "one-pace/dawn")

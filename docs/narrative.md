@@ -478,3 +478,10 @@ are established —
 `alice-thread-pocket`, `alice-foreman-pencil`, `rogue-matchbook`,
 `rogue-saw-tally`, `war-pencil-note`, `facility-second-coat`,
 `forest-two-plates` — so later scenes and mods can pay them off.
+
+## Loaded Dogfood Mods
+
+- `one-pace/` — loaded from `mods/one-pace` and grafted onto
+  `base/listen/steps`. It turns the stopped footsteps into a winter-night door
+  vigil with a mod-local brace minigame, then returns through `one-pace/dawn`
+  and its dawn close to `base/awake`. Documented in `story/one-pace.org`.

@@ -1,0 +1,45 @@
+#+title: One Pace From the Threshold
+
+* Status
+
+Loaded dogfood mod, now over the 10-minute typed floor.
+
+* Entry
+
+The mod grafts onto =base/listen/steps=, the hall-sound leaf where footsteps
+stop one pace from the threshold.
+
+* Author truth
+
+- It should continue the same situation rather than announce itself as a side
+  story.
+- The visitor is not randomly chosen by the player. The player's stance decides
+  how the already-present visitor is understood: former occupant, stranger, or
+  someone whose claim cannot be cleanly proven.
+- The room can belong to different people by route, but the reveal should feel
+  like ownership was always contested rather than reality changing.
+
+* Current surface
+
+- =one-pace/landing= extends the stopped footsteps into a winter-night door
+  vigil with snow particles and drone music.
+- =one-pace/name= collects the name on the coat tag into =one-pace-name=.
+- =one-pace/recognise= records whether the name is known in =one-pace-stance=.
+- =one-pace/bolts= records =one-pace-bolts= and routes by delegate.
+- =one-pace/brace= uses the mod-local brace minigame.
+- The shared close now runs from =one-pace/dawn= through =one-pace/dawn-key=
+  before returning to =base/awake=.
+
+* Minigame
+
+Kind: =:one-pace/brace=
+
+- Hold space, W, or up arrow to brace the door.
+- Success and failure route through stance-specific aftermath nodes.
+
+* State keys
+
+- =one-pace-name=
+- =one-pace-stance=
+- =one-pace-bolts=
+
