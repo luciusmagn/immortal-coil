@@ -867,9 +867,39 @@
                  '(setf (dialog-value "rogue-candle") "own"))
 
 (dialog-text "rogue/own-candle"
-             "you take a fresh candle, light it, and stand it on the one bare patch of altar, with no map above it yet. an opening offer. the dungeon can match it or fold."
+             "you take a fresh candle, light it, and stand it on the one bare patch of altar, with no map above it yet. wax starts a clean white coin on the stone."
              :next "rogue/hall-out")
+
+(defun rogue-candle-hall-target ()
+  (let ((candle (dialog-value "rogue-candle" "")))
+    (cond
+      ((string= candle "relit")
+       "rogue/hall-relit")
+      ((string= candle "own")
+       "rogue/hall-own")
+      (t
+       "rogue/hall-dark"))))
 
 (dialog-text "rogue/hall-out"
              "the upper exit stands open, and beyond it the dark is soft, like a room with the lamp just out. on the threshold you stop and listen once, professionally: water settling, a candle fizzing, and far below, patient as bookkeeping, the pacing, still keeping your hours."
+             :next #'rogue-candle-hall-target)
+
+(dialog-text "rogue/hall-relit"
+             "behind you, the relit candle steadies. the old cloth map above it shows a short corridor ending in a little square room. you have seen that room now, and the drawn bed is in the correct corner."
+             :next "rogue/upper-service")
+
+(dialog-text "rogue/hall-dark"
+             "behind you, the guttered candle stays out. the map above it remains unreadable, which is not the same as blank. you pass it by touch: altar edge, cold wax, stone nick, door frame."
+             :next "rogue/upper-service")
+
+(dialog-text "rogue/hall-own"
+             "behind you, your new candle has no map above it yet. the clean patch of wall receives its light without comment. if someone draws there later, they will have to decide where your room begins."
+             :next "rogue/upper-service")
+
+(dialog-text "rogue/upper-service"
+             "past the exit is a narrow service landing with broom hooks, a bucket, and a door whose hinges face you. its handle is worn on this side, thumb-polished where many hands have checked it before opening."
+             :next "rogue/service-door")
+
+(dialog-text "rogue/service-door"
+             "you open it carefully. beyond is ordinary dark: boards, stale air, and the shape of a room waiting without torchlight. when you step through, the door closes behind you with a small latch sound you know by now."
              :next "base/awake")

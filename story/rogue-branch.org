@@ -35,7 +35,8 @@ The upper dream maze exit leads to a Rogue-inspired dungeon path.
 - =rogue/wake-below= and =rogue/housekeeping= reveal the tally and the
   dungeon's accounting logic.
 - =rogue/exit-choice= offers the shrine key or keyhole before the climb out.
-- =rogue/candle-choice= closes the upper shrine account before returning to
+- =rogue/candle-choice= closes the upper shrine account; the selected candle
+  state now changes the last map/light beat before the service door returns to
   =base/awake=.
 
 * Delve device

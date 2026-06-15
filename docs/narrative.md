@@ -348,6 +348,10 @@ Current surface:
 - `rogue/housekeeping`, `rogue/exit-choice`, and `rogue/candle-choice` carry
   the branch back out through inventory/accounting choices instead of ending
   immediately at the first bedroom echo.
+- `rogue/hall-relit`, `rogue/hall-dark`, and `rogue/hall-own` are the padded
+  close: the last shrine choice changes which map/light detail follows the
+  player to the service door, then `rogue/service-door` returns to the base
+  room.
 
 ## Containment Researcher
 
