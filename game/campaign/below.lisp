@@ -256,7 +256,7 @@
              :next "below/close-door")
 
 (dialog-text "below/close-door"
-             "you close the far door behind you until the latch takes, and then the room's other door, quietly, the way you would on someone sleeping, and climb until the stair becomes furniture again, with your hours kept the whole way, in good hands, in the margin."
+             "you close the far door behind you until the latch takes, and then the room's other door, quietly, the way you would on someone sleeping, and climb until the stair ends at furniture again, with your hours kept the whole way, in good hands, in the margin."
              :next "below/receipt-pocket")
 
 (dialog-text "below/receipt-pocket"

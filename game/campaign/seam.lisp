@@ -48,7 +48,7 @@
              :next "seam/seamstress-2")
 
 (dialog-text "seam/seamstress-2"
-             "stitch by stitch, the kitchen is becoming cloth, and the cloth is becoming thread, and the thread goes onto a spool marked in chalk."
+             "stitch by stitch, the kitchen shows its cloth-work: shelf grain as weave, window light as bright thread, the smell of the room wound close to a spool marked in chalk."
              :next "seam/watch-unpick")
 
 (dialog-text "seam/watch-unpick"
@@ -60,7 +60,7 @@
              :next "seam/lesson-stitch")
 
 (dialog-text "seam/lesson-stitch"
-             "you do, and the stitch gives with a sound like a door closing in another county, and a hand's width of pantry shelf becomes cloth under your fingers."
+             "you do, and the stitch gives with a sound like a door closing in another county. under your fingers, a hand's width of pantry shelf reveals its weave."
              :next "seam/lesson-work")
 
 (dialog-text "seam/lesson-work"

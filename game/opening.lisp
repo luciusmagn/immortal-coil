@@ -692,7 +692,7 @@
              :next "dream/stair-memory")
 
 (dialog-text "dream/stair-memory"
-             "each step behind you becomes a piece of bedroom again: blanket, floorboard, chair leg, the brass shine of a key. none of it follows. the stair is returning what it borrowed."
+             "on each step behind you, bedroom details show in the dark: blanket edge, floorboard grain, chair leg, the brass shine of a key. none of it follows. the stair has been carrying those details with it."
              :next "dream/fall")
 
 (dialog-text "dream/fall"
@@ -700,7 +700,7 @@
              :next "dream/fall-2")
 
 (dialog-text "dream/fall-2"
-             "then the sensation becomes a place: walls at arm's length, ceiling too high to test, floor smooth enough that your steps arrive late, like sound through water."
+             "then the sensation gives you enough detail to stand in: walls at arm's length, ceiling too high to test, floor smooth enough that your steps arrive late, like sound through water."
              :next "dream/corners")
 
 (dialog-text "dream/corners"

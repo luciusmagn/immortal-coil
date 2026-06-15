@@ -286,7 +286,7 @@
                  '(setf (dialog-value "kept-end") "summoned"))
 
 (dialog-text "kept/summon"
-             "you ask the room to come in, and the court holds its breath, and the back wall of the courtroom becomes a wall with a window in it, curtained from the far side, and then a door."
+             "you ask the room to come in, and the court holds its breath. behind the witness chair, where everyone has avoided looking, there is a curtained window set into the back wall, and a door beside it."
              :next "kept/summon-2")
 
 (dialog-text "kept/summon-2"

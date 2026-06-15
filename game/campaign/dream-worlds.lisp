@@ -632,7 +632,7 @@
              (dialog-option "go through the far door" "below/door"))
 
 (dialog-text "rogue/delve-after"
-             "you do not take the tag. you close the door on it, quietly, the way you would on someone sleeping, and climb until the stair becomes furniture again."
+             "you do not take the tag. you close the door on it, quietly, the way you would on someone sleeping, and climb until the stair ends at furniture again."
              :next "rogue/landing-return")
 
 (dialog-text "rogue/delve-caught"
