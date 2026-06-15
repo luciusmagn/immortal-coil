@@ -445,7 +445,11 @@
     (setf (node-success-target node)
           (retarget-dialog-target (node-success-target node) old-id new-id)
           (node-failure-target node)
-          (retarget-dialog-target (node-failure-target node) old-id new-id))
+          (retarget-dialog-target (node-failure-target node) old-id new-id)
+          (node-minigame-outcomes node)
+          (mapcar (lambda (target)
+                    (retarget-dialog-target target old-id new-id))
+                  (node-minigame-outcomes node)))
     node))
 
 (-> retarget-node-links (dialog-id dialog-id) t)
