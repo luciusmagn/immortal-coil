@@ -279,7 +279,7 @@ hunter answers. Returns nil when the turn ended the delve."
                                 (1+ floor-index)
                                 (delve-state session "marks" 0))
                         +virtual-center-x+
-                        96
+                        132
                         16
                         (make-color 255 255 255 170))
     (draw-centered-text "wasd or arrows step"

@@ -191,7 +191,7 @@
 
 (-> draw-conversation-node (node) t)
 (defun draw-conversation-node (node)
-  (let* ((color (make-color 255 255 255 (current-alpha)))
+  (let* ((color (make-color 255 255 255 255))
          (entries (conversation-entry-draw-data node))
          (y (conversation-start-y (conversation-total-height entries))))
     (dolist (data entries)

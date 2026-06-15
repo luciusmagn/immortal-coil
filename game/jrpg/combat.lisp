@@ -10,6 +10,18 @@
 
 (defparameter *jrpg-combat-sfx-volume* 0.42)
 
+(defparameter *jrpg-slime-sprite*
+  #("....####...."
+    "...######..."
+    "..########.."
+    ".##+####+##."
+    ".###....###."
+    "############"
+    "##+##++##+##"
+    ".##########."
+    "..########.."
+    "...##..##..."))
+
 (defvar *jrpg-combat* nil)
 
 (defstruct jrpg-combat
@@ -210,6 +222,29 @@
                 size
                 (make-color 255 255 255 alpha)))
 
+(defun jrpg-slime-pixel-alpha (cell)
+  (case cell
+    (#\# 224)
+    (#\+ 118)
+    (t nil)))
+
+(defun draw-jrpg-slime-sprite (center-x top scale)
+  (loop with sprite-width = (length (aref *jrpg-slime-sprite* 0))
+        with left = (- center-x (/ (* sprite-width scale) 2))
+        for row across *jrpg-slime-sprite*
+        for y from 0
+        do (loop for cell across row
+                 for x from 0
+                 for alpha = (jrpg-slime-pixel-alpha cell)
+                 when alpha
+                   do (claylib/ll:draw-rectangle
+                       (round (+ left (* x scale)))
+                       (round (+ top (* y scale)))
+                       scale
+                       scale
+                       (claylib::c-ptr
+                        (make-color 255 255 255 alpha))))))
+
 (defun draw-jrpg-combat-enemy (game)
   (let ((x (+ +jrpg-combat-left+ 570))
         (y (+ +jrpg-combat-top+ 72)))
@@ -218,16 +253,7 @@
                         (- y 42)
                         20
                         (make-color 255 255 255 232))
-    (draw-centered-text "o"
-                        x
-                        y
-                        72
-                        (make-color 255 255 255 220))
-    (draw-centered-text "/|\\"
-                        x
-                        (+ y 52)
-                        30
-                        (make-color 255 255 255 210))
+    (draw-jrpg-slime-sprite x (- y 4) 9)
     (draw-centered-text
      (format nil "HP ~d/~d"
              (jrpg-combat-enemy-hp game)
