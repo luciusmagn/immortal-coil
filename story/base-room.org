@@ -17,15 +17,30 @@ but each path should reveal that the player lacked the right context.
   meanings become path-local.
 - Door counting and sound selection are secondary hook points.
 - The room should remain sparse enough that mods can reinterpret it.
+- New padding nodes ground the room in ordinary physical detail before choices:
+  low ceiling, repaired blanket, cold boards, night stand ring, key weight, and
+  a slower sleep transition. Drawer and lantern padding keep the match branch
+  tactile instead of making it feel like an immediate genre switch.
 
 * Current nodes
 
 - =base/awake=
+- =base/ceiling=
+- =base/feel=
+- =base/blanket=
 - =base/exit-bed=
+- =base/bed-edge= / =base/bed-edge-thread=
+- =base/room-breath= / echo variants
+- =base/room-hush= / echo variants
 - =base/thirst=
+- =base/shirt-fold= / echo variants
 - =base/match=
+- =base/lantern-glass=
+- =base/key-weight= / =base/key-weight-chalk=
 - =base/unlock-door=
 - =base/sleep=
+- =base/sleep-sheet=
+- =base/sleep-room=
 
 * TODO
 

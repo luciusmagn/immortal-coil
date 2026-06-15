@@ -59,6 +59,10 @@ The current branch events are still prototype hooks, but the base-room split
 should avoid looking like a genre picker or a symbolic object menu:
 
 - `base/exit-bed`: starts the ordinary room interaction.
+- `base/ceiling`, `base/blanket`, `base/bed-edge`, `base/room-hush`,
+  `base/shirt-fold`, `base/lantern-glass`, and `base/key-weight`: pad the
+  opening with stable physical detail so the branch surface reads as exploration
+  rather than a menu of genres.
 - `base/thirst`, `base/match`, and `base/unlock-door`: route through actions
   discovered while exploring the room.
 - `base/sleep`: enters the dream maze.
@@ -86,6 +90,9 @@ Current anchors:
   meanings become path-local.
 - Door counting and sound selection are secondary hook points for future paths.
 - The room should remain sparse enough that mods can reinterpret it.
+- Recent padding deliberately uses ordinary matter rather than lore: ceiling,
+  repaired cloth, floorboards, scuffed wood, a folded shirt, lantern glass, and
+  brass key. These beats should stay reusable by later path contexts.
 
 ## War Leader
 

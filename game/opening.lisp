@@ -86,6 +86,10 @@
 
 (dialog-text "base/awake"
              "you awake in a strange world..."
+             :next "base/ceiling")
+
+(dialog-text "base/ceiling"
+             "the ceiling is low enough to be certain of, high enough to keep its corners. a narrow seam runs above you from wall to wall, pale in the dark where old paint has cracked."
              :next "base/feel")
 
 ;; Move this below any node while developing, then use New Game.
@@ -94,7 +98,11 @@
 ;;  :visible :all)
 
 (dialog-text "base/feel"
-             "or at least that's how you feel..."
+             "or at least that's how you feel. the room is not moving, not making room for itself, not waiting to become anything. it is simply there before you can account for it."
+             :next "base/blanket")
+
+(dialog-text "base/blanket"
+             "the blanket has worked loose from one corner of the mattress. your hand finds the hem and the hem finds your hand back: coarse thread, one repaired tear, the weight of ordinary cloth."
              :next "base/exit-bed")
 
 (dialog-choice "base/exit-bed"
@@ -104,22 +112,42 @@
 
 (dialog-text "base/exited-bed"
              "you wearily open your eyes, there is a night stand next to your bed"
-             :next #'base-room-breath-target)
+             :next "base/bed-edge")
 
 (dialog-text "base/exited-bed-thread"
              "you wearily open your eyes, there is a night stand next to your bed. pushing back the blanket takes a moment: a loop of white thread is wound twice around two of your fingers."
+             :next "base/bed-edge-thread")
+
+(dialog-text "base/bed-edge"
+             "you sit on the mattress edge until the floor stops looking farther away than it is. the night stand is plain wood, scuffed at the lower shelf, with one pale ring where a glass has stood too long."
+             :next #'base-room-breath-target)
+
+(dialog-text "base/bed-edge-thread"
+             "you work the thread loose without breaking it. it leaves no mark, only a thin pressure memory around two fingers. the night stand beside you has one pale ring where a glass has stood too long."
              :next #'base-room-breath-target)
 
 (dialog-text "base/room-breath"
              "you stretch and get out of bed"
-             :next "base/thirst")
+             :next "base/room-hush")
 
 (dialog-text "base/room-breath-cup"
              "you stretch and get out of bed. your right hand stays curled a moment, as if it had been holding a cup."
-             :next "base/thirst")
+             :next "base/room-hush-cup")
 
 (dialog-text "base/room-breath-desk"
              "you stretch and get out of bed. your neck aches the way it does after sleeping at a desk."
+             :next "base/room-hush-desk")
+
+(dialog-text "base/room-hush"
+             "the boards answer your weight one at a time. outside the room there may be a hall, or another room, or only the dark that gathers behind closed doors. nothing hurries you."
+             :next "base/thirst")
+
+(dialog-text "base/room-hush-cup"
+             "the boards answer your weight one at a time. the curled hand opens slowly, finger by finger, as if setting down something it has already lost. nothing else in the room moves."
+             :next "base/thirst")
+
+(dialog-text "base/room-hush-desk"
+             "the boards answer your weight one at a time. you roll your shoulders, and the ache at the back of your neck settles into the ordinary shape of a bad night's sleep."
              :next "base/thirst")
 
 (dialog-choice "base/thirst"
@@ -133,14 +161,26 @@
 
 (dialog-text "base/drawer"
              "there are some drawers in your room, you rummage through the top one looking for something to wear. there's a paper matchbook sticking out of a shirt."
-             :next "base/match")
+             :next "base/shirt-fold")
 
 (dialog-text "base/drawer-pitch"
              "there are some drawers in your room, you rummage through the top one looking for something to wear. there's a paper matchbook sticking out of a shirt, and pine pitch under two of your fingernails."
-             :next "base/match")
+             :next "base/shirt-pitch")
 
 (dialog-text "base/drawer-bread"
              "there are some drawers in your room, you rummage through the top one looking for something to wear. there's a paper matchbook sticking out of a shirt. the shirt smells faintly of bread."
+             :next "base/shirt-bread")
+
+(dialog-text "base/shirt-fold"
+             "the shirt unfolds badly, as if it was put away by someone in a hurry and corrected later by someone with no hurry at all. the matchbook falls into your palm."
+             :next "base/match")
+
+(dialog-text "base/shirt-pitch"
+             "the shirt unfolds badly. the pitch under your nails darkens the cuff when you touch it, and the matchbook falls out with a dry little tap."
+             :next "base/match")
+
+(dialog-text "base/shirt-bread"
+             "the shirt unfolds badly. the bread smell is strongest at the cuff, warm and stale at once, and the matchbook drops out between two buttons."
              :next "base/match")
 
 (dialog-choice "base/match"
@@ -150,6 +190,10 @@
 
 (dialog-text "base/light-lantern"
              "the match lights up, you spot a lantern that you can light with the match."
+             :next "base/lantern-glass")
+
+(dialog-text "base/lantern-glass"
+             "the lantern glass is cloudy but whole. when the flame catches, the room gains edges: basin, blanket, drawer, door. nothing explains itself in the new light."
              :next "jrpg/inn")
 
 (dialog-text "base/door-shadow"
@@ -165,13 +209,21 @@
 
 (dialog-text "base/door-key"
              "the key is on a small table by the door"
-             :next "base/unlock-door")
+             :next "base/key-weight")
 
 (dialog-on-enter "base/door-key-chalk"
                  '(setf (dialog-value "has-brass-key") t))
 
 (dialog-text "base/door-key-chalk"
              "the key is on a small table by the door. picking it up leaves chalk dust on the pad of your thumb."
+             :next "base/key-weight-chalk")
+
+(dialog-text "base/key-weight"
+             "it is heavier than it looks. not ornate, not old enough to be interesting, only brass rubbed dull where a thumb would press it."
+             :next "base/unlock-door")
+
+(dialog-text "base/key-weight-chalk"
+             "it is heavier than it looks. the chalk dust stays in the grooves of your thumbprint, pale enough that you notice it every time you turn your hand."
              :next "base/unlock-door")
 
 (dialog-choice "base/unlock-door"
@@ -227,6 +279,14 @@
 
 (dialog-text "base/sleep"
              "you rolled over and went back to sleep, nothing of interest happened..."
+             :next "base/sleep-sheet")
+
+(dialog-text "base/sleep-sheet"
+             "the sheet is cool at first, then not. the pillow keeps the dent from your head as if preserving evidence for someone patient enough to read fabric."
+             :next "base/sleep-room")
+
+(dialog-text "base/sleep-room"
+             "the room goes on being itself around you: night stand, glass, door, low ceiling, repaired blanket. sleep comes back by the same route it left, quietly and without asking."
              :next "dream/drift")
 
 
