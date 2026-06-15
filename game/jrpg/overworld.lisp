@@ -16,25 +16,87 @@
 (defvar *jrpg-overworld* nil)
 
 (defstruct jrpg-overworld
-  (node-id *runtime-fallback-node-id*)
-  (x       1)
-  (y       4)
-  (steps   0)
-  (message "walk north and east. arrows or wasd move."))
+  (node-id       *runtime-fallback-node-id*)
+  (map           *jrpg-overworld-map*)
+  (finish-glyphs '(#\!))
+  (tile-messages nil)
+  (legend        "V village  = bridge  + sign  T tower  \" grass")
+  (store-prefix  "jrpg-overworld")
+  (x             1)
+  (y             4)
+  (steps         0)
+  (message       "walk north and east. arrows or wasd move."))
 
-(defun jrpg-overworld-width ()
-  (length (aref *jrpg-overworld-map* 0)))
+(defun jrpg-overworld-width (game)
+  (length (aref (jrpg-overworld-map game) 0)))
 
-(defun jrpg-overworld-height ()
-  (length *jrpg-overworld-map*))
+(defun jrpg-overworld-height (game)
+  (length (jrpg-overworld-map game)))
+
+(defun jrpg-overworld-normalize-map (map)
+  (cond
+    ((null map)
+     *jrpg-overworld-map*)
+    ((vectorp map)
+     map)
+    ((listp map)
+     (coerce map 'vector))
+    (t
+     (runtime-warn "JRPG overworld map config is not a list or vector: ~s"
+                   map)
+     *jrpg-overworld-map*)))
+
+(defun jrpg-overworld-normalize-finish-glyphs (glyphs)
+  (cond
+    ((null glyphs)
+     '(#\!))
+    ((characterp glyphs)
+     (list glyphs))
+    ((stringp glyphs)
+     (loop for glyph across glyphs collect glyph))
+    ((listp glyphs)
+     glyphs)
+    (t
+     (runtime-warn "JRPG overworld finish glyph config is invalid: ~s"
+                   glyphs)
+     '(#\!))))
+
+(defun jrpg-overworld-start-coordinates (node)
+  (let ((start (minigame-config-value node :start '(1 4))))
+    (if (and (listp start)
+             (integerp (first start))
+             (integerp (second start)))
+        (values (first start) (second start))
+        (progn
+          (runtime-warn "JRPG overworld start config is invalid: ~s"
+                        start)
+          (values 1 4)))))
 
 (defun make-fresh-jrpg-overworld (node)
   (jrpg-init-state)
-  (make-jrpg-overworld :node-id (node-id node)
-                       :x 1
-                       :y 4
-                       :steps 0
-                       :message "walk north and east. arrows or wasd move."))
+  (multiple-value-bind (start-x start-y)
+      (jrpg-overworld-start-coordinates node)
+    (make-jrpg-overworld
+     :node-id (node-id node)
+     :map (jrpg-overworld-normalize-map
+           (minigame-config-value node :map))
+     :finish-glyphs (jrpg-overworld-normalize-finish-glyphs
+                     (minigame-config-value node :finish-glyphs))
+     :tile-messages (minigame-config-value node :tile-messages)
+     :legend (minigame-config-value
+              node
+              :legend
+              "V village  = bridge  + sign  T tower  \" grass")
+     :store-prefix (minigame-config-value node
+                                          :store-prefix
+                                          "jrpg-overworld")
+     :x start-x
+     :y start-y
+     :steps 0
+     :message (minigame-config-value
+               node
+               :start-message
+               "walk north and east. arrows or wasd move."))))
 
 (defun ensure-jrpg-overworld (node)
   (unless (and *jrpg-overworld*
@@ -43,12 +105,12 @@
     (setf *jrpg-overworld* (make-fresh-jrpg-overworld node)))
   *jrpg-overworld*)
 
-(defun jrpg-overworld-cell (x y)
+(defun jrpg-overworld-cell (game x y)
   (if (and (<= 0 x)
-           (< x (jrpg-overworld-width))
+           (< x (jrpg-overworld-width game))
            (<= 0 y)
-           (< y (jrpg-overworld-height)))
-      (char (aref *jrpg-overworld-map* y) x)
+           (< y (jrpg-overworld-height game)))
+      (char (aref (jrpg-overworld-map game) y) x)
       #\^))
 
 (defun jrpg-overworld-passable-p (cell)
@@ -69,7 +131,7 @@
          (is-key-pressed-p +key-s+))
      '(0 1))))
 
-(defun jrpg-overworld-tile-message (cell)
+(defun jrpg-overworld-default-tile-message (cell)
   (case cell
     (#\V "the village gate is already behind you.")
     (#\B "the bridge guard raises the gate chain.")
@@ -78,7 +140,17 @@
     (#\! "the grass shakes.")
     (t "the road is bright and empty.")))
 
-(defun jrpg-record-overworld-cell (cell)
+(defun jrpg-overworld-tile-message (game cell)
+  (or (rest (assoc cell
+                   (jrpg-overworld-tile-messages game)
+                   :test #'char=))
+      (jrpg-overworld-default-tile-message cell)))
+
+(defun jrpg-overworld-store-key (game suffix)
+  (format nil "~a-~a" (jrpg-overworld-store-prefix game) suffix))
+
+(defun jrpg-record-overworld-cell (game cell)
+  (declare (ignore game))
   (case cell
     (#\B (setf (jrpg-value "jrpg-crossed-bridge") t
                (jrpg-value "jrpg-route") "bridge road"))
@@ -87,6 +159,11 @@
     (#\T (setf (jrpg-value "jrpg-saw-tower") t))
     (#\! (setf (jrpg-value "jrpg-last-terrain") "grass"))))
 
+(defun jrpg-overworld-finish-cell-p (game cell)
+  (not (null (member cell
+                     (jrpg-overworld-finish-glyphs game)
+                     :test #'char=))))
+
 (defun jrpg-overworld-finish (node)
   (setf *jrpg-overworld* nil)
   (jump-to-dialog-target (node-success-target node)))
@@ -94,18 +171,18 @@
 (defun jrpg-overworld-move (node game dx dy)
   (let* ((next-x (+ (jrpg-overworld-x game) dx))
          (next-y (+ (jrpg-overworld-y game) dy))
-         (cell (jrpg-overworld-cell next-x next-y)))
+         (cell (jrpg-overworld-cell game next-x next-y)))
     (if (jrpg-overworld-passable-p cell)
         (progn
           (setf (jrpg-overworld-x game) next-x
                 (jrpg-overworld-y game) next-y
                 (jrpg-overworld-message game)
-                (jrpg-overworld-tile-message cell))
+                (jrpg-overworld-tile-message game cell))
           (incf (jrpg-overworld-steps game))
-          (setf (jrpg-value "jrpg-overworld-steps")
+          (setf (jrpg-value (jrpg-overworld-store-key game "steps"))
                 (jrpg-overworld-steps game))
-          (jrpg-record-overworld-cell cell)
-          (when (char= cell #\!)
+          (jrpg-record-overworld-cell game cell)
+          (when (jrpg-overworld-finish-cell-p game cell)
             (jrpg-overworld-finish node)))
         (setf (jrpg-overworld-message game)
               "the mountains block the road."))))
@@ -153,11 +230,14 @@
                         (make-color 255 255 255 alpha))))
 
 (defun draw-jrpg-overworld-map (game)
-  (loop for y from 0 below (jrpg-overworld-height)
-        do (loop for x from 0 below (jrpg-overworld-width)
+  (loop for y from 0 below (jrpg-overworld-height game)
+        do (loop for x from 0 below (jrpg-overworld-width game)
                  do (draw-jrpg-overworld-tile x
                                                y
-                                               (jrpg-overworld-cell x y))))
+                                               (jrpg-overworld-cell
+                                                game
+                                                x
+                                                y))))
   (draw-centered-text "@"
                       (+ (jrpg-overworld-screen-x (jrpg-overworld-x game))
                          (/ +jrpg-overworld-tile-size+ 2))
@@ -173,7 +253,7 @@
     (draw-jrpg-overworld-map game)
     (draw-jrpg-box 250 392 480 92)
     (draw-jrpg-line (jrpg-overworld-message game) 270 414 17)
-    (draw-jrpg-line "V village  = bridge  + sign  T tower  \" grass"
+    (draw-jrpg-line (jrpg-overworld-legend game)
                     270
                     444
                     15

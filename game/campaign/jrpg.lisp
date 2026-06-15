@@ -72,10 +72,10 @@
              :next "jrpg/party")
 
 (dialog-pick "jrpg/party"
-             "who joins you at the village gate?"
-             (dialog-option "Lena, the childhood friend" "jrpg/friend")
-             (dialog-option "Nio, the quiet mage" "jrpg/mage")
-             (dialog-option "Bram, the knight" "jrpg/knight"))
+             "before the gate, what do you make time for?"
+             (dialog-option "help Lena tie down the pack" "jrpg/friend")
+             (dialog-option "return Nio's charm book" "jrpg/mage")
+             (dialog-option "ask Bram about the road" "jrpg/knight"))
 
 (dialog-on-enter "jrpg/friend"
                  '(jrpg-set-companion "Lena" "childhood friend"))
@@ -406,7 +406,28 @@
              :next "jrpg/road-home")
 
 (dialog-text "jrpg/road-home"
-             "the walk back runs ahead of the rain. at the mile marker, the ditch grass is shaking again, and not with wind."
+             "the walk back runs ahead of the rain. Pell's bell is quiet behind you before the tower drops below the ridge."
+             :next "jrpg/home-overworld")
+
+(dialog-minigame "jrpg/home-overworld"
+                 "arrows or wasd move. reach the bridge before the rain."
+                 :game :jrpg-overworld
+                 :success "jrpg/home-road-grass"
+                 :failure "jrpg/home-road-grass"
+                 :config (list :start '(13 2)
+                               :finish-glyphs '(#\B)
+                               :store-prefix "jrpg-home-road"
+                               :start-message "the tower is behind you. the bridge is west."
+                               :legend "V Oakbarrow  = bridge  + sign  T tower  \" grass"
+                               :tile-messages
+                               '((#\T . "the tower is behind you.")
+                                 (#\R . "the road sign points back to Oakbarrow.")
+                                 (#\! . "the ditch grass shakes in the rain.")
+                                 (#\B . "the bridge boards are slick.")
+                                 (#\V . "Oakbarrow's gate lanterns burn ahead."))))
+
+(dialog-text "jrpg/home-road-grass"
+             "near the bridge, the ditch grass shakes again, and not with wind. {jrpg-companion} steps between you and the road sign."
              :next "jrpg/home-ambush")
 
 (dialog-minigame "jrpg/home-ambush"
