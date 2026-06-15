@@ -24,6 +24,14 @@
       (t
        "jrpg/road-clear"))))
 
+(defun jrpg-shrine-combat-result-target ()
+  (let ((result (jrpg-value "jrpg-last-battle" "victory")))
+    (cond
+      ((string= result "retreat")
+       "jrpg/shrine-retreat")
+      (t
+       "jrpg/shrine-clear"))))
+
 (defun jrpg-companion-road-target ()
   (let ((companion (jrpg-companion)))
     (cond
@@ -33,6 +41,16 @@
        "jrpg/road-bram")
       (t
        "jrpg/road-lena"))))
+
+(defun jrpg-shrine-companion-target ()
+  (let ((companion (jrpg-companion)))
+    (cond
+      ((string= companion "Nio")
+       "jrpg/shrine-nio")
+      ((string= companion "Bram")
+       "jrpg/shrine-bram")
+      (t
+       "jrpg/shrine-lena"))))
 
 
 ;;; Opening quest
@@ -253,11 +271,14 @@
 
 (dialog-text "jrpg/slime-retreat"
              "you return to the mile marker. OAKBARROW 1 is carved deeper than NORTH TOWER 3."
-             :next "jrpg/tower-road")
+             :next "jrpg/road-rest")
+
+(dialog-on-enter "jrpg/slime-defeat"
+                 '(jrpg-heal 9))
 
 (dialog-text "jrpg/slime-defeat"
              "you wake beside the ditch. {jrpg-companion} has one hand on your shoulder and mud on both knees."
-             :next "jrpg/tower-road")
+             :next "jrpg/road-rest")
 
 (dialog-conversation "jrpg/road-clear"
                      (dialog-left "{jrpg-companion}"
@@ -266,6 +287,118 @@
                                    "is that good?")
                      (dialog-left "{jrpg-companion}"
                                   "for a first mile, yes.")
+                     :next "jrpg/road-rest")
+
+(dialog-text "jrpg/road-rest"
+             "the north road runs between low pines for another mile. a cart track breaks off toward a white roadside shrine, while the main road keeps climbing toward the tower hill."
+             :next "jrpg/road-rest-choice")
+
+(dialog-pick "jrpg/road-rest-choice"
+             "at the cart-track fork, what do you do?"
+             (dialog-option "check the roadside shrine" "jrpg/shrine-track")
+             (dialog-option "split the travel loaf" "jrpg/shrine-lunch")
+             (dialog-option "keep to the tower road" "jrpg/tower-road"))
+
+(dialog-on-enter "jrpg/shrine-track"
+                 '(setf (jrpg-value "jrpg-road-detour") "shrine"))
+
+(dialog-text "jrpg/shrine-track"
+             "the cart track is narrow but used: wheel ruts, pine needles, and a line of white stones set too regularly to be accidental."
+             :next "jrpg/shrine-overworld")
+
+(dialog-minigame "jrpg/shrine-overworld"
+                 "arrows or wasd move. follow the cart track to the shrine."
+                 :game :jrpg-overworld
+                 :success "jrpg/shrine-arrival"
+                 :failure "jrpg/shrine-arrival"
+                 :config (list :map '("................"
+                                      "....^^^^....S..."
+                                      "...^....^...!..."
+                                      "...^....^...!..."
+                                      "..B..R.........."
+                                      "......^^^^......"
+                                      "................")
+                               :start '(4 4)
+                               :finish-glyphs '(#\S)
+                               :store-prefix "jrpg-shrine-road"
+                               :start-message "the cart track leaves the main road by the sign."
+                               :legend "= bridge  + sign  S shrine  \" high grass  ^ hill"
+                               :tile-messages
+                               '((#\B . "the bridge is now a white line behind you.")
+                                 (#\R . "the road sign has a small shrine mark cut into its post.")
+                                 (#\S . "the shrine stones are cold even in sun.")
+                                 (#\! . "the grass beside the track is wet where it should be dry.")
+                                 (#\. . "the cart track crunches under your boots."))))
+
+(dialog-text "jrpg/shrine-arrival"
+             "the shrine is a square shelf of white stone under two pines. someone has left three copper bits, a cracked cup, and a strip of wax paper from Toma's oven."
+             :next "jrpg/shrine-slime")
+
+(dialog-text "jrpg/shrine-slime"
+             "the wet grass beside the shelf gathers itself into a moss-dark slime. it has pine needles stuck all through it and one copper bit showing near the surface."
+             :next "jrpg/shrine-slime-combat")
+
+(dialog-minigame "jrpg/shrine-slime-combat"
+                 "choose a command. arrows or wasd move. enter or space confirms."
+                 :game :jrpg-combat
+                 :success #'jrpg-shrine-combat-result-target
+                 :failure "jrpg/shrine-limp"
+                 :config (list :enemy-name "MOSS SLIME"
+                               :enemy-hp 18
+                               :enemy-attack-min 4
+                               :enemy-attack-max 7
+                               :victory-xp 5
+                               :victory-gold 4
+                               :message "a moss slime slides from under the shrine shelf."))
+
+(dialog-text "jrpg/shrine-clear"
+             "the moss slime comes apart into clean water, pine needles, and the copper bit. {jrpg-companion} rinses the coin in the cracked cup before giving it to the shelf."
+             :next #'jrpg-shrine-companion-target)
+
+(dialog-text "jrpg/shrine-retreat"
+             "you back out to the cart track. the moss slime stays by the shelf, slow and satisfied, as if the offering box is its proper work."
+             :next #'jrpg-shrine-companion-target)
+
+(dialog-on-enter "jrpg/shrine-limp"
+                 '(jrpg-heal 7))
+
+(dialog-text "jrpg/shrine-limp"
+             "you wake sitting against one of the pines. the shrine shelf is damp, the copper bits are gone, and {jrpg-companion} has put the cracked cup upright again."
+             :next #'jrpg-shrine-companion-target)
+
+(dialog-on-enter "jrpg/shrine-lunch"
+                 '(setf (jrpg-value "jrpg-road-detour") "lunch")
+                 '(jrpg-heal 4))
+
+(dialog-text "jrpg/shrine-lunch"
+             "you sit on a warm stone by the fork and split the travel loaf. crumbs fall into the cart rut, and ants find them with a discipline that would shame soldiers."
+             :next #'jrpg-shrine-companion-target)
+
+(dialog-conversation "jrpg/shrine-lena"
+                     (dialog-left "Lena"
+                                  "we came this way once to cut pine boughs for midsummer.")
+                     (dialog-right "{player-name}"
+                                   "did we leave an offering?")
+                     (dialog-left "Lena"
+                                  "your best knife. not on purpose. Toma found it in a loaf pan two days later and blamed me for teaching you religion.")
+                     :next "jrpg/tower-road")
+
+(dialog-conversation "jrpg/shrine-nio"
+                     (dialog-left "Nio"
+                                  "the charm book calls this a wayside shelf. not a shrine. shrines have names.")
+                     (dialog-right "{player-name}"
+                                   "does that matter?")
+                     (dialog-left "Nio"
+                                  "to the book, yes. to the cup and copper, apparently no.")
+                     :next "jrpg/tower-road")
+
+(dialog-conversation "jrpg/shrine-bram"
+                     (dialog-left "Bram"
+                                  "my helmet was hung here last winter. i made an offering for courage and forgot what i offered.")
+                     (dialog-right "{player-name}"
+                                   "was the offering the helmet?")
+                     (dialog-left "Bram"
+                                  "that is what Oren says. Oren is not a priest, but he is often nearby when i am stupid.")
                      :next "jrpg/tower-road")
 
 (dialog-text "jrpg/tower-road"

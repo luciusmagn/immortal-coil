@@ -137,6 +137,7 @@
     (#\B "the bridge guard raises the gate chain.")
     (#\R "the road sign says NORTH TOWER.")
     (#\T "the tower is still too far to touch.")
+    (#\S "the roadside shrine is white stone and old pine.")
     (#\! "the grass shakes.")
     (t "the road is bright and empty.")))
 
@@ -157,6 +158,7 @@
     (#\R (setf (jrpg-value "jrpg-read-road-sign") t
                (jrpg-value "jrpg-route") "north road"))
     (#\T (setf (jrpg-value "jrpg-saw-tower") t))
+    (#\S (setf (jrpg-value "jrpg-road-shrine-seen") t))
     (#\! (setf (jrpg-value "jrpg-last-terrain") "grass"))))
 
 (defun jrpg-overworld-finish-cell-p (game cell)
@@ -210,6 +212,7 @@
     (#\B "=")
     (#\R "+")
     (#\T "T")
+    (#\S "S")
     (#\! "\"")
     (t ".")))
 

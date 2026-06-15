@@ -245,8 +245,12 @@ Current surface:
 - `jrpg/village-errand` records whether the player dealt with Mira, Toma, or
   Oren before leaving.
 - `jrpg/overworld` is a small overworld-walk minigame leading to companion
-  road dialogue; `jrpg/hill-overworld` reuses it for the final tower approach.
+  road dialogue; `jrpg/shrine-overworld` reuses it for a roadside shrine
+  detour, `jrpg/hill-overworld` for the final tower approach, and
+  `jrpg/home-overworld` for the return road.
 - `jrpg/slime-combat` is an early-Final-Fantasy-style turn combat minigame.
+  `jrpg/shrine-slime-combat` and `jrpg/home-ambush` reuse it with different
+  road contexts.
 - `jrpg/tower-choice` records the tower approach.
 - Pell, the tower steward, introduces the tower approach choices.
 - `jrpg/pell-questions` is the first dogfooded interrogation helper: a

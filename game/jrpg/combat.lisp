@@ -30,27 +30,63 @@
 (defvar *jrpg-combat* nil)
 
 (defstruct jrpg-combat
-  (node-id       *runtime-fallback-node-id*)
-  (enemy-name    "SLIME")
-  (enemy-hp      14)
-  (enemy-max-hp  14)
-  (selected      0)
-  (message       "a slime draws near.")
-  (elapsed       0.0)
-  (finish-target nil)
-  (finish-delay  0.0))
+  (node-id          *runtime-fallback-node-id*)
+  (enemy-name       "SLIME")
+  (enemy-hp         14)
+  (enemy-max-hp     14)
+  (enemy-attack-min 3)
+  (enemy-attack-max 6)
+  (victory-xp       4)
+  (victory-gold     6)
+  (selected         0)
+  (message          "a slime draws near.")
+  (elapsed          0.0)
+  (finish-target    nil)
+  (finish-delay     0.0))
+
+(defun jrpg-combat-config-number (node key default)
+  (let ((value (minigame-config-value node key default)))
+    (if (numberp value)
+        value
+        default)))
+
+(defun jrpg-combat-config-string (node key default)
+  (let ((value (minigame-config-value node key default)))
+    (if (stringp value)
+        value
+        default)))
 
 (defun make-fresh-jrpg-combat (node)
   (jrpg-init-state)
-  (make-jrpg-combat :node-id (node-id node)
-                    :enemy-name "SLIME"
-                    :enemy-hp 14
-                    :enemy-max-hp 14
-                    :selected 0
-                    :message "a slime draws near."
-                    :elapsed 0.0
-                    :finish-target nil
-                    :finish-delay 0.0))
+  (let ((enemy-hp (jrpg-combat-config-number node :enemy-hp 14)))
+    (make-jrpg-combat :node-id (node-id node)
+                      :enemy-name (jrpg-combat-config-string node
+                                                             :enemy-name
+                                                             "SLIME")
+                      :enemy-hp enemy-hp
+                      :enemy-max-hp enemy-hp
+                      :enemy-attack-min (jrpg-combat-config-number
+                                         node
+                                         :enemy-attack-min
+                                         3)
+                      :enemy-attack-max (jrpg-combat-config-number
+                                         node
+                                         :enemy-attack-max
+                                         6)
+                      :victory-xp (jrpg-combat-config-number node
+                                                             :victory-xp
+                                                             4)
+                      :victory-gold (jrpg-combat-config-number node
+                                                               :victory-gold
+                                                               6)
+                      :selected 0
+                      :message (jrpg-combat-config-string
+                                node
+                                :message
+                                "a slime draws near.")
+                      :elapsed 0.0
+                      :finish-target nil
+                      :finish-delay 0.0)))
 
 (defun ensure-jrpg-combat (node)
   (unless (and *jrpg-combat*
@@ -111,8 +147,9 @@
   (+ (jrpg-number "jrpg-hero-attack" 5)
      (get-random-value 0 2)))
 
-(defun jrpg-combat-enemy-attack ()
-  (max 1 (- (get-random-value 3 6)
+(defun jrpg-combat-enemy-attack (game)
+  (max 1 (- (get-random-value (jrpg-combat-enemy-attack-min game)
+                              (jrpg-combat-enemy-attack-max game))
             (jrpg-number "jrpg-hero-defense" 2))))
 
 (defun jrpg-combat-enemy-alive-p (game)
@@ -123,10 +160,12 @@
         (max 0 (- (jrpg-combat-enemy-hp game) amount))))
 
 (defun jrpg-combat-victory (node game)
-  (jrpg-award-victory :xp 4 :gold 6)
+  (jrpg-award-victory :xp (jrpg-combat-victory-xp game)
+                      :gold (jrpg-combat-victory-gold game))
   (play-jrpg-sound "coin" :volume 0.34)
   (setf (jrpg-combat-message game)
-        "the slime is defeated.")
+        (format nil "the ~a is defeated."
+                (string-downcase (jrpg-combat-enemy-name game))))
   (jrpg-combat-finish game (node-success-target node)))
 
 (defun jrpg-combat-defeat (node game)
@@ -136,12 +175,14 @@
   (jrpg-combat-finish game (node-failure-target node)))
 
 (defun jrpg-combat-enemy-turn (node game)
-  (let ((damage (jrpg-combat-enemy-attack)))
+  (let ((damage (jrpg-combat-enemy-attack game)))
     (jrpg-damage-hero damage)
     (play-jrpg-sound "hit" :volume 0.34)
     (if (jrpg-hero-alive-p)
         (setf (jrpg-combat-message game)
-              (format nil "the slime hits you for ~d." damage))
+              (format nil "the ~a hits you for ~d."
+                      (string-downcase (jrpg-combat-enemy-name game))
+                      damage))
         (jrpg-combat-defeat node game))))
 
 (defun jrpg-combat-attack-command (node game)

@@ -46,8 +46,9 @@ Concrete elements:
 
 ** North road
 
-Implemented through =jrpg/overworld=, =jrpg/road-mile-marker=, the hill-road
-approach =jrpg/hill-overworld=, and the return road =jrpg/home-overworld=.
+Implemented through =jrpg/overworld=, =jrpg/road-mile-marker=, the optional
+roadside shrine detour =jrpg/shrine-overworld=, the hill-road approach
+=jrpg/hill-overworld=, and the return road =jrpg/home-overworld=.
 
 Concrete elements:
 
@@ -55,6 +56,8 @@ Concrete elements:
 - mile marker reading =OAKBARROW 1, NORTH TOWER 3=
 - ditch mud
 - slime tracks
+- cart track to a white roadside shrine
+- cracked cup and copper offerings
 - pale hill road
 - switchback to Pell's toll hut
 - rain on the return road
@@ -185,6 +188,15 @@ demon-lord idea.
 - =jrpg/slime-arrives=
 - =jrpg/slime-combat=
 - result branch: =jrpg/slime-retreat=, =jrpg/slime-defeat=, =jrpg/road-clear=
+- =jrpg/road-rest=
+- =jrpg/road-rest-choice=
+- optional shrine branch: =jrpg/shrine-track=, =jrpg/shrine-overworld=,
+  =jrpg/shrine-arrival=, =jrpg/shrine-slime=, =jrpg/shrine-slime-combat=
+- shrine result branch: =jrpg/shrine-clear=, =jrpg/shrine-retreat=,
+  =jrpg/shrine-limp=
+- lunch branch: =jrpg/shrine-lunch=
+- companion shrine branch: =jrpg/shrine-lena=, =jrpg/shrine-nio=,
+  =jrpg/shrine-bram=
 - =jrpg/tower-road=
 - =jrpg/hill-overworld=
 - =jrpg/tower-hill-arrival=
@@ -235,8 +247,11 @@ demon-lord idea.
 - =jrpg-crossed-bridge=
 - =jrpg-read-road-sign=
 - =jrpg-saw-tower=
+- =jrpg-road-shrine-seen=
+- =jrpg-road-detour=
 - =jrpg-last-terrain=
 - =jrpg-overworld-steps=
+- =jrpg-shrine-road-steps=
 - =jrpg-tower-hill-steps=
 - =jrpg-home-road-steps=
 - =jrpg/pell-questions/asked/front-door=
@@ -261,8 +276,8 @@ Current behavior:
 - WASD/arrows movement.
 - Small map with village, bridge, sign, tower, grass.
 - Reaching grass advances to the road mile marker.
-- The same minigame is configured and reused for the hill road and the return
-  road.
+- The same minigame is configured and reused for the roadside shrine, hill road,
+  and return road.
 - Movement stores route/landmark facts and per-road step counts.
 
 Expansion direction:
@@ -283,6 +298,9 @@ Current behavior:
 
 Expansion direction:
 
+- Combat nodes can configure enemy name, HP, attack range, starting message, XP,
+  and gold.
+- The shrine detour uses the same combat minigame for a moss slime.
 - Add more enemies.
 - Add companion effects.
 - Add a separate battle cue only if it does not become too rhythmic.
@@ -320,8 +338,7 @@ Current SFX:
 
 * TODO
 
-- Add more landmark encounters.
-- Add at least one camp/rest scene before the tower.
+- Add more landmark encounters after the shrine.
 - Give each companion a real non-joke beat before Vane.
 - Keep early Vane material concrete and local; do not foreshadow the
   player-from-another-path idea yet.
