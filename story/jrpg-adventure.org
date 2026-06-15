@@ -295,6 +295,8 @@ Current behavior:
 - 2x2 menu: =ATTACK=, =MAGIC=, =ITEM=, =RUN=.
 - Uses JRPG state for HP/MP/gold/potions/xp.
 - Victory, defeat, and retreat set =jrpg-last-battle=.
+- Slimes render as black-and-white pixel blobs with alpha dithering, two dark
+  eye gaps, a subtle row wobble, and a matching floor shadow.
 
 Expansion direction:
 
