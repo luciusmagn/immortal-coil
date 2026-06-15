@@ -480,14 +480,18 @@
     (t
      (let ((node (gethash old-id *nodes*))
            (source (gethash old-id *node-sources*))
+           (source-path (gethash old-id *node-source-paths*))
            (pending-effects (gethash old-id *pending-node-enter-effects*)))
        (remhash old-id *nodes*)
        (remhash old-id *node-sources*)
+       (remhash old-id *node-source-paths*)
        (remhash old-id *pending-node-enter-effects*)
        (setf (node-id node) new-id
              (gethash new-id *nodes*) node)
        (when source
          (setf (gethash new-id *node-sources*) source))
+       (when source-path
+         (setf (gethash new-id *node-source-paths*) source-path))
        (when pending-effects
          (setf (gethash new-id *pending-node-enter-effects*)
                pending-effects))

@@ -55,7 +55,7 @@
 (defparameter *editor-node-id-field*
   (make-instance 'editor-string-field
                  :key :id
-                 :label "ID"
+                 :label "ID (RENAME)"
                  :reader #'node-id))
 
 (defparameter *editor-speaker-field*
