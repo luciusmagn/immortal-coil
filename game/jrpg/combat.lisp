@@ -11,16 +11,21 @@
 (defparameter *jrpg-combat-sfx-volume* 0.42)
 
 (defparameter *jrpg-slime-sprite*
-  #("....####...."
-    "...######..."
-    "..########.."
-    ".##+####+##."
-    ".###....###."
-    "############"
-    "##+##++##+##"
-    ".##########."
-    "..########.."
-    "...##..##..."))
+  #("......######......"
+    "....##########...."
+    "...############..."
+    "..####******####.."
+    ".#####*####*#####."
+    ".####........####."
+    "######......######"
+    "#######....#######"
+    "##################"
+    "###+####++####+###"
+    ".###++######++###."
+    "..###++++++++###.."
+    "...####++++####..."
+    ".....########....."
+    "......##..##......"))
 
 (defvar *jrpg-combat* nil)
 
@@ -31,6 +36,7 @@
   (enemy-max-hp  14)
   (selected      0)
   (message       "a slime draws near.")
+  (elapsed       0.0)
   (finish-target nil)
   (finish-delay  0.0))
 
@@ -42,6 +48,7 @@
                     :enemy-max-hp 14
                     :selected 0
                     :message "a slime draws near."
+                    :elapsed 0.0
                     :finish-target nil
                     :finish-delay 0.0))
 
@@ -189,6 +196,7 @@
 
 (defun update-jrpg-combat-minigame (node dt)
   (let ((game (ensure-jrpg-combat node)))
+    (incf (jrpg-combat-elapsed game) dt)
     (cond
       ((jrpg-combat-finish-target game)
        (decf (jrpg-combat-finish-delay game) dt)
@@ -224,22 +232,44 @@
 
 (defun jrpg-slime-pixel-alpha (cell)
   (case cell
+    (#\* 255)
     (#\# 224)
-    (#\+ 118)
+    (#\+ 124)
     (t nil)))
 
-(defun draw-jrpg-slime-sprite (center-x top scale)
+(defun jrpg-slime-row-offset (row elapsed)
+  (round (* 2.0
+            (sin (+ (* elapsed 2.4)
+                    (* row 0.52))))))
+
+(defun draw-jrpg-slime-shadow (center-x y elapsed)
+  (let* ((pulse (+ 1.0 (* 0.08 (sin (* elapsed 3.0)))))
+         (width (* 116 pulse))
+         (height 12)
+         (left (- center-x (/ width 2))))
+    (loop for offset from 0 below height by 4
+          do (claylib/ll:draw-rectangle
+              (round (+ left (* offset 1.6)))
+              (round (+ y offset))
+              (round (- width (* offset 3.2)))
+              3
+              (claylib::c-ptr
+               (make-color 255 255 255 (- 54 (* offset 4))))))))
+
+(defun draw-jrpg-slime-sprite (center-x top scale elapsed)
   (loop with sprite-width = (length (aref *jrpg-slime-sprite* 0))
         with left = (- center-x (/ (* sprite-width scale) 2))
+        with bounce = (round (* 4.0 (sin (* elapsed 3.0))))
         for row across *jrpg-slime-sprite*
         for y from 0
+        for row-offset = (jrpg-slime-row-offset y elapsed)
         do (loop for cell across row
                  for x from 0
                  for alpha = (jrpg-slime-pixel-alpha cell)
                  when alpha
                    do (claylib/ll:draw-rectangle
-                       (round (+ left (* x scale)))
-                       (round (+ top (* y scale)))
+                       (round (+ left row-offset (* x scale)))
+                       (round (+ top bounce (* y scale)))
                        scale
                        scale
                        (claylib::c-ptr
@@ -253,13 +283,14 @@
                         (- y 42)
                         20
                         (make-color 255 255 255 232))
-    (draw-jrpg-slime-sprite x (- y 4) 9)
+    (draw-jrpg-slime-shadow x (+ y 112) (jrpg-combat-elapsed game))
+    (draw-jrpg-slime-sprite x (- y 8) 7 (jrpg-combat-elapsed game))
     (draw-centered-text
      (format nil "HP ~d/~d"
              (jrpg-combat-enemy-hp game)
              (jrpg-combat-enemy-max-hp game))
      x
-     (+ y 112)
+     (+ y 134)
      16
      (make-color 255 255 255 210))))
 
