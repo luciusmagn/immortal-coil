@@ -15,6 +15,9 @@
 (defconstant +delve-cell+ 46)
 (defconstant +delve-pixel+ 8)
 (defconstant +delve-sight+ 4)
+(defconstant +delve-map-center-y+ 384.0)
+(defconstant +delve-hud-height+ 56.0)
+(defconstant +delve-hud-gap+ 18.0)
 
 (defparameter *delve-sprites*
   '((#\@ . ("..#.."
@@ -238,6 +241,40 @@ hunter answers. Returns nil when the turn ended the delve."
                            (claylib::c-ptr
                             (make-color 255 255 255 alpha))))))))
 
+(defun draw-delve-hud (left top width height floor-index marks)
+  (let* ((hud-top (min (+ top height +delve-hud-gap+)
+                       (- +virtual-height+ +delve-hud-height+ 28.0)))
+         (hud-left left)
+         (status (format nil "floor ~d   marks ~d"
+                         (1+ floor-index)
+                         marks))
+         (controls "wasd or arrows step")
+         (color (make-color 255 255 255 180)))
+    (claylib/ll:draw-rectangle (round hud-left)
+                               (round hud-top)
+                               (round width)
+                               (round +delve-hud-height+)
+                               (claylib::c-ptr
+                                (make-color 0 0 0 230)))
+    (draw-rectangle-outline hud-left
+                            hud-top
+                            width
+                            +delve-hud-height+
+                            (make-color 255 255 255 150)
+                            :thickness 1)
+    (draw-text-at status
+                  (+ hud-left 18)
+                  (+ hud-top 19)
+                  16
+                  color)
+    (draw-text-at controls
+                  (- (+ hud-left width)
+                     18
+                     (text-width controls 16))
+                  (+ hud-top 19)
+                  16
+                  color)))
+
 (defun delve-cell-glyph (session floor-index x y)
   (let ((glyph (delve-glyph-at session x y)))
     (cond
@@ -257,7 +294,7 @@ hunter answers. Returns nil when the turn ended the delve."
          (rows (length grid))
          (cols (length (aref grid 0)))
          (left (- +virtual-center-x+ (/ (* cols +delve-cell+) 2.0)))
-         (top (- 384 (/ (* rows +delve-cell+) 2.0))))
+         (top (- +delve-map-center-y+ (/ (* rows +delve-cell+) 2.0))))
     (loop for y below rows
           do (loop for x below (length (aref grid y))
                    for distance = (max (abs (- x px)) (abs (- y py)))
@@ -275,17 +312,11 @@ hunter answers. Returns nil when the turn ended the delve."
                                                (max 40 alpha)))
                           (when (and (= x px) (= y py))
                             (delve-draw-sprite #\@ cell-left cell-top 255)))))
-    (draw-centered-text (format nil "floor ~d   marks ~d"
-                                (1+ floor-index)
-                                (delve-state session "marks" 0))
-                        +virtual-center-x+
-                        132
-                        16
-                        (make-color 255 255 255 170))
-    (draw-centered-text "wasd or arrows step"
-                        +virtual-center-x+
-                        (- +virtual-height+ 42)
-                        16
-                        (make-color 255 255 255 170))))
+    (draw-delve-hud left
+                    top
+                    (* cols +delve-cell+)
+                    (* rows +delve-cell+)
+                    floor-index
+                    (delve-state session "marks" 0))))
 
 (register-minigame-session-kind :rogue-delve 'rogue-delve-session)
