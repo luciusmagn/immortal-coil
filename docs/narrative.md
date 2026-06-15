@@ -45,6 +45,14 @@ transitions. A branch entry should feel like the next ordinary detail in the
 same situation; only later, or on another route, should the player understand
 that the detail carried them into a different context.
 
+Choices should describe something the current player character can actually do,
+notice, say, or decide. Do not ask the player to choose facts outside that
+character's control, such as which unrelated person happens to meet them at a
+gate. If a choice affects a fact, the causal path should be in-world: the player
+goes to someone, asks for help, takes a route, or uses an established power.
+Reality-warping choices are only acceptable when that power belongs explicitly
+to the branch and is not just an author shortcut.
+
 ## Current Branch Shape
 
 The current branch events are still prototype hooks, but the base-room split
@@ -227,8 +235,8 @@ Current surface:
 
 - `jrpg/inn` reframes the room as an inn room.
 - `jrpg/name` collects the name written on the quest notice.
-- Oakbarrow currently introduces Mira, Toma, Oren, and the companion choices
-  Lena, Nio, and Bram.
+- Oakbarrow currently introduces Mira, Toma, Oren, and the companion routes
+  Lena, Nio, and Bram through ordinary actions before the gate.
 - `jrpg/village-errand` records whether the player dealt with Mira, Toma, or
   Oren before leaving.
 - `jrpg/overworld` is a small overworld-walk minigame leading to companion
@@ -240,8 +248,10 @@ Current surface:
 - `jrpg/sword-choice` settles the visit (duel, terms, or asking about the
   broken swords) into `jrpg-vane-answer`. Vane's hill of broken swords stays
   ordinary JRPG lore; it must not foreshadow the hidden demon-lord idea.
-- `jrpg/inn-return` and `jrpg/ledger-line` close the chapter at Oakbarrow:
-  breakfast one day late, one ledger line, asleep before the candle is out.
+- `jrpg/home-overworld` reuses the overworld minigame for the return road, then
+  `jrpg/home-ambush` reuses turn combat before the bridge.
+- `jrpg/inn-return`, `jrpg/ledger-line`, and `jrpg/fair-choice` close the
+  Oakbarrow chapter into either the fair branch or room-four return.
 
 ## Dream Maze
 

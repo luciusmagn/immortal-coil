@@ -8,7 +8,7 @@ Implemented as the largest current branch spine.
 
 The matchbook path leads into a straight-faced fantasy adventure. It should read
 at first as a bog-standard JRPG demon-lord quest: inn, village, companion,
-overworld, slime, tower, demon lord.
+overworld, slime, tower, demon lord, and a return road.
 
 * Author truth
 
@@ -21,6 +21,8 @@ overworld, slime, tower, demon lord.
   another path. Do not foreshadow this in the early route.
 - Stats, route choices, companion choice, combat results, inventory, and
   village errands should live in the shared store for later hooks and mods.
+- The companion route should come from ordinary actions the player takes before
+  the gate, not from choosing who happens to appear.
 
 * Places
 
@@ -44,7 +46,8 @@ Concrete elements:
 
 ** North road
 
-Implemented through =jrpg/overworld= and =jrpg/road-mile-marker=.
+Implemented through =jrpg/overworld=, =jrpg/road-mile-marker=, and the return
+road =jrpg/home-overworld=.
 
 Concrete elements:
 
@@ -52,6 +55,7 @@ Concrete elements:
 - mile marker reading =OAKBARROW 1, NORTH TOWER 3=
 - ditch mud
 - slime tracks
+- rain on the return road
 
 ** North Tower
 
@@ -189,7 +193,18 @@ demon-lord idea.
 - =jrpg/sword-choice=
 - answer branch: =jrpg/duel= and =jrpg/duel-end=, =jrpg/refuse=, =jrpg/swords=
 - =jrpg/inn-return=
-- =jrpg/ledger-line=, which sleeps back into =base/awake=
+- =jrpg/road-home=
+- =jrpg/home-overworld=
+- =jrpg/home-road-grass=
+- =jrpg/home-ambush=
+- return combat branch: =jrpg/home-clear=, =jrpg/home-limp=
+- =jrpg/bridge-home=
+- =jrpg/oven-warm=
+- terms branch: =jrpg/terms-duel=, =jrpg/terms-terms=, =jrpg/terms-asked=
+- =jrpg/evening-table= or =ledger/breakfast=
+- =jrpg/ledger-line=
+- =jrpg/fair-word=
+- =jrpg/fair-choice=, which leads to =festival/stay= or =jrpg/room-four=
 
 * State keys
 
@@ -214,6 +229,7 @@ demon-lord idea.
 - =jrpg-saw-tower=
 - =jrpg-last-terrain=
 - =jrpg-overworld-steps=
+- =jrpg-home-road-steps=
 - =jrpg-last-battle=
 - =jrpg-tower-approach=
 - =jrpg-demon-approach=
@@ -230,7 +246,8 @@ Current behavior:
 - WASD/arrows movement.
 - Small map with village, bridge, sign, tower, grass.
 - Reaching grass advances to the road mile marker.
-- Movement stores route/landmark facts.
+- The same minigame is configured and reused for the return road.
+- Movement stores route/landmark facts and per-road step counts.
 
 Expansion direction:
 
@@ -275,9 +292,8 @@ Current SFX:
 
 * TODO
 
-- Add more overworld walking and landmark encounters.
+- Add more landmark encounters.
 - Add at least one camp/rest scene before the tower.
-- Add one more combat encounter after the slime.
 - Give each companion a real non-joke beat before Vane.
 - Keep early Vane material concrete and local; do not foreshadow the
   player-from-another-path idea yet.
