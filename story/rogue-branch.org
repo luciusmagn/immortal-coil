@@ -2,7 +2,7 @@
 
 * Status
 
-Stub branch with several implemented nodes.
+Implemented branch spine with two substantial dark branches.
 
 * Entry
 
@@ -24,10 +24,19 @@ The upper dream maze exit leads to a Rogue-inspired dungeon path.
 - =rogue/loot=, where wearing the ring sets =rogue-ring-worn=
 - =rogue/stairs= descends past the carved name; turning back finds the door
   locked from the other side.
-- =rogue/floor-two= and =rogue/cell= end in a room furnished like the base
+- =rogue/floor-two= opens the second landing with armory, cistern, shrine,
+  and the long stair.
+- =rogue/far-hall= and =rogue/cell= find a room furnished like the base
   bedroom, with no lock plate on the inside.
+- =rogue/cell-row= extends that room into a row of cells and can lead into the
+  lights-out branch.
 - =rogue/pillow= hides a half-used matchbook; =rogue/sleep= fades out with
   the torch.
+- =rogue/wake-below= and =rogue/housekeeping= reveal the tally and the
+  dungeon's accounting logic.
+- =rogue/exit-choice= offers the shrine key or keyhole before the climb out.
+- =rogue/candle-choice= closes the upper shrine account before returning to
+  =base/awake=.
 
 * Delve device
 
@@ -48,6 +57,14 @@ device.
   reveal. The bottom room is the bedroom again, with a fresh RETURN IF
   FOUND tag on the bed. Being caught wakes the player on the landing,
   counted, nothing missing except the going down.
+- =below/delve= reuses the same minigame kind with different maps, prefix, and
+  outcome ids.
+
+* Other minigames
+
+- =rogue/stair-maze= reuses the Doom-like maze engine to find the stairs after
+  the cell row.
+- =lightsout/hold-still= reuses the forest hide minigame in absolute dark.
 
 * Audio
 
@@ -59,6 +76,8 @@ device.
   beyond marks.
 - Track inventory facts in the dialog store.
 - Keep prose terse and concrete.
+- Consider a Rogue-specific interrogation later, probably with the clerk in
+  =below/=, now that =dialog-interrogation= exists.
 
 * Dark branches
 

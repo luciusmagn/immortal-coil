@@ -123,17 +123,17 @@
 
 (dialog-text "lightsout/round"
              "you walk the round with the lamplighter, bracket to bracket, and learn the work by sound: the scrape of the taper, the catch of the wick."
-             :next "lightsout/round-2")
+             :next "lightsout/round-flame")
 
-(dialog-text "lightsout/round-2"
+(dialog-text "lightsout/round-flame"
              "and then, each time, the long soft pull as the new flame bends into the dark and is drunk, steadily, like a beast at a trough at evening."
-             :next "lightsout/round-2")
+             :next "lightsout/round-attending")
 
-(dialog-text "lightsout/round-2"
+(dialog-text "lightsout/round-attending"
              "the lamplighter stands by each torch while it is taken, a hand on the bracket, the way a farmer stands at the rail at feeding. not guarding. attending."
-             :next "lightsout/round-2-2")
+             :next "lightsout/round-company")
 
-(dialog-text "lightsout/round-2-2"
+(dialog-text "lightsout/round-company"
              "the dark eats better with company, is the theory, and the theory is the lamplighter's own, and nobody is in a position to argue."
              :next "lightsout/taper")
 
@@ -243,13 +243,13 @@
 
 (dialog-text "lightsout/long-count"
              "you cover it by arithmetic: doors counted, drafts banked, the warm wall your one rail. it takes what it takes."
-             :next "lightsout/long-count-2")
+             :next "lightsout/long-count-arrival")
 
-(dialog-text "lightsout/long-count-2"
+(dialog-text "lightsout/long-count-arrival"
              "when you misstep, nothing catches you, and when you arrive, nothing congratulates you, and you stand at the row's end prouder and lonelier than any light ever left you."
-             :next "lightsout/long-count-2")
+             :next "lightsout/long-count-knock")
 
-(dialog-text "lightsout/long-count-2"
+(dialog-text "lightsout/long-count-knock"
              "the warm wall stayed, is the thing you will keep from it. unfed, unobliged, the pacing held its half step the whole way, and at the last crossing it knocked once, low, level with your hand, and you knocked back, because some accounts are kept in older coin than light."
              :next "lightsout/bracket-relit")
 

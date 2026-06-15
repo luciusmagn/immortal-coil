@@ -54,17 +54,17 @@
 
 (dialog-text "nightshift/palimpsest"
              "the notebook is older than its cover."
-             :next "nightshift/palimpsest-2")
+             :next "nightshift/palimpsest-layers")
 
-(dialog-text "nightshift/palimpsest-2"
+(dialog-text "nightshift/palimpsest-layers"
              "under M-3's pencil, where the rubber has worn the paper soft, an earlier hand shows through, and under that another, the layers going down like wallpaper in an old house."
-             :next "nightshift/palimpsest-3")
+             :next "nightshift/palimpsest-drill")
 
-(dialog-text "nightshift/palimpsest-3"
+(dialog-text "nightshift/palimpsest-drill"
              "the earliest legible layer is just numbers: in for four. hold for four. out for four."
-             :next "nightshift/palimpsest-2")
+             :next "nightshift/palimpsest-relay")
 
-(dialog-text "nightshift/palimpsest-2"
+(dialog-text "nightshift/palimpsest-relay"
              "the notes are a relay, you understand, passed room-keeper to room-keeper down years nobody totals, every generation erasing just enough to make space and never enough to lose the drill. you are not the next one. you are the latest one. the difference is company."
              :next "nightshift/first-watch")
 
@@ -198,29 +198,29 @@
 
 (dialog-text "nightshift/souvenirs"
              "some mornings after recurrence the room comes back carrying. a pine needle on the sill. flour dust in the blanket's weave."
-             :next "nightshift/souvenirs-2")
+             :next "nightshift/souvenirs-ticket")
 
-(dialog-text "nightshift/souvenirs-2"
+(dialog-text "nightshift/souvenirs-ticket"
              "once, pressed flat under the glass of water, a tram ticket, punched, from a city whose name the inventory disputes. the room travels, and files its travels, and you are the cabinet."
-             :next "nightshift/souvenirs-2")
+             :next "nightshift/souvenirs-drawer")
 
-(dialog-text "nightshift/souvenirs-2"
+(dialog-text "nightshift/souvenirs-drawer"
              "you keep them in the drawer with the notebook: needle, dust folded in paper, ticket. the inventory never objects. the drawer was always going to hold this."
-             :next "nightshift/souvenirs-2-2")
+             :next "nightshift/souvenirs-labels")
 
-(dialog-text "nightshift/souvenirs-2-2"
+(dialog-text "nightshift/souvenirs-labels"
              "somewhere in an archive a file gets a line longer each time, and you could write the spine labels yourself now: CROSSING. HILL HOUSE. THIRD DISTRICT. OAKBARROW."
              :next "nightshift/mug")
 
 (dialog-text "nightshift/mug"
              "one tray arrives with a mug on it. grey, designation stenciled, yours, from the staff room locker row you will never stand in again. nobody initials a reason."
-             :next "nightshift/mug-2")
+             :next "nightshift/mug-paperwork")
 
-(dialog-text "nightshift/mug-2"
+(dialog-text "nightshift/mug-paperwork"
              "somebody on the far side simply decided the room side should have its own mug, and fought whatever paperwork that took, and lost the fight quietly, and sent it anyway."
-             :next "nightshift/mug-2")
+             :next "nightshift/mug-tea")
 
-(dialog-text "nightshift/mug-2"
+(dialog-text "nightshift/mug-tea"
              "you drink the acceptable tea from your own mug at the lawful hour, and through the wall the binder's pages turn, and the line being written about you is calm, and the mug is the calmest thing in it."
              :next "nightshift/m3-glass")
 
@@ -288,13 +288,13 @@
 
 (dialog-text "nightshift/take-coat"
              "the coat fits the way the older coat in the locker always promised it would."
-             :next "nightshift/take-coat-2")
+             :next "nightshift/take-coat-watch")
 
-(dialog-text "nightshift/take-coat-2"
+(dialog-text "nightshift/take-coat-watch"
              "on your first watch from the corridor side you draw the curtain back slowly, rings one at a time, and stand away from the glass, and the sleeper inside stirs, and takes the next breath the familiar way, and you hold yours, per the drill, and the drill holds."
-             :next "nightshift/take-coat-2")
+             :next "nightshift/take-coat-date")
 
-(dialog-text "nightshift/take-coat-2"
+(dialog-text "nightshift/take-coat-date"
              "you initial the line M-3 initialed for years, and under it, for the first time, you write the date in full. some dates deserve to be found again. you understand the sentence now from the inside of the hand that writes it."
              :next "nightshift/end-glass")
 

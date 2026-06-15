@@ -57,13 +57,13 @@
 
 (dialog-text "seam/lesson"
              "she beckons you to the kitchen on her lap and puts the needle in your hand, guiding it backward through one stitch. take it out slow, she says."
-             :next "seam/lesson-2")
+             :next "seam/lesson-stitch")
 
-(dialog-text "seam/lesson-2"
+(dialog-text "seam/lesson-stitch"
              "you do, and the stitch gives with a sound like a door closing in another county, and a hand's width of pantry shelf becomes cloth under your fingers."
-             :next "seam/lesson-2")
+             :next "seam/lesson-work")
 
-(dialog-text "seam/lesson-2"
+(dialog-text "seam/lesson-work"
              "one is enough, she says, taking the needle back. now you know the weight of the work, and you will not tell anyone above that it is cruel, because you have felt it, and it is not cruel. it is exact. they are different trades."
              :next "seam/seamstress-talk")
 
@@ -111,13 +111,13 @@
 
 (dialog-text "seam/her-glass"
              "there is one more glass, apart from the shelf, on the table of tables at her right hand: half empty, no line marked. hers."
-             :next "seam/her-glass-2")
+             :next "seam/her-glass-kept")
 
-(dialog-text "seam/her-glass-2"
+(dialog-text "seam/her-glass-kept"
              "she drinks from it while she works, the only drinking glass in the under-court, and you understand that living here is its own kind of keeping, and that somebody, therefore, keeps her."
-             :next "seam/her-glass-2")
+             :next "seam/her-glass-question")
 
-(dialog-text "seam/her-glass-2"
+(dialog-text "seam/her-glass-question"
              "you do not ask who fills it. some questions are doors, and you have learned which way this one opens, and that you are not on the opening side."
              :next "seam/stray")
 
@@ -174,13 +174,13 @@
 
 (dialog-text "seam/adopt"
              "she ties the small room's thread beside your own, two strands on one wrist, and the knot she uses has no name above ground."
-             :next "seam/adopt-2")
+             :next "seam/adopt-knot")
 
-(dialog-text "seam/adopt-2"
+(dialog-text "seam/adopt-knot"
              "the room comes in against your side, boards to your boot, the way a thing comes in that has decided about you. promises take all of it, she says again, but gently, the way you bless someone."
-             :next "seam/adopt-2")
+             :next "seam/adopt-room")
 
-(dialog-text "seam/adopt-2"
+(dialog-text "seam/adopt-room"
              "from now on, she says, your room has a small room in it, somewhere a wall used to be honest. keep them both watered. she means the glasses. you will stand two glasses now, each to its line, and the second one is lower, child height."
              :next "seam/parting")
 
@@ -189,13 +189,13 @@
 
 (dialog-text "seam/finish"
              "you sit with the small room while she takes it out. it lies flat for her now, which it never has, because somebody is sitting with it, and that was the whole holdout, all these years."
-             :next "seam/finish-2")
+             :next "seam/finish-lamp")
 
-(dialog-text "seam/finish-2"
+(dialog-text "seam/finish-lamp"
              "she unpicks the lamp last of all, lit for the first stitch and the last, and winds its evening light into the heart of the spool."
-             :next "seam/finish-2")
+             :next "seam/finish-spool")
 
-(dialog-text "seam/finish-2"
+(dialog-text "seam/finish-spool"
              "the chalk she writes on the spool is one word long, and she lets you write it, and you write the word you would want on yours, and she reads it and nods once, and shelves it where the afternoon light lands longest."
              :next "seam/parting")
 

@@ -328,6 +328,12 @@ Current surface:
 - `rogue/delve` is the long stair: the reusable pixel-sprite crawl with
   store-persisted progress. Its bottom room is the bedroom with a fresh
   wrist tag; marks gathered tie back to the chalk tally.
+- `rogue/stair-maze` reuses the Doom-like maze engine to find the stairs after
+  the cell row, and `lightsout/hold-still` reuses the hiding minigame in the
+  lights-out branch.
+- `rogue/housekeeping`, `rogue/exit-choice`, and `rogue/candle-choice` carry
+  the branch back out through inventory/accounting choices instead of ending
+  immediately at the first bedroom echo.
 
 ## Containment Researcher
 
