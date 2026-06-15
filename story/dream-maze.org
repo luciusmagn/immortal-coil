@@ -2,7 +2,8 @@
 
 * Status
 
-Implemented as a Doom-like dream-branch surface.
+Implemented as a Doom-like dream-branch surface with authored bridge tissue
+before and after the maze.
 
 * Role
 
@@ -19,10 +20,17 @@ It should not explain that it is selecting a genre.
 
 * Current surface
 
+- =dream/drift= through =dream/no-map= turns sleep into a corridor and
+  pads the transition before the minigame.
 - =dream/maze= runs the Doom-like maze minigame.
 - Left exit leads to Alice.
 - Upper exit leads to Rogue.
-- Right exit should lead toward containment researcher.
+- Right exit leads through =dream/right-exit=, =dream/right-line=,
+  =dream/right-window=, =dream/right-card=, =dream/right-threshold=, and
+  =dream/right-knock= before containment grafts in.
+- Lost/failure leads through =dream/maze-lost=, =dream/lost-wall=,
+  =dream/lost-count=, =dream/lost-light=, =dream/lost-coat=, and
+  =dream/lost-follow= before containment grafts in.
 
 * Audio and visual
 
@@ -32,4 +40,5 @@ It should not explain that it is selecting a genre.
 * TODO
 
 - Make exits more visually legible but still diegetic.
-- Make lost/failure lead to authored content.
+- Add more dream-local cues for repeated visits without turning the maze into
+  a literal genre picker.

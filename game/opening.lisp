@@ -593,10 +593,66 @@
 
 (dialog-text "dream/drift"
              "a few moments later, you fall asleep"
+             :next "dream/blanket")
+
+(dialog-text "dream/blanket"
+             "the blanket does not get heavier. the room gets quieter under it, as if somebody has put the whole house under a glass and set the glass down carefully."
+             :next "dream/bed-edge")
+
+(dialog-text "dream/bed-edge"
+             "your hand finds the edge of the mattress and then keeps finding it, edge after edge, each one lower than the last. you do not move. the room is doing the lowering."
+             :next "dream/night-stand")
+
+(dialog-text "dream/night-stand"
+             "the night stand is still beside you for a while, falling at the same pace. the glass on it holds its water perfectly level, which is how you know the falling is serious."
+             :next "dream/glass-level")
+
+(dialog-text "dream/glass-level"
+             "you watch the water for proof of motion. no ripple, no tilt, no meniscus climbing the side. the room can fall forever, apparently, provided it keeps good manners."
+             :next "dream/drawer-open")
+
+(dialog-text "dream/drawer-open"
+             "one drawer slides open by a finger's width. inside is only darkness, folded with your clothes, and the smell of paper matches after rain."
+             :next "dream/door-below")
+
+(dialog-text "dream/door-below"
+             "below the bed, where floor should be, a door passes in the dark: brass handle first, then keyhole, then the panel. it is not the bedroom door. it is one of the doors the bedroom keeps in reserve."
+             :next "dream/first-step")
+
+(dialog-text "dream/first-step"
+             "you put one foot down because sleep has rules about dignity, and the first stair accepts it. the bed is gone when you look back. the stair remembers it for you."
+             :next "dream/stair-memory")
+
+(dialog-text "dream/stair-memory"
+             "each step behind you becomes a piece of bedroom again: blanket, floorboard, chair leg, the brass shine of a key. none of it follows. the stair is returning what it borrowed."
              :next "dream/fall")
 
 (dialog-text "dream/fall"
              "you feel a falling sensation"
+             :next "dream/fall-2")
+
+(dialog-text "dream/fall-2"
+             "then the sensation becomes a place: walls at arm's length, ceiling too high to test, floor smooth enough that your steps arrive late, like sound through water."
+             :next "dream/corners")
+
+(dialog-text "dream/corners"
+             "corners appear before you reach them and vanish behind you without drama. the corridor is not changing. you are only seeing as much of it as sleep allows at once."
+             :next "dream/line")
+
+(dialog-text "dream/line"
+             "a thin white line runs along the floor. it does not point anywhere. it only proves there is a floor. you follow it because proof is better than dark."
+             :next "dream/intersection")
+
+(dialog-text "dream/intersection"
+             "the line reaches an intersection and splits three ways without choosing for you. left, upper, right. all three branches are equally ordinary until you stand before one."
+             :next "dream/listen")
+
+(dialog-text "dream/listen"
+             "from the left comes falling air. from above, dry stone. from the right, a quiet mechanical hum that might be a light or a machine, if dreams cared about the difference."
+             :next "dream/no-map")
+
+(dialog-text "dream/no-map"
+             "there is no map. you know this with the certainty dreams allow, and also with the certainty of a person who has already been expected somewhere without being told where."
              :next "dream/maze")
 
 (dialog-minigame "dream/maze"
@@ -613,8 +669,68 @@
 
 (dialog-text "dream/right-exit"
              "past the right exit, the corridor straightens, and a painted line runs down the middle of the floor. the door at the end has the same handle as the one that was behind you."
+             :next "dream/right-line")
+
+(dialog-text "dream/right-line"
+             "the painted line is not bright. it is old floor paint, rubbed thin where many shoes have obeyed it. yours fall into the same lane before you decide to be careful."
+             :next "dream/right-window")
+
+(dialog-text "dream/right-window"
+             "a window passes on the left. behind it is a dark room with a bed and a small table. you see it for less than a breath, not long enough to make it yours, long enough to know it was there."
+             :next "dream/right-clipboard")
+
+(dialog-text "dream/right-clipboard"
+             "a clipboard hangs below the window. the paper on it has boxes, dates, and one line of handwriting dragged through by a black bar. you keep walking before the words arrange themselves."
+             :next "dream/right-card")
+
+(dialog-text "dream/right-card"
+             "something flat taps your chest when you walk: a card on a cord, blank side out. you do not remember putting it on. the cord is warm where it crosses the back of your neck."
+             :next "dream/right-name")
+
+(dialog-text "dream/right-name"
+             "you turn the card over. whatever was printed there has been rubbed white by a thumb. below the blank is a small ruled space, waiting for a designation."
+             :next "dream/right-threshold")
+
+(dialog-text "dream/right-threshold"
+             "at the door, the painted line ends under your toes. on the other side, someone has already turned on a desk lamp."
+             :next "dream/right-knock")
+
+(dialog-text "dream/right-knock"
+             "you do not knock. somebody on the other side writes once, a small check mark on paper, and the door opens before your hand reaches the handle."
              :next "base/awake")
 
 (dialog-text "dream/maze-lost"
              "you lose the thread of which corridor came first."
+             :next "dream/lost-wall")
+
+(dialog-text "dream/lost-wall"
+             "you stop with one hand on the wall. the wall is cool, painted, and very slightly rough, the way corridor paint gets rough when it has been washed too often."
+             :next "dream/lost-count")
+
+(dialog-text "dream/lost-count"
+             "you count backward from ten because that is what people do when they do not want to admit they are calling for help. at six, a second set of footsteps joins yours and keeps the same count."
+             :next "dream/lost-light")
+
+(dialog-text "dream/lost-light"
+             "a light appears around the next corner, not bright, not friendly, just official enough that the dark steps back from it. the footsteps stop before you turn."
+             :next "dream/lost-sign")
+
+(dialog-text "dream/lost-sign"
+             "beside the light, a wall sign points both directions with the same arrow. the word under the arrows has been painted over so many times it has become a raised white block."
+             :next "dream/lost-coat")
+
+(dialog-text "dream/lost-coat"
+             "there is a grey coat in the light. you cannot see the face above it yet. the coat waits with the posture of someone assigned to wait."
+             :next "dream/lost-page")
+
+(dialog-text "dream/lost-page"
+             "the coat holds one page on a clipboard. your name is not on it. that should be comforting, but the blank beside NAME is too clean, too ready."
+             :next "dream/lost-found")
+
+(dialog-text "dream/lost-found"
+             "when you reach the corner, the coat turns in the direction the corridor has already decided you will go."
+             :next "dream/lost-follow")
+
+(dialog-text "dream/lost-follow"
+             "you follow because being lost has already made one decision for you, and because the coat walks at the pace of someone who knows exactly how slowly a frightened person can move."
              :next "base/awake")

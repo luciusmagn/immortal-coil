@@ -62,6 +62,9 @@ should avoid looking like a genre picker or a symbolic object menu:
 - `base/thirst`, `base/match`, and `base/unlock-door`: route through actions
   discovered while exploring the room.
 - `base/sleep`: enters the dream maze.
+- `dream/drift` through `dream/no-map`: pads the sleep transition into
+  the maze so the branch surface feels like a place rather than an instant
+  selector.
 - `dream/maze`: routes by minigame outcome map (:left, :upper, :right).
 
 This is acceptable for proving the graph, minigame, music, particle, and mod
@@ -277,9 +280,10 @@ Current surface:
 - `dream/maze` runs the Doom-like maze minigame.
 - A left exit leads to Alice.
 - An upper exit leads to Rogue.
-- A right exit should lead toward the containment-researcher path.
-- Failure/lost results should also lead into authored content, not a literal
-  loop back to the opening.
+- A right exit leads through `dream/right-exit` to `dream/right-knock`,
+  where containment grafts in through `facility-desk-target`.
+- Lost results lead through `dream/maze-lost` to `dream/lost-follow`, where the
+  grey-coat escort enters before containment grafts in at `facility/found`.
 
 ## Alice Branch
 
