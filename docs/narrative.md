@@ -244,6 +244,9 @@ Current surface:
 - `jrpg/slime-combat` is an early-Final-Fantasy-style turn combat minigame.
 - `jrpg/tower-choice` records the tower approach.
 - Pell, the tower steward, introduces the tower approach choices.
+- `jrpg/pell-questions` is the first dogfooded interrogation helper: a
+  question menu that asks Pell about the front door, side stair, and morning
+  bell before approach selection.
 - `jrpg/demon-choice` records how the player approaches Vane.
 - `jrpg/sword-choice` settles the visit (duel, terms, or asking about the
   broken swords) into `jrpg-vane-answer`. Vane's hill of broken swords stays

@@ -193,6 +193,129 @@
                            parsed-options))
          ,parent))))
 
+  (-> dialog-interrogation-asked-key (t t) dialog-store-key)
+  (defun dialog-interrogation-asked-key (parent suffix)
+    (format nil "~a/asked/~a"
+            (dialog-id-string parent)
+            (dialog-id-fragment suffix)))
+
+  (-> dialog-interrogation-question-target (symbol dialog-pattern-option-data)
+      cons)
+  (defun dialog-interrogation-question-target (parent option)
+    `(dialog-child-id ,parent ,(dialog-pattern-option-suffix option)))
+
+  (-> dialog-interrogation-question-unless
+      (symbol dialog-pattern-option-data)
+      cons)
+  (defun dialog-interrogation-question-unless (parent option)
+    (let ((suffix (dialog-pattern-option-suffix option))
+          (custom-unless (dialog-pattern-option-key option :unless nil)))
+      (if custom-unless
+          `#'(lambda ()
+               (or (dialog-value
+                    (dialog-interrogation-asked-key ,parent ,suffix))
+                   (dialog-condition-true-p ,custom-unless)))
+          `#'(lambda ()
+               (dialog-value
+                (dialog-interrogation-asked-key ,parent ,suffix))))))
+
+  (-> dialog-interrogation-question-option-form
+      (symbol dialog-pattern-option-data)
+      cons)
+  (defun dialog-interrogation-question-option-form (parent option)
+    `(dialog-option ,(getf option :label)
+                    ,(dialog-interrogation-question-target parent option)
+                    :when ,(dialog-pattern-option-key option :when t)
+                    :unless ,(dialog-interrogation-question-unless parent
+                                                                   option)
+                    :enabled-when
+                    ,(dialog-pattern-option-key option :enabled-when t)
+                    :enabled-unless
+                    ,(dialog-pattern-option-key option :enabled-unless nil)))
+
+  (-> dialog-interrogation-all-asked-condition
+      (symbol list)
+      cons)
+  (defun dialog-interrogation-all-asked-condition (parent options)
+    `#'(lambda ()
+         (and ,@(loop for option in options
+                      collect `(dialog-value
+                                (dialog-interrogation-asked-key
+                                 ,parent
+                                 ,(dialog-pattern-option-suffix option)))))))
+
+  (-> dialog-interrogation-continue-option-form
+      (symbol string t boolean list)
+      cons)
+  (defun dialog-interrogation-continue-option-form (parent
+                                                    label
+                                                    target
+                                                    require-all-p
+                                                    options)
+    `(dialog-option ,label
+                    ,target
+                    :when ,(if require-all-p
+                               (dialog-interrogation-all-asked-condition
+                                parent
+                                options)
+                               t)))
+
+  (-> dialog-interrogation-question-answer-forms
+      (symbol dialog-pattern-option-data)
+      list)
+  (defun dialog-interrogation-question-answer-forms (parent option)
+    (let ((texts (getf option :texts))
+          (suffix (dialog-pattern-option-suffix option))
+          (speaker (dialog-pattern-option-key option :speaker nil)))
+      (if texts
+          `((dialog-on-enter
+             ,(dialog-interrogation-question-target parent option)
+             `(setf (dialog-value
+                     ,(dialog-interrogation-asked-key ,parent ,suffix))
+                    t))
+            (dialog-define-interrogation-answer
+             ,(dialog-interrogation-question-target parent option)
+             (list ,@texts)
+             :speaker ,speaker
+             :next ,parent))
+          `((runtime-warn
+             "Dialog interrogation question has no answer text under ~a: ~a"
+             ,parent
+             ,(getf option :label))))))
+
+  (-> dialog-interrogation-expansion (t t list) cons)
+  (defun dialog-interrogation-expansion (id prompt body)
+    (multiple-value-bind (question-specs keys)
+        (dialog-pattern-read-body body)
+      (let* ((parent (gensym "PARENT-"))
+             (options (mapcar #'dialog-pattern-option question-specs))
+             (target (getf keys :next))
+             (continue-label (or (getf keys :continue-label) "continue"))
+             (require-all-p (not (null (getf keys :require-all)))))
+        `(let ((,parent ,id))
+           (dialog-pick
+            ,parent
+            ,prompt
+            ,@(mapcar (lambda (option)
+                        (dialog-interrogation-question-option-form parent
+                                                                   option))
+                      options)
+            ,(dialog-interrogation-continue-option-form
+              parent
+              continue-label
+              (or target
+                  `(progn
+                     (runtime-warn "Dialog interrogation needs :next: ~a"
+                                   ,parent)
+                     *runtime-fallback-node-id*))
+              require-all-p
+              options))
+           ,@(loop for option in options
+                   append (dialog-interrogation-question-answer-forms
+                           parent
+                           option))
+           ,parent))))
+
 (-> dialog-define-path (t list &key (:next (option dialog-id))) dialog-id)
 (defun dialog-define-path (id texts &key next)
   (let ((path-id (dialog-id-string id)))
@@ -227,3 +350,31 @@
 
 (defmacro dialog-list-path (id prompt &body options)
   (dialog-choice-pattern-expansion 'dialog-list id prompt options))
+
+(-> dialog-define-interrogation-answer
+    (t list &key (:speaker (option string)) (:next (option dialog-target)))
+    dialog-id)
+(defun dialog-define-interrogation-answer (id texts &key speaker next)
+  (let ((path-id (dialog-id-string id)))
+    (if speaker
+        (if texts
+            (loop with count = (length texts)
+                  for text in texts
+                  for step from 1
+                  for node-id = (dialog-path-node-id path-id step)
+                  for next-id = (cond
+                                  ((< step count)
+                                   (dialog-path-node-id path-id (1+ step)))
+                                  (next
+                                   next))
+                  do (dialog-say node-id
+                                 speaker
+                                 (dialog-path-text-string text)
+                                 :next next-id))
+            (runtime-warn "Dialog interrogation answer has no text: ~a"
+                          path-id))
+        (dialog-define-path path-id texts :next next))
+    path-id))
+
+(defmacro dialog-interrogation (id prompt &body body)
+  (dialog-interrogation-expansion id prompt body))

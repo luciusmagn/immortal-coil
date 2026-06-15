@@ -140,6 +140,7 @@ Tower steward. Manages slate, front door, side stair, and morning bell.
 Current nodes:
 
 - =jrpg/tower-steward=
+- =jrpg/pell-questions=
 - =jrpg/tower-front=
 - =jrpg/tower-wait=
 - =jrpg/chapter-end=
@@ -183,6 +184,7 @@ demon-lord idea.
 - result branch: =jrpg/slime-retreat=, =jrpg/slime-defeat=, =jrpg/road-clear=
 - =jrpg/tower-road=
 - =jrpg/tower-steward=
+- =jrpg/pell-questions=
 - =jrpg/tower-choice=
 - tower branch: =jrpg/tower-front=, =jrpg/tower-side=, =jrpg/tower-wait=
 - =jrpg/demon-hall=
@@ -230,6 +232,9 @@ demon-lord idea.
 - =jrpg-last-terrain=
 - =jrpg-overworld-steps=
 - =jrpg-home-road-steps=
+- =jrpg/pell-questions/asked/front-door=
+- =jrpg/pell-questions/asked/side-stair=
+- =jrpg/pell-questions/asked/morning-bell=
 - =jrpg-last-battle=
 - =jrpg-tower-approach=
 - =jrpg-demon-approach=
@@ -270,6 +275,17 @@ Expansion direction:
 - Add more enemies.
 - Add companion effects.
 - Add a separate battle cue only if it does not become too rhythmic.
+
+** Interrogation
+
+Helper: =dialog-interrogation=
+
+Current behavior:
+
+- Pell has the first JRPG question menu at =jrpg/pell-questions=.
+- Questions are hidden after being asked by store flags.
+- =:require-all t= holds the approach choice until all three practical
+  questions have been asked.
 
 * Audio
 

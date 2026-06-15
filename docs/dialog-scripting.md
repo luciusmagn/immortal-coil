@@ -74,6 +74,29 @@ Conditions work like normal choices:
  "the hatch opens with a sound like a bad tooth.")
 ```
 
+## Interrogations
+
+`dialog-interrogation` creates a Visual-Novel-style question menu. Each asked
+question writes an `ID/asked/QUESTION` flag into the shared store, hides itself,
+and returns to the question menu. Use `:require-all t` when the continue option
+should appear only after every question has been asked.
+
+```lisp
+(dialog-interrogation "my-mod/clerk-questions"
+                      "the clerk waits with the ledger open."
+                      (:next "my-mod/after-clerk")
+                      (:continue-label "finish")
+                      (:require-all t)
+                      ("ask about the key"
+                       :id "key"
+                       :speaker "clerk"
+                       "the key was signed out before dawn.")
+                      ("ask about the room"
+                       :id "room"
+                       :speaker "clerk"
+                       "room four is paid through winter."))
+```
+
 The visual editor expands these helpers into ordinary graph nodes when reading a
 script. Export still writes primitive `dialog-*` forms.
 

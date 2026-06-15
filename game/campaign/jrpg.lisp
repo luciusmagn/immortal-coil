@@ -279,7 +279,25 @@
                                    "{player-name}, from Oakbarrow.")
                      (dialog-left "Pell"
                                   "front door is honest, side stair is faster, morning bell is safer.")
-                     :next "jrpg/tower-choice")
+                     :next "jrpg/pell-questions")
+
+(dialog-interrogation "jrpg/pell-questions"
+                      "Pell keeps the slate open while the hill wind moves dust across the path."
+                      (:next "jrpg/tower-choice")
+                      (:continue-label "choose an approach")
+                      (:require-all t)
+                      ("ask about the front door"
+                       :id "front-door"
+                       :speaker "Pell"
+                       "front door means he sees you coming and you see him seeing you. some people prefer that. some people need it.")
+                      ("ask about the side stair"
+                       :id "side-stair"
+                       :speaker "Pell"
+                       "side stair is narrow, clean, and nobody writes songs about it. mind the loose fourth step from the top.")
+                      ("ask about the morning bell"
+                       :id "morning-bell"
+                       :speaker "Pell"
+                       "morning bell is for people who want a night's sleep before deciding they are brave. i ring it either way."))
 
 
 ;;; Tower approach

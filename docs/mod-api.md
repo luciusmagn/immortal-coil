@@ -323,6 +323,29 @@ Available helper macros:
 - `dialog-choice-path`
 - `dialog-pick-path`
 - `dialog-list-path`
+- `dialog-interrogation`
+
+Interrogations are reusable question menus:
+
+```lisp
+(dialog-interrogation "my-mod/witness"
+                      "the witness keeps both hands on the table."
+                      (:next "my-mod/after-witness")
+                      (:continue-label "enough")
+                      (:require-all t)
+                      ("ask about the hallway"
+                       :id "hallway"
+                       :speaker "witness"
+                       "i heard the door before i saw the light.")
+                      ("ask about the light"
+                       :id "light"
+                       :speaker "witness"
+                       "it came under the door, not through the keyhole."))
+```
+
+Each question is hidden after it is asked by storing an
+`ID/asked/QUESTION` flag. `:speaker` makes generated answers `say` nodes;
+without it, answers are plain text nodes.
 
 ## Node Effects
 
