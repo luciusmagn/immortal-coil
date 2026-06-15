@@ -585,7 +585,15 @@
 (dialog-particles "ship/crash-return" :warp :immediate t)
 
 (dialog-text "ship/crash-return"
-             "white lines fill your eyes. when you blink them away, the alarm is still sounding."
+             "white lines fill your eyes, all of them running away from a black point you cannot look away from."
+             :next "ship/crash-return-hands")
+
+(dialog-text "ship/crash-return-hands"
+             "your hands are still on the controls. the gloves have creased white at the knuckles. you cannot feel the pressure yet, only see where it should hurt."
+             :next "ship/crash-return-alarm")
+
+(dialog-text "ship/crash-return-alarm"
+             "the lines break apart. the bridge comes back in pieces: console, warning strip, checklist, alarm."
              :next "ship/alarm")
 
 

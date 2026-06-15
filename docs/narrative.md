@@ -176,9 +176,10 @@ Current surface:
   shift: dark bridge, one cup on the rack, the manual open to the player's
   procedure.
 - Failure loops back into the same alarm without explaining the loop, and
-  silently counts in the `ship-failures` store key. The crash-return beat
-  switches briefly to the `:warp` particle field, so the private loop has a
-  white-line effect screen without prose explaining it.
+  silently counts in the `ship-failures` store key. The crash-return sequence
+  (`ship/crash-return`, `ship/crash-return-hands`,
+  `ship/crash-return-alarm`) stays under the `:warp` particle field, so the
+  private loop has a white-line effect screen without prose explaining it.
 - `ship/bridge` and `ship/praise` introduce Imari (logs) and Voss (lanes);
   the crew's praise reads as a compliment and is meant to sting later.
 - `ship/galley-remembered` is the first memory intrusion: Voss's burned
