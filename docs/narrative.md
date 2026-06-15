@@ -334,6 +334,9 @@ Current surface:
 - `rogue/stair-maze` reuses the Doom-like maze engine to find the stairs after
   the cell row, and `lightsout/hold-still` reuses the hiding minigame in the
   lights-out branch.
+- `below/clerk-questions` reuses the interrogation helper for the clerk: ask
+  about the auditors, the ajar door, and what the ledger wants before the branch
+  returns to the ribbon book.
 - `rogue/housekeeping`, `rogue/exit-choice`, and `rogue/candle-choice` carry
   the branch back out through inventory/accounting choices instead of ending
   immediately at the first bedroom echo.
@@ -408,7 +411,8 @@ each parent path's section and org file.
 - alice: `seam/` — following the white thread down under the table to
   the compost of doors, where unkept rooms go. DONE (20.1 min).
 - rogue: `below/` — the bookkeeping floors beneath the tally, and the
-  clerk met in person. Two-hunter delve. DONE (20.3 min).
+  clerk met in person. Two-hunter delve and clerk interrogation. DONE
+  (20.3 min before the interrogation expansion).
 - rogue: `lightsout/` — the torch economy fails: a sight-starved delve
   and the etiquette of feeding the dark. DONE (20.4 min).
 - facility: `nightshift/` — reassigned to the room side of the glass:

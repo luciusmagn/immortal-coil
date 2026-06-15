@@ -123,16 +123,28 @@
                                    "you keep all of it. every floor. every step.")
                      (dialog-left "the clerk"
                                   "somebody has to. a dungeon is a building that has decided to keep happening. the deciding takes minutes. the minutes are these. sit, i said. the chair is for sitting, not for symbolism.")
-                     :next "below/clerk-2")
+                     :next "below/clerk-questions")
 
-(dialog-conversation "below/clerk-2"
-                     (dialog-left "the clerk"
-                                  "the pair in the walls are auditors. they check my figures against the floors, step against entry, breath against margin. there were not always two.")
-                     (dialog-right "you"
-                                   "what happened?")
-                     (dialog-left "the clerk"
-                                  "a discrepancy. once. one delver went a single hour unlogged, and for that hour the third floor did not entirely exist, and what it did instead is not in any book, because that is what unlogged means. never again. hence the pair.")
-                     :next "below/ribbon-book")
+(dialog-interrogation "below/clerk-questions"
+                      "the clerk leaves the pen uncapped, point resting on a blotter cut to the size of a cell."
+                      (:next "below/ribbon-book")
+                      (:continue-label "let the clerk continue")
+                      (:require-all t)
+                      ("ask about the auditors"
+                       :id "auditors"
+                       :speaker "the clerk"
+                       "the pair in the walls check my figures against the floors, step against entry, breath against margin. there were not always two."
+                       "a discrepancy. once. one delver went a single hour unlogged, and for that hour the third floor did not entirely exist, and what it did instead is not in any book, because that is what unlogged means. never again. hence the pair.")
+                      ("ask why the door was ajar"
+                       :id "ajar-door"
+                       :speaker "the clerk"
+                       "once a tenure i leave one door ajar without choosing which one. the building chooses the rest. if nobody comes, the hinge gets oiled and the entry is voided."
+                       "if someone comes, i receive them. that is all a summons is down here: a door doing its part before the person knows there is a part.")
+                      ("ask what the ledger wants"
+                       :id "ledger-wants"
+                       :speaker "the clerk"
+                       "wanting is expensive language. the ledger records. the building wants the recording done correctly. the people inside it want to leave with something carried out."
+                       "i am employed at the narrow place where those wants can share a desk without tearing the paper. it is not dignified work. it is necessary work."))
 
 (dialog-text "below/ribbon-book"
              "on the desk's far corner lies one ledger apart from all the others, closed, tied shut with a ribbon gone grey. the discrepancy's book. the clerk does not look at it, with the particular skill of someone who has practiced not looking at one thing for a very long time."
