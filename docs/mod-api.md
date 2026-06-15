@@ -373,6 +373,7 @@ Built-in particle fields:
 
 - `:rising`
 - `:stars`
+- `:warp`
 - `:title-menu`
 
 Mods may register a new particle field:

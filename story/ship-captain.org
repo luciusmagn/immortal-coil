@@ -39,7 +39,8 @@ The glass of water path leads into the hard-sci-fi ship captain story.
 - =ship/later= opens the lonely-future interlude behind a lower-third scene
   shift.
 - Failure returns to the same alarm without explaining the mechanism, and
-  silently counts in =ship-failures=.
+  silently counts in =ship-failures=. The failure return uses the =:warp=
+  particle field before fading back to stars on the alarm.
 - =ship/bridge= and =ship/praise= introduce Imari (logs) and Voss (lanes);
   "you make it look rehearsed" is admiration meant to sting later.
 - =ship/galley-remembered= is the first memory intrusion: Voss's burned
@@ -50,7 +51,7 @@ The glass of water path leads into the hard-sci-fi ship captain story.
 * Audio and visual
 
 - Music: =assets/audio/ship-lyria-drone.mp3=
-- Particles: star field should be available from this path.
+- Particles: =:stars= for the ship path and =:warp= for failure returns.
 
 * TODO
 

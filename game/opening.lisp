@@ -253,6 +253,8 @@
              "captain {player-name} to the bridge. the crossing is closing early."
              :next "ship/flight")
 
+(dialog-particles "ship/alarm" :stars :fade-seconds 1.1)
+
 (dialog-minigame "ship/flight"
                  "w/a/s/d or arrow keys steer. hold the ship in the open gates."
                  :game :wire-flight
@@ -579,6 +581,8 @@
 (dialog-on-enter "ship/crash-return"
                  '(setf (dialog-value "ship-failures")
                         (1+ (dialog-value "ship-failures" 0))))
+
+(dialog-particles "ship/crash-return" :warp :immediate t)
 
 (dialog-text "ship/crash-return"
              "white lines fill your eyes. when you blink them away, the alarm is still sounding."

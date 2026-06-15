@@ -96,6 +96,7 @@
                    (:file "system")
                    (:file "rising")
                    (:file "star")
+                   (:file "warp")
                    (:file "field")))
 
                  (:file "play-state")

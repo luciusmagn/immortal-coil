@@ -343,6 +343,8 @@
    (make-instance 'rising-particle-system :id :rising :builtin-p t))
   (register-particle-field-definition
    (make-instance 'star-particle-system :id :stars :builtin-p t))
+  (register-particle-field-definition
+   (make-instance 'warp-particle-system :id :warp :builtin-p t))
   (dialog-particle-field-kind :title-menu
                               :reset #'reset-title-particles
                               :update #'update-title-particles
