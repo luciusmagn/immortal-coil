@@ -59,6 +59,18 @@ sbcl --eval '(require :asdf)' \
 
 Use the title menu: =MODS=, then =EDIT BASE GAME=, =CREATE MOD=, or =EDIT MOD=.
 
+Useful editor bindings:
+
+#+begin_src text
+C-h      show bindings
+C-y      rename current node / edit node details
+C-l      edit node destinations
+C-e      edit current node text
+C-i      insert a node at the current link
+C-r      replace the current node
+C-g      cancel active editor panel
+#+end_src
+
 ** Load Check
 
 #+begin_src sh

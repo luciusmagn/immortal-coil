@@ -125,6 +125,16 @@ Patch a spoken node's speaker:
 (dialog-set-speaker "my-mod/crewman" "navigator")
 ```
 
+Rename a node ID:
+
+```lisp
+(dialog-rename-node "my-mod/old-id" "my-mod/new-id")
+```
+
+Renaming retargets direct string links in the currently loaded graph. Use stable
+IDs once a mod is published; renames are mainly for editor drafts and local
+cleanup.
+
 Use `dialog-set-next` sparingly. Prefer adding choices or writing new nodes
 unless the mod intentionally changes an existing path.
 

@@ -184,7 +184,7 @@
               (setf *editor-mode* :edit-node-fields
                     *editor-node-fields-node-id* (node-id node)
                     *editor-node-fields-field-index* 0
-                    *editor-status-message* "EDITOR: EDITING DETAILS")
+                    *editor-status-message* "EDITOR: EDITING NODE ID/DETAILS")
               (loop for field across fields
                     do (editor-node-field-prime node field))
               (play-choice-switch)

@@ -590,7 +590,7 @@
                                (claylib::c-ptr
                                 (make-color 0 0 0 234)))
     (draw-rectangle-outline left top panel-width panel-height color)
-    (draw-text-at "EDIT DETAILS"
+    (draw-text-at "EDIT NODE ID/DETAILS"
                   (+ left 24)
                   (+ top 18)
                   14
@@ -740,7 +740,7 @@
                  ("C-m" "cycle the current node music")
                  ("C-l" "edit current node destinations")
                  ("C-v" "show or hide predicate-filtered choices")
-                 ("C-y" "edit current node id and details")
+                 ("C-y" "rename current node or edit details")
                  ("C-o" "edit node details or highlighted item")
                  ("C-e" "edit the current node text")
                  ("C-s" "show shared state or save active panel")
