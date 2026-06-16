@@ -17,6 +17,8 @@ but each path should reveal that the player lacked the right context.
   meanings become path-local.
 - Door counting and sound selection are secondary hook points.
 - The room should remain sparse enough that mods can reinterpret it.
+- =base/sleep= should stay direct. Do not pad the bed-refusal path before the
+  dream maze.
 
 * Current nodes
 

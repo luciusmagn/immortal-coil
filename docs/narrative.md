@@ -22,6 +22,10 @@ entries can withhold context, but once the player is inside a path, scenes
 should be grounded in named characters, concrete places, actions, costs, and
 consequences.
 
+Long dialogue blocks look bad in the typewriter UI. Prefer shorter dialogue
+nodes chained together when a real scene beat needs room, but do not add
+extra nodes just to pad an otherwise direct transition.
+
 Becoming concrete does not fix a single canon. A later divergence can still
 recontextualize even grounded material, and the reveal is branch-relative: one route
 may establish that a path was a simulation all along, while another holds it was the
@@ -61,10 +65,7 @@ should avoid looking like a genre picker or a symbolic object menu:
 - `base/exit-bed`: starts the ordinary room interaction.
 - `base/thirst`, `base/match`, and `base/unlock-door`: route through actions
   discovered while exploring the room.
-- `base/sleep`: enters the dream maze.
-- `dream/drift` through `dream/no-map`: pads the sleep transition into
-  the maze so the branch surface feels like a place rather than an instant
-  selector.
+- `base/sleep`: enters the dream maze directly. Do not pad the bed-refusal path.
 - `dream/maze`: routes by minigame outcome map (:left, :upper, :right).
 
 This is acceptable for proving the graph, minigame, music, particle, and mod

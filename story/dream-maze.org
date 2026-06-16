@@ -2,8 +2,7 @@
 
 * Status
 
-Implemented as a Doom-like dream-branch surface with authored bridge tissue
-before and after the maze.
+Implemented as a Doom-like dream-branch surface.
 
 * Role
 
@@ -20,8 +19,8 @@ It should not explain that it is selecting a genre.
 
 * Current surface
 
-- =dream/drift= through =dream/no-map= turns sleep into a corridor and
-  pads the transition before the minigame.
+- =base/sleep= enters =dream/maze= directly. Do not add padding before the
+  minigame.
 - =dream/maze= runs the Doom-like maze minigame.
 - Left exit leads to Alice.
 - Upper exit leads to Rogue.

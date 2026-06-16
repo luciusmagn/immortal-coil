@@ -227,7 +227,7 @@
 
 (dialog-text "base/sleep"
              "you rolled over and went back to sleep, nothing of interest happened..."
-             :next "dream/drift")
+             :next "dream/maze")
 
 
 ;;; Ship captain
@@ -598,70 +598,6 @@
 
 
 ;;; Dream maze
-
-(dialog-text "dream/drift"
-             "a few moments later, you fall asleep"
-             :next "dream/blanket")
-
-(dialog-text "dream/blanket"
-             "the blanket does not get heavier. the room gets quieter under it, as if somebody has put the whole house under a glass and set the glass down carefully."
-             :next "dream/bed-edge")
-
-(dialog-text "dream/bed-edge"
-             "your hand finds the edge of the mattress and then keeps finding it, edge after edge, each one lower than the last. you do not move. the room is doing the lowering."
-             :next "dream/night-stand")
-
-(dialog-text "dream/night-stand"
-             "the night stand is still beside you for a while, falling at the same pace. the glass on it holds its water perfectly level, which is how you know the falling is serious."
-             :next "dream/glass-level")
-
-(dialog-text "dream/glass-level"
-             "you watch the water for proof of motion. no ripple, no tilt, no meniscus climbing the side. the room can fall forever, apparently, provided it keeps good manners."
-             :next "dream/drawer-open")
-
-(dialog-text "dream/drawer-open"
-             "one drawer slides open by a finger's width. inside is only darkness, folded with your clothes, and the smell of paper matches after rain."
-             :next "dream/door-below")
-
-(dialog-text "dream/door-below"
-             "below the bed, where floor should be, a door passes in the dark: brass handle first, then keyhole, then the panel. it is not the bedroom door. it is one of the doors the bedroom keeps in reserve."
-             :next "dream/first-step")
-
-(dialog-text "dream/first-step"
-             "you put one foot down because sleep has rules about dignity, and the first stair accepts it. the bed is gone when you look back. the stair remembers it for you."
-             :next "dream/stair-memory")
-
-(dialog-text "dream/stair-memory"
-             "on each step behind you, bedroom details show in the dark: blanket edge, floorboard grain, chair leg, the brass shine of a key. none of it follows. the stair has been carrying those details with it."
-             :next "dream/fall")
-
-(dialog-text "dream/fall"
-             "you feel a falling sensation"
-             :next "dream/fall-2")
-
-(dialog-text "dream/fall-2"
-             "then the sensation gives you enough detail to stand in: walls at arm's length, ceiling too high to test, floor smooth enough that your steps arrive late, like sound through water."
-             :next "dream/corners")
-
-(dialog-text "dream/corners"
-             "corners appear before you reach them and vanish behind you without drama. the corridor is not changing. you are only seeing as much of it as sleep allows at once."
-             :next "dream/line")
-
-(dialog-text "dream/line"
-             "a thin white line runs along the floor. it does not point anywhere. it only proves there is a floor. you follow it because proof is better than dark."
-             :next "dream/intersection")
-
-(dialog-text "dream/intersection"
-             "the line reaches an intersection and splits three ways without choosing for you. left, upper, right. all three branches are equally ordinary until you stand before one."
-             :next "dream/listen")
-
-(dialog-text "dream/listen"
-             "from the left comes falling air. from above, dry stone. from the right, a quiet mechanical hum that might be a light or a machine, if dreams cared about the difference."
-             :next "dream/no-map")
-
-(dialog-text "dream/no-map"
-             "there is no map. you know this with the certainty dreams allow, and also with the certainty of a person who has already been expected somewhere without being told where."
-             :next "dream/maze")
 
 (dialog-minigame "dream/maze"
                  "w/s or up/down move. a/d or left/right turn. find an exit."
