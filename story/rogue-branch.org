@@ -100,9 +100,6 @@ Store keys:
   a required interrogation menu. Entered through the bottom room's far door at
   =rogue/bottom-choice=; rejoins at =rogue/landing-return=. Keys:
   =below-asked= and =below/clerk-questions/asked/*=.
-- =lightsout/= (done, 20.4 min): the torch economy fails and the delve goes
-  sight-starved. Torches are fodder, the lamplighter walks a feeding rota
-  from the clerk's mother flame, and the etiquette of feeding the dark is
-  learned by touch. Entered from the fourth option on =rogue/row-choice=;
-  forest-hide reused in absolute dark; rejoins at =rogue/stair-hunt=. Key:
-  =lightsout-fed=.
+- =lightsout/=: the torch fails and the delve goes sight-starved. Entered
+  from the fourth option on =rogue/row-choice=; forest-hide is reused in
+  absolute dark; rejoins at =rogue/stair-hunt=. Key: =lightsout-fed=.

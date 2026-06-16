@@ -286,10 +286,8 @@ Current surface:
 - `dream/maze` runs the Doom-like maze minigame.
 - A left exit leads to Alice.
 - An upper exit leads to Rogue.
-- A right exit leads through `dream/right-exit` to `dream/right-knock`,
-  where containment grafts in through `facility-desk-target`.
-- Lost results lead through `dream/maze-lost` to `dream/lost-follow`, where the
-  grey-coat escort enters before containment grafts in at `facility/found`.
+- A right exit leads through `dream/right-exit` into containment.
+- Lost results lead through `dream/maze-lost` into containment.
 
 ## Alice Branch
 
@@ -348,12 +346,8 @@ Current surface:
   about the auditors, the ajar door, and what the ledger wants before the branch
   returns to the ribbon book.
 - `rogue/housekeeping`, `rogue/exit-choice`, and `rogue/candle-choice` carry
-  the branch back out through inventory/accounting choices instead of ending
-  immediately at the first bedroom echo.
-- `rogue/hall-relit`, `rogue/hall-dark`, and `rogue/hall-own` are the padded
-  close: the last shrine choice changes which map/light detail follows the
-  player to the service door, then `rogue/service-door` returns to the base
-  room.
+  the branch back out through inventory/accounting choices. Keep the return
+  short; do not pad it after the shrine choice.
 
 ## Containment Researcher
 
@@ -376,11 +370,10 @@ Author truth:
 
 Current surface:
 
-- `dream/right-exit` shows a straightened corridor with a painted line down the
-  middle of the floor and a familiar door handle. The painted line is the first
-  institutional seed for this path.
-- `game/campaign/containment.lisp` grafts both `dream/right-exit` and
-  `dream/maze-lost` into the facility corridor.
+- `dream/right-exit` shows a straightened corridor with a white floor line,
+  then enters the facility path.
+- `dream/maze-lost` enters the same facility path when the player loses the
+  route.
 - `facility/desk` holds a sign-in sheet already signed three times in the
   player's handwriting; `facility/designation` collects a designation, not a
   name, into `facility-designation`.
@@ -398,11 +391,11 @@ Visual note:
 ## Dark Branches
 
 Every major path is growing two darker, more twisted branches, each with
-its own id prefix (measurable in `scripts/content-report.lisp`) and a 20
-typed-minute floor. Entries obey the gentle-branching rules: in-scene,
-padded, one-of-N choices inside the parent narrative, with
-recontextualization as the engine of the horror. Status notes live with
-each parent path's section and org file.
+its own id prefix (measurable in `scripts/content-report.lisp`). Length
+must be earned by concrete scenes, not padding. Entries obey the
+gentle-branching rules: in-scene, concise, one-of-N choices inside the
+parent narrative, with recontextualization as the engine of the horror.
+Status notes live with each parent path's section and org file.
 
 - ship: `husk/` — boarding a dead sister ship whose logs are in the
   captain's hand and whose manifest is the crew's. DONE (20.5 min).
@@ -427,8 +420,8 @@ each parent path's section and org file.
 - rogue: `below/` — the bookkeeping floors beneath the tally, and the
   clerk met in person. Two-hunter delve and clerk interrogation. DONE
   (20.3 min before the interrogation expansion).
-- rogue: `lightsout/` — the torch economy fails: a sight-starved delve
-  and the etiquette of feeding the dark. DONE (20.4 min).
+- rogue: `lightsout/` — the torch fails and the delve goes sight-starved.
+  DONE.
 - facility: `nightshift/` — reassigned to the room side of the glass:
   the log from inside, the predecessor's notes. DONE (20.2 min).
 - facility: `release/` — decommissioning: files burned on schedule,
@@ -478,10 +471,10 @@ as a crossroads. The built-in graph instead picks at most one waking echo
 per return (`choose-wake-echo` stores it in `wake-echo`, rotating by the
 `wakes` counter) and surfaces it as a binary variant of whichever
 ordinary room beat owns that detail diegetically — thread at the blanket,
-pitch in the drawer, laminate on the lock plate. Path entries are padded
-the same way: `base/drink`, `base/key-turn`, and `base/light-lantern`
-each put an ordinary beat between a trigger choice and the first
-path-owned node, and `ship/wake-after`, `war/knock-again`,
+pitch in the drawer, laminate on the lock plate. Path entries should stay
+brief and diegetic: `base/drink`, `base/key-turn`, and `base/light-lantern`
+are direct action beats before the path-owned node, and `ship/wake-after`,
+`war/knock-again`,
 `forest/threshold-again`, and `facility/desk-again` are revisit variants
 chosen by each path's own flags. Durable artifacts are flagged as they
 are established —

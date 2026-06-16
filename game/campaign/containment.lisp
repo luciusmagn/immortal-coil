@@ -6,8 +6,8 @@
       "facility/desk-again"
       "facility/desk"))
 
-(dialog-set-next "dream/right-knock" #'facility-desk-target)
-(dialog-set-next "dream/lost-follow" "facility/found")
+(dialog-set-next "dream/right-exit" "facility/found")
+(dialog-set-next "dream/maze-lost" "facility/found")
 
 (dialog-text "facility/found"
              "at the next turn a man in a grey coat is waiting. he does not ask who you are, and you follow the painted line with him."

@@ -289,7 +289,7 @@
              :next "forest/dawn-walk")
 
 (dialog-text "forest/dawn-walk"
-             "in daylight the forest is just pines and cold. you keep the road in sight through the trees and walk in the direction the cars went. twice you pass markers you take at first for game trails: ribbons of surveyor's tape, faded pink, tied at shoulder height, spaced the way you would space them to find your way back in the dark."
+             "in daylight the forest is just pines and cold. you keep the road in sight and follow the tire marks. twice you pass faded surveyor's tape tied at shoulder height."
              :next "forest/mailboxes")
 
 (dialog-text "forest/mailboxes"
@@ -406,7 +406,7 @@
              :next "forest/county-dusk")
 
 (dialog-text "forest/county-dusk"
-             "dusk on the far side of the county line looks like dusk anywhere: yard lights coming on one farm at a time, a dog reporting you to nobody, the smell of cut field. you keep waiting for the relief to arrive with it, and what arrives instead is the suspicion that you will miss the pines, which is the cruelest thing the hill has done yet."
+             "dusk beyond the county line looks ordinary: yard lights, wire fence, cut field. relief does not come with it."
              :next "forest/bus-end")
 
 (dialog-on-enter "forest/stay-on"

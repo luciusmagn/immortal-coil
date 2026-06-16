@@ -500,7 +500,7 @@
               :next "ship/later-bridge")
 
 (dialog-text "ship/later-bridge"
-             "the bridge is dark except for the console light. your checklist is still taped beside it, soft at the corners. you cannot remember when you last heard another voice on board. item nine still says count everyone twice, and you still do, both counts agreeing the way they have agreed for longer than you let yourself measure: one."
+             "the bridge is dark except for the console light. your checklist is still taped beside it. item nine says count everyone twice. both counts agree: one."
              :next "ship/later-galley")
 
 (dialog-text "ship/later-galley"
@@ -612,69 +612,9 @@
                                  "dream/right-exit"))
 
 (dialog-text "dream/right-exit"
-             "past the right exit, the corridor straightens, and a painted line runs down the middle of the floor. the door at the end has the same handle as the one that was behind you."
-             :next "dream/right-line")
-
-(dialog-text "dream/right-line"
-             "the painted line is not bright. it is old floor paint, rubbed thin where many shoes have obeyed it. yours fall into the same lane before you decide to be careful."
-             :next "dream/right-window")
-
-(dialog-text "dream/right-window"
-             "a window passes on the left. behind it is a dark room with a bed and a small table. you see it for less than a breath, not long enough to make it yours, long enough to know it was there."
-             :next "dream/right-clipboard")
-
-(dialog-text "dream/right-clipboard"
-             "a clipboard hangs below the window. the paper on it has boxes, dates, and one line of handwriting dragged through by a black bar. you keep walking before the words arrange themselves."
-             :next "dream/right-card")
-
-(dialog-text "dream/right-card"
-             "something flat taps your chest when you walk: a card on a cord, blank side out. you do not remember putting it on. the cord is warm where it crosses the back of your neck."
-             :next "dream/right-name")
-
-(dialog-text "dream/right-name"
-             "you turn the card over. whatever was printed there has been rubbed white by a thumb. below the blank is a small ruled space, waiting for a designation."
-             :next "dream/right-threshold")
-
-(dialog-text "dream/right-threshold"
-             "at the door, the painted line ends under your toes. on the other side, someone has already turned on a desk lamp."
-             :next "dream/right-knock")
-
-(dialog-text "dream/right-knock"
-             "you do not knock. somebody on the other side writes once, a small check mark on paper, and the door opens before your hand reaches the handle."
-             :next "base/awake")
+             "past the right exit, the corridor straightens. a white line runs down the floor. you follow it."
+             :next "facility/found")
 
 (dialog-text "dream/maze-lost"
              "you lose the thread of which corridor came first."
-             :next "dream/lost-wall")
-
-(dialog-text "dream/lost-wall"
-             "you stop with one hand on the wall. the wall is cool, painted, and very slightly rough, the way corridor paint gets rough when it has been washed too often."
-             :next "dream/lost-count")
-
-(dialog-text "dream/lost-count"
-             "you count backward from ten because that is what people do when they do not want to admit they are calling for help. at six, a second set of footsteps joins yours and keeps the same count."
-             :next "dream/lost-light")
-
-(dialog-text "dream/lost-light"
-             "a light appears around the next corner, not bright, not friendly, just official enough that the dark steps back from it. the footsteps stop before you turn."
-             :next "dream/lost-sign")
-
-(dialog-text "dream/lost-sign"
-             "beside the light, a wall sign points both directions with the same arrow. the word under the arrows has been painted over so many times it has become a raised white block."
-             :next "dream/lost-coat")
-
-(dialog-text "dream/lost-coat"
-             "there is a grey coat in the light. you cannot see the face above it yet. the coat waits with the posture of someone assigned to wait."
-             :next "dream/lost-page")
-
-(dialog-text "dream/lost-page"
-             "the coat holds one page on a clipboard. your name is not on it. that should be comforting, but the blank beside NAME is too clean, too ready."
-             :next "dream/lost-found")
-
-(dialog-text "dream/lost-found"
-             "when you reach the corner, the coat turns in the direction the corridor has already decided you will go."
-             :next "dream/lost-follow")
-
-(dialog-text "dream/lost-follow"
-             "you follow because being lost has already made one decision for you, and because the coat walks at the pace of someone who knows exactly how slowly a frightened person can move."
-             :next "base/awake")
+             :next "facility/found")

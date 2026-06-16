@@ -272,7 +272,7 @@
 
 (dialog-say "alice/verdict-record"
             "the card judge"
-            "for the record, before sentence. the room measures as testified, knot notwithstanding. the room smells, per the defendant, of {alice-room-smell}, and the jar agrees. the glass was full at every inspection on file. these facts are now the room's, permanently. the defendant should consider what that means about who keeps whom."
+            "for the record: the room measures as testified. the jar agrees with the defendant on the smell: {alice-room-smell}. the glass was full at every inspection. sentence follows."
             :next "alice/verdict")
 
 (dialog-say "alice/verdict"
@@ -337,7 +337,7 @@
             :next "alice/effects")
 
 (dialog-text "alice/effects"
-             "before release, the clerk returns your effects against signature: exhibit one, the matchbook. exhibit two, the brass key. exhibit three, the paper tag, ink run, first line legible. you did not arrive with any of these, and the clerk's face says arrivals are a formality the court gave up on long before your case. you sign anyway, and the signature comes out steadier than you meant it to."
+             "before release, the clerk returns your effects: matchbook, brass key, paper tag. you did not arrive with them. you sign anyway."
              :next "alice/chambers")
 
 (dialog-say "alice/chambers"
@@ -408,7 +408,7 @@
              :next "alice/stairwell-up")
 
 (dialog-text "alice/stairwell-up"
-             "the stairwell takes you up at exactly the length it always was, which after the chair's warning feels like a courtesy paid to you personally. at the top, the thread goes slack, its work done, and slips off your wrist on its own knot. you catch it before it falls, wind it twice around two fingers the way thread is kept, and put it in your pocket, where the court cannot enter it into anything."
+             "at the top of the stairwell, the thread goes slack and slips off your wrist. you wind it twice around two fingers and put it in your pocket."
              :next "base/awake")
 
 
@@ -730,7 +730,7 @@
              :next "rogue/return-cell")
 
 (dialog-text "rogue/return-cell"
-             "you go back into the cell because it is the room you know, and shut the door, and there is still no lock plate on this side, and tonight that is almost a comfort. you set the ration tin against the door anyway, balanced to fall and wake you, dungeon custom, older than locks and more honest about what it can promise."
+             "you go back into the cell and shut the door. there is still no lock plate on this side. you set the ration tin against the door to wake you if it opens."
              :next "rogue/sleep")
 
 (dialog-on-enter "rogue/pillow"
@@ -803,7 +803,7 @@
              :next "rogue/landing-return")
 
 (dialog-text "rogue/landing-return"
-             "the landing with the three doors. the cistern door stands open now, and from inside comes the sound of water settling, as if something large has just finished crossing it without your permission. on the landing stone, wet prints lead from the cistern to the blank end wall and stop at it, unhurried to the last print."
+             "the landing with the three doors. the cistern door stands open. wet prints lead from the cistern to the blank end wall and stop there."
              :next "rogue/exit-door")
 
 (dialog-text "rogue/exit-door"
@@ -853,53 +853,23 @@
                  '(setf (dialog-value "rogue-candle") "relit"))
 
 (dialog-text "rogue/relight"
-             "you relight it from its neighbor. the wick takes on the second try, and the map above it — older than the others, drawn on cloth — shows its faded corridor again, and the corridor has a small bed marked in it."
-             :next "rogue/hall-out")
+             "you relight it from its neighbor. the old cloth map above it shows a faded corridor and a small bed."
+             :next "rogue/service-door")
 
 (dialog-on-enter "rogue/let-out"
                  '(setf (dialog-value "rogue-candle") "out"))
 
 (dialog-text "rogue/let-out"
-             "you let it stay out. whoever's map it lit has either found the way or stopped needing one, and in both cases the dark over it is now correct."
-             :next "rogue/hall-out")
+             "you let it stay out. the map above it remains unreadable."
+             :next "rogue/service-door")
 
 (dialog-on-enter "rogue/own-candle"
                  '(setf (dialog-value "rogue-candle") "own"))
 
 (dialog-text "rogue/own-candle"
-             "you take a fresh candle, light it, and stand it on the one bare patch of altar, with no map above it yet. wax starts a clean white coin on the stone."
-             :next "rogue/hall-out")
-
-(defun rogue-candle-hall-target ()
-  (let ((candle (dialog-value "rogue-candle" "")))
-    (cond
-      ((string= candle "relit")
-       "rogue/hall-relit")
-      ((string= candle "own")
-       "rogue/hall-own")
-      (t
-       "rogue/hall-dark"))))
-
-(dialog-text "rogue/hall-out"
-             "the upper exit stands open, and beyond it the dark is soft, like a room with the lamp just out. on the threshold you stop and listen once, professionally: water settling, a candle fizzing, and far below, patient as bookkeeping, the pacing, still keeping your hours."
-             :next #'rogue-candle-hall-target)
-
-(dialog-text "rogue/hall-relit"
-             "behind you, the relit candle steadies. the old cloth map above it shows a short corridor ending in a little square room. you have seen that room now, and the drawn bed is in the correct corner."
-             :next "rogue/upper-service")
-
-(dialog-text "rogue/hall-dark"
-             "behind you, the guttered candle stays out. the map above it remains unreadable, which is not the same as blank. you pass it by touch: altar edge, cold wax, stone nick, door frame."
-             :next "rogue/upper-service")
-
-(dialog-text "rogue/hall-own"
-             "behind you, your new candle has no map above it yet. the clean patch of wall receives its light without comment. if someone draws there later, they will have to decide where your room begins."
-             :next "rogue/upper-service")
-
-(dialog-text "rogue/upper-service"
-             "past the exit is a narrow service landing with broom hooks, a bucket, and a door whose hinges face you. its handle is worn on this side, thumb-polished where many hands have checked it before opening."
+             "you take a fresh candle, light it, and set it on the bare patch of altar."
              :next "rogue/service-door")
 
 (dialog-text "rogue/service-door"
-             "you open it carefully. beyond is ordinary dark: boards, stale air, and the shape of a room waiting without torchlight. when you step through, the door closes behind you with a small latch sound you know by now."
+             "past the shrine is a service door. you open it. beyond are boards, stale air, and a room without torchlight."
              :next "base/awake")

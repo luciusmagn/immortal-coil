@@ -27,8 +27,8 @@ card.
 
 * Current surface
 
-- =game/campaign/containment.lisp= grafts both =dream/right-exit= and
-  =dream/maze-lost= into the facility corridor.
+- =dream/right-exit= and =dream/maze-lost= enter the facility corridor
+  directly. Do not add long bridge tissue here.
 - =facility/desk= shows a sign-in sheet already signed three times in the
   player's handwriting.
 - =facility/designation= collects a designation, not a name, into

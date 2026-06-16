@@ -1,70 +1,17 @@
-;;; Lights out: the rogue path's second dark branch. The torch economy
-;;; fails, the delve goes sight-starved, and the etiquette of feeding
-;;; the dark is learned by touch. Entered by pressing on past the
-;;; torch's reach; rejoins at the stair hunt.
+;;; Lights out: the rogue path's second dark branch. The torch fails and
+;;; the delve goes sight-starved. Entered by pressing on past the torch's
+;;; reach; rejoins at the stair hunt.
 
 (dialog-text "lightsout/press"
-             "you press on past the torch's reach, which is a decision the torch takes personally. it burns brown, then small, then honest, and you walk the row watching it die rather than rationing it, because rationing light is how the dark learns you are afraid of it."
+             "you press on past the torch's reach. it gutters brown, then goes out."
              :next "lightsout/dies")
 
 (dialog-text "lightsout/dies"
-             "the torch dies between one door and the next. the dark does not fall. it arrives. it was waiting at the edge of the light the whole time, politely, the way the well-mannered wait, and now it comes in and takes its seat."
-             :next "lightsout/first-minute")
-
-(dialog-text "lightsout/first-minute"
-             "the first minute is the worst, and you know the shape of bad minutes now, so you stand still inside it and count, and at sixty the corridor is still a corridor, your hand is still on stone, and the dark has not done anything except be all of it."
-             :next "lightsout/lessons")
-
-(dialog-text "lightsout/lessons"
-             "the dark teaches by subtraction. with sight gone, the corridor hands you what is left: the draft on your right cheek that means a cross-passage, the floor's worn middle underfoot, the count of doors by their frames, four boards apart, knuckle height."
-             :next "lightsout/lessons-2")
-
-(dialog-text "lightsout/lessons-2"
-             "doors, you learn, breathe. a shut room exhales under its door as you pass, a cool thread across the boot, each room's breath its own. the cells of the row go by like that, breath by breath, and one of them you pass quicker, and do not let yourself count which."
-             :next "lightsout/crossing-instinct")
-
-(dialog-text "lightsout/crossing-instinct"
-             "at the first cross-passage you stop and say your name into the dark, out loud, before you know why. the crossing carries it both ways, and nothing answers, and the nothing has the texture of a nod, and you cross. some etiquette is older than the learning of it."
-             :next "lightsout/warm-wall")
-
-(dialog-text "lightsout/warm-wall"
-             "and the wall. one wall is warmer than stone has any business being, and the warmth moves when you move, half a step offset, patient. the thing that paces you has not gone anywhere. in the dark, it is the only landmark that knows you back."
-             :next "lightsout/reversal")
-
-(dialog-text "lightsout/reversal"
-             "you stop dead, once, as a test. the pacing goes on three steps, stops, and comes back two, and waits, the warmth of it level with your shoulder. then it sets off again, slower. you follow the warm wall. the hunter has become the handrail. neither of you remarks on it."
-             :next "lightsout/count-wrong")
-
-(dialog-text "lightsout/count-wrong"
-             "your footstep count comes out wrong by one, again, the way it did along the cistern wall. in the dark you finally hear the extra step for what it is. not an echo. a contribution."
-             :next "lightsout/strike")
-
-(dialog-text "lightsout/strike"
-             "at some corner you fish out your striker and snap one spark, for bearings."
-             :next "lightsout/strike-2")
-
-(dialog-text "lightsout/strike-2"
-             "the spark leaps, bends sideways toward the open dark, stretches long like a thing being drunk through a straw, and goes out upward. sparks do not go out upward."
-             :next "lightsout/strike-3")
-
-(dialog-text "lightsout/strike-3"
-             "you stand with the striker in your fist and revise the entire economy."
-             :next "lightsout/economy")
-
-(dialog-text "lightsout/economy"
-             "the half-spent torches. the housekeeping that relights brackets nobody asked it to. the candles kept lit at the shrines. none of it was ever for the delvers. light, down here, is not equipment."
-             :next "lightsout/economy-2")
-
-(dialog-text "lightsout/economy-2"
-             "it is fodder. the dungeon keeps the dark fed on a rota, and the rota is called torches."
-             :next "lightsout/levy")
-
-(dialog-text "lightsout/levy"
-             "and your torch did not die early. it was levied. the dark is hungrier this season, the rota is short, and the dungeon balanced its books out of your bracket. somewhere a tidy hand has entered it: torch, one, levied. the delver can count."
+             "you keep one hand on the wall and count doorframes by touch. another set of steps keeps half a pace behind yours."
              :next "lightsout/hide-setup")
 
 (dialog-text "lightsout/hide-setup"
-             "ahead, the corridor's draft goes still, which in a corridor is a held breath. something is coming the other way, down the middle of the dark, large enough to push warmth ahead of it, and the warm wall under your hand goes tense the way a held arm goes tense."
+             "something comes down the middle of the corridor. you stop breathing."
              :next "lightsout/hold-still")
 
 (dialog-minigame "lightsout/hold-still"

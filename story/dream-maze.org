@@ -24,12 +24,8 @@ It should not explain that it is selecting a genre.
 - =dream/maze= runs the Doom-like maze minigame.
 - Left exit leads to Alice.
 - Upper exit leads to Rogue.
-- Right exit leads through =dream/right-exit=, =dream/right-line=,
-  =dream/right-window=, =dream/right-card=, =dream/right-threshold=, and
-  =dream/right-knock= before containment grafts in.
-- Lost/failure leads through =dream/maze-lost=, =dream/lost-wall=,
-  =dream/lost-count=, =dream/lost-light=, =dream/lost-coat=, and
-  =dream/lost-follow= before containment grafts in.
+- Right exit leads through =dream/right-exit= into containment.
+- Lost/failure leads through =dream/maze-lost= into containment.
 
 * Audio and visual
 
