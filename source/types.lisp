@@ -203,6 +203,10 @@
     "A save plist for the active particle field and transition."
     'plist)
 
+  (deftype journal-entry-kind ()
+    "Kind tag for one chronological gameplay journal entry."
+    '(member :text :say :scene :conversation :choice :input :minigame))
+
   (deftype flight-gate-index ()
     "A nonnegative wire-flight gate index."
     'nonnegative-integer))

@@ -46,6 +46,9 @@
         :selected-index (play-state-selected-index *state*)
         :conversation-index (play-state-conversation-index *state*)
         :input-buffer (play-state-input-buffer *state*)
+        :journal-entries (play-state-journal-entries *state*)
+        :journal-visit-index (play-state-journal-visit-index *state*)
+        :journal-recorded (play-state-journal-recorded *state*)
         :dialog-store (dialog-store-alist)
         :particle-field (particle-field-state-data)))
 
@@ -72,6 +75,13 @@
     (if (stringp value)
         value
         "")))
+
+(-> save-data-list (save-data keyword) list)
+(defun save-data-list (data key)
+  (let ((value (getf data key)))
+    (if (listp value)
+        value
+        nil)))
 
 
 ;;; File IO
@@ -175,7 +185,13 @@
            :selected-index (save-data-nonnegative-integer data :selected-index)
            :conversation-index
            (save-data-nonnegative-integer data :conversation-index)
-           :input-buffer (save-data-string data :input-buffer)))
+           :input-buffer (save-data-string data :input-buffer)
+           :journal-entries (save-data-list data :journal-entries)
+           :journal-open-p nil
+           :journal-scroll 0
+           :journal-visit-index
+           (save-data-nonnegative-integer data :journal-visit-index)
+           :journal-recorded (save-data-list data :journal-recorded)))
     (restore-particle-field-state (getf data :particle-field))))
 
 (defparameter *save-month-names*

@@ -313,7 +313,8 @@ Current surface:
 
 ## Rogue Branch
 
-The upper dream exit leads to a Rogue-inspired dungeon branch.
+The upper dream exit flashes a large `@`, then leads to a Rogue-inspired
+dungeon branch.
 
 Author truth:
 
@@ -325,6 +326,7 @@ Author truth:
 
 Current surface:
 
+- `rogue/ascii-reveal` is the slow `@` flash at the branch reveal.
 - `rogue/entrance` opens onto hard white dungeon lines.
 - `rogue/inventory` gives a ration, a ring, and no memory of the stairs.
 - `rogue/door` chooses a door by list.
@@ -336,7 +338,8 @@ Current surface:
   bedroom, drawn in dungeon lines, with no lock plate on the inside.
 - `rogue/pillow` hides a half-used matchbook; `rogue/sleep` fades out with
   the torch.
-- `rogue/delve` is the long stair: the reusable pixel-sprite crawl with
+- `rogue/delve` is the long stair: the reusable ASCII crawl with class choice,
+  pack menu, HP, rations, map scrolls, monsters, traps, items, and
   store-persisted progress. Its bottom room is the bedroom with a fresh
   wrist tag; marks gathered tie back to the chalk tally.
 - `rogue/stair-maze` reuses the Doom-like maze engine to find the stairs after

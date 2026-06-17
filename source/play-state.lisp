@@ -14,7 +14,12 @@
   (visible-count       0 :type nonnegative-integer)
   (selected-index      0 :type nonnegative-integer)
   (conversation-index  0 :type nonnegative-integer)
-  (input-buffer        "" :type string))
+  (input-buffer        "" :type string)
+  (journal-entries     nil :type list)
+  (journal-open-p      nil :type boolean)
+  (journal-scroll      0 :type nonnegative-integer)
+  (journal-visit-index 0 :type nonnegative-integer)
+  (journal-recorded    nil :type list))
 
 
 ;;; Save hook
@@ -51,7 +56,15 @@
                  :visible-count 0
                  :selected-index 0
                  :conversation-index 0
-                 :input-buffer ""))
+                 :input-buffer ""
+                 :journal-entries nil
+                 :journal-open-p nil
+                 :journal-scroll 0
+                 :journal-visit-index 0
+                 :journal-recorded nil))
+  (when (fboundp 'journal-begin-node-visit)
+    (funcall (symbol-function 'journal-begin-node-visit)
+             (current-node)))
   (apply-node-enter-effects (current-node)))
 
 (-> editor-before-jump-maybe (dialog-id) boolean)
@@ -75,7 +88,13 @@
                 (play-state-visible-count *state*) 0
                 (play-state-selected-index *state*) 0
                 (play-state-conversation-index *state*) 0
-                (play-state-input-buffer *state*) "")
+                (play-state-input-buffer *state*) ""
+                (play-state-journal-open-p *state*) nil
+                (play-state-journal-scroll *state*) 0
+                (play-state-journal-recorded *state*) nil)
+          (when (fboundp 'journal-begin-node-visit)
+            (funcall (symbol-function 'journal-begin-node-visit)
+                     (current-node)))
           (apply-node-enter-effects (current-node))
           (save-current-game-maybe)
           t))))

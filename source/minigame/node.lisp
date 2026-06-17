@@ -7,6 +7,7 @@
      (when (confirm-pressed-p)
        (skip-typewriter node)))
     (t
+     (journal-record-node-visible node)
      (let ((definition (find-minigame-definition (node-minigame node))))
        (if definition
            (update-minigame-definition definition node dt)
@@ -15,7 +16,8 @@
 (-> draw-minigame-node (node) t)
 (defun draw-minigame-node (node)
   (let ((color (make-color 255 255 255 (current-alpha))))
-    (draw-choice-prompt node 96 color)
+    (when (plusp (length (node-display-text node)))
+      (draw-choice-prompt node 96 color))
     (when (story-text-visible-p node)
       (let ((definition (find-minigame-definition (node-minigame node)
                                                   :warn-p nil)))

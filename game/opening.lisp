@@ -605,10 +605,10 @@
                  :success "dream/maze-lost"
                  :failure "dream/maze-lost"
                  :config (list :left "alice/fall"
-                               :upper "rogue/entrance"
+                               :upper "rogue/ascii-reveal"
                                :right "dream/right-exit")
                  :outcomes (list "alice/fall"
-                                 "rogue/entrance"
+                                 "rogue/ascii-reveal"
                                  "dream/right-exit"))
 
 (dialog-text "dream/right-exit"

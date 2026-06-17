@@ -100,6 +100,7 @@
                    (:file "field")))
 
                  (:file "play-state")
+                 (:file "journal")
 
                  (:module "text-runtime"
                   :pathname "text"

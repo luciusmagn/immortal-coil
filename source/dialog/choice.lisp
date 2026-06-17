@@ -81,11 +81,13 @@
      (when (confirm-pressed-p)
        (skip-typewriter node)))
     (t
+     (journal-record-node-visible node)
      (move-selection node (selection-direction node))
      (when (confirm-pressed-p)
        (let ((choice (selected-active-choice node)))
          (cond
            ((and choice (choice-enabled-p choice))
+            (journal-record-choice-selection node choice)
             (jump-to-dialog-target (choice-target choice)))
            (choice
             (play-choice-switch))))))))

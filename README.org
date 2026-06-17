@@ -90,6 +90,13 @@ Options are saved to:
 save/options.lisp
 #+end_src
 
+** Gameplay
+
+#+begin_src text
+J       open the journal
+Escape  pause
+#+end_src
+
 With =IMMORTAL_COIL_SAVE_DIR= set, options are saved to:
 
 #+begin_src text

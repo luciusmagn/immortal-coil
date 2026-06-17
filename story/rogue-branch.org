@@ -6,7 +6,8 @@ Implemented branch spine with two substantial dark branches.
 
 * Entry
 
-The upper dream maze exit leads to a Rogue-inspired dungeon path.
+The upper dream maze exit first flashes a large =@=, then leads to a
+Rogue-inspired dungeon path.
 
 * Author truth
 
@@ -18,6 +19,8 @@ The upper dream maze exit leads to a Rogue-inspired dungeon path.
 
 * Current surface
 
+- =rogue/ascii-reveal= slowly flashes the =@= sign before the path resolves
+  into the dungeon.
 - =rogue/entrance=
 - =rogue/inventory=
 - =rogue/door=
@@ -42,14 +45,20 @@ The upper dream maze exit leads to a Rogue-inspired dungeon path.
 * Delve device
 
 The south door off the second-floor landing opens the long stair: the
-=:rogue-delve= minigame (=game/rogue/delve.lisp=), the path's central
+=:rogue-delve= minigame (=game/rogue/delve/core.lisp=), the path's central
 device.
 
 - Reusable: maps, save prefix, and outcome ids all arrive via node
   config. Other paths or mods can run their own delves with their own
   floors.
-- Tiny black-and-white pixel sprites (5x5 bitmaps), a four-tile torch
-  radius, turn-based steps: player moves, then the hunter answers.
+- ASCII-first presentation: =@= player, =#= wall, =.= floor, =g= monster,
+  =m= hunter, item glyphs, stairs, and goal.
+- Class menu before the crawl: fighter, thief, or seer. Class stats set HP,
+  sight, attack, stealth, starting rations, and map-scroll access.
+- Inventory menu during the crawl: =i= opens the pack, where rations and map
+  scrolls are used.
+- Turn-based steps: player moves, hazards/items resolve, hunger can hurt, then
+  the hunter answers.
 - All progress (floor, position, marks, hunter, picked set) lives in
   the dialog store under the prefix, so the autosave keeps mid-delve
   progress and the stair resumes where the player left it, even across
@@ -69,13 +78,14 @@ device.
 
 * Audio
 
-- Music: =assets/audio/rogue-lyria-drone.mp3=
+- Music: =assets/audio/rogue/chiptune-crypt.wav= on the Rogue reveal/path.
+- SFX: =assets/audio/rogue/*.wav= for class confirmation, menu movement,
+  step, bump, pickup, hit, kill, and stairs.
 
 * TODO
 
-- Grow the delve: more floors, a second hunter behavior, items
-  beyond marks.
-- Track inventory facts in the dialog store.
+- Add more class-specific events and floor layouts.
+- Add additional monster behaviors beyond the hunter.
 - Keep prose terse and concrete.
 
 * Interrogation

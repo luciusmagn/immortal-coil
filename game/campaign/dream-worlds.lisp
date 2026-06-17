@@ -412,8 +412,15 @@
              :next "base/awake")
 
 
+(dialog-music "rogue/ascii-reveal" "audio/rogue/chiptune-crypt.wav" :volume 0.20)
+
+(dialog-minigame "rogue/ascii-reveal"
+                 ""
+                 :game :rogue-at-flash
+                 :success "rogue/entrance"
+                 :failure "rogue/entrance")
+
 (dialog-particles "rogue/entrance" :rising :fade-seconds 2.5)
-(dialog-music "rogue/entrance" "audio/rogue-lyria-drone.mp3" :volume 0.26)
 
 (dialog-text "rogue/entrance"
              "the upper exit opens onto a dungeon floor drawn in hard white lines."
@@ -576,39 +583,63 @@
       "rogue/delve-bottom"))
 
 (dialog-minigame "rogue/delve"
-                 "wasd or arrow keys step. find the bottom."
+                 "wasd or arrow keys step. i opens your pack. find the bottom."
                  :game :rogue-delve
                  :success #'rogue-delve-bottom-target
                  :failure "rogue/delve-left"
                  :config (list :save-prefix "delve"
                                :caught-target "rogue/delve-caught"
                                :leave-target "rogue/delve-left"
+                               :step-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/step.wav"))
+                               :bump-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/bump.wav"))
+                               :menu-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/menu.wav"))
+                               :class-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/class.wav"))
+                               :pickup-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/pickup.wav"))
+                               :hit-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/hit.wav"))
+                               :kill-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/kill.wav"))
+                               :stairs-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/stairs.wav"))
                                :maps
                                (list (list "#############"
-                                           "#<....#..*..#"
+                                           "#<..%.#..*..#"
                                            "#.###.#.###.#"
-                                           "#.#...#...#.#"
-                                           "#.#.#####.#.#"
+                                           "#.#..g#..?#.#"
+                                           "#.#.##^##.#.#"
                                            "#@..*...#.#.#"
-                                           "#.######..#.#"
+                                           "#.#####!..#.#"
                                            "#........#>.#"
                                            "#############")
                                      (list "#############"
-                                           "#<......#..*#"
+                                           "#<...%..#..*#"
                                            "###.###.#.###"
-                                           "#...#.#.#...#"
+                                           "#..g#.#.#...#"
                                            "#.###.#.###.#"
                                            "#.#...m...#.#"
-                                           "#.#.#####.#.#"
-                                           "#*..#...#..>#"
+                                           "#.#.##^##.#.#"
+                                           "#*..#.!?#..>#"
                                            "#############")
                                      (list "#############"
                                            "#<..#.....#.#"
-                                           "##.##.###.#.#"
+                                           "##.##g###.#.#"
                                            "#..#..#.#.#.#"
-                                           "#.##.##.#.#.#"
+                                           "#.##^##.#.#.#"
                                            "#.#..#..*.#.#"
-                                           "#.#.##.####.#"
+                                           "#.#.##!####.#"
                                            "#...#......$#"
                                            "#############"))))
 

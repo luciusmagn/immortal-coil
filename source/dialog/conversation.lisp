@@ -74,6 +74,11 @@
 (-> update-conversation-node (node) t)
 (defun update-conversation-node (node)
   (advance-conversation-typewriter node)
+  (when (and (plusp (conversation-entry-count node))
+             (conversation-current-entry-visible-p node))
+    (journal-record-conversation-entry
+     node
+     (conversation-current-entry node)))
   (cond
     ((zerop (conversation-entry-count node))
      (when (confirm-pressed-p)

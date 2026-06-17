@@ -129,6 +129,7 @@
   (let ((value (parse-number-input)))
     (if (number-input-valid-p node value)
         (progn
+          (journal-record-input-response node (princ-to-string value))
           (setf (dialog-value (node-response-key node)) value)
           (jump-to-dialog-target (node-target node)))
         (play-choice-switch))))
@@ -140,6 +141,7 @@
      (when (confirm-pressed-p)
        (skip-typewriter node)))
     (t
+     (journal-record-node-visible node)
      (drain-number-input node)
      (when (confirm-pressed-p)
        (submit-number-node node)))))
@@ -191,6 +193,7 @@
   (let ((value (string-input-value)))
     (if (string-input-valid-p node value)
         (progn
+          (journal-record-input-response node value)
           (setf (dialog-value (node-response-key node)) value)
           (jump-to-dialog-target (node-target node)))
         (play-choice-switch))))
@@ -202,6 +205,7 @@
      (when (confirm-pressed-p)
        (skip-typewriter node)))
     (t
+     (journal-record-node-visible node)
      (drain-string-input node)
      (when (string-submit-pressed-p)
        (submit-string-node node)))))

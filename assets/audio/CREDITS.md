@@ -73,3 +73,11 @@
 - Author: GboxMikeFozzy
 - License: CC0
 - Notes: Used as alternating movement footsteps in the Doom-like dream-maze minigame.
+
+## rogue/*.wav
+
+- Source: Procedurally generated locally for Immortal Coil.
+- Date generated: 2026-06-17.
+- Generator: `scripts/generate-rogue-audio.lisp`.
+- Files: `chiptune-crypt.wav`, `menu.wav`, `class.wav`, `step.wav`, `bump.wav`, `pickup.wav`, `hit.wav`, `kill.wav`, `stairs.wav`.
+- Notes: 8-bit/chiptune-style Rogue branch loop and short crawl sound effects.

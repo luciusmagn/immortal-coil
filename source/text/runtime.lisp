@@ -60,9 +60,11 @@
     ((not (story-text-visible-p node))
      (when (confirm-pressed-p)
        (skip-typewriter node)))
-    ((and (node-next node)
-          (confirm-pressed-p))
-     (jump-to-dialog-target (node-next node)))))
+    (t
+     (journal-record-node-visible node)
+     (when (and (node-next node)
+                (confirm-pressed-p))
+       (jump-to-dialog-target (node-next node))))))
 
 
 ;;; Rendering
