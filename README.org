@@ -97,6 +97,16 @@ J       open the journal
 Escape  pause
 #+end_src
 
+** Saves
+
+The title menu =LOAD GAME= list supports:
+
+#+begin_src text
+RET     load selected save
+D/DEL   request delete, press again to confirm
+Escape  cancel/back
+#+end_src
+
 With =IMMORTAL_COIL_SAVE_DIR= set, options are saved to:
 
 #+begin_src text
@@ -164,3 +174,13 @@ Disable mods:
 #+begin_src sh
 IMMORTAL_COIL_DISABLE_MODS=1 sbcl ...
 #+end_src
+
+The title menu =MODS= -> =MOD LIST= toggles individual mods. Disabled
+directory mods get:
+
+#+begin_src text
+mods/<mod-id>/.disabled
+#+end_src
+
+Legacy single-file mods get a sidecar marker, such as
+=mods/.example.disabled= for =mods/example.lisp=.

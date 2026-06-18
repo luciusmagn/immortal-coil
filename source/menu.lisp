@@ -11,7 +11,8 @@
                           :exit "EXIT"))
 
 (defparameter *mods-menu-selection*
-  (make-command-selection :edit-base "EDIT BASE GAME"
+  (make-command-selection :mod-list "MOD LIST"
+                          :edit-base "EDIT BASE GAME"
                           :create-mod "CREATE MOD"
                           :edit-mod "EDIT MOD"
                           :refresh "REFRESH"
@@ -19,14 +20,25 @@
 
 (defvar *menu-status-message* nil)
 (defvar *mods-menu-active-p* nil)
+(defvar *mod-list-active-p* nil)
 (defvar *load-menu-active-p* nil)
 (defvar *menu-pending-slot* nil)
+(defvar *load-menu-delete-pending-slot* nil)
 
 (defparameter *load-menu-panel*
   (make-instance 'list-panel
                  :title "LOAD GAME"
                  :empty-text "no saved games yet"
+                 :footer "RET LOAD  D/DEL DELETE  ESC BACK"
                  :width 620))
+
+(defparameter *mod-list-panel*
+  (make-instance 'list-panel
+                 :title "MOD LIST"
+                 :empty-text "no mods found"
+                 :footer "RET TOGGLE  R REFRESH  ESC BACK"
+                 :width 760
+                 :visible-rows 10))
 
 (defconstant +mods-menu-panel-width+ 560)
 (defconstant +mods-menu-panel-height+ 440)
@@ -78,8 +90,10 @@
         *menu-start-elapsed* 0.0
         *menu-status-message* (current-mod-status-text)
         *mods-menu-active-p* nil
+        *mod-list-active-p* nil
         *load-menu-active-p* nil
-        *menu-pending-slot* nil)
+        *menu-pending-slot* nil
+        *load-menu-delete-pending-slot* nil)
   (selection-reset *mods-menu-selection*)
   (selection-reset *menu-selection*))
 
@@ -236,18 +250,42 @@
   (load-title-logo)
   (play-choice-switch))
 
-(-> open-load-menu () t)
-(defun open-load-menu ()
+(-> load-menu-selected-slot () (option string))
+(defun load-menu-selected-slot ()
+  (list-panel-selected-value *load-menu-panel*))
+
+(-> load-menu-delete-pending-p () boolean)
+(defun load-menu-delete-pending-p ()
+  (and *load-menu-delete-pending-slot*
+       (equal *load-menu-delete-pending-slot*
+              (load-menu-selected-slot))))
+
+(-> load-menu-footer-text () string)
+(defun load-menu-footer-text ()
+  (if (load-menu-delete-pending-p)
+      "D/DEL CONFIRM DELETE  ESC CANCEL"
+      "RET LOAD  D/DEL DELETE  ESC BACK"))
+
+(-> refresh-load-menu-panel () list-panel)
+(defun refresh-load-menu-panel ()
   (list-panel-set-items *load-menu-panel*
                         (loop for entry in (list-save-slots)
                               collect (cons (getf entry :slot)
                                             (save-slot-label entry))))
-  (setf *load-menu-active-p* t)
+  (setf (list-panel-footer *load-menu-panel*) (load-menu-footer-text))
+  *load-menu-panel*)
+
+(-> open-load-menu () t)
+(defun open-load-menu ()
+  (setf *load-menu-active-p* t
+        *load-menu-delete-pending-slot* nil)
+  (refresh-load-menu-panel)
   (play-choice-switch))
 
 (-> close-load-menu () t)
 (defun close-load-menu ()
-  (setf *load-menu-active-p* nil)
+  (setf *load-menu-active-p* nil
+        *load-menu-delete-pending-slot* nil)
   (play-choice-switch))
 
 (-> load-slot-game (string) boolean)
@@ -267,19 +305,51 @@
           *menu-start-elapsed* 0.0)
     t))
 
+(-> load-menu-delete-pressed-p () boolean)
+(defun load-menu-delete-pressed-p ()
+  (or (is-key-pressed-p +key-d+)
+      (is-key-pressed-p +key-delete+)))
+
+(-> request-delete-selected-save () t)
+(defun request-delete-selected-save ()
+  (let ((slot (load-menu-selected-slot)))
+    (cond
+      ((null slot)
+       (play-choice-switch))
+      ((equal slot *load-menu-delete-pending-slot*)
+       (when (delete-save-slot slot)
+         (setf *load-menu-delete-pending-slot* nil)
+         (refresh-load-menu-panel))
+       (play-choice-switch))
+      (t
+       (setf *load-menu-delete-pending-slot* slot)
+       (setf (list-panel-footer *load-menu-panel*) (load-menu-footer-text))
+       (play-choice-switch)))))
+
 (-> update-load-menu () t)
 (defun update-load-menu ()
   (cond
     ((is-key-pressed-p +key-escape+)
-     (close-load-menu))
+     (if *load-menu-delete-pending-slot*
+         (progn
+           (setf *load-menu-delete-pending-slot* nil)
+           (setf (list-panel-footer *load-menu-panel*) (load-menu-footer-text))
+           (play-choice-switch))
+         (close-load-menu)))
     ((or (is-key-pressed-p +key-down+) (is-key-pressed-p +key-s+))
+     (setf *load-menu-delete-pending-slot* nil)
      (when (list-panel-move *load-menu-panel* 1)
+       (setf (list-panel-footer *load-menu-panel*) (load-menu-footer-text))
        (play-choice-switch)))
     ((or (is-key-pressed-p +key-up+) (is-key-pressed-p +key-w+))
+     (setf *load-menu-delete-pending-slot* nil)
      (when (list-panel-move *load-menu-panel* -1)
+       (setf (list-panel-footer *load-menu-panel*) (load-menu-footer-text))
        (play-choice-switch)))
+    ((load-menu-delete-pressed-p)
+     (request-delete-selected-save))
     ((confirm-pressed-p)
-     (let ((slot (list-panel-selected-value *load-menu-panel*)))
+     (let ((slot (load-menu-selected-slot)))
        (if slot
            (progn
              (setf *menu-pending-slot* slot
@@ -287,10 +357,35 @@
              (begin-start-transition :load-slot))
            (close-load-menu))))))
 
+(-> update-mod-list () t)
+(defun update-mod-list ()
+  (cond
+    ((is-key-pressed-p +key-escape+)
+     (close-mod-list))
+    ((or (is-key-pressed-p +key-down+) (is-key-pressed-p +key-s+))
+     (when (list-panel-move *mod-list-panel* 1)
+       (play-choice-switch)))
+    ((or (is-key-pressed-p +key-up+) (is-key-pressed-p +key-w+))
+     (when (list-panel-move *mod-list-panel* -1)
+       (play-choice-switch)))
+    ((is-key-pressed-p +key-r+)
+     (refresh-mod-list-and-status))
+    ((confirm-pressed-p)
+     (toggle-selected-mod-enabled))))
+
 (-> draw-load-menu () t)
 (defun draw-load-menu ()
   (draw-list-panel *load-menu-panel*
                    188
+                   (make-color 255
+                               255
+                               255
+                               (round (* 238 (menu-alpha-scale))))))
+
+(-> draw-mod-list () t)
+(defun draw-mod-list ()
+  (draw-list-panel *mod-list-panel*
+                   142
                    (make-color 255
                                255
                                255
@@ -308,8 +403,67 @@
 (defun close-mods-menu ()
   (reset-mod-editor-state)
   (setf *mods-menu-active-p* nil
+        *mod-list-active-p* nil
         *menu-status-message* (current-mod-status-text))
   (play-choice-switch))
+
+(-> menu-truncate-text (string nonnegative-integer) string)
+(defun menu-truncate-text (text max-length)
+  (if (<= (length text) max-length)
+      text
+      (format nil "~a..." (subseq text 0 (max 0 (- max-length 3))))))
+
+(-> mod-list-entry-status-label (mod-list-entry) string)
+(defun mod-list-entry-status-label (entry)
+  (if (mod-list-entry-enabled-p entry)
+      "[ON ]"
+      "[OFF]"))
+
+(-> mod-list-entry-label (mod-list-entry) string)
+(defun mod-list-entry-label (entry)
+  (format nil "~a ~a  ~a"
+          (mod-list-entry-status-label entry)
+          (menu-truncate-text (mod-list-entry-name entry) 28)
+          (menu-truncate-text (mod-list-entry-id entry) 34)))
+
+(-> refresh-mod-list-panel () list-panel)
+(defun refresh-mod-list-panel ()
+  (list-panel-set-items *mod-list-panel*
+                        (loop for entry in (mod-list-entries)
+                              collect (cons entry
+                                            (mod-list-entry-label entry))))
+  *mod-list-panel*)
+
+(-> open-mod-list () t)
+(defun open-mod-list ()
+  (refresh-mod-list-panel)
+  (setf *mod-list-active-p* t)
+  (play-choice-switch))
+
+(-> close-mod-list () t)
+(defun close-mod-list ()
+  (setf *mod-list-active-p* nil
+        *menu-status-message* (current-mod-status-text))
+  (play-choice-switch))
+
+(-> refresh-mod-list-and-status () t)
+(defun refresh-mod-list-and-status ()
+  (refresh-mod-list-panel)
+  (setf *menu-status-message*
+        (if (fboundp 'refresh-dialog-mod-status)
+            (funcall (symbol-function 'refresh-dialog-mod-status))
+            "MODS: UNAVAILABLE"))
+  (load-title-logo)
+  (play-choice-switch))
+
+(-> toggle-selected-mod-enabled () t)
+(defun toggle-selected-mod-enabled ()
+  (let ((entry (list-panel-selected-value *mod-list-panel*)))
+    (if entry
+        (progn
+          (toggle-mod-list-entry entry)
+          (refresh-mod-list-and-status))
+        (play-choice-switch))))
 
 (-> start-transition-total-seconds () seconds)
 (defun start-transition-total-seconds ()
@@ -388,6 +542,8 @@
 (-> execute-selected-mods-menu-option () t)
 (defun execute-selected-mods-menu-option ()
   (case (selected-mods-action)
+    (:mod-list
+     (open-mod-list))
     (:edit-base
      (play-start-confirm)
      (start-base-game-editor))
@@ -610,6 +766,9 @@
     ((and *mods-menu-active-p*
           (mod-editor-active-p))
      (draw-mod-editor))
+    ((and *mods-menu-active-p*
+          *mod-list-active-p*)
+     (draw-mod-list))
     (*mods-menu-active-p*
      (draw-mods-menu))
     (*load-menu-active-p*
@@ -648,6 +807,8 @@
 (-> update-mods-menu () t)
 (defun update-mods-menu ()
   (cond
+    (*mod-list-active-p*
+     (update-mod-list))
     ((mod-editor-active-p)
      (update-mod-editor))
     ((is-key-pressed-p +key-escape+)

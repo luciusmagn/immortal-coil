@@ -60,6 +60,31 @@ Disable mod loading with:
 IMMORTAL_COIL_DISABLE_MODS=1
 ```
 
+## Enable And Disable
+
+Use the title menu:
+
+```text
+MODS -> MOD LIST
+```
+
+`RET` toggles the selected mod, `R` refreshes the list, and `ESC` goes back.
+
+Disabled directory mods are skipped when the graph loads. The toggle writes a
+dotfile in the mod folder:
+
+```text
+mods/<mod-id>/.disabled
+```
+
+Legacy single-file mods in `mods/` use a sidecar marker in the same directory,
+for example:
+
+```text
+mods/example.lisp
+mods/.example.disabled
+```
+
 ## Assets
 
 Inside a script, use `dialog-asset-pathname` for files bundled with that mod:

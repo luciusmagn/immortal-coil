@@ -227,6 +227,24 @@
             t)))
     (error () nil)))
 
+(-> delete-save-slot (string) boolean)
+(defun delete-save-slot (slot)
+  (handler-case
+      (let ((path (save-slot-pathname slot)))
+        (if (probe-file path)
+            (progn
+              (delete-file path)
+              (when (and *active-save-slot*
+                         (string= *active-save-slot* slot))
+                (setf *active-save-slot* nil))
+              t)
+            (progn
+              (runtime-warn "Cannot delete missing save slot: ~a" slot)
+              nil)))
+    (error (condition)
+      (runtime-warn "Could not delete save slot ~a: ~a" slot condition)
+      nil)))
+
 (-> load-current-game-save () boolean)
 (defun load-current-game-save ()
   (handler-case
