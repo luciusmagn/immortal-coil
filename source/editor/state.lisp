@@ -235,7 +235,10 @@
   (when *state*
     (let ((node (current-node)))
       (when (eq (node-kind node) :choice)
-        (setf (play-state-selected-index *state*) 0))))
+        (setf (play-state-selected-index *state*) 0
+              (play-state-choice-preview-index *state*) 0
+              (play-state-choice-preview-elapsed *state*) 0.0
+              (play-state-choice-preview-visible-count *state*) 0))))
   (play-choice-switch)
   t)
 
@@ -359,6 +362,9 @@
         (play-state-type-delay *state*) 0.0
         (play-state-visible-count *state*) 0
         (play-state-selected-index *state*) 0
+        (play-state-choice-preview-index *state*) 0
+        (play-state-choice-preview-elapsed *state*) 0.0
+        (play-state-choice-preview-visible-count *state*) 0
         (play-state-conversation-index *state*) 0
         (play-state-input-buffer *state*) ""))
 

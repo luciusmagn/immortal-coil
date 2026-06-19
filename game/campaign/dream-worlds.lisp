@@ -430,11 +430,17 @@
              "you have a ration, a ring you cannot identify, and no memory of which stairs brought you to this floor."
              :next "rogue/door")
 
-(dialog-list "rogue/door"
-             "choose a door."
-             (dialog-option "north: damp stone" "rogue/north")
-             (dialog-option "east: old bones" "rogue/east")
-             (dialog-option "west: quiet altar" "rogue/west"))
+(dialog-compass "rogue/door"
+                "choose a door."
+                (dialog-direction :north
+                                  "rogue/north"
+                                  :preview "the north door is damp stone. water beads on the handle.")
+                (dialog-direction :east
+                                  "rogue/east"
+                                  :preview "the east door has a pale rib wedged under it.")
+                (dialog-direction :west
+                                  "rogue/west"
+                                  :preview "the west door smells faintly of cold candle wax."))
 
 (dialog-text "rogue/north"
              "the corridor smells of iron and wet rope. something invisible misses you by one square."
@@ -486,12 +492,20 @@
              "the steps are worn smooth in the middle, the way stone wears under years of feet. they end at a landing with three doors and a draft."
              :next "rogue/landing")
 
-(dialog-list "rogue/landing"
-             "choose a door."
-             (dialog-option "north: oiled metal" "rogue/armory")
-             (dialog-option "east: standing water" "rogue/cistern")
-             (dialog-option "west: old wax" "rogue/shrine")
-             (dialog-option "south: a long stair" "rogue/delve-entry"))
+(dialog-compass "rogue/landing"
+                "choose a door."
+                (dialog-direction :north
+                                  "rogue/armory"
+                                  :preview "the north door is iron, slathered in oil and sticky to the touch.")
+                (dialog-direction :east
+                                  "rogue/cistern"
+                                  :preview "standing water shows under the east door. the draft smells mineral.")
+                (dialog-direction :west
+                                  "rogue/shrine"
+                                  :preview "wax has run under the west door and hardened in white ridges.")
+                (dialog-direction :south
+                                  "rogue/delve-entry"
+                                  :preview "the south stair drops in a straight run. the air below it is colder."))
 
 (dialog-on-enter "rogue/armory"
                  '(setf (dialog-value "rogue-floor2-room") "armory"))

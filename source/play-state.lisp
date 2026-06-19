@@ -13,6 +13,9 @@
   (type-delay          0.0 :type seconds)
   (visible-count       0 :type nonnegative-integer)
   (selected-index      0 :type nonnegative-integer)
+  (choice-preview-index 0 :type nonnegative-integer)
+  (choice-preview-elapsed 0.0 :type seconds)
+  (choice-preview-visible-count 0 :type nonnegative-integer)
   (conversation-index  0 :type nonnegative-integer)
   (input-buffer        "" :type string)
   (journal-entries     nil :type list)
@@ -55,6 +58,9 @@
                  :type-delay *game-start-type-delay-seconds*
                  :visible-count 0
                  :selected-index 0
+                 :choice-preview-index 0
+                 :choice-preview-elapsed 0.0
+                 :choice-preview-visible-count 0
                  :conversation-index 0
                  :input-buffer ""
                  :journal-entries nil
@@ -87,6 +93,9 @@
                 (play-state-type-delay *state*) 0.0
                 (play-state-visible-count *state*) 0
                 (play-state-selected-index *state*) 0
+                (play-state-choice-preview-index *state*) 0
+                (play-state-choice-preview-elapsed *state*) 0.0
+                (play-state-choice-preview-visible-count *state*) 0
                 (play-state-conversation-index *state*) 0
                 (play-state-input-buffer *state*) ""
                 (play-state-journal-open-p *state*) nil

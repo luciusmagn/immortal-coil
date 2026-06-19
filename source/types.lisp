@@ -157,7 +157,11 @@
 
   (deftype choice-layout ()
     "Choice presentation style."
-    '(member :horizontal :vertical :list))
+    '(member :horizontal :vertical :list :compass))
+
+  (deftype compass-direction ()
+    "Direction slot for compass-style choices."
+    '(member :north :west :east :south))
 
   (deftype dialog-condition ()
     "Permissive script condition accepted by the dialog runtime."

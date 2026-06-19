@@ -5,9 +5,29 @@
 (defun choice-layout (node)
   (or (node-layout node) :horizontal))
 
+(defparameter *compass-direction-order*
+  '(:north :west :east :south))
+
 (defun choice-selectable-index-p (choices index)
   (and (<= 0 index)
        (< index (length choices))))
+
+(defun reset-choice-preview-typewriter
+    (&optional (index (play-state-selected-index *state*)))
+  (setf (play-state-choice-preview-index *state*) index
+        (play-state-choice-preview-elapsed *state*) 0.0
+        (play-state-choice-preview-visible-count *state*) 0))
+
+(defun ensure-choice-preview-index-current ()
+  (unless (= (play-state-choice-preview-index *state*)
+             (play-state-selected-index *state*))
+    (reset-choice-preview-typewriter)))
+
+(defun set-choice-selected-index (index)
+  (unless (= index (play-state-selected-index *state*))
+    (setf (play-state-selected-index *state*) index)
+    (reset-choice-preview-typewriter index)
+    (play-choice-switch)))
 
 (defun first-selectable-choice-index (choices)
   (loop for choice across choices
@@ -16,10 +36,13 @@
           return index))
 
 (defun normalize-choice-selection (choices)
-  (let ((count (length choices)))
+  (let ((count (length choices))
+        (old-index (play-state-selected-index *state*)))
     (cond
       ((zerop count)
-       (setf (play-state-selected-index *state*) 0))
+       (setf (play-state-selected-index *state*) 0)
+       (unless (= old-index 0)
+         (reset-choice-preview-typewriter 0)))
       (t
        (when (>= (play-state-selected-index *state*) count)
          (setf (play-state-selected-index *state*) (1- count)))
@@ -28,7 +51,9 @@
                     (not (choice-selectable-index-p
                           choices
                           (play-state-selected-index *state*))))
-           (setf (play-state-selected-index *state*) fallback)))))))
+           (setf (play-state-selected-index *state*) fallback)))))
+    (unless (= old-index (play-state-selected-index *state*))
+      (reset-choice-preview-typewriter))))
 
 (defun next-selectable-choice-index (choices selected direction)
   (loop with count = (length choices)
@@ -51,9 +76,45 @@
          (is-key-pressed-p +key-left+))
      -1)))
 
+(defun compass-requested-direction ()
+  (cond
+    ((or (is-key-pressed-p +key-up+)
+         (is-key-pressed-p +key-w+))
+     :north)
+    ((or (is-key-pressed-p +key-left+)
+         (is-key-pressed-p +key-a+))
+     :west)
+    ((or (is-key-pressed-p +key-right+)
+         (is-key-pressed-p +key-d+))
+     :east)
+    ((or (is-key-pressed-p +key-down+)
+         (is-key-pressed-p +key-s+))
+     :south)))
+
+(defun choice-compass-direction (choices index)
+  (or (choice-direction (aref choices index))
+      (nth index *compass-direction-order*)))
+
+(defun compass-choice-index (choices direction)
+  (loop for choice across choices
+        for index from 0
+        when (and choice
+                  (eq (choice-compass-direction choices index) direction))
+          return index))
+
+(defun move-compass-selection (node)
+  (let* ((choices (active-node-choices node))
+         (direction (compass-requested-direction)))
+    (normalize-choice-selection choices)
+    (when direction
+      (let ((index (compass-choice-index choices direction)))
+        (when index
+          (set-choice-selected-index index))))))
+
 (defun selection-direction (node)
   (case (choice-layout node)
     (:horizontal (horizontal-selection-direction))
+    (:compass nil)
     (t (vertical-selection-direction))))
 
 (defun move-selection (node direction)
@@ -66,14 +127,33 @@
                          direction)))
         (when (and next-index
                    (/= next-index (play-state-selected-index *state*)))
-          (setf (play-state-selected-index *state*) next-index)
-          (play-choice-switch))))))
+          (set-choice-selected-index next-index))))))
 
 (defun selected-active-choice (node)
   (let ((choices (active-node-choices node)))
     (normalize-choice-selection choices)
     (when (plusp (length choices))
       (aref choices (play-state-selected-index *state*)))))
+
+(defun choice-preview-visible-p (choice)
+  (>= (play-state-choice-preview-visible-count *state*)
+      (length (choice-display-preview choice))))
+
+(defun skip-choice-preview (choice)
+  (setf (play-state-choice-preview-visible-count *state*)
+        (length (choice-display-preview choice))))
+
+(defun advance-choice-preview-typewriter (choice dt)
+  (ensure-choice-preview-index-current)
+  (incf (play-state-choice-preview-elapsed *state*) dt)
+  (let* ((old-count (play-state-choice-preview-visible-count *state*))
+         (text (choice-display-preview choice))
+         (new-count (min (length text)
+                         (floor (* (play-state-choice-preview-elapsed *state*)
+                                   *characters-per-second*)))))
+    (when (> new-count old-count)
+      (setf (play-state-choice-preview-visible-count *state*) new-count)
+      (play-type-click text old-count new-count))))
 
 (defun update-choice-node (node)
   (cond
@@ -82,10 +162,16 @@
        (skip-typewriter node)))
     (t
      (journal-record-node-visible node)
-     (move-selection node (selection-direction node))
+     (if (eq (choice-layout node) :compass)
+         (move-compass-selection node)
+         (move-selection node (selection-direction node)))
      (when (confirm-pressed-p)
        (let ((choice (selected-active-choice node)))
          (cond
+           ((and (eq (choice-layout node) :compass)
+                 choice
+                 (not (choice-preview-visible-p choice)))
+            (skip-choice-preview choice))
            ((and choice (choice-enabled-p choice))
             (journal-record-choice-selection node choice)
             (jump-to-dialog-target (choice-target choice)))
@@ -265,19 +351,79 @@
                                spacing
                                color)))))
 
+(defun visible-choice-preview-lines (choice size max-width)
+  (visible-text-lines (wrap-text-lines (choice-display-preview choice)
+                                       size
+                                       max-width)
+                      (play-state-choice-preview-visible-count *state*)))
+
+(defun draw-compass-choice-preview (choice y color)
+  (let* ((size 19)
+         (lines (visible-choice-preview-lines choice
+                                              size
+                                              *dialog-text-max-width*)))
+    (multiple-value-bind (x text-y width)
+        (draw-centered-text-lines lines
+                                  +virtual-center-x+
+                                  y
+                                  size
+                                  color)
+      (unless (choice-preview-visible-p choice)
+        (draw-cursor x text-y width size color)))))
+
+(defun compass-choice-position (direction center-x center-y)
+  (ecase direction
+    (:north (values center-x (- center-y 82.0)))
+    (:west (values (- center-x 156.0) center-y))
+    (:east (values (+ center-x 156.0) center-y))
+    (:south (values center-x (+ center-y 82.0)))))
+
+(defun draw-compass-choice-option (choices index center-x center-y color)
+  (let* ((choice (aref choices index))
+         (direction (choice-compass-direction choices index)))
+    (when direction
+      (multiple-value-bind (x y)
+          (compass-choice-position direction center-x center-y)
+        (draw-choice-option-centered choice
+                                     x
+                                     y
+                                     (= index
+                                        (play-state-selected-index *state*))
+                                     color)))))
+
+(defun draw-compass-choice-node (node color)
+  (let* ((choices (active-node-choices node))
+         (choice (selected-active-choice node))
+         (dial-y (+ +virtual-center-y+ 124.0)))
+    (draw-choice-prompt node (- +virtual-center-y+ 198.0) color)
+    (when (and choice
+               (story-text-visible-p node))
+      (draw-compass-choice-preview choice (- +virtual-center-y+ 64.0) color)
+      (loop for index from 0 below (length choices)
+            do (draw-compass-choice-option choices
+                                           index
+                                           +virtual-center-x+
+                                           dial-y
+                                           color)))))
+
 (defun draw-choice-node (node)
   (let ((color (make-color 255 255 255 (current-alpha))))
     (case (choice-layout node)
       (:vertical (draw-vertical-choice-node node color))
       (:list (draw-list-choice-node node color))
+      (:compass (draw-compass-choice-node node color))
       (t (draw-horizontal-choice-node node color)))))
 
 
 ;;; Node behavior
 
 (defmethod node-update ((node choice-node) dt)
-  (declare (ignore dt))
   (advance-typewriter node)
+  (when (and (story-text-visible-p node)
+             (eq (choice-layout node) :compass))
+    (let ((choice (selected-active-choice node)))
+      (when choice
+        (advance-choice-preview-typewriter choice dt))))
   (update-choice-node node))
 
 (defmethod node-draw ((node choice-node))

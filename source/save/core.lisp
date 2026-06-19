@@ -183,6 +183,9 @@
            :type-delay 0.0
            :visible-count (save-data-nonnegative-integer data :visible-count)
            :selected-index (save-data-nonnegative-integer data :selected-index)
+           :choice-preview-index 0
+           :choice-preview-elapsed 0.0
+           :choice-preview-visible-count 0
            :conversation-index
            (save-data-nonnegative-integer data :conversation-index)
            :input-buffer (save-data-string data :input-buffer)

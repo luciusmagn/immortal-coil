@@ -262,7 +262,20 @@ script the node came from, or the draft file for orphans."
   (case layout
     (:horizontal 'dialog-choice)
     (:list 'dialog-list)
+    (:compass 'dialog-compass)
     (t 'dialog-pick)))
+
+(-> editor-choice-script-form (choice) list)
+(defun editor-choice-script-form (choice)
+  (let ((form `(dialog-option ,(choice-label choice)
+                              ,(editor-target-form
+                                (or (choice-target choice)
+                                    *runtime-fallback-node-id*)))))
+    (when (choice-direction choice)
+      (setf form (append form (list :direction (choice-direction choice)))))
+    (when (choice-preview choice)
+      (setf form (append form (list :preview (choice-preview choice)))))
+    form))
 
 (defmethod node-write-script-form ((node choice-node) stream)
   (format stream "~&(~(~a~) ~s~%             ~s"
@@ -271,10 +284,7 @@ script the node came from, or the draft file for orphans."
           (node-text node))
   (loop for choice across (node-choices node)
         do (format stream "~%             ~s"
-                   `(dialog-option ,(choice-label choice)
-                                   ,(editor-target-form
-                                     (or (choice-target choice)
-                                         *runtime-fallback-node-id*)))))
+                   (editor-choice-script-form choice)))
   (format stream ")~2%"))
 
 (defmethod node-write-script-form ((node conversation-node) stream)
@@ -689,6 +699,9 @@ script the node came from, or the draft file for orphans."
           (play-state-type-delay *state*) 0.0
           (play-state-visible-count *state*) 0
           (play-state-selected-index *state*) 0
+          (play-state-choice-preview-index *state*) 0
+          (play-state-choice-preview-elapsed *state*) 0.0
+          (play-state-choice-preview-visible-count *state*) 0
           (play-state-conversation-index *state*) 0
           (play-state-input-buffer *state*) ""))
   t)

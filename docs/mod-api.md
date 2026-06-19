@@ -168,6 +168,22 @@ Scrollable list:
              (dialog-option "west" "my-mod/west"))
 ```
 
+Sparse compass-style choice:
+
+```lisp
+(dialog-compass "my-mod/landing"
+                "choose a door."
+                (dialog-direction :north
+                                  "my-mod/north"
+                                  :preview "the north door is iron and oily.")
+                (dialog-direction :west
+                                  "my-mod/west"
+                                  :preview "wax has hardened under the west door."))
+```
+
+Compass nodes render only the supplied direction slots in a cross. They do not
+draw a literal compass. One to four options are valid.
+
 Append a choice to an existing choice node:
 
 ```lisp

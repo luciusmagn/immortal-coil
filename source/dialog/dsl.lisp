@@ -246,7 +246,9 @@
   (make-choice :label "continue"
                :target *runtime-fallback-node-id*
                :condition t
-               :enabled-condition t))
+               :enabled-condition t
+               :direction nil
+               :preview nil))
 
 (-> dialog-option-condition (dialog-condition (option dialog-condition))
     dialog-condition)
@@ -263,20 +265,60 @@
                    (:when dialog-condition)
                    (:unless (option dialog-condition))
                    (:enabled-when dialog-condition)
-                   (:enabled-unless (option dialog-condition)))
+                   (:enabled-unless (option dialog-condition))
+                   (:direction (option compass-direction))
+                   (:preview (option string)))
     choice)
 (defun dialog-option (label target
                       &key ((:when when-condition) t)
                            ((:unless unless-condition) nil)
                            ((:enabled-when enabled-when-condition) t)
-                           ((:enabled-unless enabled-unless-condition) nil))
+                           ((:enabled-unless enabled-unless-condition) nil)
+                           ((:direction direction) nil)
+                           ((:preview preview) nil))
   (make-choice :label label
                :target target
                :condition (dialog-option-condition when-condition
                                                    unless-condition)
                :enabled-condition
                (dialog-option-condition enabled-when-condition
-                                        enabled-unless-condition)))
+                                        enabled-unless-condition)
+               :direction direction
+               :preview preview))
+
+(-> direction-label (compass-direction) string)
+(defun direction-label (direction)
+  (ecase direction
+    (:north "N")
+    (:west "W")
+    (:east "E")
+    (:south "S")))
+
+(-> dialog-direction (compass-direction
+                      dialog-target
+                      &key
+                      (:label (option string))
+                      (:preview (option string))
+                      (:when dialog-condition)
+                      (:unless (option dialog-condition))
+                      (:enabled-when dialog-condition)
+                      (:enabled-unless (option dialog-condition)))
+    choice)
+(defun dialog-direction (direction target
+                         &key label
+                              preview
+                              ((:when when-condition) t)
+                              ((:unless unless-condition) nil)
+                              ((:enabled-when enabled-when-condition) t)
+                              ((:enabled-unless enabled-unless-condition) nil))
+  (dialog-option (or label (direction-label direction))
+                 target
+                 :direction direction
+                 :preview preview
+                 :when when-condition
+                 :unless unless-condition
+                 :enabled-when enabled-when-condition
+                 :enabled-unless enabled-unless-condition))
 
 (-> choice-visible-p (choice) boolean)
 (defun choice-visible-p (choice)
@@ -330,6 +372,20 @@
 (defun dialog-list (id text &rest options)
   (make-dialog-choice-node id text :list options))
 
+(-> dialog-compass-options (dialog-id list) list)
+(defun dialog-compass-options (id options)
+  (if (> (length options) 4)
+      (progn
+        (runtime-warn "Compass node ~a has more than four options; keeping the first four."
+                      id)
+        (subseq options 0 4))
+      options))
+
+(-> dialog-compass (dialog-id string &rest choice) dialog-id)
+(defun dialog-compass (id text &rest options)
+  (make-dialog-choice-node id text :compass
+                           (dialog-compass-options id options)))
+
 (-> dialog-add-choice (dialog-id
                        string
                        dialog-target
@@ -337,20 +393,26 @@
                        (:when dialog-condition)
                        (:unless (option dialog-condition))
                        (:enabled-when dialog-condition)
-                       (:enabled-unless (option dialog-condition)))
+                       (:enabled-unless (option dialog-condition))
+                       (:direction (option compass-direction))
+                       (:preview (option string)))
     dialog-id)
 (defun dialog-add-choice (node-id label target
                           &key ((:when when-condition) t)
                                ((:unless unless-condition) nil)
                                ((:enabled-when enabled-when-condition) t)
-                               ((:enabled-unless enabled-unless-condition) nil))
+                               ((:enabled-unless enabled-unless-condition) nil)
+                               ((:direction direction) nil)
+                               ((:preview preview) nil))
   (node-add-choice (find-node node-id)
                    (dialog-option label
                                   target
                                   :when when-condition
                                   :unless unless-condition
                                   :enabled-when enabled-when-condition
-                                  :enabled-unless enabled-unless-condition))
+                                  :enabled-unless enabled-unless-condition
+                                  :direction direction
+                                  :preview preview))
   node-id)
 
 (defgeneric node-add-choice (node choice)

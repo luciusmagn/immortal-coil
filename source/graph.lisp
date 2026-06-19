@@ -28,7 +28,9 @@
   (label             "" :type string)
   (target            *runtime-fallback-node-id* :type dialog-target)
   (condition         t :type dialog-condition)
-  (enabled-condition t :type dialog-condition))
+  (enabled-condition t :type dialog-condition)
+  (direction         nil :type (option compass-direction))
+  (preview           nil :type (option string)))
 
 (defstruct conversation-entry
   (side    :left :type conversation-side)
