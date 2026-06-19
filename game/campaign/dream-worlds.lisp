@@ -472,7 +472,7 @@
              :next "rogue/unfinished")
 
 (dialog-text "rogue/ration"
-             "the ration tastes like the breakfast you did not eat at the inn."
+             "the ration is hard bread and salt meat. it takes work to chew."
              :next "rogue/unfinished")
 
 (dialog-text "rogue/unfinished"
