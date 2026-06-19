@@ -682,11 +682,16 @@
 
 (dialog-text "rogue/delve-caught"
              "the pacing closes its distance all at once, from the one direction you were not counting. you wake on the landing with the torch relit and your hours kept for you. nothing is missing except the going down."
-             :next "rogue/landing-return")
+             :next "rogue/delve-return-choice")
 
 (dialog-text "rogue/delve-left"
-             "you climb back to the landing, and the cold climbs with you as far as the door, where it stops, well-mannered."
-             :next "rogue/landing-return")
+             "you climb back to the landing. the cold reaches the door behind you and stops there."
+             :next "rogue/delve-return-choice")
+
+(dialog-pick "rogue/delve-return-choice"
+             "the stair is still open."
+             (dialog-option "go back down" "rogue/delve-entry")
+             (dialog-option "return to the landing" "rogue/landing-return"))
 
 (dialog-text "rogue/far-hall"
              "the far hall narrows. along it, something keeps pace with you one wall away, matching your steps so well that stopping feels like an agreement."

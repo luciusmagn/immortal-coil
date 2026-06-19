@@ -1,5 +1,19 @@
 ;;; rogue delve rendering
 
+(defparameter *delve-legend-entries*
+  '((#\@ "you")
+    (#\# "wall")
+    (#\> "down")
+    (#\< "up/out")
+    (#\* "chalk")
+    (#\% "ration")
+    (#\! "potion")
+    (#\? "map")
+    (#\g "enemy")
+    (#\m "hunter")
+    (#\^ "trap")
+    (#\$ "goal")))
+
 (defun delve-cell-glyph (session floor-index x y)
   (let ((glyph (delve-glyph-at session x y)))
     (cond
@@ -70,6 +84,46 @@
     (draw-text-at status (+ hud-left 18) (+ hud-top 15) 16 color)
     (draw-text-at controls (+ hud-left 18) (+ hud-top 42) 15 color)))
 
+(defun draw-delve-legend-entry (entry x y color)
+  (destructuring-bind (glyph label) entry
+    (draw-text-at (string glyph) x y 17 color)
+    (draw-text-at label (+ x 28) y 15 color)))
+
+(defun draw-delve-legend (left top width)
+  (let* ((panel-left (+ left width 32.0))
+         (panel-top top)
+         (panel-width 166.0)
+         (row-height 19.0)
+         (panel-height (+ 38.0
+                          (* row-height
+                             (length *delve-legend-entries*))))
+         (color (make-color 255 255 255 172)))
+    (claylib/ll:draw-rectangle (round panel-left)
+                               (round panel-top)
+                               (round panel-width)
+                               (round panel-height)
+                               (claylib::c-ptr
+                                (make-color 0 0 0 218)))
+    (draw-rectangle-outline panel-left
+                            panel-top
+                            panel-width
+                            panel-height
+                            (make-color 255 255 255 118)
+                            :thickness 1)
+    (draw-text-at "LEGEND"
+                  (+ panel-left 16)
+                  (+ panel-top 10)
+                  14
+                  (make-color 255 255 255 155))
+    (loop for entry in *delve-legend-entries*
+          for row from 0
+          for y = (+ panel-top 34 (* row row-height))
+          while (< (+ y 17) (+ panel-top panel-height))
+          do (draw-delve-legend-entry entry
+                                      (+ panel-left 16)
+                                      y
+                                      color))))
+
 (defun draw-delve-map (session)
   (let* ((grid (delve-floor-grid session))
          (floor-index (delve-floor-index session))
@@ -100,7 +154,10 @@
                     left
                     top
                     (* cols +delve-cell+)
-                    (* rows +delve-cell+))))
+                    (* rows +delve-cell+))
+    (draw-delve-legend left
+                       top
+                       (* cols +delve-cell+))))
 
 (defun draw-delve-class-option (session class index y color)
   (let* ((selected-p (= index (delve-state session "class-index" 0)))
