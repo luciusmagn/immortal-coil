@@ -70,9 +70,11 @@
 (defun vertical-selection-direction ()
   (cond
     ((or (is-key-pressed-p +key-down+)
+         (is-key-pressed-p +key-s+)
          (is-key-pressed-p +key-right+))
      1)
     ((or (is-key-pressed-p +key-up+)
+         (is-key-pressed-p +key-w+)
          (is-key-pressed-p +key-left+))
      -1)))
 
@@ -156,15 +158,15 @@
       (play-type-click text old-count new-count))))
 
 (defun update-choice-node (node)
+  (if (eq (choice-layout node) :compass)
+      (move-compass-selection node)
+      (move-selection node (selection-direction node)))
   (cond
     ((not (story-text-visible-p node))
      (when (confirm-pressed-p)
        (skip-typewriter node)))
     (t
      (journal-record-node-visible node)
-     (if (eq (choice-layout node) :compass)
-         (move-compass-selection node)
-         (move-selection node (selection-direction node)))
      (when (confirm-pressed-p)
        (let ((choice (selected-active-choice node)))
          (cond
@@ -398,13 +400,13 @@
     (draw-choice-prompt node (- +virtual-center-y+ 198.0) color)
     (when (and choice
                (story-text-visible-p node))
-      (draw-compass-choice-preview choice (- +virtual-center-y+ 64.0) color)
-      (loop for index from 0 below (length choices)
-            do (draw-compass-choice-option choices
-                                           index
-                                           +virtual-center-x+
-                                           dial-y
-                                           color)))))
+      (draw-compass-choice-preview choice (- +virtual-center-y+ 64.0) color))
+    (loop for index from 0 below (length choices)
+          do (draw-compass-choice-option choices
+                                         index
+                                         +virtual-center-x+
+                                         dial-y
+                                         color))))
 
 (defun draw-choice-node (node)
   (let ((color (make-color 255 255 255 (current-alpha))))
