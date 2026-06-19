@@ -4,15 +4,18 @@
 ;;; a config prefix so autosaves can resume a long delve.
 ;;;
 ;;; Map glyphs: # wall, . floor, @ spawn, * chalk mark, m hunter,
-;;; g monster, ^ trap, % ration, ! potion, ? map scroll,
-;;; > stairs down, < stairs up, $ goal.
+;;; G/B/O monsters, ^ trap, : ration, ! potion, ? map scroll,
+;;; >/< stairs internally render as %, , is the bottom.
 
 (defconstant +delve-cell+ 28)
 (defconstant +delve-glyph-size+ 24)
 (defconstant +delve-sight+ 4)
 (defconstant +delve-map-center-y+ 378.0)
-(defconstant +delve-hud-height+ 92.0)
+(defconstant +delve-hud-height+ 116.0)
 (defconstant +delve-hud-gap+ 16.0)
+(defconstant +delve-display-stairs-glyph+ #\%)
+(defconstant +delve-ration-glyph+ #\:)
+(defconstant +delve-goal-glyph+ #\,)
 
 (defparameter *delve-classes*
   '((:id :fighter
@@ -41,7 +44,7 @@
      :description "bad knife, long sight, map sense")))
 
 (defparameter *delve-inventory-options*
-  #(:return :ration :scroll))
+  #(:ration :scroll :return))
 
 (defparameter *delve-fallback-map*
   '(("#########"
@@ -157,6 +160,34 @@
     (when path
       (play-story-sound path :volume volume))))
 
+(defun delve-set-message (session control &rest args)
+  (setf (delve-state session "message")
+        (if args
+            (apply #'format nil control args)
+            control)))
+
+(defun delve-monster-name (glyph)
+  (case (char-upcase glyph)
+    (#\B "bat")
+    (#\G "goblin")
+    (#\O "orc")
+    (t nil)))
+
+(defun delve-monster-attack-text (glyph)
+  (case (char-upcase glyph)
+    (#\B "the bat tears at your face.")
+    (#\G "the goblin jabs under your guard.")
+    (#\O "the orc drives you back a step.")
+    (t "the monster hits you.")))
+
+(defun delve-monster-damage (glyph)
+  (case (char-upcase glyph)
+    (#\O 2)
+    (t 1)))
+
+(defun delve-goal-p (glyph)
+  (member glyph '(#\, #\$) :test #'eql))
+
 
 ;;; Session setup
 
@@ -191,7 +222,8 @@
               (delve-state session "turns") 0
               (delve-state session "picked") nil
               (delve-state session "killed") nil
-              (delve-state session "mapped") nil)
+              (delve-state session "mapped") nil
+              (delve-state session "message") "choose a class.")
         (delve-initialize-position session)))
     (unless (delve-state session "phase")
       (setf (delve-state session "phase")
@@ -207,7 +239,10 @@
                                                   :seer)
                                               1
                                               0)
-          (delve-state session "inventory-index") 0))
+          (delve-state session "inventory-index") 0)
+    (delve-set-message session
+                       "~a enters the dungeon."
+                       (string-downcase (delve-class-label class))))
   (delve-sound session :class-sound 0.54))
 
 
@@ -217,10 +252,10 @@
   (not (eql (delve-glyph-at session x y) #\#)))
 
 (defun delve-monster-p (glyph)
-  (member glyph '(#\g #\b #\o) :test #'eql))
+  (not (null (delve-monster-name glyph))))
 
 (defun delve-item-p (glyph)
-  (member glyph '(#\* #\% #\! #\?) :test #'eql))
+  (member glyph '(#\* #\: #\! #\?) :test #'eql))
 
 (defun delve-hunter-caught-p (session)
   (and (delve-state session "hunter")
@@ -277,6 +312,7 @@
   (incf (delve-state session "turns"))
   (when (and (zerop (mod (delve-state session "turns") 26))
              (zerop (delve-state session "rations" 0)))
+    (delve-set-message session "hunger takes one hit.")
     (unless (delve-hurt session node 1)
       (return-from delve-advance-turn nil)))
   (delve-hunter-step session)
@@ -287,8 +323,8 @@
       t))
 
 (defun delve-resolve-monster (session node x y glyph floor-index)
-  (declare (ignore glyph))
-  (let* ((roll (get-random-value 1 10))
+  (let* ((name (or (delve-monster-name glyph) "monster"))
+         (roll (get-random-value 1 10))
          (attack (delve-player-attack session))
          (hit-p (<= roll attack)))
     (if hit-p
@@ -297,34 +333,44 @@
           (incf (delve-state session "xp"))
           (setf (delve-state session "x") x
                 (delve-state session "y") y)
+          (delve-set-message session "you kill the ~a." name)
           (delve-sound session :kill-sound 0.48)
           (delve-advance-turn session node))
         (progn
+          (delve-set-message session (delve-monster-attack-text glyph))
           (delve-sound session :hit-sound 0.46)
-          (when (delve-hurt session node 1)
+          (when (delve-hurt session node (delve-monster-damage glyph))
             (delve-advance-turn session node))))))
 
 (defun delve-trigger-trap (session node floor-index x y)
   (delve-mark-picked session floor-index x y)
   (let ((stealth (delve-class-value session :stealth 1)))
     (if (<= (get-random-value 1 6) stealth)
-        (delve-sound session :pickup-sound 0.38)
-        (delve-hurt session node 1))))
+        (progn
+          (delve-set-message session "you spot the trap before it bites.")
+          (delve-sound session :pickup-sound 0.38))
+        (progn
+          (delve-set-message session "the trap takes one clean hit.")
+          (delve-hurt session node 1)))))
 
 (defun delve-collect-item (session floor-index x y glyph)
   (unless (delve-picked-p session floor-index x y)
     (delve-mark-picked session floor-index x y)
     (case glyph
       (#\*
-       (incf (delve-state session "marks")))
-      (#\%
-       (incf (delve-state session "rations")))
+       (incf (delve-state session "marks"))
+       (delve-set-message session "you pocket a chalk mark."))
+      (#\:
+       (incf (delve-state session "rations"))
+       (delve-set-message session "you pack a food ration."))
       (#\!
        (setf (delve-state session "hp")
              (min (delve-max-hp session)
-                  (+ (delve-current-hp session) 2))))
+                  (+ (delve-current-hp session) 2)))
+       (delve-set-message session "the potion closes a wound."))
       (#\?
-       (incf (delve-state session "scrolls"))))
+       (incf (delve-state session "scrolls"))
+       (delve-set-message session "you find a map scroll.")))
     (delve-sound session :pickup-sound 0.38)))
 
 (defun delve-enter-cell (session node x y)
@@ -349,11 +395,13 @@
        (when (delve-item-p glyph)
          (delve-collect-item session floor-index x y glyph))
        (cond
-         ((eql glyph #\$)
+         ((delve-goal-p glyph)
+          (delve-set-message session "you find the bottom.")
           (delve-finish session node :goal-target
                         (node-success-target node))
           nil)
          ((eql glyph #\>)
+          (delve-set-message session "you take the stairs down.")
           (if (< (1+ floor-index) (length (delve-floors session)))
               (delve-switch-floor session (1+ floor-index) #\<)
               (delve-finish session node :goal-target
@@ -362,10 +410,12 @@
          ((eql glyph #\<)
           (if (zerop floor-index)
               (progn
+                (delve-set-message session "you take the stairs out.")
                 (delve-finish session node :leave-target
                               (node-failure-target node))
                 nil)
               (progn
+                (delve-set-message session "you take the stairs up.")
                 (delve-switch-floor session (1- floor-index) #\>)
                 nil)))
          (t
@@ -454,15 +504,18 @@
        (setf (delve-state session "hp")
              (min (delve-max-hp session)
                   (+ (delve-current-hp session) 2)))
+       (delve-set-message session "you eat a ration.")
        (delve-sound session :pickup-sound 0.42)
        (delve-close-inventory session)))
     (:scroll
      (when (plusp (delve-state session "scrolls" 0))
        (decf (delve-state session "scrolls"))
        (setf (delve-state session "mapped") t)
+       (delve-set-message session "the map fills in this floor.")
        (delve-sound session :pickup-sound 0.42)
        (delve-close-inventory session)))
     (t
+     (delve-set-message session "pack closed.")
      (delve-close-inventory session))))
 
 (defun update-delve-inventory-menu (session)
@@ -475,7 +528,9 @@
                  (length actions)))
       (delve-sound session :menu-sound 0.24))
     (cond
-      ((is-key-pressed-p +key-i+)
+      ((or (is-key-pressed-p +key-i+)
+           (is-key-pressed-p +key-tab+)
+           (is-key-pressed-p +key-escape+))
        (delve-close-inventory session))
       ((confirm-pressed-p)
        (delve-use-inventory-action

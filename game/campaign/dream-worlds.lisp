@@ -597,7 +597,7 @@
       "rogue/delve-bottom"))
 
 (dialog-minigame "rogue/delve"
-                 "wasd or arrow keys step. i opens your pack. find the bottom."
+                 "wasd or arrow keys step. i opens your pack. move onto % stairs. find the bottom."
                  :game :rogue-delve
                  :success #'rogue-delve-bottom-target
                  :failure "rogue/delve-left"
@@ -630,18 +630,18 @@
                                             "audio/rogue/stairs.wav"))
                                :maps
                                (list (list "#############"
-                                           "#<..%.#..*..#"
+                                           "#<..:.#..*..#"
                                            "#.###.#.###.#"
-                                           "#.#..g#..?#.#"
+                                           "#.#..G#..?#.#"
                                            "#.#.##^##.#.#"
                                            "#@..*...#.#.#"
                                            "#.#####!..#.#"
                                            "#........#>.#"
                                            "#############")
                                      (list "#############"
-                                           "#<...%..#..*#"
+                                           "#<...:..#..*#"
                                            "###.###.#.###"
-                                           "#..g#.#.#...#"
+                                           "#..O#.#.#...#"
                                            "#.###.#.###.#"
                                            "#.#...m...#.#"
                                            "#.#.##^##.#.#"
@@ -649,12 +649,12 @@
                                            "#############")
                                      (list "#############"
                                            "#<..#.....#.#"
-                                           "##.##g###.#.#"
+                                           "##.##B###.#.#"
                                            "#..#..#.#.#.#"
                                            "#.##^##.#.#.#"
                                            "#.#..#..*.#.#"
                                            "#.#.##!####.#"
-                                           "#...#......$#"
+                                           "#...#......,#"
                                            "#############"))))
 
 (dialog-on-enter "rogue/delve-bottom"

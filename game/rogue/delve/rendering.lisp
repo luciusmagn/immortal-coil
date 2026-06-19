@@ -1,16 +1,21 @@
 ;;; rogue delve rendering
 
 (defparameter *delve-legend-entries*
-  '((#\> "down")
-    (#\< "up/out")
+  '((#\% "stairs")
     (#\* "chalk")
-    (#\% "ration")
+    (#\: "food")
     (#\! "potion")
-    (#\? "map")
-    (#\g "enemy")
-    (#\m "hunter")
+    (#\? "scroll")
+    (#\, "bottom")
+    (#\B "bat")
+    (#\G "goblin")
+    (#\O "orc")
+    (#\M "hunter")
     (#\^ "trap")
-    (#\$ "goal")))
+    (#\= "ring")
+    (#\) "weapon")
+    (#\] "armor")
+    (#\/ "staff")))
 
 (defparameter *delve-legend-hidden-glyphs* '(#\@ #\#))
 
@@ -32,6 +37,12 @@
       ((and (delve-monster-p glyph)
             (delve-killed-p session floor-index x y))
        #\.)
+      ((or (eql glyph #\>) (eql glyph #\<))
+       +delve-display-stairs-glyph+)
+      ((eql glyph #\$)
+       +delve-goal-glyph+)
+      ((delve-monster-p glyph)
+       (char-upcase glyph))
       ((or (eql glyph #\@) (eql glyph #\m))
        #\.)
       (t glyph))))
@@ -42,7 +53,7 @@
     (or (<= distance (delve-player-sight session))
         (and (delve-state session "mapped")
              (member (delve-glyph-at session x y)
-                     '(#\# #\< #\> #\$)
+                     '(#\# #\< #\> #\, #\$)
                      :test #'eql)))))
 
 (defun delve-cell-alpha (session x y)
@@ -81,14 +92,18 @@
                            (delve-current-hp session)
                            (delve-max-hp session)
                            (1+ (delve-floor-index session))))
-         (status-b (format nil "ration ~d  scroll ~d  mark ~d  xp ~d"
+         (status-b (format nil "food ~d  scroll ~d  mark ~d  xp ~d"
                            (delve-state session "rations" 0)
                            (delve-state session "scrolls" 0)
                            (delve-state session "marks" 0)
                            (delve-state session "xp" 0)))
-         (controls "wasd/arrows move   i inventory   <> stairs")
+         (message (delve-state session "message" "move carefully."))
+         (controls "wasd/arrows move   i pack   move onto % stairs")
          (hud-width (delve-hud-width width
-                                     (list status-a status-b controls)))
+                                     (list message
+                                           status-a
+                                           status-b
+                                           controls)))
          (hud-left (delve-hud-left left width hud-width))
          (text-left (+ hud-left +delve-hud-padding-x+))
          (color (make-color 255 255 255 190)))
@@ -104,11 +119,16 @@
                             +delve-hud-height+
                             (make-color 255 255 255 155)
                             :thickness 1)
-    (draw-text-at status-a text-left (+ hud-top 13) +delve-hud-status-size+ color)
-    (draw-text-at status-b text-left (+ hud-top 38) +delve-hud-status-size+ color)
+    (draw-text-at message
+                  text-left
+                  (+ hud-top 13)
+                  +delve-hud-status-size+
+                  (make-color 255 255 255 220))
+    (draw-text-at status-a text-left (+ hud-top 40) +delve-hud-status-size+ color)
+    (draw-text-at status-b text-left (+ hud-top 64) +delve-hud-status-size+ color)
     (draw-text-at controls
                   text-left
-                  (+ hud-top 66)
+                  (+ hud-top 91)
                   +delve-hud-controls-size+
                   color)))
 
@@ -136,7 +156,7 @@
                           (when (and (delve-state session "hunter")
                                      (= x (delve-state session "hunter-x"))
                                      (= y (delve-state session "hunter-y")))
-                            (record-glyph #\m)))))
+                            (record-glyph #\M)))))
     glyphs))
 
 (defun delve-visible-legend-entries (session)
@@ -203,7 +223,7 @@
                           (when (and (delve-state session "hunter")
                                      (= x (delve-state session "hunter-x"))
                                      (= y (delve-state session "hunter-y")))
-                            (draw-delve-glyph #\m center-x center-y alpha))
+                            (draw-delve-glyph #\M center-x center-y alpha))
                           (when (and (= x px) (= y py))
                             (draw-delve-glyph #\@ center-x center-y 255)))))
     (draw-delve-hud session
@@ -255,16 +275,47 @@
 
 (defun delve-inventory-label (action)
   (case action
-    (:ration "eat a ration")
-    (:scroll "read a map scroll")
-    (t "return")))
+    (:ration "food ration")
+    (:scroll "map scroll")
+    (t "close pack")))
+
+(defun delve-inventory-glyph (action)
+  (case action
+    (:ration +delve-ration-glyph+)
+    (:scroll #\?)
+    (t #\space)))
+
+(defun delve-inventory-count (session action)
+  (case action
+    (:ration (delve-state session "rations" 0))
+    (:scroll (delve-state session "scrolls" 0))
+    (t nil)))
+
+(defun delve-inventory-description (action)
+  (case action
+    (:ration "eat: restore 2 hp")
+    (:scroll "read: reveal this floor")
+    (t "return to the map")))
+
+(defun delve-inventory-line (session action index)
+  (let ((count (delve-inventory-count session action))
+        (letter (code-char (+ (char-code #\a) index))))
+    (if count
+        (format nil "~c) ~c  ~a x~d"
+                letter
+                (delve-inventory-glyph action)
+                (delve-inventory-label action)
+                count)
+        (format nil "~c)    ~a"
+                letter
+                (delve-inventory-label action)))))
 
 (defun draw-delve-inventory-menu (session)
   (let* ((actions (delve-inventory-actions session))
-         (left (- +virtual-center-x+ 230))
-         (top 202)
-         (width 460)
-         (height 292)
+         (left (- +virtual-center-x+ 280))
+         (top 184)
+         (width 560)
+         (height 340)
          (color (make-color 255 255 255 235)))
     (claylib/ll:draw-rectangle (round left)
                                (round top)
@@ -281,16 +332,23 @@
     (loop for action in actions
           for index from 0
           for selected-p = (= index (delve-state session "inventory-index" 0))
-          for y = (+ top 104 (* index 46))
-          do (draw-centered-text
-              (format nil "~a ~a"
-                      (if selected-p ">" " ")
-                      (delve-inventory-label action))
-              +virtual-center-x+
-              y
-              20
-              color))
-    (draw-centered-text "enter use   i close"
+          for y = (+ top 98 (* index 64))
+          do (progn
+               (draw-text-at
+                (format nil "~a ~a"
+                        (if selected-p ">" " ")
+                        (delve-inventory-line session action index))
+                (+ left 44)
+                y
+                20
+                color)
+               (draw-text-at (delve-inventory-description action)
+                             (+ left 78)
+                             (+ y 27)
+                             14
+                             (make-color 255 255 255
+                                         (if selected-p 175 120)))))
+    (draw-centered-text "enter use   esc/i close"
                         +virtual-center-x+
                         (- (+ top height) 34)
                         14
