@@ -14,6 +14,12 @@
 
 (defparameter *delve-legend-hidden-glyphs* '(#\@ #\#))
 
+(defconstant +delve-hud-min-width+ 520.0)
+(defconstant +delve-hud-padding-x+ 18.0)
+(defconstant +delve-hud-edge-margin+ 24.0)
+(defconstant +delve-hud-status-size+ 16)
+(defconstant +delve-hud-controls-size+ 15)
+
 (defun delve-cell-glyph (session floor-index x y)
   (let ((glyph (delve-glyph-at session x y)))
     (cond
@@ -53,36 +59,58 @@
                       +delve-glyph-size+
                       (make-color 255 255 255 alpha)))
 
+(defun delve-hud-left (map-left map-width hud-width)
+  (let ((center (+ map-left (/ map-width 2.0))))
+    (min (- +virtual-width+ hud-width +delve-hud-edge-margin+)
+         (max +delve-hud-edge-margin+
+              (- center (/ hud-width 2.0))))))
+
+(defun delve-hud-width (map-width lines)
+  (max map-width
+       +delve-hud-min-width+
+       (+ (* 2 +delve-hud-padding-x+)
+          (loop for line in lines
+                maximize (text-width line +delve-hud-status-size+)))))
+
 (defun draw-delve-hud (session left top width height)
   (let* ((hud-top (min (+ top height +delve-hud-gap+)
                        (- +virtual-height+ +delve-hud-height+ 28.0)))
-         (hud-left left)
          (class (delve-class session))
-         (status (format nil "~a  hp ~d/~d  ration ~d  scroll ~d  depth ~d  mark ~d  xp ~d"
-                         (delve-class-label class)
-                         (delve-current-hp session)
-                         (delve-max-hp session)
-                         (delve-state session "rations" 0)
-                         (delve-state session "scrolls" 0)
-                         (1+ (delve-floor-index session))
-                         (delve-state session "marks" 0)
-                         (delve-state session "xp" 0)))
+         (status-a (format nil "~a  hp ~d/~d  depth ~d"
+                           (delve-class-label class)
+                           (delve-current-hp session)
+                           (delve-max-hp session)
+                           (1+ (delve-floor-index session))))
+         (status-b (format nil "ration ~d  scroll ~d  mark ~d  xp ~d"
+                           (delve-state session "rations" 0)
+                           (delve-state session "scrolls" 0)
+                           (delve-state session "marks" 0)
+                           (delve-state session "xp" 0)))
          (controls "wasd/arrows move   i inventory   <> stairs")
+         (hud-width (delve-hud-width width
+                                     (list status-a status-b controls)))
+         (hud-left (delve-hud-left left width hud-width))
+         (text-left (+ hud-left +delve-hud-padding-x+))
          (color (make-color 255 255 255 190)))
     (claylib/ll:draw-rectangle (round hud-left)
                                (round hud-top)
-                               (round width)
+                               (round hud-width)
                                (round +delve-hud-height+)
                                (claylib::c-ptr
                                 (make-color 0 0 0 235)))
     (draw-rectangle-outline hud-left
                             hud-top
-                            width
+                            hud-width
                             +delve-hud-height+
                             (make-color 255 255 255 155)
                             :thickness 1)
-    (draw-text-at status (+ hud-left 18) (+ hud-top 15) 16 color)
-    (draw-text-at controls (+ hud-left 18) (+ hud-top 42) 15 color)))
+    (draw-text-at status-a text-left (+ hud-top 13) +delve-hud-status-size+ color)
+    (draw-text-at status-b text-left (+ hud-top 38) +delve-hud-status-size+ color)
+    (draw-text-at controls
+                  text-left
+                  (+ hud-top 66)
+                  +delve-hud-controls-size+
+                  color)))
 
 (defun draw-delve-legend-entry (entry x y color)
   (destructuring-bind (glyph label) entry

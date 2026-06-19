@@ -11,7 +11,7 @@
 (defconstant +delve-glyph-size+ 24)
 (defconstant +delve-sight+ 4)
 (defconstant +delve-map-center-y+ 378.0)
-(defconstant +delve-hud-height+ 70.0)
+(defconstant +delve-hud-height+ 92.0)
 (defconstant +delve-hud-gap+ 16.0)
 
 (defparameter *delve-classes*
