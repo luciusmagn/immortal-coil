@@ -1,9 +1,7 @@
 ;;; rogue delve rendering
 
 (defparameter *delve-legend-entries*
-  '((#\@ "you")
-    (#\# "wall")
-    (#\> "down")
+  '((#\> "down")
     (#\< "up/out")
     (#\* "chalk")
     (#\% "ration")
@@ -13,6 +11,8 @@
     (#\m "hunter")
     (#\^ "trap")
     (#\$ "goal")))
+
+(defparameter *delve-legend-hidden-glyphs* '(#\@ #\#))
 
 (defun delve-cell-glyph (session floor-index x y)
   (let ((glyph (delve-glyph-at session x y)))
@@ -89,40 +89,68 @@
     (draw-text-at (string glyph) x y 17 color)
     (draw-text-at label (+ x 28) y 15 color)))
 
-(defun draw-delve-legend (left top width)
-  (let* ((panel-left (+ left width 32.0))
-         (panel-top top)
-         (panel-width 166.0)
-         (row-height 19.0)
-         (panel-height (+ 38.0
-                          (* row-height
-                             (length *delve-legend-entries*))))
-         (color (make-color 255 255 255 172)))
-    (claylib/ll:draw-rectangle (round panel-left)
-                               (round panel-top)
-                               (round panel-width)
-                               (round panel-height)
-                               (claylib::c-ptr
-                                (make-color 0 0 0 218)))
-    (draw-rectangle-outline panel-left
-                            panel-top
-                            panel-width
-                            panel-height
-                            (make-color 255 255 255 118)
-                            :thickness 1)
-    (draw-text-at "LEGEND"
-                  (+ panel-left 16)
-                  (+ panel-top 10)
-                  14
-                  (make-color 255 255 255 155))
-    (loop for entry in *delve-legend-entries*
-          for row from 0
-          for y = (+ panel-top 34 (* row row-height))
-          while (< (+ y 17) (+ panel-top panel-height))
-          do (draw-delve-legend-entry entry
-                                      (+ panel-left 16)
-                                      y
-                                      color))))
+(defun delve-legend-glyph-p (glyph)
+  (and (not (member glyph *delve-legend-hidden-glyphs* :test #'eql))
+       (assoc glyph *delve-legend-entries* :test #'eql)))
+
+(defun delve-visible-legend-glyphs (session)
+  (let* ((grid (delve-floor-grid session))
+         (floor-index (delve-floor-index session))
+         (glyphs nil))
+    (flet ((record-glyph (glyph)
+             (when (delve-legend-glyph-p glyph)
+               (pushnew glyph glyphs :test #'eql))))
+      (loop for y below (length grid)
+            do (loop for x below (length (aref grid y))
+                     when (delve-visible-cell-p session x y)
+                       do (record-glyph
+                           (delve-cell-glyph session floor-index x y))
+                          (when (and (delve-state session "hunter")
+                                     (= x (delve-state session "hunter-x"))
+                                     (= y (delve-state session "hunter-y")))
+                            (record-glyph #\m)))))
+    glyphs))
+
+(defun delve-visible-legend-entries (session)
+  (let ((glyphs (delve-visible-legend-glyphs session)))
+    (remove-if-not (lambda (entry)
+                     (member (first entry) glyphs :test #'eql))
+                   *delve-legend-entries*)))
+
+(defun draw-delve-legend (session left top width)
+  (let ((entries (delve-visible-legend-entries session)))
+    (when entries
+      (let* ((panel-left (+ left width 32.0))
+             (panel-top top)
+             (panel-width 166.0)
+             (row-height 19.0)
+             (panel-height (+ 38.0 (* row-height (length entries))))
+             (color (make-color 255 255 255 172)))
+        (claylib/ll:draw-rectangle (round panel-left)
+                                   (round panel-top)
+                                   (round panel-width)
+                                   (round panel-height)
+                                   (claylib::c-ptr
+                                    (make-color 0 0 0 218)))
+        (draw-rectangle-outline panel-left
+                                panel-top
+                                panel-width
+                                panel-height
+                                (make-color 255 255 255 118)
+                                :thickness 1)
+        (draw-text-at "LEGEND"
+                      (+ panel-left 16)
+                      (+ panel-top 10)
+                      14
+                      (make-color 255 255 255 155))
+        (loop for entry in entries
+              for row from 0
+              for y = (+ panel-top 34 (* row row-height))
+              while (< (+ y 17) (+ panel-top panel-height))
+              do (draw-delve-legend-entry entry
+                                          (+ panel-left 16)
+                                          y
+                                          color))))))
 
 (defun draw-delve-map (session)
   (let* ((grid (delve-floor-grid session))
@@ -155,7 +183,8 @@
                     top
                     (* cols +delve-cell+)
                     (* rows +delve-cell+))
-    (draw-delve-legend left
+    (draw-delve-legend session
+                       left
                        top
                        (* cols +delve-cell+))))
 
