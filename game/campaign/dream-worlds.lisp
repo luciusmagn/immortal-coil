@@ -474,7 +474,7 @@
              :next "rogue/stairs")
 
 (dialog-pick "rogue/stairs"
-             "the carving is older than the dust on it."
+             "dust has settled in the cut lines."
              (dialog-option "take the stairs down" "rogue/floor-two")
              (dialog-option "go back the way you came" "rogue/back"))
 
