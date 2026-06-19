@@ -289,10 +289,10 @@
 (-> direction-label (compass-direction) string)
 (defun direction-label (direction)
   (ecase direction
-    (:north "N")
-    (:west "W")
-    (:east "E")
-    (:south "S")))
+    (:north "north")
+    (:west "west")
+    (:east "east")
+    (:south "south")))
 
 (-> dialog-direction (compass-direction
                       dialog-target
