@@ -86,7 +86,7 @@
              :next "kept/weather-after")
 
 (dialog-text "kept/weather-after"
-             "you learn to ration the weather the way the district rationed flour, you think, and then you stop, because you do not know where that thought keeps its things, and the cell pretends not to have heard it, which is the cell at its kindest."
+             "you learn to ration the weather the way the district rationed flour. then you stop. you do not know where that thought comes from. the cell pretends not to have heard it. that is the cell at its kindest."
              :next "kept/smell-jar")
 
 (dialog-text "kept/smell-jar"
@@ -294,7 +294,7 @@
              :next "kept/cups-row")
 
 (dialog-text "kept/cups-row"
-             "as the court empties, the cups file past you in a row, each pausing at your shoulder for the length of a steep, which from cups is an embrace, and the last one in line is yours, the witness, who says nothing, having testified enough for one lifetime, and steams."
+             "as the court empties, the cups file past you in a row, each pausing at your shoulder for the length of a steep. from a cup that is an embrace. the last one in line is yours, the witness. it says nothing, having testified enough for one lifetime, and steams."
              :next "kept/corridor-last")
 
 (dialog-text "kept/corridor-last"
