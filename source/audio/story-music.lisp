@@ -6,6 +6,15 @@
 (defvar *story-music-playing-p* nil)
 (defvar *story-music-volume* 0.28)
 
+;;; The relative path most recently handed to set-story-music, kept so a
+;;; save can record which track is playing portably (the resolved
+;;; *story-music-path* is an absolute, machine-specific pathname).
+(defvar *story-music-source* nil)
+
+;;; A (path volume) selection carried from a loaded save, applied once the
+;;; menu has finished tearing down title/story audio for the transition.
+(defvar *pending-restored-music* nil)
+
 (-> story-music-effective-volume () scalar)
 (defun story-music-effective-volume ()
   (* *story-music-volume*
@@ -85,10 +94,31 @@
       (let ((pathname (story-music-pathname path)))
         (unless (story-music-same-path-p pathname)
           (load-story-music pathname volume))
-        (setf *story-music-volume* volume)
+        (setf *story-music-volume* volume
+              *story-music-source* (if (stringp path)
+                                       path
+                                       (namestring pathname)))
         (play-story-music-loaded))
       (runtime-warn "Story music skipped; audio device is not ready: ~a"
                     path)))
+
+(-> active-story-music-selection () t)
+(defun active-story-music-selection ()
+  "The track to record in a save: (path volume) while playing, else nil."
+  (when (and *story-music-playing-p* *story-music-source*)
+    (list *story-music-source* *story-music-volume*)))
+
+(-> apply-restored-story-music () t)
+(defun apply-restored-story-music ()
+  "Resume the track carried from a loaded save, after the menu's teardown."
+  (let ((selection *pending-restored-music*))
+    (setf *pending-restored-music* nil)
+    (when (and (consp selection)
+               (stringp (first selection)))
+      (set-story-music (first selection)
+                       :volume (if (realp (second selection))
+                                   (second selection)
+                                   0.28)))))
 
 (-> update-story-music-stream () t)
 (defun update-story-music-stream ()

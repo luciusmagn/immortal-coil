@@ -205,6 +205,7 @@
   (when (load-current-game-save)
     (stop-title-music)
     (stop-story-music)
+    (apply-restored-story-music)
     (setf *save-current-game-p* t
           *mode* :game
           *game-fade-elapsed* 0.0
@@ -296,6 +297,7 @@
   (when (load-game-slot slot)
     (stop-title-music)
     (stop-story-music)
+    (apply-restored-story-music)
     (setf *save-current-game-p* t
           *load-menu-active-p* nil
           *mode* :game

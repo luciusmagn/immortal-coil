@@ -50,7 +50,8 @@
         :journal-visit-index (play-state-journal-visit-index *state*)
         :journal-recorded (play-state-journal-recorded *state*)
         :dialog-store (dialog-store-alist)
-        :particle-field (particle-field-state-data)))
+        :particle-field (particle-field-state-data)
+        :story-music (active-story-music-selection)))
 
 (-> save-data-current-id (save-data) t)
 (defun save-data-current-id (data)
@@ -195,7 +196,8 @@
            :journal-visit-index
            (save-data-nonnegative-integer data :journal-visit-index)
            :journal-recorded (save-data-list data :journal-recorded)))
-    (restore-particle-field-state (getf data :particle-field))))
+    (restore-particle-field-state (getf data :particle-field))
+    (setf *pending-restored-music* (getf data :story-music))))
 
 (defparameter *save-month-names*
   #("JAN" "FEB" "MAR" "APR" "MAY" "JUN"
