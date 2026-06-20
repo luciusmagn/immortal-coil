@@ -211,7 +211,7 @@
                  '(setf (dialog-value "husk-decision") "scuttled"))
 
 (dialog-text "husk/scuttle"
-             "the charges are where charges are kept. that does not surprise you anymore."
+             "the charges are in the aft locker. you go straight to it in the dark, without thinking. that does not surprise you anymore."
              :next "husk/scuttle-2")
 
 (dialog-text "husk/scuttle-2"

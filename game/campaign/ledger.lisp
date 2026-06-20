@@ -66,7 +66,7 @@
                      :next "ledger/sixty-seven")
 
 (dialog-text "ledger/sixty-seven"
-             "entry sixty-seven is yours. posted: the year on the notice above your basin. the name is the name you gave. the settled column is blank, and the left behind column is blank, and both blanks have been ruled and waiting a long time."
+             "entry sixty-seven is yours. posted: the year on the notice above your basin. the name on it is the one you gave. the settled column is blank, and the left behind column is blank, and both blanks have been ruled and waiting a long time."
              :next "ledger/ruled-line")
 
 (dialog-text "ledger/ruled-line"

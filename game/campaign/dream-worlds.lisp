@@ -772,7 +772,7 @@
                  :failure "rogue/stair-lost")
 
 (dialog-text "rogue/stair-found"
-             "the stairs are where stairs are, at the end you had not tried yet. going up, the carved name on the first step reads the same from below. carved names should not do that."
+             "the stairs are at the end you had not tried yet. going up, the carved name on the first step reads the same from below. carved names should not do that."
              :next "rogue/return-cell")
 
 (dialog-text "rogue/stair-lost"
