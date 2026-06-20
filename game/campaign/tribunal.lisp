@@ -32,7 +32,7 @@
              :next "tribunal/letter-2")
 
 (dialog-text "tribunal/letter-2"
-             "it invites you to assist. the word assist is doing the work that handcuffs would do in a poorer country."
+             "it invites you to assist. in a poorer country they would use handcuffs and mean the same thing."
              :next "tribunal/arrival")
 
 (dialog-text "tribunal/arrival"
@@ -91,7 +91,7 @@
              :next "tribunal/signature-look-3")
 
 (dialog-text "tribunal/signature-look-3"
-             "it is the best signature you have ever seen, and it is yours the way a portrait is you."
+             "it is the best signature you have ever seen. it is yours, the way a portrait is yours."
              :next "tribunal/signature-choice")
 
 (dialog-pick "tribunal/signature-choice"
@@ -130,7 +130,7 @@
              :next "tribunal/unknown-2")
 
 (dialog-text "tribunal/unknown-2"
-             "it is the truest thing said in the gymnasium all morning, and you watch it land as the worst possible answer, because the commission has a column for guilt and a column for innocence and no column for this."
+             "it is the truest thing said in the gymnasium all morning. you watch it land as the worst possible answer. the commission has a column for guilt and a column for innocence. it has no column for this."
              :next "tribunal/vey")
 
 (dialog-conversation "tribunal/vey"
@@ -147,7 +147,7 @@
              :next "tribunal/vey-after-2")
 
 (dialog-text "tribunal/vey-after-2"
-             "cooperation has a tariff and he paid it early, in the currency he always kept ready: other men's orderliness."
+             "cooperation has a price and he paid it early. he paid in other men's orderliness. he always kept that ready."
              :next "tribunal/vey-after-3")
 
 (dialog-text "tribunal/vey-after-3"
@@ -159,7 +159,7 @@
              :next "tribunal/transcripts-2")
 
 (dialog-text "tribunal/transcripts-2"
-             "a clerk stands at a lectern with three years of intercept flimsies and reads the numbers aloud, in groups, hour after hour, because the rules of evidence say the record must contain what the exhibit contains, and the exhibit contains the numbers."
+             "a clerk stands at a lectern with three years of intercept flimsies and reads the numbers aloud, in groups, hour after hour. the rules of evidence say the record must contain what the exhibit contains. the exhibit is the numbers."
              :next "tribunal/transcripts-listen")
 
 (dialog-text "tribunal/transcripts-listen"
@@ -286,7 +286,7 @@
                  '(setf (dialog-value "tribunal-statement") "asked"))
 
 (dialog-text "tribunal/statement-asked"
-             "you say: the war was there every morning, asking to be lost more slowly, and i was the one it asked. i thought that if i stayed, the asking would at least pass through someone who hated the answer."
+             "you say: the war was there every morning. the most anyone could do was lose it slowly. i was the one they asked to do it. i thought if i stayed, the asking would at least pass through a man who hated the answer."
              :next "tribunal/statement-asked-2")
 
 (dialog-text "tribunal/statement-asked-2"
@@ -340,7 +340,7 @@
              :next "tribunal/verdict-unknown-3")
 
 (dialog-text "tribunal/verdict-unknown-3"
-             "you will sign your name once a week for the rest of your life while a clerk watches your hand, and this is either the gentlest sentence the regulations contain or the most exact, and the commission, closing its folder, declines to say which."
+             "you will sign your name once a week for the rest of your life while a clerk watches your hand. it is the gentlest sentence the regulations contain. it may also be the most exact. the commission closes its folder and does not say which."
              :next "tribunal/after")
 
 (dialog-text "tribunal/after"
