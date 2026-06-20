@@ -95,59 +95,37 @@
                  :config (list :save-prefix "below"
                                :caught-target "below/audited"
                                :leave-target "below/turned-back"
-                               :maps
-                               (list (list "###################"
-                                           "#<      #         #"
-                                           "####### # ####### #"
-                                           "#     #m# # !   # #"
-                                           "# ### # #*# ### # #"
-                                           "#?  # # # #*  #   #"
-                                           "# # # # # #########"
-                                           "# # #   #  m      #"
-                                           "# # ####### ### # #"
-                                           "# #       # #   # #"
-                                           "# ##### # ### # #^#"
-                                           "#       #     #  >#"
-                                           "###################")
-                                     (list "###################"
-                                           "#<  #             #"
-                                           "### # ###  ########"
-                                           "#   # # #         #"
-                                           "# # #m# ######### #"
-                                           "# !^# # # ?     # #"
-                                           "# ### # # # # # # #"
-                                           "# #     # # # #   #"
-                                           "# # #*### # # ### #"
-                                           "#m#   #   # # # # #"
-                                           "# ##### ###   # # #"
-                                           "#       #     # *>#"
-                                           "###################")
-                                     (list "###################"
-                                           "#<#         m   * #"
-                                           "# ##### ##### ### #"
-                                           "# #   # #   #   # #"
-                                           "# # # # # # # # # #"
-                                           "# # # m   # #   # #"
-                                           "# # ####### ##! # #"
-                                           "#*  #   #   #   # #"
-                                           "##### # # ### #####"
-                                           "# #   # # #       #"
-                                           "# # # # # ### ### #"
-                                           "#   #   ^    ?   >#"
-                                           "###################")
-                                     (list "###################"
-                                           "#<  #    m#  m^ * #"
-                                           "###*# # ### # ### #"
-                                           "#   # #     #     #"
-                                           "# ### ####### #  ##"
-                                           "#   # #       #   #"
-                                           "### # # ####### # #"
-                                           "#   # #   #     # #"
-                                           "# ####### # ###   #"
-                                           "# #   #!  # #     #"
-                                           "# # # # ### #? ####"
-                                           "#   #   #        ,#"
-                                           "###################"))))
+                               :step-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/step.wav"))
+                               :bump-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/bump.wav"))
+                               :menu-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/menu.wav"))
+                               :class-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/class.wav"))
+                               :pickup-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/pickup.wav"))
+                               :hit-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/hit.wav"))
+                               :kill-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/kill.wav"))
+                               :stairs-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/stairs.wav"))
+                               :gen-floors 5
+                               :gen-width 27
+                               :gen-height 17
+                               :gen-hunters 2
+                               :gen-monsters 6
+                               :gen-items 5
+                               :gen-traps 3))
 
 (dialog-text "below/audited"
              "one of the pair steps out of its wall. you do not quite see it. the torch will not hold its light on it. the floor files you."

@@ -92,11 +92,13 @@
                            (delve-current-hp session)
                            (delve-max-hp session)
                            (1+ (delve-floor-index session))))
-         (status-b (format nil "food ~d  scroll ~d  mark ~d  xp ~d"
+         (status-b (format nil "food ~d  scroll ~d  mark ~d  xp ~d~@[  dig ~d~]"
                            (delve-state session "rations" 0)
                            (delve-state session "scrolls" 0)
                            (delve-state session "marks" 0)
-                           (delve-state session "xp" 0)))
+                           (delve-state session "xp" 0)
+                           (let ((digs (delve-state session "digs" 0)))
+                             (when (plusp digs) digs))))
          (message (delve-state session "message" "move carefully."))
          (controls "wasd/arrows move   i pack   move onto % stairs")
          (hud-width (delve-hud-width width
@@ -254,10 +256,14 @@
                         (make-color 255 255 255 (if selected-p 185 115)))))
 
 (defun draw-delve-class-menu (session)
-  (let ((color (make-color 255 255 255 235)))
+  (let* ((color (make-color 255 255 255 235))
+         (count (length *delve-classes*))
+         (step 64)
+         (start-y 250)
+         (hint-y (+ start-y (* count step) 14)))
     (draw-centered-text "CHOOSE A CLASS"
                         +virtual-center-x+
-                        214
+                        202
                         26
                         color)
     (loop for class in *delve-classes*
@@ -265,11 +271,11 @@
           do (draw-delve-class-option session
                                       class
                                       index
-                                      (+ 282 (* index 76))
+                                      (+ start-y (* index step))
                                       color))
     (draw-centered-text "wasd/arrows select   enter confirm"
                         +virtual-center-x+
-                        560
+                        hint-y
                         15
                         (make-color 255 255 255 170))))
 
@@ -277,24 +283,28 @@
   (case action
     (:ration "food ration")
     (:scroll "map scroll")
+    (:dig "pick")
     (t "close pack")))
 
 (defun delve-inventory-glyph (action)
   (case action
     (:ration +delve-ration-glyph+)
     (:scroll #\?)
+    (:dig #\#)
     (t #\space)))
 
 (defun delve-inventory-count (session action)
   (case action
     (:ration (delve-state session "rations" 0))
     (:scroll (delve-state session "scrolls" 0))
+    (:dig (delve-state session "digs" 0))
     (t nil)))
 
 (defun delve-inventory-description (action)
   (case action
     (:ration "eat: restore 2 hp")
     (:scroll "read: reveal this floor")
+    (:dig "break the walls around you")
     (t "return to the map")))
 
 (defun delve-inventory-line (session action index)

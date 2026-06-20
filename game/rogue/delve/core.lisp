@@ -20,36 +20,181 @@
 (defparameter *delve-classes*
   '((:id :fighter
      :label "FIGHTER"
-     :hp 8
+     :hp 10
      :sight 4
-     :attack 6
+     :attack 7
      :stealth 1
      :rations 1
-     :description "mail, sword-arm, no patience for doors")
-    (:id :thief
-     :label "THIEF"
-     :hp 5
-     :sight 4
+     :scrolls 0
+     :digs 0
+     :description "mail and a short sword. opens doors with his shoulder.")
+    (:id :rogue
+     :label "ROGUE"
+     :hp 6
+     :sight 5
      :attack 4
-     :stealth 4
+     :stealth 5
      :rations 2
-     :description "soft steps, trap hands, better exits")
+     :scrolls 1
+     :digs 0
+     :description "soft boots, lockpicks, a nose for floors that bite.")
+    (:id :ranger
+     :label "RANGER"
+     :hp 7
+     :sight 6
+     :attack 5
+     :stealth 3
+     :rations 2
+     :scrolls 0
+     :digs 0
+     :description "long sight and a quiet bow. reads the dark a room out.")
     (:id :seer
      :label "SEER"
      :hp 4
-     :sight 6
+     :sight 7
      :attack 3
      :stealth 2
      :rations 1
-     :description "bad knife, long sight, map sense")))
+     :scrolls 2
+     :digs 0
+     :description "a bad knife, long eyes, and a map sense.")
+    (:id :tunneler
+     :label "TUNNELER"
+     :hp 8
+     :sight 4
+     :attack 4
+     :stealth 2
+     :rations 1
+     :scrolls 0
+     :digs 3
+     :description "a pick and a grudge against walls. digs when cornered.")))
 
 (defparameter *delve-inventory-options*
-  #(:ration :scroll :return))
+  #(:ration :scroll :dig :return))
 
-(defparameter *delve-fallback-map*
-  '(("#########"
-     "#@..*..$#"
-     "#########")))
+;;; Procedural floors
+;;;
+;;; Each delve builds its own rooms-and-corridors dungeon once and stores
+;;; the result under the save prefix, so a resumed crawl keeps the same
+;;; map. Two different delves (different prefixes) and two playthroughs of
+;;; one delve get different layouts.
+
+(defun delve-rect-clear-p (grid x0 y0 rw rh)
+  (let ((h (array-dimension grid 0))
+        (w (array-dimension grid 1)))
+    (loop for y from (1- y0) to (+ y0 rh) always
+          (loop for x from (1- x0) to (+ x0 rw) always
+                (or (< x 0) (< y 0) (>= x w) (>= y h)
+                    (char= (aref grid y x) #\#))))))
+
+(defun delve-carve-rect (grid x0 y0 rw rh)
+  (loop for y from y0 below (+ y0 rh) do
+        (loop for x from x0 below (+ x0 rw) do
+              (setf (aref grid y x) #\.))))
+
+(defun delve-carve-h (grid xa xb y)
+  (loop for x from (min xa xb) to (max xa xb) do (setf (aref grid y x) #\.)))
+
+(defun delve-carve-v (grid ya yb x)
+  (loop for y from (min ya yb) to (max ya yb) do (setf (aref grid y x) #\.)))
+
+(defun delve-generate-grid (w h)
+  "Return (values grid room-centers); rooms are chained by corridors, so
+the whole floor is connected."
+  (let ((grid (make-array (list h w) :initial-element #\#))
+        (centers nil))
+    (dotimes (try 24)
+      (let* ((rw (+ 3 (get-random-value 0 5)))
+             (rh (+ 2 (get-random-value 0 3)))
+             (x0 (+ 1 (get-random-value 0 (max 1 (- w rw 2)))))
+             (y0 (+ 1 (get-random-value 0 (max 1 (- h rh 2))))))
+        (when (delve-rect-clear-p grid x0 y0 rw rh)
+          (delve-carve-rect grid x0 y0 rw rh)
+          (let ((cx (+ x0 (floor rw 2)))
+                (cy (+ y0 (floor rh 2))))
+            (when centers
+              (destructuring-bind (px py) (first centers)
+                (if (zerop (get-random-value 0 1))
+                    (progn (delve-carve-h grid px cx py)
+                           (delve-carve-v grid py cy cx))
+                    (progn (delve-carve-v grid py cy px)
+                           (delve-carve-h grid px cx cy)))))
+            (push (list cx cy) centers)))))
+    (values grid (nreverse centers))))
+
+(defun delve-open-cells (grid)
+  (loop for y below (array-dimension grid 0)
+        nconc (loop for x below (array-dimension grid 1)
+                    when (char= (aref grid y x) #\.)
+                      collect (list x y))))
+
+(defun delve-grid-rows (grid)
+  (loop for y below (array-dimension grid 0)
+        collect (coerce (loop for x below (array-dimension grid 1)
+                              collect (aref grid y x))
+                        'string)))
+
+(defun delve-floor-grid-and-rooms (w h)
+  "A connected floor grid with at least three rooms, or, after enough
+failed tries, one open interior room with synthesized centers."
+  (loop for try below 60
+        do (multiple-value-bind (grid centers) (delve-generate-grid w h)
+             (when (>= (length centers) 3)
+               (return-from delve-floor-grid-and-rooms (values grid centers))))
+        finally
+           (let ((grid (make-array (list h w) :initial-element #\#)))
+             (delve-carve-rect grid 1 1 (- w 2) (- h 2))
+             (return (values grid
+                             (list (list 2 2)
+                                   (list (floor w 2) (floor h 2))
+                                   (list (- w 3) (- h 3))))))))
+
+(defun delve-build-floor (w h first-p last-p hunters monsters items traps)
+  "Build one floor and return its rows as a list of strings."
+  (multiple-value-bind (grid centers) (delve-floor-grid-and-rooms w h)
+    (destructuring-bind (fx fy) (first centers)
+      (destructuring-bind (lx ly) (car (last centers))
+        (if first-p
+            (progn
+              (setf (aref grid fy fx) #\@)
+              (destructuring-bind (sx sy) (second centers)
+                (setf (aref grid sy sx) #\<)))
+            (setf (aref grid fy fx) #\<))
+        (setf (aref grid ly lx) (if last-p #\, #\>))))
+    (let ((cells (dream-maze-shuffle (delve-open-cells grid))))
+      (flet ((scatter (glyph n)
+               (dotimes (i n)
+                 (when cells
+                   (destructuring-bind (cx cy) (pop cells)
+                     (setf (aref grid cy cx) glyph))))))
+        (scatter #\m hunters)
+        (dotimes (i monsters)
+          (scatter (nth (get-random-value 0 2) '(#\G #\B #\O)) 1))
+        (scatter #\* (max 1 (floor items 2)))
+        (scatter #\: (max 1 (floor (1+ items) 3)))
+        (scatter #\! 1)
+        (scatter #\? 1)
+        (scatter #\^ traps)))
+    (delve-grid-rows grid)))
+
+(defun delve-config-count (session key default)
+  (let ((value (session-config-value session key default)))
+    (if (and (integerp value) (>= value 0)) value default)))
+
+(defun delve-generate-dungeon (session)
+  "A fresh dungeon for this delve as a list of floors (each a row list)."
+  (let ((floors (max 2 (delve-config-count session :gen-floors 4)))
+        (w (max 13 (delve-config-count session :gen-width 23)))
+        (h (max 9 (delve-config-count session :gen-height 15)))
+        (hunters (delve-config-count session :gen-hunters 1))
+        (monsters (delve-config-count session :gen-monsters 4))
+        (items (delve-config-count session :gen-items 4))
+        (traps (delve-config-count session :gen-traps 2)))
+    (loop for fi below floors
+          collect (delve-build-floor w h
+                                     (zerop fi)
+                                     (= fi (1- floors))
+                                     hunters monsters items traps))))
 
 ;;; Crawl state
 
@@ -72,11 +217,6 @@
 
 (defun delve-parse-floor (rows)
   (coerce (mapcar (lambda (row) (coerce row 'vector)) rows) 'vector))
-
-(defun delve-normalize-maps (maps)
-  (if (and (listp maps) maps)
-      maps
-      *delve-fallback-map*))
 
 (defun delve-find-glyph (floor glyph)
   (loop for y below (length floor)
@@ -208,26 +348,45 @@
           (delve-state session "y") y)
     (delve-place-hunter session 0)))
 
+(defun delve-resolve-floor-rows (session)
+  "Floors as row lists: stored map if resuming, else an authored :maps,
+else a freshly generated dungeon. Persisted so a resume keeps its map."
+  (let ((stored (delve-state session "floor-data")))
+    (if (and (listp stored) stored)
+        stored
+        (let* ((maps (session-config-value session :maps))
+               (rows (if (and (listp maps) maps)
+                         maps
+                         (delve-generate-dungeon session))))
+          (setf (delve-state session "floor-data") rows)
+          rows))))
+
+(defun delve-load-floors (session)
+  (setf (delve-floors session)
+        (coerce (mapcar #'delve-parse-floor
+                        (delve-resolve-floor-rows session))
+                'vector)))
+
 (defmethod initialize-instance :after ((session rogue-delve-session) &key)
-  (let ((maps (delve-normalize-maps (session-config-value session :maps))))
-    (setf (delve-floors session)
-          (coerce (mapcar #'delve-parse-floor maps) 'vector))
-    (unless (delve-state session "started")
-      (with-batched-store-saves ()
-        (setf (delve-state session "started") t
-              (delve-state session "phase") :class
-              (delve-state session "class-index") 0
-              (delve-state session "marks") 0
-              (delve-state session "xp") 0
-              (delve-state session "turns") 0
-              (delve-state session "picked") nil
-              (delve-state session "killed") nil
-              (delve-state session "mapped") nil
-              (delve-state session "message") "choose a class.")
-        (delve-initialize-position session)))
-    (unless (delve-state session "phase")
-      (setf (delve-state session "phase")
-            (if (delve-state session "class") :crawl :class)))))
+  (unless (delve-state session "started")
+    (with-batched-store-saves ()
+      (setf (delve-state session "started") t
+            (delve-state session "phase") :class
+            (delve-state session "class-index") 0
+            (delve-state session "marks") 0
+            (delve-state session "xp") 0
+            (delve-state session "turns") 0
+            (delve-state session "picked") nil
+            (delve-state session "killed") nil
+            (delve-state session "mapped") nil
+            (delve-state session "floor-data") nil
+            (delve-state session "message") "choose a class.")
+      (delve-load-floors session)
+      (delve-initialize-position session)))
+  (delve-load-floors session)
+  (unless (delve-state session "phase")
+    (setf (delve-state session "phase")
+          (if (delve-state session "class") :crawl :class))))
 
 (defun delve-start-class (session class)
   (with-batched-store-saves ()
@@ -235,10 +394,8 @@
           (delve-state session "phase") :crawl
           (delve-state session "hp") (getf class :hp)
           (delve-state session "rations") (getf class :rations)
-          (delve-state session "scrolls") (if (eq (delve-class-id class)
-                                                  :seer)
-                                              1
-                                              0)
+          (delve-state session "scrolls") (getf class :scrolls 0)
+          (delve-state session "digs") (getf class :digs 0)
           (delve-state session "inventory-index") 0)
     (delve-set-message session
                        "~a enters the dungeon."
@@ -478,6 +635,7 @@
   (case action
     (:ration (plusp (delve-state session "rations" 0)))
     (:scroll (plusp (delve-state session "scrolls" 0)))
+    (:dig (plusp (delve-state session "digs" 0)))
     (t t)))
 
 (defun delve-inventory-actions (session)
@@ -495,6 +653,37 @@
   (setf (delve-state session "phase") :crawl
         (delve-state session "inventory-index") 0)
   (delve-sound session :menu-sound 0.24))
+
+(defun delve-persist-floor (session)
+  "Write the current (mutated) floor grid back into the stored map so a
+resume keeps any walls the tunneler broke."
+  (let* ((idx (delve-floor-index session))
+         (grid (aref (delve-floors session) idx))
+         (rows (loop for row across grid collect (coerce row 'string)))
+         (data (copy-list (delve-state session "floor-data"))))
+    (when (and data (< idx (length data)))
+      (setf (nth idx data) rows
+            (delve-state session "floor-data") data))))
+
+(defun delve-dig-around (session)
+  "Break interior walls orthogonally next to the player. Returns the count."
+  (let* ((grid (delve-floor-grid session))
+         (px (delve-state session "x"))
+         (py (delve-state session "y"))
+         (h (length grid))
+         (w (length (aref grid 0)))
+         (broken 0))
+    (dolist (step '((1 . 0) (-1 . 0) (0 . 1) (0 . -1)))
+      (let ((nx (+ px (car step)))
+            (ny (+ py (cdr step))))
+        (when (and (> nx 0) (< nx (1- w))
+                   (> ny 0) (< ny (1- h))
+                   (char= (aref (aref grid ny) nx) #\#))
+          (setf (aref (aref grid ny) nx) #\.)
+          (incf broken))))
+    (when (plusp broken)
+      (delve-persist-floor session))
+    broken))
 
 (defun delve-use-inventory-action (session action)
   (case action
@@ -514,6 +703,19 @@
        (delve-set-message session "the map fills in this floor.")
        (delve-sound session :pickup-sound 0.42)
        (delve-close-inventory session)))
+    (:dig
+     (if (plusp (delve-state session "digs" 0))
+         (let ((broken (delve-dig-around session)))
+           (if (plusp broken)
+               (progn
+                 (decf (delve-state session "digs"))
+                 (delve-set-message session "your pick opens the wall.")
+                 (delve-sound session :hit-sound 0.5))
+               (delve-set-message session "no wall close enough to break."))
+           (delve-close-inventory session))
+         (progn
+           (delve-set-message session "your digs are spent.")
+           (delve-close-inventory session))))
     (t
      (delve-set-message session "pack closed.")
      (delve-close-inventory session))))

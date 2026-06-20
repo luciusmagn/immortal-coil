@@ -81,25 +81,37 @@
                  :config (list :save-prefix "husk-decks"
                                :caught-target "husk/paced"
                                :leave-target "husk/withdraw"
-                               :maps
-                               (list (list "#############"
-                                           "#<....#.....#"
-                                           "#.###.#.###.#"
-                                           "#.#*..#...#.#"
-                                           "#.#.#####.#.#"
-                                           "#@..#...*.#.#"
-                                           "#.###.###.#.#"
-                                           "#.....#...#>#"
-                                           "#############")
-                                     (list "#############"
-                                           "#<..#....*..#"
-                                           "##.##.#####.#"
-                                           "#..#..#...#.#"
-                                           "#.##.##.#.#.#"
-                                           "#.#...m.#...#"
-                                           "#.#.#####.###"
-                                           "#*..#......$#"
-                                           "#############"))))
+                               :step-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/step.wav"))
+                               :bump-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/bump.wav"))
+                               :menu-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/menu.wav"))
+                               :class-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/class.wav"))
+                               :pickup-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/pickup.wav"))
+                               :hit-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/hit.wav"))
+                               :kill-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/kill.wav"))
+                               :stairs-sound
+                               (namestring (dialog-asset-pathname
+                                            "audio/rogue/stairs.wav"))
+                               :gen-floors 4
+                               :gen-width 21
+                               :gen-height 15
+                               :gen-hunters 1
+                               :gen-monsters 4
+                               :gen-items 4
+                               :gen-traps 2))
 
 (dialog-text "husk/paced"
              "the sound that has kept pace one bulkhead over is not one bulkhead over now. you do not run. you walk backward to the lock with your lamp on the corridor, the way you back off from a dog. the corridor lets you."
