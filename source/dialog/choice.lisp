@@ -223,15 +223,23 @@
          (width (text-width label size))
          (enabled-p (choice-enabled-p choice))
          (option-color (choice-option-color choice color)))
-    (draw-text-at label x y size option-color)
-    (unless enabled-p
-      (draw-locked-choice-strike x y width size option-color))
-    (when selected-p
-      (claylib/ll:draw-rectangle (round x)
-                                 (round (+ y size 3))
-                                 width
-                                 4
-                                 (claylib::c-ptr option-color)))))
+    (if selected-p
+        ;; invert: a filled bar behind the label, dark text on top
+        (let ((pad-x 8.0)
+              (pad-y 3.0)
+              (text-color (make-color 16 16 16 (a option-color))))
+          (claylib/ll:draw-rectangle (round (- x pad-x))
+                                     (round (- y pad-y))
+                                     (round (+ width (* 2.0 pad-x)))
+                                     (round (+ size (* 2.0 pad-y)))
+                                     (claylib::c-ptr option-color))
+          (draw-text-at label x y size text-color)
+          (unless enabled-p
+            (draw-locked-choice-strike x y width size text-color)))
+        (progn
+          (draw-text-at label x y size option-color)
+          (unless enabled-p
+            (draw-locked-choice-strike x y width size option-color))))))
 
 (defun draw-choice-option-centered (choice center-x y selected-p color)
   (let* ((size 20)
