@@ -259,7 +259,7 @@
                  "w/a/s/d or arrow keys steer. hold the ship in the open gates."
                  :game :wire-flight
                  :success "ship/threaded"
-                 :failure "ship/crash-return")
+                 :failure "ship/nap-reset")
 
 (dialog-text "ship/threaded"
              "you thread the line. for one second, the ship is quiet."
@@ -358,7 +358,7 @@
                  "w/a/s/d or arrow keys steer. hold the ship in the open gates."
                  :game :wire-flight
                  :success "ship/aftermath"
-                 :failure "ship/crash-return")
+                 :failure "ship/nap-reset")
 
 (dialog-text "ship/aftermath"
              "the crossing holds. the board goes green deck by deck. two decks stay dark. on the bridge nobody says anything."
@@ -582,22 +582,22 @@
              "you turn in at the bunk with the stenciled name. the stencil is worn now. it has been repainted at least once. the letters are traced over themselves, a little off true."
              :next "base/awake")
 
-(dialog-on-enter "ship/crash-return"
+;;; Flight failure does not read as a crash. The day quietly resets: you
+;;; wake in the chair, hours before the crossing, as if from a nap. The
+;;; ship-failures count climbs unseen and surfaces later as the galley
+;;; remembering what you would rather it did not.
+(dialog-on-enter "ship/nap-reset"
                  '(setf (dialog-value "ship-failures")
                         (1+ (dialog-value "ship-failures" 0))))
 
-(dialog-particles "ship/crash-return" :warp :immediate t)
+(dialog-particles "ship/nap-reset" :stars :fade-seconds 4.0)
 
-(dialog-text "ship/crash-return"
-             "white lines fill your eyes. they all run from one black point. you cannot look away from it."
-             :next "ship/crash-return-hands")
+(dialog-text "ship/nap-reset"
+             "your eyes are closed, and then they are open. the glass is cold in your hand. you are in the chair on the bridge, and you have been asleep."
+             :next "ship/nap-reset-wake")
 
-(dialog-text "ship/crash-return-hands"
-             "your hands are still on the controls. the gloves are creased white at the knuckles. you cannot feel the grip yet. you can see where it should hurt."
-             :next "ship/crash-return-alarm")
-
-(dialog-text "ship/crash-return-alarm"
-             "the lines break apart. the bridge comes back in pieces: console, warning strip, checklist, alarm."
+(dialog-text "ship/nap-reset-wake"
+             "the boards are green. the crossing is still hours off. a nap before a long watch, nothing the manual would mark against you. you sit up and shake it off."
              :next "ship/alarm")
 
 
