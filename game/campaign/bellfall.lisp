@@ -4,7 +4,7 @@
 ;;; terms answer; exits through the choice of what Oakbarrow does next.
 
 (dialog-text "bellfall/asleep"
-             "the sleep is the good kind, and the winter that starts tomorrow is the first quiet winter in nine years, and it keeps its word, and so do the eight after it."
+             "the sleep is the good kind. the winter that starts tomorrow is the first quiet one in nine years. it keeps its word. so do the eight after it."
              :next "bellfall/years")
 
 (dialog-scene "bellfall/years"
@@ -136,7 +136,7 @@
              :next "bellfall/no-bell")
 
 (dialog-text "bellfall/no-bell"
-             "that evening the supper bell does not ring. nobody decided it. the village simply eats unrung, one night, in honor of a ringer, and the silence at the usual hour is the loudest the bell has ever been."
+             "that evening the supper bell does not ring. nobody decided it. the village eats with no bell, one night, for the man who rang one. everyone hears the hour anyway, by the stroke that does not come."
              :next "bellfall/ditch")
 
 (dialog-text "bellfall/ditch"
@@ -183,7 +183,7 @@
                      :next "bellfall/drawer")
 
 (dialog-text "bellfall/drawer"
-             "and one evening Mira sets the till drawer on the long table, and in it the blank notices wait in their stack, and the practice slate, and the pen, and she puts her hands flat on the table and looks at you, and the whole inn goes quiet."
+             "one evening Mira sets the till drawer on the long table. the blank notices wait in their stack. the practice slate. the pen. she puts her hands flat on the table and looks at you. the whole inn goes quiet."
              :next "bellfall/choice")
 
 (dialog-pick "bellfall/choice"
@@ -208,7 +208,7 @@
              :next "bellfall/post-companion")
 
 (dialog-text "bellfall/post-companion"
-             "{jrpg-companion} watches from the stair, and later, drying plates, says only: you have her hand now. and you do. that is the whole horror and the whole kindness of it, held in one sentence, put away wet."
+             "{jrpg-companion} watches from the stair, and later, drying plates, says only: you have her hand now. and you do. it is the kindest thing anyone has said to you. it is also the worst. they say it over the plates and keep drying."
              :next "bellfall/end")
 
 (dialog-on-enter "bellfall/take"
