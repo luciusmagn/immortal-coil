@@ -6,12 +6,12 @@
 
 (defparameter *jrpg-overworld-map*
   #("................"
-    "...^^^^........."
+    "...^^^^.....o..."
     "..^....^.....T.."
     "..^....^........"
     ".V...B....!!...."
-    ".....R.........."
-    "................"))
+    ".....R........$."
+    "......~~~......."))
 
 (defvar *jrpg-overworld* nil)
 
@@ -20,7 +20,7 @@
   (map           *jrpg-overworld-map*)
   (finish-glyphs '(#\!))
   (tile-messages nil)
-  (legend        "V village  = bridge  + sign  T tower  \" grass")
+  (legend        "V village  = bridge  + sign  T tower  $ gold  o tonic")
   (store-prefix  "jrpg-overworld")
   (x             1)
   (y             4)
@@ -86,7 +86,7 @@
      :legend (minigame-config-value
               node
               :legend
-              "V village  = bridge  + sign  T tower  \" grass")
+              "V village  = bridge  + sign  T tower  $ gold  o tonic")
      :store-prefix (minigame-config-value node
                                           :store-prefix
                                           "jrpg-overworld")
@@ -114,7 +114,7 @@
       #\^))
 
 (defun jrpg-overworld-passable-p (cell)
-  (not (char= cell #\^)))
+  (not (member cell '(#\^ #\~) :test #'char=)))
 
 (defun jrpg-overworld-input-direction ()
   (cond
@@ -139,6 +139,9 @@
     (#\T "the tower is still too far to touch.")
     (#\S "the roadside shrine is white stone and old pine.")
     (#\! "the grass shakes.")
+    (#\$ "coins glint in the roadside grass.")
+    (#\o "a small corked bottle waits on a flat stone.")
+    (#\~ "the river runs cold and quick.")
     (t "the road is bright and empty.")))
 
 (defun jrpg-overworld-tile-message (game cell)
@@ -149,6 +152,46 @@
 
 (defun jrpg-overworld-store-key (game suffix)
   (format nil "~a-~a" (jrpg-overworld-store-prefix game) suffix))
+
+(defun jrpg-overworld-collected (game)
+  (jrpg-value (jrpg-overworld-store-key game "collected") nil))
+
+(defun jrpg-overworld-collected-p (game x y)
+  (member (list x y) (jrpg-overworld-collected game) :test #'equal))
+
+(defun jrpg-overworld-mark-collected (game x y)
+  (setf (jrpg-value (jrpg-overworld-store-key game "collected"))
+        (cons (list x y) (jrpg-overworld-collected game))))
+
+(defun jrpg-overworld-effective-cell (game x y)
+  "A picked-up gold or potion tile reads as plain road afterward."
+  (let ((cell (jrpg-overworld-cell game x y)))
+    (if (and (member cell '(#\$ #\o) :test #'char=)
+             (jrpg-overworld-collected-p game x y))
+        #\.
+        cell)))
+
+(defun jrpg-overworld-tile-effects (game x y cell)
+  "Sounds and pickups for the tile just entered; pickups override the
+message and are taken only once."
+  (case cell
+    (#\$ (unless (jrpg-overworld-collected-p game x y)
+           (let ((gold (get-random-value 3 6)))
+             (jrpg-adjust-number "jrpg-gold" gold)
+             (jrpg-overworld-mark-collected game x y)
+             (play-jrpg-sound "coin" :volume 0.40)
+             (setf (jrpg-overworld-message game)
+                   (format nil "loose coins in the grass. ~d gold." gold)))))
+    (#\o (unless (jrpg-overworld-collected-p game x y)
+           (jrpg-adjust-number "jrpg-potions" 1)
+           (jrpg-overworld-mark-collected game x y)
+           (play-jrpg-sound "tonic" :volume 0.40)
+           (setf (jrpg-overworld-message game)
+                 "a corked tonic, left for travelers. you take it.")))
+    (#\B (play-jrpg-sound "gate-chain" :volume 0.42))
+    (#\R (play-jrpg-sound "ledger" :volume 0.30))
+    (#\T (play-jrpg-sound "bell" :volume 0.30))
+    (#\S (play-jrpg-sound "bell" :volume 0.24))))
 
 (defun jrpg-record-overworld-cell (game cell)
   (declare (ignore game))
@@ -179,15 +222,20 @@
           (setf (jrpg-overworld-x game) next-x
                 (jrpg-overworld-y game) next-y
                 (jrpg-overworld-message game)
-                (jrpg-overworld-tile-message game cell))
+                (jrpg-overworld-tile-message
+                 game
+                 (jrpg-overworld-effective-cell game next-x next-y)))
           (incf (jrpg-overworld-steps game))
           (setf (jrpg-value (jrpg-overworld-store-key game "steps"))
                 (jrpg-overworld-steps game))
           (jrpg-record-overworld-cell game cell)
+          (jrpg-overworld-tile-effects game next-x next-y cell)
           (when (jrpg-overworld-finish-cell-p game cell)
             (jrpg-overworld-finish node)))
         (setf (jrpg-overworld-message game)
-              "the mountains block the road."))))
+              (if (char= cell #\~)
+                  "the water is too deep to wade."
+                  "the mountains block the road.")))))
 
 (defun update-jrpg-overworld-minigame (node dt)
   (declare (ignore dt))
@@ -214,6 +262,9 @@
     (#\T "T")
     (#\S "S")
     (#\! "\"")
+    (#\$ "$")
+    (#\o "o")
+    (#\~ "~")
     (t ".")))
 
 (defun draw-jrpg-overworld-tile (x y cell)
@@ -237,7 +288,7 @@
         do (loop for x from 0 below (jrpg-overworld-width game)
                  do (draw-jrpg-overworld-tile x
                                                y
-                                               (jrpg-overworld-cell
+                                               (jrpg-overworld-effective-cell
                                                 game
                                                 x
                                                 y))))
