@@ -12,12 +12,15 @@
 (defvar *tree-open-p* nil)
 (defvar *tree-pan-x* 0.0)
 (defvar *tree-pan-y* 0.0)
+(defvar *tree-model* nil)
 
 (defconstant +tree-x-gap+ 44.0)
 (defconstant +tree-y-gap+ 52.0)
 (defconstant +tree-base-x+ 140.0)
 (defconstant +tree-base-y+ 632.0)
 (defconstant +tree-pan-step+ 13.0)
+(defconstant +tree-lookahead+ 8)
+(defconstant +tree-max-nodes+ 1400)
 (defconstant +tree-bead-visited-radius+ 5.0)
 (defconstant +tree-bead-frontier-radius+ 3.5)
 (defconstant +tree-bead-current-radius+ 7.0)
@@ -60,23 +63,69 @@ fallback so old saves and fresh states still render a root."
         (let ((id (and *state* (play-state-current-id *state*))))
           (when id (list (cons id nil)))))))
 
-(defun tree-layout (model id depth counter)
-  "Assign depth and an x-slot to ID and its subtree (post-order: leaves
-take sequential slots, parents centre over their children)."
+(defun tree-compute-depths (model)
+  "BFS from the root over the trunk (visited) children to set the depth
+of every visited node."
+  (let ((root (tree-model-root model))
+        (depth (tree-model-depth model))
+        (children (tree-model-children model)))
+    (when root
+      (setf (gethash root depth) 0)
+      (let ((queue (list root)))
+        (loop while queue
+              for id = (pop queue)
+              do (dolist (child (gethash id children))
+                   (unless (gethash child depth)
+                     (setf (gethash child depth) (1+ (gethash id depth)))
+                     (setf queue (nconc queue (list child))))))))))
+
+(defun tree-grow-frontier (model)
+  "Expand static (string) descendants of visited nodes, breadth-first,
+out to a look-ahead horizon past the deepest node reached. This reveals
+levels down branches you took and branches you did not. Dynamic targets
+are never followed, so their subtrees stay hidden until actually
+entered, and the horizon advances as you reach deeper nodes."
+  (let* ((placed (tree-model-visited model))
+         (parent (tree-model-parent model))
+         (depth (tree-model-depth model))
+         (children (tree-model-children model))
+         (seen (make-hash-table :test #'equal))
+         (count (hash-table-count placed))
+         (horizon (+ (loop for id being the hash-keys of placed
+                           maximize (gethash id depth 0))
+                     +tree-lookahead+))
+         (queue (loop for id being the hash-keys of placed collect id)))
+    (loop while queue
+          for id = (pop queue)
+          for d = (gethash id depth 0)
+          when (< d horizon)
+            do (dolist (child (tree-node-static-children id))
+                 (when (and (< count +tree-max-nodes+)
+                            (not (gethash child placed))
+                            (not (gethash child seen)))
+                   (setf (gethash child seen) t
+                         (gethash child parent) id
+                         (gethash child depth) (1+ d))
+                   (push child (gethash id children))
+                   (incf count)
+                   (setf queue (nconc queue (list child))))))))
+
+(defun tree-layout-x (model id counter)
+  "Assign each node an x-slot (leaves take sequential slots, parents
+centre over their children) and collect ids. Depth is precomputed."
   (push id (tree-model-ids model))
-  (setf (gethash id (tree-model-depth model)) depth)
-  (let ((children (gethash id (tree-model-children model))))
-    (if (null children)
+  (let ((kids (gethash id (tree-model-children model))))
+    (if (null kids)
         (progn
           (setf (gethash id (tree-model-x model)) (car counter))
           (incf (car counter)))
         (progn
-          (dolist (child children)
-            (tree-layout model child (1+ depth) counter))
+          (dolist (child kids)
+            (tree-layout-x model child counter))
           (setf (gethash id (tree-model-x model))
-                (/ (loop for child in children
+                (/ (loop for child in kids
                          sum (gethash child (tree-model-x model)))
-                   (length children)))))))
+                   (length kids)))))))
 
 (defun build-tree-model ()
   (let* ((model (make-tree-model))
@@ -94,22 +143,13 @@ take sequential slots, parents centre over their children)."
           (or (loop for (id . par) in pairs when (null par) return id)
               (caar pairs)
               *story-start-node*))
-    ;; frontier: static children of entered nodes that are not yet entered
-    (let ((seen (make-hash-table :test #'equal)))
-      (loop for pair in pairs
-            for id = (car pair)
-            do (dolist (child (tree-node-static-children id))
-                 (unless (or (gethash child placed) (gethash child seen))
-                   (setf (gethash child seen) t
-                         (gethash child parent) id)
-                   (push child (gethash id children))))))
+    (tree-compute-depths model)
+    (tree-grow-frontier model)
     (maphash (lambda (id kids) (setf (gethash id children) (reverse kids)))
              children)
     (let ((root (tree-model-root model)))
-      (when (and root (or (gethash root placed)
-                          (gethash root children)
-                          (null pairs)))
-        (tree-layout model root 0 (list 0.0))))
+      (when root
+        (tree-layout-x model root (list 0.0))))
     model))
 
 
@@ -141,13 +181,15 @@ take sequential slots, parents centre over their children)."
        (not (journal-open-p))))
 
 (defun open-tree ()
-  (setf *tree-open-p* t)
-  (center-tree-on-current (build-tree-model))
+  (setf *tree-open-p* t
+        *tree-model* (build-tree-model))
+  (center-tree-on-current *tree-model*)
   (play-choice-switch)
   t)
 
 (defun close-tree ()
-  (setf *tree-open-p* nil)
+  (setf *tree-open-p* nil
+        *tree-model* nil)
   (play-choice-switch)
   t)
 
@@ -226,7 +268,7 @@ take sequential slots, parents centre over their children)."
 
 (defun draw-tree-overlay ()
   (when *tree-open-p*
-    (let ((model (build-tree-model)))
+    (let ((model (or *tree-model* (build-tree-model))))
       (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
                                  (claylib::c-ptr (make-color 0 0 0 234)))
       (tree-draw-connectors model)
