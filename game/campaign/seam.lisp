@@ -4,7 +4,7 @@
 ;;; Entered from the thread's fork; exits up through the garden.
 
 (dialog-text "seam/under"
-             "under the long table the cloth hangs to the floor. the floor is honest about what it is. boards. between two boards, a seam. the second strand of thread runs down into it, taut, like a line let down a well."
+             "under the long table the cloth hangs to the floor. the floor under it is plain boards. between two boards, a seam. the second strand of thread runs down into it, taut, like a line let down a well."
              :next "seam/boards")
 
 (dialog-text "seam/boards"
@@ -28,7 +28,7 @@
              :next "seam/compost-quiet")
 
 (dialog-text "seam/compost-quiet"
-             "nothing rots here, exactly. it un-firms. a wardrobe drift settles as you watch, a hand's width in an hour, the way snow settles, and the settling is the only sound except, somewhere off among the lintels, a needle being threaded."
+             "nothing rots here, exactly. it loosens. a wardrobe drift settles as you watch, a hand's width in an hour, the way snow settles, and the settling is the only sound except, somewhere off among the lintels, a needle being threaded."
              :next "seam/lanes")
 
 (dialog-text "seam/lanes"
@@ -167,7 +167,7 @@
              :next "seam/spool-yours-s2")
 
 (dialog-text "seam/spool-yours-s2"
-             "it does not need to. the white thread on your wrist runs to it, and hums very slightly, like a held breath being managed."
+             "it does not need to. the white thread on your wrist runs to it, and hums very slightly, like a held breath."
              :next "seam/spool-truth")
 
 (dialog-conversation "seam/spool-truth"
