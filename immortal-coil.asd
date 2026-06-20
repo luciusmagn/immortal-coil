@@ -101,6 +101,7 @@
 
                  (:file "play-state")
                  (:file "journal")
+                 (:file "tree-view")
 
                  (:module "text-runtime"
                   :pathname "text"

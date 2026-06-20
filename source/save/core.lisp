@@ -49,6 +49,7 @@
         :journal-entries (play-state-journal-entries *state*)
         :journal-visit-index (play-state-journal-visit-index *state*)
         :journal-recorded (play-state-journal-recorded *state*)
+        :visited (play-state-visited *state*)
         :dialog-store (dialog-store-alist)
         :particle-field (particle-field-state-data)
         :story-music (active-story-music-selection)))
@@ -195,7 +196,8 @@
            :journal-scroll 0
            :journal-visit-index
            (save-data-nonnegative-integer data :journal-visit-index)
-           :journal-recorded (save-data-list data :journal-recorded)))
+           :journal-recorded (save-data-list data :journal-recorded)
+           :visited (save-data-list data :visited)))
     (restore-particle-field-state (getf data :particle-field))
     (setf *pending-restored-music* (getf data :story-music))))
 

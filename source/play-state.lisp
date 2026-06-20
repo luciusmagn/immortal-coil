@@ -22,7 +22,18 @@
   (journal-open-p      nil :type boolean)
   (journal-scroll      0 :type nonnegative-integer)
   (journal-visit-index 0 :type nonnegative-integer)
-  (journal-recorded    nil :type list))
+  (journal-recorded    nil :type list)
+  (visited             nil :type list))
+
+
+;;; Visited trail (for the story tree overlay)
+
+(defun record-visited-node (id parent)
+  "Record entering node ID, coming from PARENT, for the story tree.
+One entry per node, kept in first-visit order (newest pushed first)."
+  (when (and *state* (stringp id))
+    (unless (assoc id (play-state-visited *state*) :test #'equal)
+      (push (cons id parent) (play-state-visited *state*)))))
 
 
 ;;; Save hook
@@ -67,7 +78,9 @@
                  :journal-open-p nil
                  :journal-scroll 0
                  :journal-visit-index 0
-                 :journal-recorded nil))
+                 :journal-recorded nil
+                 :visited nil))
+  (record-visited-node (play-state-current-id *state*) nil)
   (when (fboundp 'journal-begin-node-visit)
     (funcall (symbol-function 'journal-begin-node-visit)
              (current-node)))
@@ -85,7 +98,8 @@
       (progn
         (runtime-warn "Cannot jump to ~s without a play state." id)
         nil)
-      (let ((resolved-id (resolve-node-id id)))
+      (let ((resolved-id (resolve-node-id id))
+            (from (play-state-current-id *state*)))
         (when (or (equal (play-state-current-id *state*) resolved-id)
                   (editor-before-jump-maybe resolved-id))
           (setf (play-state-current-id *state*) resolved-id
@@ -101,6 +115,7 @@
                 (play-state-journal-open-p *state*) nil
                 (play-state-journal-scroll *state*) 0
                 (play-state-journal-recorded *state*) nil)
+          (record-visited-node resolved-id from)
           (when (fboundp 'journal-begin-node-visit)
             (funcall (symbol-function 'journal-begin-node-visit)
                      (current-node)))
