@@ -331,7 +331,11 @@ failed tries, one open interior room with synthesized centers."
 
 ;;; Session setup
 
+(declaim (ftype (function (t t) t) delve-ensure-monsters))
+
 (defun delve-place-hunter (session floor-index)
+  (delve-ensure-monsters session floor-index)
+  (setf (delve-state session "hunter-alert") 0)
   (let ((grid (aref (delve-floors session) floor-index)))
     (multiple-value-bind (x y) (delve-find-glyph grid #\m)
       (if (eql (aref (aref grid y) x) #\m)
@@ -378,6 +382,9 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
             (delve-state session "turns") 0
             (delve-state session "picked") nil
             (delve-state session "killed") nil
+            (delve-state session "monsters") nil
+            (delve-state session "monsters-init") nil
+            (delve-state session "hunter-alert") 0
             (delve-state session "mapped") nil
             (delve-state session "floor-data") nil
             (delve-state session "message") "choose a class.")
@@ -447,6 +454,121 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
       (delve-place-hunter session bounded-floor)
       (delve-sound session :stairs-sound 0.48))))
 
+;;; Roaming monsters
+;;;
+;;; The monster glyphs in the generated grid seed a live, per-floor list
+;;; of (x y glyph). They wake when the player comes within a stealth-
+;;; dependent radius, step toward them, and bite from an adjacent cell.
+;;; The list lives in the store, so a resumed crawl finds them where they
+;;; wandered. The static grid glyphs themselves render as plain floor.
+
+(defun delve-scan-monsters (grid)
+  (loop for y below (length grid)
+        nconc (loop for x below (length (aref grid y))
+                    for glyph = (aref (aref grid y) x)
+                    when (delve-monster-p glyph)
+                      collect (list x y glyph))))
+
+(defun delve-floor-monsters (session floor)
+  (cdr (assoc floor (delve-state session "monsters") :test #'eql)))
+
+(defun (setf delve-floor-monsters) (value session floor)
+  (setf (delve-state session "monsters")
+        (cons (cons floor value)
+              (remove floor (delve-state session "monsters")
+                      :key #'car :test #'eql)))
+  value)
+
+(defun delve-ensure-monsters (session floor)
+  (unless (member floor (delve-state session "monsters-init") :test #'eql)
+    (setf (delve-floor-monsters session floor)
+          (delve-scan-monsters (aref (delve-floors session) floor)))
+    (setf (delve-state session "monsters-init")
+          (cons floor (delve-state session "monsters-init")))))
+
+(defun delve-monster-at (session floor x y)
+  (find-if (lambda (mon) (and (= (first mon) x) (= (second mon) y)))
+           (delve-floor-monsters session floor)))
+
+(defun delve-remove-monster (session floor mon)
+  (setf (delve-floor-monsters session floor)
+        (remove mon (delve-floor-monsters session floor) :test #'eq)))
+
+(defun delve-monster-wake-radius (session)
+  (max 2 (- 4 (floor (delve-class-value session :stealth 1) 2))))
+
+(defun delve-move-monsters (session node)
+  "Wake, pursue, and bite. Returns NIL if a bite finishes the player."
+  (let* ((floor (delve-floor-index session))
+         (px (delve-state session "x"))
+         (py (delve-state session "y"))
+         (wake (delve-monster-wake-radius session))
+         (occupied (make-hash-table :test #'equal))
+         (result nil)
+         (alive t))
+    (dolist (mon (delve-floor-monsters session floor))
+      (setf (gethash (cons (first mon) (second mon)) occupied) t))
+    (dolist (mon (delve-floor-monsters session floor))
+      (let* ((mx (first mon))
+             (my (second mon))
+             (glyph (third mon))
+             (nx mx)
+             (ny my)
+             (dist (max (abs (- px mx)) (abs (- py my)))))
+        (cond
+          ((not alive))
+          ((and (<= dist wake) (<= dist 1))
+           (delve-set-message session (delve-monster-attack-text glyph))
+           (delve-sound session :hit-sound 0.40)
+           (unless (delve-hurt session node (delve-monster-damage glyph))
+             (setf alive nil)))
+          ((<= dist wake)
+           (let* ((dx (cond ((< mx px) 1) ((> mx px) -1) (t 0)))
+                  (dy (cond ((< my py) 1) ((> my py) -1) (t 0)))
+                  (prefer-x (>= (abs (- px mx)) (abs (- py my))))
+                  (cands (if prefer-x
+                             (list (cons (+ mx dx) my) (cons mx (+ my dy)))
+                             (list (cons mx (+ my dy)) (cons (+ mx dx) my)))))
+             (dolist (cand cands)
+               (let ((cx (car cand))
+                     (cy (cdr cand)))
+                 (when (and (or (/= cx mx) (/= cy my))
+                            (delve-walkable-p session cx cy)
+                            (not (and (= cx px) (= cy py)))
+                            (not (gethash (cons cx cy) occupied)))
+                   (setf nx cx ny cy)
+                   (return)))))))
+        (remhash (cons mx my) occupied)
+        (setf (gethash (cons nx ny) occupied) t)
+        (push (list nx ny glyph) result)))
+    (setf (delve-floor-monsters session floor) (nreverse result))
+    alive))
+
+
+;;; Hunter
+;;;
+;;; The hunter senses the player within a stealth-dependent radius and
+;;; then keeps the scent for several turns even after the player slips
+;;; back out of range, closing a step at a time. A stealthy class can
+;;; pass much nearer before it stirs.
+
+(defun delve-hunter-detect-radius (session)
+  (max 2 (- 7 (delve-class-value session :stealth 1))))
+
+(defun delve-hunter-pursue (session hx hy px py)
+  (let* ((dx (cond ((< hx px) 1) ((> hx px) -1) (t 0)))
+         (dy (cond ((< hy py) 1) ((> hy py) -1) (t 0)))
+         (prefer-x (>= (abs (- px hx)) (abs (- py hy)))))
+    (flet ((try-x ()
+             (and (/= dx 0)
+                  (delve-walkable-p session (+ hx dx) hy)
+                  (setf (delve-state session "hunter-x") (+ hx dx))))
+           (try-y ()
+             (and (/= dy 0)
+                  (delve-walkable-p session hx (+ hy dy))
+                  (setf (delve-state session "hunter-y") (+ hy dy)))))
+      (if prefer-x (or (try-x) (try-y)) (or (try-y) (try-x))))))
+
 (defun delve-hunter-step (session)
   (when (delve-state session "hunter")
     (let* ((hx (delve-state session "hunter-x"))
@@ -454,16 +576,12 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
            (px (delve-state session "x"))
            (py (delve-state session "y"))
            (distance (max (abs (- px hx)) (abs (- py hy)))))
-      (when (<= distance 6)
-        (let* ((step-x (+ hx (cond ((< hx px) 1) ((> hx px) -1) (t 0))))
-               (step-y (+ hy (cond ((< hy py) 1) ((> hy py) -1) (t 0)))))
-          (cond
-            ((and (/= step-x hx)
-                  (delve-walkable-p session step-x hy))
-             (setf (delve-state session "hunter-x") step-x))
-            ((and (/= step-y hy)
-                  (delve-walkable-p session hx step-y))
-             (setf (delve-state session "hunter-y") step-y))))))))
+      (when (<= distance (delve-hunter-detect-radius session))
+        (setf (delve-state session "hunter-alert") 9))
+      (when (plusp (delve-state session "hunter-alert" 0))
+        (setf (delve-state session "hunter-alert")
+              (1- (delve-state session "hunter-alert" 0)))
+        (delve-hunter-pursue session hx hy px py)))))
 
 (defun delve-advance-turn (session node)
   (incf (delve-state session "turns"))
@@ -472,6 +590,8 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
     (delve-set-message session "hunger takes one hit.")
     (unless (delve-hurt session node 1)
       (return-from delve-advance-turn nil)))
+  (unless (delve-move-monsters session node)
+    (return-from delve-advance-turn nil))
   (delve-hunter-step session)
   (if (delve-hunter-caught-p session)
       (progn
@@ -479,14 +599,15 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
         nil)
       t))
 
-(defun delve-resolve-monster (session node x y glyph floor-index)
-  (let* ((name (or (delve-monster-name glyph) "monster"))
+(defun delve-resolve-monster (session node x y mon floor-index)
+  (let* ((glyph (third mon))
+         (name (or (delve-monster-name glyph) "monster"))
          (roll (get-random-value 1 10))
          (attack (delve-player-attack session))
          (hit-p (<= roll attack)))
     (if hit-p
         (progn
-          (delve-mark-killed session floor-index x y)
+          (delve-remove-monster session floor-index mon)
           (incf (delve-state session "xp"))
           (setf (delve-state session "x") x
                 (delve-state session "y") y)
@@ -537,9 +658,10 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
       ((not (delve-walkable-p session x y))
        (delve-sound session :bump-sound 0.28)
        t)
-      ((and (delve-monster-p glyph)
-            (not (delve-killed-p session floor-index x y)))
-       (delve-resolve-monster session node x y glyph floor-index))
+      ((delve-monster-at session floor-index x y)
+       (delve-resolve-monster session node x y
+                              (delve-monster-at session floor-index x y)
+                              floor-index))
       ((and (eql glyph #\^)
             (not (delve-picked-p session floor-index x y)))
        (setf (delve-state session "x") x

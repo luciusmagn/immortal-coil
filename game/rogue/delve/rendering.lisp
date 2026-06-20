@@ -42,7 +42,7 @@
       ((eql glyph #\$)
        +delve-goal-glyph+)
       ((delve-monster-p glyph)
-       (char-upcase glyph))
+       #\.)
       ((or (eql glyph #\@) (eql glyph #\m))
        #\.)
       (t glyph))))
@@ -228,6 +228,14 @@
                             (draw-delve-glyph #\M center-x center-y alpha))
                           (when (and (= x px) (= y py))
                             (draw-delve-glyph #\@ center-x center-y 255)))))
+    (loop for mon in (delve-floor-monsters session floor-index)
+          for mx = (first mon)
+          for my = (second mon)
+          when (delve-visible-cell-p session mx my)
+            do (draw-delve-glyph (char-upcase (third mon))
+                                 (+ left (* mx +delve-cell+) (/ +delve-cell+ 2.0))
+                                 (+ top (* my +delve-cell+) (/ +delve-cell+ 2.0))
+                                 (delve-cell-alpha session mx my)))
     (draw-delve-hud session
                     left
                     top
