@@ -4,11 +4,11 @@
 ;;; Entered from the thread's fork; exits up through the garden.
 
 (dialog-text "seam/under"
-             "under the long table the cloth hangs to the floor and the floor is honest about what it is: boards, and between two boards, a seam, and the second strand of thread runs down into it, taut, like a line let down a well."
+             "under the long table the cloth hangs to the floor. the floor is honest about what it is. boards. between two boards, a seam. the second strand of thread runs down into it, taut, like a line let down a well."
              :next "seam/boards")
 
 (dialog-text "seam/boards"
-             "you press the seam and the boards part along it, not like wood, like cloth taking a hem out, and there are stairs below, and the stairs are made of door sills, stacked, worn in the middle by exactly one kind of traffic."
+             "you press the seam and the boards part along it, not like wood, like cloth taking a hem out. there are stairs below. they are made of door sills, stacked, worn in the middle by one kind of traffic."
              :next "seam/descent")
 
 (dialog-text "seam/descent"
@@ -114,7 +114,7 @@
              :next "seam/her-glass-kept")
 
 (dialog-text "seam/her-glass-kept"
-             "she drinks from it while she works, the only drinking glass in the under-court, and you understand that living here is its own kind of keeping, and that somebody, therefore, keeps her."
+             "she drinks from it while she works. it is the only drinking glass in the under-court. living here is its own kind of keeping. somebody, therefore, keeps her."
              :next "seam/her-glass-question")
 
 (dialog-text "seam/her-glass-question"
@@ -156,7 +156,7 @@
                      :next "seam/sit")
 
 (dialog-text "seam/sit"
-             "she pours you tea, because some hospitality is structural, and the cup she pours it into has a chip you recognize, and you do not ask, and the not-asking is in your voice when you thank her, and she nods: learned manners. the kind this place teaches."
+             "she pours you tea. some hospitality is structural. the cup she pours it into has a chip you recognize. you do not ask. the not-asking is in your voice when you thank her, and she nods. learned manners. the kind this place teaches."
              :next "seam/tea-warm")
 
 (dialog-text "seam/tea-warm"
