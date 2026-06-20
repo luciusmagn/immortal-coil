@@ -86,7 +86,24 @@
                                    "what is this place?")
                      (dialog-left "the seamstress"
                                   "where rooms go when nobody keeps them. somebody has to take them apart kindly. the alternative is that they come apart unkindly, up there, around whoever is left in them.")
-                     :next "seam/economy")
+                     :next "seam/seamstress-questions")
+
+(dialog-interrogation "seam/seamstress-questions"
+                      "her needle does not stop moving while she talks. there is room to ask, between one stitch and the next."
+                      (:next "seam/economy")
+                      (:continue-label "hear the rest")
+                      ("ask if many come down the thread"
+                       :id "many"
+                       :speaker "the seamstress"
+                       "a few a year, always by accident, always sure they meant to. you are the first in a while to ask what the place is before asking how to leave it.")
+                      ("ask what 'not advised' means"
+                       :id "advised"
+                       :speaker "the seamstress"
+                       "that the coming down costs a little of the room you came from. you will not miss the thread until you are home and a wall fails to meet.")
+                      ("ask how long she has worked here"
+                       :id "long"
+                       :speaker "the seamstress"
+                       "longer than the rooms i unpick, shorter than the thread. time is measured in stitches here, and i have lost the count kindly, which is the only way to lose it."))
 
 (dialog-conversation "seam/economy"
                      (dialog-left "the seamstress"

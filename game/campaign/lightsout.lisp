@@ -48,7 +48,24 @@
                                    "you light torches you cannot see, in the dark, to feed the dark.")
                      (dialog-left "the lamplighter"
                                   "i light by touch, to a rota, and what the dark does with the light afterward is the dark's business and the ledger's. you want it to be sinister. it is groceries.")
-                     :next "lightsout/etiquette")
+                     :next "lightsout/lamplighter-questions")
+
+(dialog-interrogation "lightsout/lamplighter-questions"
+                      "the lamplighter waits at the bracket with the taper unlit, in no apparent hurry to explain himself further unless asked."
+                      (:next "lightsout/etiquette")
+                      (:continue-label "learn the rules")
+                      ("ask how long he has walked the round"
+                       :id "round"
+                       :speaker "the lamplighter"
+                       "longer than the torches last, shorter than the dark. you do not count a round in years. you count it in brackets, and i have lit a great many brackets.")
+                      ("ask what happens if a bracket is missed"
+                       :id "missed"
+                       :speaker "the lamplighter"
+                       "the dark goes hungry there and takes the difference from the next warm thing. usually a rat. once a lamplighter who argued the rota. i do not argue the rota.")
+                      ("ask whether the dark ever refuses the light"
+                       :id "refuse"
+                       :speaker "the lamplighter"
+                       "never. it is the most grateful thing i tend. a mouth that says thank you is not a monster. it is a guest, and i keep it fed like one."))
 
 (dialog-conversation "lightsout/etiquette"
                      (dialog-left "the lamplighter"

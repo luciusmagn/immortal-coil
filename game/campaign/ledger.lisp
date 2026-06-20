@@ -84,7 +84,24 @@
 
 (dialog-text "ledger/why"
              "she lays it out like change on the counter. the hill grows unless it is fed visitors. the tower meters the hill. the village provisions the visitors. everyone keeps their column and the valley stays a valley."
-             :next "ledger/toma-loaf")
+             :next "ledger/why-questions")
+
+(dialog-interrogation "ledger/why-questions"
+                      "Mira keeps her hands flat on the open book and lets you sit with it. tonight she is answering, for once."
+                      (:next "ledger/toma-loaf")
+                      (:continue-label "sit with what she said")
+                      ("ask what happens if the village stops posting"
+                       :id "stop"
+                       :speaker "Mira"
+                       "the hill feeds anyway. it just stops being choosy. a posted notice picks who comes. an unposted hill takes who wanders. we learned that the loud way.")
+                      ("ask whether Vane knows his part"
+                       :id "vane"
+                       :speaker "Mira"
+                       "Vane wrote half the terms. the post is not a punishment, it is a chair somebody sits in so the valley keeps its shape. he sits it well. that is the whole tragedy.")
+                      ("ask how she came to keep the book"
+                       :id "keeper"
+                       :speaker "Mira"
+                       "the last keeper slid it across this counter and did not explain. i have been explaining it to myself since. tonight is the first time i said it aloud to anyone."))
 
 (dialog-text "ledger/toma-loaf"
              "the travel loaf survives the bridge because the bridge is as far as most of them get, and a loaf that comes back can be sold twice."

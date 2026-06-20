@@ -58,7 +58,24 @@
                                    "is it from the long table?")
                      (dialog-left "the cup"
                                   "it is from your place at it. your place is kept cleared. that is not the same as kept empty, whatever the chair tells you.")
-                     :next "kept/tea-ceremony")
+                     :next "kept/cup-questions")
+
+(dialog-interrogation "kept/cup-questions"
+                      "the tea steams between you and the cup waits, with the patience of something that has nowhere it would rather be."
+                      (:next "kept/tea-ceremony")
+                      (:continue-label "pour the first cup")
+                      ("ask what it testified to"
+                       :id "testimony"
+                       :speaker "the cup"
+                       "the second cup is for that. you will ask, and i will answer, and we will both prefer the answer to not knowing. the first cup is only for being glad you are here.")
+                      ("ask why a witness apologizes at all"
+                       :id "apology"
+                       :speaker "the cup"
+                       "because a true testimony and a kind one are rarely the same cup, and i poured the true one. tea is the only apology a cup is shaped to make.")
+                      ("ask whether the verdict can be appealed"
+                       :id "appeal"
+                       :speaker "the cup"
+                       "everything here can be appealed. that is what keeping means. the appeal is heard, enjoyed, and denied with courtesy. drink before it cools."))
 
 (dialog-text "kept/tea-ceremony"
              "tea with the cup has rules the cup never states and always keeps: the kept pours, the visitor steams, nobody mentions the trial until the second cup, and then both of you mention nothing else."

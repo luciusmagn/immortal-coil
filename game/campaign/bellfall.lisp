@@ -88,7 +88,24 @@
                                    "Vane was a sixty-seven once.")
                      (dialog-left "Mira"
                                   "Vane was a fifty-nine. the tower is not a monster's house, it is a post. it has always been held by someone's child who asked about terms. you asked about terms.")
-                     :next "bellfall/funeral-prep")
+                     :next "bellfall/terms-questions")
+
+(dialog-interrogation "bellfall/terms-questions"
+                      "the bell has not yet rung for the procession. Mira lets you keep the chair a little longer."
+                      (:next "bellfall/funeral-prep")
+                      (:continue-label "rise for the funeral")
+                      ("ask what the terms actually are"
+                       :id "terms"
+                       :speaker "Mira"
+                       "what the valley owes the hill, and what the hill agrees not to take. the words change with each post. the arithmetic under them never has.")
+                      ("ask how the post changes hands"
+                       :id "post"
+                       :speaker "Mira"
+                       "the one above comes down to the grave-yard. the one below goes up to the desk. nobody is forced. everybody is chosen. that has been enough to keep it turning.")
+                      ("ask whether anyone has refused the post"
+                       :id "refused"
+                       :speaker "Mira"
+                       "one did. the hill stopped being choosy that winter, and the valley spent a long time being findable to it. we do not say his name. we post more carefully now."))
 
 (dialog-scene "bellfall/funeral-prep"
               "the morning of the funeral."
@@ -196,7 +213,22 @@
                                    "Oren?")
                      (dialog-left "Oren"
                                   "chains are honest. notices are not. but my knee is honest too, and it says i hold that chain four more winters at the most. i will not vote for a plan that needs me in it.")
+                     :next "bellfall/table-say")
+
+(dialog-choice-path "bellfall/table-say"
+                    "the table waits. Toma and Oren have said their piece, and now the quiet is yours to fill or leave."
+                    ("side with Toma: the bread is mercy"
+                     :id "toma"
+                     "Toma nods like a man who already knew. Oren says nothing, which from Oren is a whole speech, and pours you the last of the cider anyway."
                      :next "bellfall/drawer")
+                    ("side with Oren: the chain is honest"
+                     :id "oren"
+                     "Oren straightens, vindicated and unhappy about it. Toma only says that honesty does not rise, but he says it kindly, and cuts you more bread."
+                     :next "bellfall/drawer")
+                    ("say the valley should need neither"
+                     :id "neither"
+                     "the table goes quiet the way it does when someone says the true thing too early. Mira lets the quiet finish, then reaches for the drawer."
+                     :next "bellfall/drawer"))
 
 (dialog-text "bellfall/drawer"
              "one evening Mira sets the till drawer on the long table. the blank notices wait in their stack. the practice slate. the pen. she puts her hands flat on the table and looks at you. the whole inn goes quiet."

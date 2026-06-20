@@ -59,7 +59,24 @@
                                    "will this one stay?")
                      (dialog-left "Sorel"
                                   "the column is closed. let some other ledger worry about staying. today the figure is final, and the figure has stopped growing, and i am going to sit down for a moment on the good chair.")
-                     :next "armistice/brandt")
+                     :next "armistice/sorel-questions")
+
+(dialog-interrogation "armistice/sorel-questions"
+                      "Sorel has not sat down yet. he stands by the closed column with the pen still in his hand, willing to be kept a moment longer."
+                      (:next "armistice/brandt")
+                      (:continue-label "let him sit down")
+                      ("ask what the final figure is"
+                       :id "figure"
+                       :speaker "Sorel"
+                       "i will not say it aloud on the day it stopped growing. you signed for most of it. read it tonight, alone, once, and then let the line hold it for you.")
+                      ("ask if he has closed a column like this before"
+                       :id "before"
+                       :speaker "Sorel"
+                       "harvests, debts, one bank. never a war. a war does not close, chancellor. it is the first time i have ruled a line and dared it to mean what it says.")
+                      ("ask how a person closes the war inside"
+                       :id "inside"
+                       :speaker "Sorel"
+                       "i do not know. books are easier than men. but i am told you begin by sitting on the good chair, and i intend to test the method directly."))
 
 (dialog-conversation "armistice/brandt"
                      (dialog-left "Brandt"
@@ -101,7 +118,24 @@
                                    "by the window, Olen. it is the new map. everything on it is ours to lose slowly.")
                      (dialog-left "Olen"
                                   "by the window. yes. i will require new habits. i am told the river is good to look at, now that it is only a river.")
-                     :next "armistice/vey")
+                     :next "armistice/olen-questions")
+
+(dialog-interrogation "armistice/olen-questions"
+                      "Olen has not moved to the window yet. he stands where the map was, hands half-raised toward a thing that is no longer there."
+                      (:next "armistice/vey")
+                      (:continue-label "leave him to the window")
+                      ("ask what it is like to leave the map"
+                       :id "map"
+                       :speaker "Olen"
+                       "like setting down a weight you forgot was yours. my hands keep reaching for it. i am told that fades. i am told a great many things fade, starting today.")
+                      ("ask whether the window feels like a weakness"
+                       :id "window"
+                       :speaker "Olen"
+                       "for four years a window was where a shell came through. i must learn it as where light comes through. the river will help. it is patient about being only a river.")
+                      ("ask what new habits he will need"
+                       :id "habits"
+                       :speaker "Olen"
+                       "to stand without a map. to plan a week instead of a front. to call the river a river. small habits, chancellor. i was only ever good at the large terrible ones."))
 
 (dialog-text "armistice/vey"
              "you pass Vey's office. he is at his desk, composing, in his even hand, a memorandum on the orderly administration of peacetime, dated today, addressed to whom it may concern."
