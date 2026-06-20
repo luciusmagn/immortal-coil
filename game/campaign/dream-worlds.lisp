@@ -534,7 +534,7 @@
                  '(setf (dialog-value "rogue-floor2-room") "cistern"))
 
 (dialog-text "rogue/cistern"
-             "a cistern room, ankle-deep. the water is clear and perfectly still except by the far wall, where it is still in a different way: held still, the way you hold breath, and you know that kind of stillness from the inside now, from under pines, and you give it the professional courtesy of not staring."
+             "a cistern room, ankle-deep. the water is clear and perfectly still except by the far wall, where it is still in a different way. held still, the way you hold a breath. you know that stillness from the inside now, from under the pines. you do it the courtesy of not staring."
              :next "rogue/cistern-choice")
 
 (dialog-pick "rogue/cistern-choice"
@@ -576,7 +576,7 @@
                  '(setf (dialog-value "rogue-took-key") t))
 
 (dialog-text "rogue/offer-key"
-             "you hang the brass key on an empty nail. it fits the nail the way it fit the lock, which is to say exactly, which is to say you should not have been surprised either time."
+             "you hang the brass key on an empty nail. it fits the nail the way it fit the lock. exactly. you should not have been surprised either time."
              :next "rogue/far-hall")
 
 (dialog-text "rogue/take-key"
@@ -762,7 +762,7 @@
              :next "rogue/stair-hunt")
 
 (dialog-text "rogue/stair-hunt"
-             "the stair you came down is not where you left it, which in a dungeon means you are remembering wrong, and you prefer the dungeon's explanation. you walk the corridor to find it."
+             "the stair you came down is not where you left it. in a dungeon that means you are remembering wrong. you prefer the dungeon's explanation. you walk the corridor to find it."
              :next "rogue/stair-maze")
 
 (dialog-minigame "rogue/stair-maze"
@@ -772,7 +772,7 @@
                  :failure "rogue/stair-lost")
 
 (dialog-text "rogue/stair-found"
-             "the stairs are where stairs are: at the end you had not tried yet. going up, the carved name on the first step reads the same from below, which carved names should not."
+             "the stairs are where stairs are, at the end you had not tried yet. going up, the carved name on the first step reads the same from below. carved names should not do that."
              :next "rogue/return-cell")
 
 (dialog-text "rogue/stair-lost"
@@ -886,7 +886,7 @@
              :next "rogue/out")
 
 (dialog-text "rogue/out"
-             "the entrance hall again. your inventory is what it always was, plus what you know now, which no slot carries."
+             "the entrance hall again. your inventory is what it always was, plus what you know now. no slot carries that."
              :next "rogue/shrine-rest")
 
 (dialog-text "rogue/shrine-rest"
