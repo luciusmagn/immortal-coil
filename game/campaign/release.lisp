@@ -271,7 +271,7 @@
              :next "release/scrubber-window-2")
 
 (dialog-text "release/scrubber-window-2"
-             "the machine holds there the length of a held breath, four counts, then scrubs the bend like any other yard of paint, which is the difference, in the end, between procedure and the people who keep it."
+             "the machine holds there the length of a held breath, four counts, then scrubs the bend like any other yard of paint. that is the difference between procedure and the people who keep it."
              :next "release/walk-ahead")
 
 (dialog-text "release/walk-ahead"
@@ -279,7 +279,7 @@
              :next "release/walk-ahead-2")
 
 (dialog-text "release/walk-ahead-2"
-             "every step you take exists for exactly as long as you need it to, which is a fair description, you think, of every corridor you have ever walked."
+             "every step you take lasts exactly as long as you need it to. that is a fair description of every corridor you have ever walked."
              :next "release/lights")
 
 (dialog-text "release/lights"
