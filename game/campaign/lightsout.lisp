@@ -166,7 +166,7 @@
              :next "lightsout/fed-after-2")
 
 (dialog-text "lightsout/fed-after-2"
-             "a fed dark has a texture. it is the difference between a silent room and a quiet one, between being unobserved and being unbothered. you stand in it and understand why the lamplighter has held this round for a tenure: some work pays in atmosphere, and the wage is real."
+             "a fed dark has its own feel. it is the difference between being unwatched and being unbothered. you stand in it and understand why the lamplighter has held this round for a tenure. some work pays in atmosphere, and the wage is real."
              :next "lightsout/walked-up")
 
 (dialog-text "lightsout/walked-up"
@@ -174,7 +174,7 @@
              :next "lightsout/walked-up-2")
 
 (dialog-text "lightsout/walked-up-2"
-             "there is no other way to put it: the warm wall on one side, a new warmth on the other, the corridor unrolling underfoot at exactly your stride, doors arriving when expected, and the draft holding your bearing for you like a hat handed back."
+             "there is no other way to put it. the warm wall on one side, a new warmth on the other. the corridor unrolls underfoot at exactly your stride. doors arrive when expected. the draft holds your bearing for you, like a hat handed back."
              :next "lightsout/bracket-relit")
 
 (dialog-on-enter "lightsout/feed-nothing"
