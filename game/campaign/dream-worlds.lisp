@@ -41,7 +41,7 @@
                      :next "alice/garden-count")
 
 (dialog-text "alice/garden-count"
-             "you pass the painted rows without counting them, which takes the kind of effort the court would call self-control and the garden would call cowardice."
+             "you pass the painted rows without counting them. it takes more effort than it should."
              :next "alice/queue")
 
 (dialog-text "alice/queue"
@@ -263,7 +263,7 @@
                  '(setf (dialog-value "alice-deliberation") "counted"))
 
 (dialog-text "alice/juror-count"
-             "you count the jurors twice and get two different numbers, and stop, because you know this feeling from somewhere with fewer chandeliers. the foreman, without turning, writes one more line."
+             "you count the jurors twice and get two different numbers. you stop. you have had this feeling before, somewhere with fewer chandeliers. the foreman, without turning, writes one more line."
              :next "alice/verdict-rise")
 
 (dialog-text "alice/verdict-rise"
