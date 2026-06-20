@@ -230,7 +230,7 @@
                  '(setf (dialog-value "facility-archive") "shelved"))
 
 (dialog-text "facility/shelve"
-             "you shelve all four, spine out, unread. they go in with the soft fit of files that live there, between neighbors labeled in scripts you do not look at long enough to fail to read."
+             "you shelve all four, spine out, unread. they go in with the soft fit of files that live there, between neighbors whose labels you do not let your eyes rest on."
              :next "facility/watch2")
 
 (dialog-on-enter "facility/open-file"
@@ -349,7 +349,7 @@
             :next "facility/kettle")
 
 (dialog-text "facility/kettle"
-             "the staff room kettle is warm. there is one mug, grey, designation stenciled, and a tin of the kind of tea that exists to be acceptable to everyone. you have your tea standing up, reading the notice board, exactly the way you would in any job, and for four minutes it works."
+             "the staff room kettle is warm. there is one mug, grey, designation stenciled, and a tin of the kind of tea that exists to be acceptable to everyone. you drink it standing up, reading the notice board, the way you would in any job. for four minutes it works."
              :next "facility/locker")
 
 (dialog-on-enter "facility/locker"
