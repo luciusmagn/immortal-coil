@@ -1,8 +1,10 @@
 (in-package #:immortal-coil)
 
-(defconstant +jrpg-overworld-tile-size+ 30)
+(defconstant +jrpg-overworld-tile-size+ 24)
 (defconstant +jrpg-overworld-left+ 250)
 (defconstant +jrpg-overworld-top+ 160)
+(defconstant +jrpg-overworld-view-cols+ 30)
+(defconstant +jrpg-overworld-view-rows+ 9)
 
 (defparameter *jrpg-overworld-map*
   #("................"
@@ -12,6 +14,88 @@
     ".V...B....!!...."
     ".....R........$."
     "......~~~......."))
+
+;;; Procedural overworld. A big map with a guaranteed winding road from
+;;; the west edge to the finish, the occurrence's landmarks strung along
+;;; that road, obstacle clusters and pickups scattered off it. Generated
+;;; fresh each time the walk is entered, so the route is never the same.
+
+(defun jrpg-gen-rows (grid)
+  (loop for y below (array-dimension grid 0)
+        collect (coerce (loop for x below (array-dimension grid 1)
+                              collect (aref grid y x))
+                        'string)))
+
+(defun jrpg-gen-overworld (w h finish-glyph waypoints)
+  "Returns (values rows start-x start-y)."
+  (let* ((grid (make-array (list h w) :initial-element #\.))
+         (seen (make-hash-table :test 'equal))
+         (sx 1) (sy (floor h 2))
+         (fx (- w 2)) (fy (floor h 2))
+         (road nil)
+         (x sx) (y sy))
+    (flet ((keep (px py) (setf (gethash (cons px py) seen) t)))
+      (keep x y)
+      (push (list x y) road)
+      (loop repeat (* w h)
+            while (or (/= x fx) (/= y fy))
+            do (let ((choices nil))
+                 (cond ((< x fx) (push (cons 1 0) choices)
+                                 (push (cons 1 0) choices)
+                                 (push (cons 1 0) choices))
+                       ((> x fx) (push (cons -1 0) choices)))
+                 (cond ((< y fy) (push (cons 0 1) choices))
+                       ((> y fy) (push (cons 0 -1) choices)))
+                 (push (if (zerop (get-random-value 0 1))
+                           (cons 0 1) (cons 0 -1))
+                       choices)
+                 (let ((step (nth (get-random-value 0 (1- (length choices)))
+                                  choices)))
+                   (setf x (max 1 (min (- w 2) (+ x (car step))))
+                         y (max 1 (min (- h 2) (+ y (cdr step)))))
+                   (keep x y)
+                   (push (list x y) road))))
+      ;; straighten the rest of the road to the finish, guaranteeing a path
+      (loop while (/= x fx) do (incf x (if (< x fx) 1 -1))
+                               (keep x y) (push (list x y) road))
+      (loop while (/= y fy) do (incf y (if (< y fy) 1 -1))
+                               (keep x y) (push (list x y) road))
+      (setf road (nreverse road))
+      ;; obstacle clusters, never on the road
+      (dotimes (i (floor (* w h) 12))
+        (let ((cx (get-random-value 1 (- w 2)))
+              (cy (get-random-value 1 (- h 2)))
+              (glyph (if (zerop (get-random-value 0 3)) #\~ #\^)))
+          (dotimes (j (get-random-value 1 4))
+            (let ((ox (max 1 (min (- w 2) (+ cx (get-random-value -1 1)))))
+                  (oy (max 1 (min (- h 2) (+ cy (get-random-value -1 1))))))
+              (unless (gethash (cons ox oy) seen)
+                (setf (aref grid oy ox) glyph))))))
+      ;; landmarks strung along the road
+      (let ((n (length road))
+            (k (length waypoints)))
+        (loop for wp in waypoints
+              for i from 1
+              for idx = (min (1- n) (max 1 (floor (* i n) (1+ k))))
+              do (destructuring-bind (wx wy) (nth idx road)
+                   (setf (aref grid wy wx) wp)
+                   (keep wx wy))))
+      (setf (aref grid fy fx) finish-glyph
+            (aref grid sy sx) #\.)
+      ;; pickups on open cells near the road
+      (let ((placed 0))
+        (dolist (cell road)
+          (when (< placed 5)
+            (destructuring-bind (rx ry) cell
+              (let ((ox (max 1 (min (- w 2) (+ rx (get-random-value -2 2)))))
+                    (oy (max 1 (min (- h 2) (+ ry (get-random-value -1 1))))))
+                (when (and (char= (aref grid oy ox) #\.)
+                           (not (gethash (cons ox oy) seen))
+                           (zerop (get-random-value 0 6)))
+                  (setf (aref grid oy ox)
+                        (if (zerop (get-random-value 0 1)) #\$ #\o))
+                  (incf placed)))))))
+      (values (jrpg-gen-rows grid) sx sy))))
 
 (defvar *jrpg-overworld* nil)
 
@@ -72,31 +156,59 @@
                         start)
           (values 1 4)))))
 
+(defun jrpg-overworld-config-int (node key default)
+  (let ((value (minigame-config-value node key default)))
+    (if (integerp value) value default)))
+
 (defun make-fresh-jrpg-overworld (node)
   (jrpg-init-state)
-  (multiple-value-bind (start-x start-y)
-      (jrpg-overworld-start-coordinates node)
-    (make-jrpg-overworld
-     :node-id (node-id node)
-     :map (jrpg-overworld-normalize-map
-           (minigame-config-value node :map))
-     :finish-glyphs (jrpg-overworld-normalize-finish-glyphs
-                     (minigame-config-value node :finish-glyphs))
-     :tile-messages (minigame-config-value node :tile-messages)
-     :legend (minigame-config-value
-              node
-              :legend
-              "V village  = bridge  + sign  T tower  $ gold  o tonic")
-     :store-prefix (minigame-config-value node
-                                          :store-prefix
-                                          "jrpg-overworld")
-     :x start-x
-     :y start-y
-     :steps 0
-     :message (minigame-config-value
-               node
-               :start-message
-               "walk north and east. arrows or wasd move."))))
+  (let ((gen-width (minigame-config-value node :gen-width)))
+    (if (and (integerp gen-width) (> gen-width 12))
+        (let* ((gen-height (jrpg-overworld-config-int node :gen-height 18))
+               (finish (let ((value (minigame-config-value node
+                                                           :finish-glyph #\!)))
+                         (if (characterp value) value #\!)))
+               (waypoints (let ((value (minigame-config-value node :waypoints
+                                                              '(#\R))))
+                            (if (listp value) value '(#\R)))))
+          (multiple-value-bind (rows start-x start-y)
+              (jrpg-gen-overworld gen-width gen-height finish waypoints)
+            (make-jrpg-overworld
+             :node-id (node-id node)
+             :map (coerce rows 'vector)
+             :finish-glyphs (list finish)
+             :tile-messages (minigame-config-value node :tile-messages)
+             :legend (minigame-config-value
+                      node :legend
+                      "= bridge  + sign  T tower  $ gold  o tonic  ^~ block")
+             :store-prefix (minigame-config-value node :store-prefix
+                                                  "jrpg-overworld")
+             :x start-x
+             :y start-y
+             :steps 0
+             :message (minigame-config-value
+                       node :start-message
+                       "the country opens out. arrows or wasd move."))))
+        (multiple-value-bind (start-x start-y)
+            (jrpg-overworld-start-coordinates node)
+          (make-jrpg-overworld
+           :node-id (node-id node)
+           :map (jrpg-overworld-normalize-map
+                 (minigame-config-value node :map))
+           :finish-glyphs (jrpg-overworld-normalize-finish-glyphs
+                           (minigame-config-value node :finish-glyphs))
+           :tile-messages (minigame-config-value node :tile-messages)
+           :legend (minigame-config-value
+                    node :legend
+                    "V village  = bridge  + sign  T tower  $ gold  o tonic")
+           :store-prefix (minigame-config-value node :store-prefix
+                                                "jrpg-overworld")
+           :x start-x
+           :y start-y
+           :steps 0
+           :message (minigame-config-value
+                     node :start-message
+                     "walk north and east. arrows or wasd move."))))))
 
 (defun ensure-jrpg-overworld (node)
   (unless (and *jrpg-overworld*
@@ -245,13 +357,17 @@ message and are taken only once."
         (destructuring-bind (dx dy) direction
           (jrpg-overworld-move node game dx dy))))))
 
-(defun jrpg-overworld-screen-x (x)
-  (+ +jrpg-overworld-left+
-     (* x +jrpg-overworld-tile-size+)))
-
-(defun jrpg-overworld-screen-y (y)
-  (+ +jrpg-overworld-top+
-     (* y +jrpg-overworld-tile-size+)))
+(defun jrpg-overworld-camera (game)
+  "Top-left viewport tile, scrolled to keep the player centered and
+clamped to the map edges."
+  (let ((w (jrpg-overworld-width game))
+        (h (jrpg-overworld-height game)))
+    (values (max 0 (min (- (jrpg-overworld-x game)
+                           (floor +jrpg-overworld-view-cols+ 2))
+                        (max 0 (- w +jrpg-overworld-view-cols+))))
+            (max 0 (min (- (jrpg-overworld-y game)
+                           (floor +jrpg-overworld-view-rows+ 2))
+                        (max 0 (- h +jrpg-overworld-view-rows+)))))))
 
 (defun jrpg-overworld-tile-label (cell)
   (case cell
@@ -267,10 +383,8 @@ message and are taken only once."
     (#\~ "~")
     (t ".")))
 
-(defun draw-jrpg-overworld-tile (x y cell)
-  (let ((screen-x (jrpg-overworld-screen-x x))
-        (screen-y (jrpg-overworld-screen-y y))
-        (alpha (if (char= cell #\.) 92 220)))
+(defun draw-jrpg-overworld-cell (cell screen-x screen-y)
+  (let ((alpha (if (char= cell #\.) 92 220)))
     (draw-rectangle-outline screen-x
                             screen-y
                             +jrpg-overworld-tile-size+
@@ -280,25 +394,32 @@ message and are taken only once."
     (draw-centered-text (jrpg-overworld-tile-label cell)
                         (+ screen-x (/ +jrpg-overworld-tile-size+ 2))
                         (+ screen-y (/ +jrpg-overworld-tile-size+ 2))
-                        18
+                        15
                         (make-color 255 255 255 alpha))))
 
 (defun draw-jrpg-overworld-map (game)
-  (loop for y from 0 below (jrpg-overworld-height game)
-        do (loop for x from 0 below (jrpg-overworld-width game)
-                 do (draw-jrpg-overworld-tile x
-                                               y
-                                               (jrpg-overworld-effective-cell
-                                                game
-                                                x
-                                                y))))
-  (draw-centered-text "@"
-                      (+ (jrpg-overworld-screen-x (jrpg-overworld-x game))
-                         (/ +jrpg-overworld-tile-size+ 2))
-                      (+ (jrpg-overworld-screen-y (jrpg-overworld-y game))
-                         (/ +jrpg-overworld-tile-size+ 2))
-                      22
-                      (make-color 255 255 255 255)))
+  (multiple-value-bind (cam-x cam-y) (jrpg-overworld-camera game)
+    (loop for row below +jrpg-overworld-view-rows+
+          do (loop for col below +jrpg-overworld-view-cols+
+                   for mx = (+ cam-x col)
+                   for my = (+ cam-y row)
+                   when (and (< mx (jrpg-overworld-width game))
+                             (< my (jrpg-overworld-height game)))
+                     do (draw-jrpg-overworld-cell
+                         (jrpg-overworld-effective-cell game mx my)
+                         (+ +jrpg-overworld-left+ (* col +jrpg-overworld-tile-size+))
+                         (+ +jrpg-overworld-top+ (* row +jrpg-overworld-tile-size+)))))
+    (draw-centered-text "@"
+                        (+ +jrpg-overworld-left+
+                           (* (- (jrpg-overworld-x game) cam-x)
+                              +jrpg-overworld-tile-size+)
+                           (/ +jrpg-overworld-tile-size+ 2))
+                        (+ +jrpg-overworld-top+
+                           (* (- (jrpg-overworld-y game) cam-y)
+                              +jrpg-overworld-tile-size+)
+                           (/ +jrpg-overworld-tile-size+ 2))
+                        18
+                        (make-color 255 255 255 255))))
 
 (defun draw-jrpg-overworld-minigame (node color)
   (declare (ignore color))

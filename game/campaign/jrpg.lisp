@@ -226,7 +226,19 @@
                  "arrows or wasd move. cross the overworld road."
                  :game :jrpg-overworld
                  :success "jrpg/road-mile-marker"
-                 :failure "jrpg/road-mile-marker")
+                 :failure "jrpg/road-mile-marker"
+                 :config (list :gen-width 42
+                               :gen-height 22
+                               :finish-glyph #\!
+                               :waypoints '(#\R #\T)
+                               :store-prefix "jrpg-overworld"
+                               :start-message "the country opens out past the bridge. arrows or wasd move."
+                               :legend "+ sign  T tower  \" mile marker  $ coin  o tonic  ^~ block"
+                               :tile-messages
+                               '((#\R . "a road sign points the way to the north tower.")
+                                 (#\T . "the north tower stands far off the road.")
+                                 (#\! . "the mile marker reads OAKBARROW 1, NORTH TOWER 3.")
+                                 (#\. . "the road runs bright and open."))))
 
 (dialog-text "jrpg/road-mile-marker"
              "past the bridge, a mile marker reads OAKBARROW 1, NORTH TOWER 3. slime tracks shine in the ditch mud."
@@ -311,23 +323,17 @@
                  :game :jrpg-overworld
                  :success "jrpg/shrine-arrival"
                  :failure "jrpg/shrine-arrival"
-                 :config (list :map '("................"
-                                      "....^^^^....S..."
-                                      "...^....^...!..."
-                                      "...^....^...!..."
-                                      "..B..R.........."
-                                      "......^^^^......"
-                                      "................")
-                               :start '(4 4)
-                               :finish-glyphs '(#\S)
+                 :config (list :gen-width 38
+                               :gen-height 20
+                               :finish-glyph #\S
+                               :waypoints '(#\B #\R)
                                :store-prefix "jrpg-shrine-road"
                                :start-message "the cart track leaves the main road by the sign."
-                               :legend "= bridge  + sign  S shrine  \" high grass  ^ hill"
+                               :legend "= bridge  + sign  S shrine  $ coin  o tonic  ^~ block"
                                :tile-messages
                                '((#\B . "the bridge is now a white line behind you.")
                                  (#\R . "the road sign has a small shrine mark cut into its post.")
                                  (#\S . "the shrine stones are cold even in sun.")
-                                 (#\! . "the grass beside the track is wet where it should be dry.")
                                  (#\. . "the cart track crunches under your boots."))))
 
 (dialog-text "jrpg/shrine-arrival"
@@ -410,18 +416,13 @@
                  :game :jrpg-overworld
                  :success "jrpg/tower-hill-arrival"
                  :failure "jrpg/tower-hill-arrival"
-                 :config (list :map '("................"
-                                      ".....^^^^....T.."
-                                      "....^....^......"
-                                      "..R.^....^..!!.."
-                                      "....^....^......"
-                                      ".............!.."
-                                      "................")
-                               :start '(2 3)
-                               :finish-glyphs '(#\T)
+                 :config (list :gen-width 40
+                               :gen-height 24
+                               :finish-glyph #\T
+                               :waypoints '(#\R)
                                :store-prefix "jrpg-tower-hill"
                                :start-message "the bridge is behind you. the hill road bends upward."
-                               :legend "+ road sign  T tower  \" rough grass  ^ hill"
+                               :legend "+ road sign  T tower  $ coin  o tonic  ^~ block"
                                :tile-messages
                                '((#\R . "the road sign says NORTH TOWER, NO WAGONS.")
                                  (#\T . "the tower path ends at Pell's toll hut.")
@@ -610,15 +611,16 @@
                  :game :jrpg-overworld
                  :success "jrpg/home-road-grass"
                  :failure "jrpg/home-road-grass"
-                 :config (list :start '(13 2)
-                               :finish-glyphs '(#\B)
+                 :config (list :gen-width 44
+                               :gen-height 22
+                               :finish-glyph #\B
+                               :waypoints '(#\T #\R #\V)
                                :store-prefix "jrpg-home-road"
-                               :start-message "the tower is behind you. the bridge is west."
-                               :legend "V Oakbarrow  = bridge  + sign  T tower  \" grass"
+                               :start-message "the tower is behind you. the bridge waits at the far side, and the rain is close."
+                               :legend "V Oakbarrow  = bridge  + sign  T tower  $ coin  o tonic"
                                :tile-messages
                                '((#\T . "the tower is behind you.")
                                  (#\R . "the road sign points back to Oakbarrow.")
-                                 (#\! . "the ditch grass shakes in the rain.")
                                  (#\B . "the bridge boards are slick.")
                                  (#\V . "Oakbarrow's gate lanterns burn ahead."))))
 
