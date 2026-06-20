@@ -1,5 +1,5 @@
 ;;; The midsummer fair: the jrpg path's bright branch. Game stalls,
-;;; prizes, the lantern launch, and Vane down from the tower in a plain
+;;; prizes, the lantern launch, and Hale down from the tower in a plain
 ;;; coat. Seeded: stall order, prizes, and several beats derive from
 ;;; festival-seed, rolled once into the store on entry, so a playthrough
 ;;; keeps its fair across save and load while the next one gets its own.
@@ -260,7 +260,7 @@
              :next "festival/vane-arrives")
 
 (dialog-text "festival/vane-arrives"
-             "a little after noon, a tall man in a plain grey coat buys a travel loaf at Toma's stall, pays in old coins, and joins the ring toss line like anyone. it takes the square a moment. it is Vane."
+             "a little after noon, a tall man in a plain grey coat buys a travel loaf at Toma's stall, pays in old coins, and joins the ring toss line like anyone. it takes the square a moment. it is Hale."
              :next "festival/vane-toss")
 
 (dialog-text "festival/vane-toss"
@@ -268,11 +268,11 @@
              :next "festival/vane-word")
 
 (dialog-conversation "festival/vane-word"
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "your village is good at this. the tower does not have holidays. it has anniversaries. they are not the same thing.")
                      (dialog-right "{player-name}"
                                    "you could come down for the next one.")
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "i believe that is now in the terms. Mira entered it while i was losing to the pie.")
                      :next "festival/afternoon")
 
@@ -325,7 +325,7 @@
              :next "festival/embers")
 
 (dialog-text "festival/embers"
-             "the walk back down the hedge lanes is lit by lantern stubs and full of the slow traffic of people carrying sleeping children. Vane says good night at the gate, formally, to each person, and means every one."
+             "the walk back down the hedge lanes is lit by lantern stubs and full of the slow traffic of people carrying sleeping children. Hale says good night at the gate, formally, to each person, and means every one."
              :next "festival/inn-night")
 
 (dialog-text "festival/inn-night"

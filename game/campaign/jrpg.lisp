@@ -35,7 +35,7 @@
 (defun jrpg-companion-road-target ()
   (let ((companion (jrpg-companion)))
     (cond
-      ((string= companion "Nio")
+      ((string= companion "Niko")
        "jrpg/road-nio")
       ((string= companion "Bram")
        "jrpg/road-bram")
@@ -45,7 +45,7 @@
 (defun jrpg-shrine-companion-target ()
   (let ((companion (jrpg-companion)))
     (cond
-      ((string= companion "Nio")
+      ((string= companion "Niko")
        "jrpg/shrine-nio")
       ((string= companion "Bram")
        "jrpg/shrine-bram")
@@ -92,13 +92,13 @@
 (dialog-pick "jrpg/party"
              "before the gate, what do you make time for?"
              (dialog-option "help Lena tie down the pack" "jrpg/friend")
-             (dialog-option "return Nio's charm book" "jrpg/mage")
+             (dialog-option "return Niko's charm book" "jrpg/mage")
              (dialog-option "ask Bram about the road" "jrpg/knight"))
 
 (dialog-on-enter "jrpg/friend"
                  '(jrpg-set-companion "Lena" "childhood friend"))
 (dialog-on-enter "jrpg/mage"
-                 '(jrpg-set-companion "Nio" "quiet mage"))
+                 '(jrpg-set-companion "Niko" "quiet mage"))
 (dialog-on-enter "jrpg/knight"
                  '(jrpg-set-companion "Bram" "knight"))
 
@@ -112,11 +112,11 @@
                      :next "jrpg/square")
 
 (dialog-conversation "jrpg/mage"
-                     (dialog-left "Nio"
+                     (dialog-left "Niko"
                                   "i memorized two spells and half of a weather charm.")
                      (dialog-right "{player-name}"
                                    "which half?")
-                     (dialog-left "Nio"
+                     (dialog-left "Niko"
                                   "the half that knows when it is raining.")
                      :next "jrpg/square")
 
@@ -146,7 +146,7 @@
                      (dialog-left "Mira"
                                   "room four, one candle, one basin, one blanket. all on credit.")
                      (dialog-right "{player-name}"
-                                   "for defeating Vane?")
+                                   "for defeating Hale?")
                      (dialog-left "Mira"
                                   "for leaving before breakfast.")
                      :next "jrpg/mira-questions")
@@ -162,7 +162,7 @@
                       ("ask what the tower is really like"
                        :id "tower"
                        :speaker "Mira"
-                       "a desk, a lamp, and Vane answering letters. he writes back. that unsettles people more than a monster would.")
+                       "a desk, a lamp, and Hale answering letters. he writes back. that unsettles people more than a monster would.")
                       ("ask why it is all on credit"
                        :id "credit"
                        :speaker "Mira"
@@ -271,11 +271,11 @@
                      :next "jrpg/slime-arrives")
 
 (dialog-conversation "jrpg/road-nio"
-                     (dialog-left "Nio"
+                     (dialog-left "Niko"
                                   "the weather charm says the mud is recent.")
                      (dialog-right "{player-name}"
                                    "the half that knows when it is raining?")
-                     (dialog-left "Nio"
+                     (dialog-left "Niko"
                                   "also the half that knows when it stopped.")
                      :next "jrpg/slime-arrives")
 
@@ -407,11 +407,11 @@
                      :next "jrpg/tower-road")
 
 (dialog-conversation "jrpg/shrine-nio"
-                     (dialog-left "Nio"
+                     (dialog-left "Niko"
                                   "the charm book calls this a wayside shelf. not a shrine. shrines have names.")
                      (dialog-right "{player-name}"
                                    "does that matter?")
-                     (dialog-left "Nio"
+                     (dialog-left "Niko"
                                   "to the book, yes. to the cup and copper, apparently no.")
                      :next "jrpg/tower-road")
 
@@ -508,34 +508,34 @@
              :next "jrpg/demon-hall")
 
 (dialog-text "jrpg/demon-hall"
-             "inside, a long carpet leads to a large door. a rack beside it holds three visitor swords and one mop."
+             "inside, a long carpet leads to a large door. a brass plate on it reads W. HALE, KEEPER. a rack beside it holds three visitor swords and one mop."
              :next "jrpg/demon-lord")
 
 (dialog-conversation "jrpg/demon-lord"
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "{player-name} from Oakbarrow. Mira's handwriting has improved.")
                      (dialog-right "{player-name}"
                                    "you know Mira?")
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "everyone on the north road knows Mira.")
                      :next "jrpg/vane-questions")
 
 (dialog-interrogation "jrpg/vane-questions"
-                      "Vane waits by the visitor sword rack with his hands open."
+                      "Hale waits by the visitor sword rack with his hands open."
                       (:next "jrpg/demon-choice")
                       (:continue-label "decide what to do")
                       (:require-all t)
                       ("ask about Oakbarrow"
                        :id "oakbarrow"
-                       :speaker "Vane"
+                       :speaker "Hale"
                        "Oakbarrow sends notices because notices are cheaper than soldiers, and soldiers are cheaper than admitting nobody remembers who started this.")
                       ("ask about the visitor swords"
                        :id "visitor-swords"
-                       :speaker "Vane"
+                       :speaker "Hale"
                        "they belong to the people who carried them here. if the people cannot carry them home, the hill keeps the iron until someone asks properly.")
                       ("ask about breakfast"
                        :id "breakfast"
-                       :speaker "Vane"
+                       :speaker "Hale"
                        "Mira added that line after the fifth year. she said a quest notice should promise at least one thing it can keep. i did not argue."))
 
 (dialog-pick "jrpg/demon-choice"
@@ -548,14 +548,14 @@
                  '(setf (jrpg-value "jrpg-demon-approach") "fight"))
 
 (dialog-text "jrpg/demon-fight"
-             "you draw your sword. {jrpg-companion} steps to your left and watches Vane's hands."
+             "you draw your sword. {jrpg-companion} steps to your left and watches Hale's hands."
              :next "jrpg/chapter-end")
 
 (dialog-on-enter "jrpg/demon-terms"
                  '(setf (jrpg-value "jrpg-demon-approach") "terms"))
 
 (dialog-text "jrpg/demon-terms"
-             "Vane names his terms: Oakbarrow stops posting notices, and he stops collecting broken swords from the hill."
+             "Hale names his terms: Oakbarrow stops posting notices, and he stops collecting broken swords from the hill."
              :next "jrpg/chapter-end")
 
 (dialog-on-enter "jrpg/demon-chest"
@@ -566,7 +566,7 @@
              :next "jrpg/chapter-end")
 
 (dialog-text "jrpg/chapter-end"
-             "Pell's handbell rings below. Vane takes one visitor sword from the rack and sets it on the carpet between you."
+             "Pell's handbell rings below. Hale takes one visitor sword from the rack and sets it on the carpet between you."
              :next "jrpg/sword-choice")
 
 (dialog-pick "jrpg/sword-choice"
@@ -579,15 +579,15 @@
                  '(setf (jrpg-value "jrpg-vane-answer") "duel"))
 
 (dialog-text "jrpg/duel"
-             "you take it up. Vane sets his feet, and the first exchange knocks dust from the carpet. {jrpg-companion} counts the passes out loud."
+             "you take it up. Hale sets his feet, and the first exchange knocks dust from the carpet. {jrpg-companion} counts the passes out loud."
              :next "jrpg/duel-end")
 
 (dialog-conversation "jrpg/duel-end"
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "good. Oakbarrow sends better every year.")
                      (dialog-right "{player-name}"
                                    "is it over?")
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "for this year. take the sword. it counts as a receipt.")
                      :next "jrpg/inn-return")
 
@@ -595,11 +595,11 @@
                  '(setf (jrpg-value "jrpg-vane-answer") "terms"))
 
 (dialog-conversation "jrpg/refuse"
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "then we talk. talking settles it too. it just takes longer than swords.")
                      (dialog-right "{player-name}"
                                    "Mira wants the notices to stop.")
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "and i want the hill to stop growing. tell her we are agreed.")
                      :next "jrpg/inn-return")
 
@@ -607,11 +607,11 @@
                  '(setf (jrpg-value "jrpg-vane-answer") "asked"))
 
 (dialog-conversation "jrpg/swords"
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "one for every visitor who took the sword up and lost. i mark the rack for each.")
                      (dialog-right "{player-name}"
                                    "how many marks?")
-                     (dialog-left "Vane"
+                     (dialog-left "Hale"
                                   "count them on your way out. bring the number to Mira. she keeps the other ledger.")
                      :next "jrpg/inn-return")
 

@@ -94,10 +94,10 @@
                        :id "stop"
                        :speaker "Mira"
                        "the hill feeds anyway. it just stops being choosy. a posted notice picks who comes. an unposted hill takes who wanders. we learned that the loud way.")
-                      ("ask whether Vane knows his part"
+                      ("ask whether Hale knows his part"
                        :id "vane"
                        :speaker "Mira"
-                       "Vane wrote half the terms. the post is not a punishment, it is a chair somebody sits in so the valley keeps its shape. he sits it well. that is the whole tragedy.")
+                       "Hale wrote half the terms. the post is not a punishment, it is a chair somebody sits in so the valley keeps its shape. he sits it well. that is the whole tragedy.")
                       ("ask how she came to keep the book"
                        :id "keeper"
                        :speaker "Mira"

@@ -20,7 +20,7 @@
              :next "bellfall/mornings-s2")
 
 (dialog-text "bellfall/mornings-s2"
-             "evenings you walk the chain with Oren, whose knee predicts weather better than Nio's half charm ever did."
+             "evenings you walk the chain with Oren, whose knee predicts weather better than Niko's half charm ever did."
              :next "bellfall/room-yours")
 
 (dialog-text "bellfall/room-yours"
@@ -72,7 +72,7 @@
                      (dialog-left "Pell"
                                   "the tower door stands open. the rack of swords is out on the grass, set in rows, polished. and the bell rope is still moving, and there is nobody on it.")
                      (dialog-right "{player-name}"
-                                   "Vane.")
+                                   "Hale.")
                      (dialog-left "Pell"
                                   "there is a grave dug. it was dug neat, and signed at the head, the way he did everything. it is waiting for him and he is laid beside it, waiting for us. he knew we would want to do the carrying.")
                      :next "bellfall/mira-page")
@@ -85,9 +85,9 @@
                      (dialog-left "Mira"
                                   "fifty-nine went up like all of them. he came down once, to this table, and asked me what the terms were. then he went back up and the old lord came down to this grave-yard, and the notices changed hands.")
                      (dialog-right "{player-name}"
-                                   "Vane was a sixty-seven once.")
+                                   "Hale was a sixty-seven once.")
                      (dialog-left "Mira"
-                                  "Vane was a fifty-nine. the tower is not a monster's house, it is a post. it has always been held by someone's child who asked about terms. you asked about terms.")
+                                  "Hale was a fifty-nine. the tower is not a monster's house, it is a post. it has always been held by someone's child who asked about terms. you asked about terms.")
                      :next "bellfall/terms-questions")
 
 (dialog-interrogation "bellfall/terms-questions"
@@ -149,7 +149,7 @@
 
 (dialog-conversation "bellfall/grave-words"
                      (dialog-left "Mira"
-                                  "settled, today, by terms, having held the post thirty-one years and kept the valley a valley. left behind: the village of Oakbarrow, in its entirety.")
+                                  "Walter Hale. settled, today, by terms, having held the post thirty-one years and kept the valley a valley. left behind: the village of Oakbarrow, in its entirety.")
                      (dialog-right "{player-name}"
                                    "the whole column?")
                      (dialog-left "Mira"
@@ -283,7 +283,7 @@
              :next "bellfall/take-years-2")
 
 (dialog-text "bellfall/take-years-2"
-             "you take a visitor sword down from the rack, and set it on the carpet between you, and hope, the way Vane must have hoped, that this one asks about terms."
+             "you take a visitor sword down from the rack, and set it on the carpet between you, and hope, the way Hale must have hoped, that this one asks about terms."
              :next "bellfall/end")
 
 (dialog-on-enter "bellfall/hold"
