@@ -8,8 +8,28 @@
 (defconstant +flight-success-distance+ 28.0)
 (defconstant +flight-safe-gate-count+ 3)
 (defconstant +flight-cockpit-scale+ 0.32)
+(defconstant +flight-commit-z+ 0.2)
 
 (defvar *flight-minigame* nil)
+
+;;; Projection. The ship reticle and the gates share these, so the gate
+;;; collision below can be done in screen space: what you see lined up is
+;;; what you fly through.
+(-> flight-project (scalar scalar scalar) (values scalar scalar))
+(defun flight-project (x y z)
+  (let* ((depth (+ z 0.75))
+         (scale (/ 1.0 depth)))
+    (values (+ +flight-center-x+
+               (* x +flight-view-width+ 0.5 scale))
+            (+ +flight-center-y+
+               (* y +flight-view-height+ 0.5 scale)))))
+
+(-> flight-cockpit-position (scalar scalar) (values scalar scalar))
+(defun flight-cockpit-position (x y)
+  (values (+ +flight-center-x+
+             (* x +flight-view-width+ +flight-cockpit-scale+))
+          (+ +flight-center-y+
+             (* y +flight-view-height+ +flight-cockpit-scale+))))
 
 (defstruct flight-minigame
   (node-id    *runtime-fallback-node-id* :type dialog-id)
@@ -88,13 +108,25 @@
 
 (-> flight-player-in-gate-p (flight-minigame flight-gate-index) boolean)
 (defun flight-player-in-gate-p (game gate-index)
+  ;; Screen-space test at the commit plane: the ship clears the gate when
+  ;; its drawn reticle sits inside the gate opening as it is drawn at the
+  ;; moment of crossing. the ship is a point; its hull may overhang.
   (multiple-value-bind (gate-x gate-y)
       (flight-gate-center gate-index)
     (let ((half-size (flight-opening-half-size gate-index)))
-      (and (<= (abs (- (flight-minigame-player-x game) gate-x))
-               half-size)
-           (<= (abs (- (flight-minigame-player-y game) gate-y))
-               half-size)))))
+      (multiple-value-bind (ship-x ship-y)
+          (flight-cockpit-position (flight-minigame-player-x game)
+                                   (flight-minigame-player-y game))
+        (multiple-value-bind (left top)
+            (flight-project (- gate-x half-size)
+                            (- gate-y half-size)
+                            +flight-commit-z+)
+          (multiple-value-bind (right bottom)
+              (flight-project (+ gate-x half-size)
+                              (+ gate-y half-size)
+                              +flight-commit-z+)
+            (and (<= left ship-x right)
+                 (<= top ship-y bottom))))))))
 
 (-> record-flight-crash () t)
 (defun record-flight-crash ()
@@ -177,7 +209,8 @@
 
 (-> check-flight-gates (node flight-minigame) t)
 (defun check-flight-gates (node game)
-  (let ((current-gate (floor (flight-minigame-distance game))))
+  (let ((current-gate (floor (+ (flight-minigame-distance game)
+                                +flight-commit-z+))))
     (loop for gate from (1+ (flight-minigame-last-gate game)) to current-gate
           unless (or (<= gate +flight-safe-gate-count+)
                      (flight-player-in-gate-p game gate))
