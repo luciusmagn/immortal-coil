@@ -67,11 +67,37 @@
     (jrpg-heal 9)
     t))
 
+(defun jrpg-xp-to-next (level)
+  "Experience needed to clear the given level."
+  (+ 8 (* (max 1 level) 6)))
+
+(defun jrpg-level-up-check ()
+  "Spend banked xp on levels. Returns the new level if any gained, else nil."
+  (let ((leveled nil))
+    (loop
+      (let* ((level (jrpg-number "jrpg-hero-level" 1))
+             (xp (jrpg-number "jrpg-xp" 0))
+             (need (jrpg-xp-to-next level)))
+        (if (>= xp need)
+            (progn
+              (jrpg-set-number "jrpg-xp" (- xp need))
+              (jrpg-set-number "jrpg-hero-level" (1+ level))
+              (jrpg-adjust-number "jrpg-hero-max-hp" 5)
+              (jrpg-adjust-number "jrpg-hero-attack" 1)
+              (when (evenp (1+ level))
+                (jrpg-adjust-number "jrpg-hero-mp" 1))
+              (jrpg-set-number "jrpg-hero-hp"
+                               (jrpg-number "jrpg-hero-max-hp" 18))
+              (setf leveled (1+ level)))
+            (return))))
+    leveled))
+
 (defun jrpg-award-victory (&key (xp 3) (gold 5))
   (jrpg-adjust-number "jrpg-xp" xp)
   (jrpg-adjust-number "jrpg-gold" gold)
   (jrpg-adjust-number "jrpg-slimes-defeated" 1)
-  (setf (jrpg-value "jrpg-last-battle") "victory"))
+  (setf (jrpg-value "jrpg-last-battle") "victory"
+        (jrpg-value "jrpg-just-leveled") (jrpg-level-up-check)))
 
 (defun jrpg-record-defeat ()
   (setf (jrpg-value "jrpg-last-battle") "defeat"))

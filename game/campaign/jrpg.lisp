@@ -630,7 +630,15 @@
                  "choose a command. arrows or wasd move. enter or space confirms."
                  :game :jrpg-combat
                  :success "jrpg/home-clear"
-                 :failure "jrpg/home-limp")
+                 :failure "jrpg/home-limp"
+                 :config (list :enemy-kind "wolf"
+                               :enemy-name "HILL WOLF"
+                               :enemy-hp 24
+                               :enemy-attack-min 4
+                               :enemy-attack-max 8
+                               :victory-xp 9
+                               :victory-gold 10
+                               :message "something comes up out of the ditch."))
 
 (dialog-conversation "jrpg/home-clear"
                      (dialog-left "{jrpg-companion}"

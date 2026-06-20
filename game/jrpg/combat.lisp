@@ -28,11 +28,70 @@
     "......########......"
     ".......##..##......."))
 
+(defparameter *jrpg-bat-sprite*
+  #("..#..............#.."
+    ".###....####....###."
+    "####..########..####"
+    "#####.##****##.#####"
+    "#.####.######.####.#"
+    "...####.####.####..."
+    ".....##.####.##....."
+    "......#.####.#......"
+    "........####........"
+    ".......#+##+#......."
+    "......##++++##......"
+    ".......#+##+#......."
+    "........#..#........"
+    ".......#....#......."))
+
+(defparameter *jrpg-goblin-sprite*
+  #(".......####........."
+    "......######........"
+    ".....##****##......."
+    ".....#*#**#*#......."
+    "......######........"
+    ".......####........."
+    "....#..####..#......"
+    "...##.######.##....."
+    "..###.######.###...."
+    "..#..########..#...."
+    ".....##++++##......."
+    ".....##.##.##......."
+    "....##...#..##......"
+    "...##....#...##....."))
+
+(defparameter *jrpg-wolf-sprite*
+  #("..................#."
+    ".###.............###"
+    "####............####"
+    "#####..........#####"
+    "############.#######"
+    "##############****#."
+    "###############*##.."
+    "##################.."
+    ".################..."
+    ".##.####.####.##...."
+    ".#...##...##...#...."
+    ".#...##...##...#...."))
+
+(defparameter *jrpg-enemy-sprites*
+  (list (cons "slime" *jrpg-slime-sprite*)
+        (cons "bat" *jrpg-bat-sprite*)
+        (cons "goblin" *jrpg-goblin-sprite*)
+        (cons "wolf" *jrpg-wolf-sprite*)))
+
+(defun jrpg-enemy-sprite (kind)
+  (or (cdr (assoc (string-downcase (or kind "slime"))
+                  *jrpg-enemy-sprites*
+                  :test #'string=))
+      *jrpg-slime-sprite*))
+
 (defvar *jrpg-combat* nil)
 
 (defstruct jrpg-combat
   (node-id          *runtime-fallback-node-id*)
   (enemy-name       "SLIME")
+  (enemy-kind       "slime")
   (enemy-hp         14)
   (enemy-max-hp     14)
   (enemy-attack-min 3)
@@ -64,6 +123,9 @@
                       :enemy-name (jrpg-combat-config-string node
                                                              :enemy-name
                                                              "SLIME")
+                      :enemy-kind (jrpg-combat-config-string node
+                                                             :enemy-kind
+                                                             "slime")
                       :enemy-hp enemy-hp
                       :enemy-max-hp enemy-hp
                       :enemy-attack-min (jrpg-combat-config-number
@@ -145,13 +207,20 @@
         (jrpg-combat-finish-delay game) 0.9))
 
 (defun jrpg-combat-hero-attack ()
-  (+ (jrpg-number "jrpg-hero-attack" 5)
-     (get-random-value 0 2)))
+  "Returns (values damage crit-p); about one swing in six lands clean."
+  (let ((base (+ (jrpg-number "jrpg-hero-attack" 5)
+                 (get-random-value 0 2)))
+        (crit (zerop (get-random-value 0 5))))
+    (values (if crit (* 2 base) base) crit)))
 
 (defun jrpg-combat-enemy-attack (game)
-  (max 1 (- (get-random-value (jrpg-combat-enemy-attack-min game)
-                              (jrpg-combat-enemy-attack-max game))
-            (jrpg-number "jrpg-hero-defense" 2))))
+  "Returns (values damage heavy-p); about one blow in five comes hard."
+  (let* ((heavy (zerop (get-random-value 0 4)))
+         (raw (get-random-value (jrpg-combat-enemy-attack-min game)
+                                (jrpg-combat-enemy-attack-max game)))
+         (raw (if heavy (round (* raw 1.7)) raw)))
+    (values (max 1 (- raw (jrpg-number "jrpg-hero-defense" 2)))
+            heavy)))
 
 (defun jrpg-combat-enemy-alive-p (game)
   (plusp (jrpg-combat-enemy-hp game)))
@@ -163,10 +232,17 @@
 (defun jrpg-combat-victory (node game)
   (jrpg-award-victory :xp (jrpg-combat-victory-xp game)
                       :gold (jrpg-combat-victory-gold game))
-  (play-jrpg-sound "coin" :volume 0.34)
-  (setf (jrpg-combat-message game)
-        (format nil "the ~a is defeated."
-                (string-downcase (jrpg-combat-enemy-name game))))
+  (let ((leveled (jrpg-value "jrpg-just-leveled"))
+        (name (string-downcase (jrpg-combat-enemy-name game))))
+    (if leveled
+        (progn
+          (play-jrpg-sound "bell" :volume 0.4)
+          (setf (jrpg-combat-message game)
+                (format nil "the ~a falls. you reach level ~d." name leveled)))
+        (progn
+          (play-jrpg-sound "coin" :volume 0.34)
+          (setf (jrpg-combat-message game)
+                (format nil "the ~a is defeated." name)))))
   (jrpg-combat-finish game (node-success-target node)))
 
 (defun jrpg-combat-defeat (node game)
@@ -176,30 +252,39 @@
   (jrpg-combat-finish game (node-failure-target node)))
 
 (defun jrpg-combat-enemy-turn (node game)
-  (let ((damage (jrpg-combat-enemy-attack game)))
+  (multiple-value-bind (damage heavy) (jrpg-combat-enemy-attack game)
     (jrpg-damage-hero damage)
-    (play-jrpg-sound "hit" :volume 0.34)
+    (play-jrpg-sound (if heavy "slime" "hit") :volume (if heavy 0.44 0.34))
     (if (jrpg-hero-alive-p)
         (setf (jrpg-combat-message game)
-              (format nil "the ~a hits you for ~d."
-                      (string-downcase (jrpg-combat-enemy-name game))
-                      damage))
+              (if heavy
+                  (format nil "the ~a lunges hard! ~d damage."
+                          (string-downcase (jrpg-combat-enemy-name game))
+                          damage)
+                  (format nil "the ~a hits you for ~d."
+                          (string-downcase (jrpg-combat-enemy-name game))
+                          damage)))
         (jrpg-combat-defeat node game))))
 
 (defun jrpg-combat-attack-command (node game)
-  (play-jrpg-sound "sword")
-  (let ((damage (jrpg-combat-hero-attack)))
+  (multiple-value-bind (damage crit) (jrpg-combat-hero-attack)
+    (play-jrpg-sound "sword" :volume (if crit 0.52 0.42))
     (jrpg-combat-damage-enemy game damage)
     (if (jrpg-combat-enemy-alive-p game)
         (progn
           (setf (jrpg-combat-message game)
-                (format nil "you hit the slime for ~d." damage))
+                (if crit
+                    (format nil "a clean strike! ~d damage." damage)
+                    (format nil "you hit the ~a for ~d."
+                            (string-downcase (jrpg-combat-enemy-name game))
+                            damage)))
           (jrpg-combat-enemy-turn node game))
         (jrpg-combat-victory node game))))
 
 (defun jrpg-combat-magic-command (node game)
   (if (plusp (jrpg-number "jrpg-hero-mp"))
-      (let ((damage (+ 7 (get-random-value 0 3))))
+      (let ((damage (+ 6 (jrpg-number "jrpg-hero-level" 1)
+                       (get-random-value 0 3))))
         (play-jrpg-sound "magic" :volume 0.38)
         (jrpg-adjust-number "jrpg-hero-mp" -1)
         (jrpg-combat-damage-enemy game damage)
@@ -298,11 +383,11 @@
               (claylib::c-ptr
                (make-color 255 255 255 (- 54 (* offset 4))))))))
 
-(defun draw-jrpg-slime-sprite (center-x top scale elapsed)
-  (loop with sprite-width = (length (aref *jrpg-slime-sprite* 0))
+(defun draw-jrpg-enemy-sprite (sprite center-x top scale elapsed)
+  (loop with sprite-width = (length (aref sprite 0))
         with left = (- center-x (/ (* sprite-width scale) 2))
         with bounce = (round (* 4.0 (sin (* elapsed 3.0))))
-        for row across *jrpg-slime-sprite*
+        for row across sprite
         for y from 0
         for row-offset = (jrpg-slime-row-offset y elapsed)
         do (loop for cell across row
@@ -326,7 +411,8 @@
                         20
                         (make-color 255 255 255 232))
     (draw-jrpg-slime-shadow x (+ y 112) (jrpg-combat-elapsed game))
-    (draw-jrpg-slime-sprite x (- y 8) 7 (jrpg-combat-elapsed game))
+    (draw-jrpg-enemy-sprite (jrpg-enemy-sprite (jrpg-combat-enemy-kind game))
+                            x (- y 8) 7 (jrpg-combat-elapsed game))
     (draw-centered-text
      (format nil "HP ~d/~d"
              (jrpg-combat-enemy-hp game)
