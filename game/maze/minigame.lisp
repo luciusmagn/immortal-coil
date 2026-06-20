@@ -8,7 +8,10 @@
 (defconstant +dream-maze-max-depth+ 16.0)
 (defconstant +dream-maze-max-steps+ 48)
 
-(defparameter *dream-maze-map*
+;;; Current maze grid. Regenerated per visit (see make-fresh) so the
+;;; corridors are never twice the same. Holds a valid fallback layout
+;;; until the first generation runs.
+(defvar *dream-maze-map*
   #("###############"
     "#     #   # B #"
     "# ### # # # # #"
@@ -18,6 +21,47 @@
     "# ### ##### # #"
     "#A        # C #"
     "###############"))
+
+(-> dream-maze-shuffle (list) list)
+(defun dream-maze-shuffle (items)
+  (let ((vec (coerce items 'vector)))
+    (loop for i from (1- (length vec)) downto 1
+          for j = (get-random-value 0 i)
+          do (rotatef (aref vec i) (aref vec j)))
+    (coerce vec 'list)))
+
+;;; Carve a perfect maze with a randomized depth-first backtracker on the
+;;; odd cells, then mark three far cells as the A/B/C exits. Every cell is
+;;; reachable from the (1,1) spawn by construction, so all three exits and
+;;; the bottom always solve.
+(-> generate-dream-maze-map () simple-vector)
+(defun generate-dream-maze-map ()
+  (let ((w +dream-maze-width+)
+        (h +dream-maze-height+))
+    (let ((grid (make-array (list h w) :initial-element #\#)))
+      (labels ((cell-p (x y)
+                 (and (oddp x) (oddp y) (< 0 x (1- w)) (< 0 y (1- h))))
+               (carve (x y)
+                 (setf (aref grid y x) #\Space)
+                 (dolist (step (dream-maze-shuffle
+                                '((2 . 0) (-2 . 0) (0 . 2) (0 . -2))))
+                   (let ((nx (+ x (car step)))
+                         (ny (+ y (cdr step))))
+                     (when (and (cell-p nx ny)
+                                (char= (aref grid ny nx) #\#))
+                       (setf (aref grid (+ y (truncate (cdr step) 2))
+                                  (+ x (truncate (car step) 2)))
+                             #\Space)
+                       (carve nx ny))))))
+        (carve 1 1))
+      (setf (aref grid (- h 2) 1) #\A
+            (aref grid 1 (- w 2)) #\B
+            (aref grid (- h 2) (- w 2)) #\C)
+      (coerce (loop for y below h
+                    collect (coerce (loop for x below w
+                                          collect (aref grid y x))
+                                    'string))
+              'vector))))
 
 (defvar *dream-maze-minigame* nil)
 
@@ -40,6 +84,7 @@
 
 (-> make-fresh-dream-maze-minigame (node) dream-maze-minigame)
 (defun make-fresh-dream-maze-minigame (node)
+  (setf *dream-maze-map* (generate-dream-maze-map))
   (make-dream-maze-minigame :node-id (node-id node)
                             :x 1.5
                             :y 1.5
