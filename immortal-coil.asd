@@ -97,6 +97,9 @@
                    (:file "rising")
                    (:file "star")
                    (:file "warp")
+                   (:file "snow")
+                   (:file "ash")
+                   (:file "motes")
                    (:file "field")))
 
                  (:file "play-state")

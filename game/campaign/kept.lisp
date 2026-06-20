@@ -6,6 +6,8 @@
 (dialog-on-enter "kept/refused"
                  '(setf (dialog-value "alice-sentence") "refused"))
 
+(dialog-particles "kept/refused" :motes :fade-seconds 5.0)
+
 (dialog-say "kept/refused"
             "the card judge"
             "refused. the court has waited eleven defendants for someone to refuse. very well. if you will not keep the room, the court will keep you, and we will all see which of you misses the other first."

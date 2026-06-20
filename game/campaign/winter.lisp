@@ -4,6 +4,7 @@
 ;;; the bench at six in the morning; exits through the thaw.
 
 (dialog-music "winter/doors" "audio/forest-lyria-drone.mp3" :volume 0.20)
+(dialog-particles "winter/doors" :snow :fade-seconds 5.0)
 
 (dialog-text "winter/doors"
              "you do not stand up. the bench holds you, and you hold the bench, and the idling engine counts off the seconds of the only decision out here that nobody will make for you."

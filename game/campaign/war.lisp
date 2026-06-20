@@ -5,6 +5,10 @@
 (dialog-set-next "base/listen/bells" "war/bells")
 (dialog-set-next "base/listen/glass" "war/glass")
 
+(dialog-particles "war/static" :ash :fade-seconds 4.0)
+(dialog-particles "war/bells" :ash :fade-seconds 4.0)
+(dialog-particles "war/glass" :ash :fade-seconds 4.0)
+
 (defun war-knock-target ()
   (if (dialog-value "war-first-order")
       "war/knock-again"

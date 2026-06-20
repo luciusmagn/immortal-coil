@@ -3,6 +3,8 @@
 ;;; Bells, lists, empty coats, the loaded train. Restrained throughout.
 ;;; Entered from the map room on day three; rejoins at the fourth morning.
 
+(dialog-particles "district/advice" :ash :fade-seconds 4.0)
+
 (dialog-conversation "district/advice"
                      (dialog-left "Sorel"
                                   "chancellor, no. the gate logs. whatever you see there, the log will say you saw it, and the log will not say why.")

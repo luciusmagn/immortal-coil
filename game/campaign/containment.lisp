@@ -9,6 +9,8 @@
 (dialog-set-next "dream/right-exit" "facility/found")
 (dialog-set-next "dream/maze-lost" "facility/found")
 
+(dialog-particles "facility/found" :motes :fade-seconds 5.0)
+
 (dialog-text "facility/found"
              "at the next turn a man in a grey coat is waiting. he does not ask who you are, and you follow the painted line with him."
              :next #'facility-desk-target)
