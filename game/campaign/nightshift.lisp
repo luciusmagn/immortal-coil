@@ -4,7 +4,7 @@
 ;;; tomorrow's line; exits through the succession.
 
 (dialog-text "nightshift/initialed"
-             "you initial tomorrow's line as well, under the handwriting you are done pretending not to recognize, and the two sets of initials sit together on the page like a signature and its countersignature, which is what they are."
+             "you initial tomorrow's line as well, under the handwriting you are done pretending not to recognize. the two sets of initials sit together on the page like a signature and its countersignature. that is what they are."
              :next "nightshift/m3-still")
 
 (dialog-text "nightshift/m3-still"
@@ -181,11 +181,11 @@
              :next "nightshift/remain-inside")
 
 (dialog-text "nightshift/remain-inside"
-             "you remain where you are. the room goes somewhere with you in it, the way a berth goes somewhere with its sleeper, and what passes outside the disputed door passes politely."
+             "you remain where you are. the room goes somewhere with you in it, the way a berth goes somewhere with its sleeper. what passes outside the disputed door passes politely."
              :next "nightshift/remain-inside-2")
 
 (dialog-text "nightshift/remain-inside-2"
-             "at the pace of a thing pacing itself, and you breathe the drill, in for four, hold for four, out for four, until the wall is a wall."
+             "it passes at the pace of a thing pacing itself. you breathe the drill, in for four, hold for four, out for four, until the wall is a wall again."
              :next "nightshift/morning-after")
 
 (dialog-text "nightshift/morning-after"
