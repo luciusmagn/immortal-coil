@@ -13,7 +13,7 @@
                      :next "district/coat")
 
 (dialog-text "district/coat"
-             "Brandt brings two coats from the clerks' rack, wool, unmarked, smelling of other men's tobacco. yours is tight across the shoulders. his fits. neither of you remarks on what it means that the rack had coats to spare."
+             "Brandt brings two coats from the clerks' rack, wool, unmarked, smelling of other men's tobacco. yours is tight across the shoulders. his fits. neither of you says anything about the rack having coats to spare."
              :next "district/night")
 
 (dialog-scene "district/night"
@@ -38,7 +38,7 @@
                      :next "district/maze-setup")
 
 (dialog-text "district/maze-setup"
-             "Tanners Row is barricaded at the far end, so the long way becomes the longer way, lefts and rights through a district that has rearranged itself around the curfew like a closed fist."
+             "Tanners Row is barricaded at the far end. the long way becomes the longer way, lefts and rights through a district closed up tight around the curfew."
              :next "district/streets")
 
 (dialog-minigame "district/streets"
@@ -110,7 +110,7 @@
              :next "district/coats")
 
 (dialog-text "district/coats"
-             "you walk one rail of them with the candle. mens coats, then womens, then a long stretch where the rail is lower, and you stop reading the tags there, and Brandt takes the candle from your hand without being asked."
+             "you walk one rail of them with the candle. mens coats, then womens, then a long stretch where the rail hangs lower. you stop reading the tags there. Brandt takes the candle from your hand without being asked."
              :next "district/counting-room")
 
 (dialog-text "district/counting-room"
@@ -139,7 +139,7 @@
                  '(setf (dialog-value "district-train") "unseen"))
 
 (dialog-text "district/enough"
-             "you turn back at the head of the rail cut. behind you, far down the grade, metal couples to metal once, softly, the way it does when a train is being made longer in the dark. you do not turn around. this is the moment you will revisit most."
+             "you turn back at the head of the rail cut. behind you, far down the grade, metal couples to metal once, softly, the way it does when a train is being made longer in the dark. you do not turn around. you will think about this later, more than the rest of it."
              :next "district/walk-back")
 
 (dialog-text "district/siding"
@@ -156,7 +156,7 @@
                      :next "district/train-choice")
 
 (dialog-pick "district/train-choice"
-             "the sentry stands aside from the nearest car, which is either an invitation or a record being made."
+             "the sentry stands aside from the nearest car. it is an invitation, or it is a record being made. maybe both."
              (dialog-option "order the car opened" "district/opened")
              (dialog-option "put your hand against the boards" "district/hand")
              (dialog-option "step back from it" "district/back"))
@@ -244,7 +244,7 @@
              :next "district/boots-3")
 
 (dialog-text "district/boots-3"
-             "you put on the clean boots and they fit exactly as well as they did yesterday, which this morning feels like an accusation."
+             "you put on the clean boots. they fit exactly as well as yesterday. this morning that feels like an accusation."
              :next "district/vey")
 
 (dialog-conversation "district/vey"
