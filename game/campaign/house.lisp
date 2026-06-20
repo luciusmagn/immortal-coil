@@ -10,7 +10,7 @@
              :next "house/pegs")
 
 (dialog-text "house/pegs"
-             "along the wall, coat pegs. five. four hold coats, work coats and a child's slicker, and the fifth is empty and sits at exactly the height you hang a coat, and the wood of it is worn pale, the way a peg gets worn by one coat, taken down and put up, for years."
+             "along the wall, coat pegs. five. four hold coats, work coats and a child's slicker. the fifth is empty. it sits at the height you hang a coat, and the wood of it is worn pale. one coat wore it that way, taken down and put up, for years."
              :next "house/clock")
 
 (dialog-text "house/clock"
@@ -64,11 +64,11 @@
              :next "house/grace-known-3")
 
 (dialog-text "house/grace-known-3"
-             "either the letter was dictation, or the news in this house does not change, and you cannot decide which is worse, and you keep eating."
+             "either the letter was dictation, or the news in this house never changes. you cannot decide which is worse. you keep eating."
              :next "house/upstairs")
 
 (dialog-text "house/upstairs"
-             "you have been up these stairs. your hand finds the smooth place on the rail without looking. on the landing there are four doors, and the keeper opens the second one and stands aside the way you stand aside from a thing that needs no introduction."
+             "you have been up these stairs. your hand finds the smooth place on the rail without looking. on the landing there are four doors. the keeper opens the second one and stands aside. they do not say which room it is. they do not need to."
              :next "house/room")
 
 (dialog-text "house/room"
@@ -129,7 +129,7 @@
              :next "house/listening-2")
 
 (dialog-text "house/listening-2"
-             "the two notes move once through the rooms below, unhurried. then the house's silence, which is not the absence of sound but the sound of a thing holding still around you, breathing when you breathe."
+             "the two notes move once through the rooms below, unhurried. then the house goes quiet. it is not an empty quiet. it is the quiet of a thing holding still around you, breathing when you breathe."
              :next "house/morning")
 
 (dialog-on-enter "house/search"
@@ -173,11 +173,11 @@
                      :next "house/washing")
 
 (dialog-text "house/washing"
-             "after supper you dry while the keeper washes, because the cloth was put in your hand, and the two of you stand at the basin in the lamplight passing plates like any kitchen anywhere."
+             "after supper you dry while the keeper washes, because the cloth was put in your hand. the two of you stand at the basin in the lamplight, passing plates, like any kitchen anywhere."
              :next "house/washing-2")
 
 (dialog-text "house/washing-2"
-             "your dread does not go. it just changes state, the way water does, from weather into something standing in a glass."
+             "your dread does not go anywhere. it only goes quiet, and close, and stands at the basin with you, drying plates."
              :next "house/morning")
 
 (dialog-scene "house/morning"
@@ -193,7 +193,7 @@
              :next "house/breakfast")
 
 (dialog-text "house/breakfast"
-             "morning is porridge with cream and the smell of the stove and frost going off the windows in lines. it is, and you make yourself hold the thought still, the best morning you can remember, and the remembering is shallow water, and you know it, and the porridge is warm."
+             "morning is porridge with cream and the smell of the stove and frost going off the windows in lines. it is the best morning you can remember. you make yourself hold that thought still and look at it. the memory it sits on is shallow, and you know that. the porridge is warm anyway."
              :next "house/chores")
 
 (dialog-conversation "house/chores"
@@ -210,7 +210,7 @@
              :next "house/woodpile-2")
 
 (dialog-text "house/woodpile-2"
-             "the work takes your thinking the way the soup took your hunger, cleanly, completely, and that is the trap, and naming it does not spring you from it. nothing about this house lies. that is what makes it the hill's."
+             "the work takes your thinking the way the soup took your hunger. clean, complete. that is the trap. naming it does not get you out of it. nothing in this house lies. that is what makes it the hill's."
              :next "house/bread")
 
 (dialog-text "house/bread"
@@ -282,7 +282,7 @@
              :next "house/stay-night")
 
 (dialog-text "house/stay-night"
-             "in the night, the two notes move through the house below you, room to room, the sound a house makes when it is being checked on, when its people are being counted, and the counting includes you, and you lie in your bed under your window and let it."
+             "in the night the two notes move through the house below you, room to room. it is the sound a house makes when it is being checked on, when its people are being counted. the count includes you. you lie in your bed under your window and let it."
              :next "house/last-notes")
 
 (dialog-on-enter "house/follow"
@@ -310,7 +310,7 @@
              :next "house/mirror-after-2")
 
 (dialog-text "house/mirror-after-2"
-             "the worst of it is the relief you feel when the cold starts working into you, as if the cold were a character witness."
+             "the worst of it is the relief you feel when the cold starts working into you. the cold is honest, at least. the cold is on nobody's side."
              :next "house/mirror-walk")
 
 (dialog-text "house/mirror-walk"
@@ -318,7 +318,7 @@
              :next "house/mirror-walk-2")
 
 (dialog-text "house/mirror-walk-2"
-             "at the porch the keeper has left the lamp lit and the door open and your plate covered, and has gone to bed, which is the kindest and most terrible possible argument."
+             "at the porch the keeper has left the lamp lit, the door open, your plate covered, and has gone to bed. it is the kindest argument anyone has ever made to you. it is also the worst."
              :next "house/last-notes")
 
 (dialog-text "house/last-notes"
