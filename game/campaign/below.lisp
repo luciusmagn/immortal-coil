@@ -16,7 +16,7 @@
              :next "below/shelves")
 
 (dialog-text "below/shelves"
-             "the walls become shelving without admitting a seam. ledgers, spine out, floor to dark, each spine chalked in the tidy clerk's hand. the shelving goes on past the torch in both directions, breathing the way stacks breathe, which is not at all, audibly."
+             "the walls become shelving without admitting a seam. ledgers, spine out, floor to dark, each spine chalked in the tidy clerk's hand. the shelving goes on past the torch in both directions. it is silent down here, the deep silence of paper."
              :next "below/tally-wall")
 
 (dialog-text "below/tally-wall"
@@ -97,7 +97,7 @@
                                            "#############"))))
 
 (dialog-text "below/audited"
-             "one of the pair steps out of its wall, which is not a thing you see so much as a thing the torch declines to contradict, and the floor files you."
+             "one of the pair steps out of its wall. you do not quite see it. the torch will not hold its light on it. the floor files you."
              :next "below/audited-2")
 
 (dialog-text "below/audited-2"
@@ -240,7 +240,7 @@
              :next "below/escort-pace")
 
 (dialog-text "below/escort-pace"
-             "you climb between the pair, and for once it is you matching their steps, not them matching yours, and the difference is the difference between being followed and being seen home, and you had not known until tonight that the same footfalls could mean both."
+             "you climb between the pair, and for once it is you matching their steps, not them matching yours. one of those is being followed. the other is being seen home. you had not known until tonight that the same footfalls could be both."
              :next "below/stand-closed")
 
 (dialog-text "below/stand-closed"
