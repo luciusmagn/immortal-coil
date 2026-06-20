@@ -193,7 +193,7 @@
              :next "house/round-2")
 
 (dialog-text "house/round-2"
-             "taken, or weathered, or worse, and the keeper does not check which, and you understand that not checking is the discipline that keeps the giving clean."
+             "where it went, the keeper does not check: taken, or weathered, or worse. not checking is the discipline that keeps the giving clean."
              :next "house/breakfast")
 
 (dialog-text "house/breakfast"

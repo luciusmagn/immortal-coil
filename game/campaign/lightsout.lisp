@@ -73,7 +73,7 @@
              :next "lightsout/round-flame")
 
 (dialog-text "lightsout/round-flame"
-             "and then, each time, the long soft pull as the new flame bends into the dark and is drunk, steadily, like a beast at a trough at evening."
+             "then, each time, comes the long soft pull as the new flame bends into the dark and is drunk, steadily, like a beast at a trough at evening."
              :next "lightsout/round-attending")
 
 (dialog-text "lightsout/round-attending"
@@ -197,7 +197,7 @@
              :next "lightsout/feed-nothing-2")
 
 (dialog-text "lightsout/feed-nothing-2"
-             "the way a waiter stops attending a table that is not ordering, and the corridor goes from a place you are in to a distance you must cover."
+             "it stops the way a waiter stops attending a table that is not ordering. the corridor goes from a place you are in to a distance you must cover."
              :next "lightsout/long-count")
 
 (dialog-text "lightsout/long-count"

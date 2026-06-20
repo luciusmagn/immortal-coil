@@ -183,7 +183,7 @@
              :next "release/last-tea-2")
 
 (dialog-text "release/last-tea-2"
-             "exactly the way you would in any job, on any last day, and for four minutes it works, which you both know is the tea's full operating range."
+             "you drink them the way you would in any job, on any last day. for four minutes it works, which you both know is the tea's full operating range."
              :next "release/surplus")
 
 (dialog-say "release/surplus"
@@ -275,7 +275,7 @@
              :next "release/coats-2")
 
 (dialog-text "release/coats-2"
-             "elbows gone soft: every locker in this row holds two coats, the issued one and the predecessor's, all the way down the row, all the way down the years. the facility does not hire. it rotates. today the rotation ends."
+             "its elbows are gone soft. every locker in this row holds two coats, the issued one and the predecessor's, all the way down the row, all the way down the years. the facility does not hire. it rotates. today the rotation ends."
              :next "release/scrubber")
 
 (dialog-text "release/scrubber"
@@ -307,7 +307,7 @@
              :next "release/lights-2")
 
 (dialog-text "release/lights-2"
-             "performed once at full scale, unhurried, and the last light to go is the one over the standing desk, where the glass of water stands full to the line in the dark."
+             "it is performed once at full scale, unhurried. the last light to go is the one over the standing desk, where the glass of water stands full to the line in the dark."
              :next "release/handle")
 
 (dialog-text "release/handle"
