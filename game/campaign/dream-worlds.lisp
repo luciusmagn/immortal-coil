@@ -612,7 +612,7 @@
              :next "rogue/far-hall")
 
 (dialog-text "rogue/delve-entry"
-             "the south door opens on a stair that keeps going past where stairs stop being furniture and start being terrain. cold air climbs it slowly, like something pacing itself."
+             "the stair drops past where stairs stop being furniture and start being terrain. cold air climbs it slowly, like something pacing itself, and there is no way on but down it."
              :next "rogue/delve")
 
 (defun rogue-delve-bottom-target ()
@@ -684,8 +684,8 @@
              (dialog-option "go through the far door" "below/door"))
 
 (dialog-text "rogue/delve-after"
-             "you do not take the tag. you close the door on it, quietly, the way you would on someone sleeping, and climb until the stair ends at furniture again."
-             :next "rogue/landing-return")
+             "you do not take the tag. you close the door on it, quietly, the way you would on someone sleeping, and climb until the stair ends at furniture again: a far hall, and at the end of it a barred door."
+             :next "rogue/far-door")
 
 (dialog-text "rogue/delve-caught"
              "the pacing closes its distance all at once, from the one direction you were not counting. you wake on the landing with the torch relit and your hours kept for you. nothing is missing except the going down."
@@ -696,15 +696,13 @@
              :next "rogue/delve-return-choice")
 
 (dialog-pick "rogue/delve-return-choice"
-             "the stair is still open."
+             "the stair is still open, and it is the only thing here that is."
              (dialog-option "go back down" "rogue/delve-entry")
-             (dialog-option "return to the landing" "rogue/landing-return"))
+             (dialog-option "climb to the landing" "rogue/landing"))
 
 (dialog-text "rogue/far-hall"
-             "the far hall narrows. along it, something keeps pace with you one wall away, matching your steps so well that stopping feels like an agreement."
-             :next "rogue/far-door"
-
-)
+             "the far hall narrows. along it, something keeps pace with you one wall away, matching your steps so well that stopping feels like an agreement. it ends where the floor does, at the head of a stair going down."
+             :next "rogue/delve-entry")
 
 (dialog-pick "rogue/far-door"
              "the hall ends at a barred door. the bar is on your side."
