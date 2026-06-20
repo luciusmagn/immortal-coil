@@ -36,11 +36,22 @@
 
 (dialog-text "mutiny/physical"
              "Dane's hands are warm and the instruments are cold. the questions are a little wrong. how long have you felt the crossings repeat, captain. not whether they do."
-             :next "mutiny/physical-2")
+             :next "mutiny/physical-answer")
 
-(dialog-text "mutiny/physical-2"
-             "you answer the questions she asked and not the ones she meant. Dane writes the same amount either way."
-             :next "mutiny/bridge-day")
+(dialog-choice-path "mutiny/physical-answer"
+                    "the stethoscope is cold and she is not really asking about your heart."
+                    ("answer the question she meant"
+                     :id "honest"
+                     "you tell her how long. the pencil does not speed up or slow down. the steadiness is its own kind of mercy."
+                     :next "mutiny/bridge-day")
+                    ("answer only the question she asked"
+                     :id "evade"
+                     "you answer the questions she asked and not the ones she meant. Dane writes the same amount either way."
+                     :next "mutiny/bridge-day")
+                    ("ask what she has heard from Voss"
+                     :id "voss"
+                     "the crew talks, she says, and talk is not in her instruments, so she leaves it out. she writes your pulse instead. it has changed."
+                     :next "mutiny/bridge-day"))
 
 (dialog-text "mutiny/bridge-day"
              "on the bridge the watch runs with its usual quiet. the helm is always crewed now, even in dock trim. the jump seat has been swung out and locked open, facing the boards. it is comfortable. it is yours."

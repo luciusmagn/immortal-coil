@@ -140,7 +140,22 @@
                                    "you wrote the decree, Vey.")
                      (dialog-left "Vey"
                                   "i drafted many documents. drafting is a clerk's act. signing is a sovereign's. the commission has the signature. i am only here to confirm the office was orderly, and it was. it was the most orderly office i ever served.")
+                     :next "tribunal/vey-press")
+
+(dialog-choice-path "tribunal/vey-press"
+                    "Vey waits with his hands folded, a man who has never once been late with a document."
+                    ("the words were yours. the words were the crime."
+                     :id "words"
+                     "words are proposals, he says. a proposal harms no one until a sovereign adopts it. i proposed orderliness. the adoption was above my desk."
                      :next "tribunal/vey-after")
+                    ("name one man under you who refused."
+                     :id "refused"
+                     "i cannot, he says, and that is to my credit. a refused order is a failure of administration. my office had none, and the commission has noted that it had none."
+                     :next "tribunal/vey-after")
+                    ("how do you sleep, Vey."
+                     :id "sleep"
+                     "soundly, he says, and resents the question. a man who only kept records can always show that he only kept records. he wishes you good health."
+                     :next "tribunal/vey-after"))
 
 (dialog-text "tribunal/vey-after"
              "Vey is being heard by a smaller commission in a smaller room, where his memory is excellent and his file is thin."
@@ -197,7 +212,24 @@
                                    "which are you today?")
                      (dialog-left "Sorel"
                                   "today i am the person who taught the commission to read the numbers. somebody had to. it went faster than teaching you, chancellor. they wanted to learn.")
-                     :next "tribunal/audit-ask")
+                     :next "tribunal/sorel-questions")
+
+(dialog-interrogation "tribunal/sorel-questions"
+                      "the recess has its own quiet. Sorel folds his hands on the rail and waits, the way he always could."
+                      (:next "tribunal/audit-ask")
+                      (:continue-label "let the recess end")
+                      ("ask about the two sets of books"
+                       :id "books"
+                       :speaker "Sorel"
+                       "the ink set balances. it was built to. the pencil set does not, and was not. the commission wants the balanced one to be the lie. it is not. it is incomplete on purpose.")
+                      ("ask what he told the prosecution"
+                       :id "told"
+                       :speaker "Sorel"
+                       "the arithmetic. only the arithmetic. the prosecution does not need my conscience, and would not know which drawer to file it in.")
+                      ("ask whether the commission wants the truth"
+                       :id "truth"
+                       :speaker "Sorel"
+                       "it wants a number it can sentence. truth is harder to imprison. they are trying, chancellor, and they are quicker students than we ever were."))
 
 (dialog-text "tribunal/audit-ask"
              "after the recess the prosecutor places the kilometer nine manifests on the witness table, loading figures and arrival figures, and asks whether the witness, given his celebrated thoroughness, would be good enough to reconcile them for the commission."

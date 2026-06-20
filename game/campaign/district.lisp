@@ -295,7 +295,24 @@
                                    "nothing i signed. Sorel, the lists in pencil. one hand, all of them, the whole district.")
                      (dialog-left "Sorel"
                                   "yes. mine. somebody must keep the district's books agreeing, chancellor, or when this is over, nobody will be findable again. i go thursdays, with the bread van. you are not the only one who reads columns until they are streets.")
-                     :next "district/decision")
+                     :next "district/sorel-questions")
+
+(dialog-interrogation "district/sorel-questions"
+                      "Sorel sets the pencil down. there are twenty minutes before the bell, and she does not spend them hurrying."
+                      (:next "district/decision")
+                      (:continue-label "turn to the desk")
+                      ("ask what the pencil lists are for"
+                       :id "lists"
+                       :speaker "Sorel"
+                       "names against destinations. nothing the government would print, because the government is the destination. when this ends, a list is how a mother finds a son.")
+                      ("ask how long she has kept them"
+                       :id "long"
+                       :speaker "Sorel"
+                       "since the second siding opened. i told myself it was only bookkeeping. it is, chancellor. it is bookkeeping that means to be read in a kinder year.")
+                      ("ask who else knows"
+                       :id "knows"
+                       :speaker "Sorel"
+                       "the van driver knows the route and not the reason. you know both now. that is two more than is safe and one fewer than i can carry alone."))
 
 (dialog-pick "district/decision"
              "the eight o'clock bell is twenty minutes away. the carbon of the gate log lies on the desk between you."

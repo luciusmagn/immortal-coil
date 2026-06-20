@@ -316,7 +316,24 @@
 
 (dialog-text "forest/truck-cab"
              "the cab smells of dog and diesel. the driver watches the mirrors more than the road. at the county sign he lets out a breath he has been holding since the mailboxes."
-             :next "forest/truck-drop")
+             :next "forest/truck-driver-questions")
+
+(dialog-interrogation "forest/truck-driver-questions"
+                      "the cab is warm and the driver keeps to his mirrors. the county sign is still a few miles of bad road off."
+                      (:next "forest/truck-drop")
+                      (:continue-label "ride the rest in quiet")
+                      ("ask about the place up the hill"
+                       :id "hill"
+                       :speaker "the driver"
+                       "i don't go up it. i drive the road at the bottom of it. that is a different job and i mean to keep it different.")
+                      ("ask why folk don't ask about it"
+                       :id "asking"
+                       :speaker "the driver"
+                       "asking is how you end up part of a thing. i have a dog and a route. i would like to keep both.")
+                      ("ask what he gets for the drive"
+                       :id "pay"
+                       :speaker "the driver"
+                       "nothing i would put on a form. somebody leaves diesel money in a mailbox when one of you comes down. i don't ask which box."))
 
 (dialog-text "forest/truck-drop"
              "he drops you at a crossroads store with a phone, says nothing you can thank him for, and is gone. through the store window the clerk is already looking at you. it is a look she has used before."
@@ -329,7 +346,24 @@
                                    "you all?")
                      (dialog-left "the clerk"
                                   "hill folk. you come down maybe one a winter. drink your coffee. the phone will still be there.")
-                     :next "forest/phone")
+                     :next "forest/clerk-questions")
+
+(dialog-interrogation "forest/clerk-questions"
+                      "the coffee is hot and bad. the clerk leans on the register and lets you take the time you need to take."
+                      (:next "forest/phone")
+                      (:continue-label "reach for the phone")
+                      ("ask about the other hill folk"
+                       :id "hill-folk"
+                       :speaker "the clerk"
+                       "they come down thin and go back up fed, or they don't go back. i stopped telling which by looking. i was wrong too often to keep enjoying it.")
+                      ("ask why she keeps the pot on"
+                       :id "pot"
+                       :speaker "the clerk"
+                       "my sister went up the hill once. the coffee is for her, every winter. you are only who happens to drink it.")
+                      ("ask what the call will cost"
+                       :id "cost"
+                       :speaker "the clerk"
+                       "local is free, i said. the cost is that you will know who answers. nobody has ever put a coin in for that part."))
 
 (dialog-pick "forest/phone"
              "the receiver is heavy and smells of other people's hands."

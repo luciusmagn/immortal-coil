@@ -149,7 +149,24 @@
                                    "for defeating Vane?")
                      (dialog-left "Mira"
                                   "for leaving before breakfast.")
-                     :next "jrpg/gate")
+                     :next "jrpg/mira-questions")
+
+(dialog-interrogation "jrpg/mira-questions"
+                      "Mira keeps the ledger open and the kettle near. there is time before the gate, if you want it."
+                      (:next "jrpg/gate")
+                      (:continue-label "head for the gate")
+                      ("ask about the heroes who stayed here"
+                       :id "heroes"
+                       :speaker "Mira"
+                       "they all order the same breakfast and leave before it comes. surprise me and eat it. nobody has, in a long run of mornings.")
+                      ("ask what the tower is really like"
+                       :id "tower"
+                       :speaker "Mira"
+                       "a desk, a lamp, and Vane answering letters. he writes back. that unsettles people more than a monster would.")
+                      ("ask why it is all on credit"
+                       :id "credit"
+                       :speaker "Mira"
+                       "heroes are bad for coin and good for stories, and a story keeps until spring. eat the bread you did not pay for."))
 
 (dialog-on-enter "jrpg/errand-toma"
                  '(setf (jrpg-value "jrpg-village-errand") "toma"))
