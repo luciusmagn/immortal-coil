@@ -1,13 +1,14 @@
 (in-package #:immortal-coil)
 
 ;;; The story tree: a pannable overlay (T) that visualizes the sprawling
-;;; shape of the graph. It grows from the start node as you play. Nodes
-;;; you have actually entered are bright beads; the immediate static
-;;; branches just ahead of them are dim. Targets that are computed at
-;;; runtime (function next-targets) are not shown until you take one and
-;;; the real node is recorded, so dynamic subtrees only appear once you
-;;; reach them. Beads are joined by dotted threads, and the tree grows
-;;; upward from a single root.
+;;; shape of the graph. It shows ONLY the nodes you have actually
+;;; entered, joined by dotted threads and growing upward from the root.
+;;; Nothing ahead of the player is revealed, not even a straight line, so
+;;; the branches are the alternatives you really explored across a looping
+;;; playthrough. A node whose continuation is dynamic or ambiguous (a
+;;; choice, a minigame, a runtime-computed target, with a branch not
+;;; taken) sprouts a dim "?" child so it does not read as an ending. The
+;;; whole tree shrinks toward a floor as it gathers more nodes.
 
 (defvar *tree-open-p* nil)
 (defvar *tree-pan-x* 0.0)
@@ -19,23 +20,25 @@
 (defconstant +tree-base-x+ 140.0)
 (defconstant +tree-base-y+ 632.0)
 (defconstant +tree-pan-step+ 13.0)
-(defconstant +tree-lookahead+ 8)
-(defconstant +tree-max-nodes+ 1400)
+(defconstant +tree-max-nodes+ 2000)
+(defconstant +tree-scale-ref+ 45)
+(defconstant +tree-min-scale+ 0.4)
 (defconstant +tree-bead-visited-radius+ 5.0)
-(defconstant +tree-bead-frontier-radius+ 3.5)
 (defconstant +tree-bead-current-radius+ 7.0)
 
 
 ;;; Model
 
 (defstruct tree-model
-  (root     nil)
-  (ids      nil :type list)
-  (children (make-hash-table :test #'equal))
-  (parent   (make-hash-table :test #'equal))
-  (depth    (make-hash-table :test #'equal))
-  (x        (make-hash-table :test #'equal))
-  (visited  (make-hash-table :test #'equal)))
+  (root      nil)
+  (scale     1.0)
+  (ids       nil :type list)
+  (children  (make-hash-table :test #'equal))
+  (parent    (make-hash-table :test #'equal))
+  (depth     (make-hash-table :test #'equal))
+  (x         (make-hash-table :test #'equal))
+  (visited   (make-hash-table :test #'equal))
+  (questions (make-hash-table :test #'equal)))
 
 (defun tree-node-static-children (id)
   "The static (string) outgoing targets of node ID that exist as nodes.
@@ -79,36 +82,34 @@ of every visited node."
                      (setf (gethash child depth) (1+ (gethash id depth)))
                      (setf queue (nconc queue (list child))))))))))
 
-(defun tree-grow-frontier (model)
-  "Expand static (string) descendants of visited nodes, breadth-first,
-out to a look-ahead horizon past the deepest node reached. This reveals
-levels down branches you took and branches you did not. Dynamic targets
-are never followed, so their subtrees stay hidden until actually
-entered, and the horizon advances as you reach deeper nodes."
-  (let* ((placed (tree-model-visited model))
-         (parent (tree-model-parent model))
-         (depth (tree-model-depth model))
-         (children (tree-model-children model))
-         (seen (make-hash-table :test #'equal))
-         (count (hash-table-count placed))
-         (horizon (+ (loop for id being the hash-keys of placed
-                           maximize (gethash id depth 0))
-                     +tree-lookahead+))
-         (queue (loop for id being the hash-keys of placed collect id)))
-    (loop while queue
-          for id = (pop queue)
-          for d = (gethash id depth 0)
-          when (< d horizon)
-            do (dolist (child (tree-node-static-children id))
-                 (when (and (< count +tree-max-nodes+)
-                            (not (gethash child placed))
-                            (not (gethash child seen)))
-                   (setf (gethash child seen) t
-                         (gethash child parent) id
-                         (gethash child depth) (1+ d))
-                   (push child (gethash id children))
-                   (incf count)
-                   (setf queue (nconc queue (list child))))))))
+(defun tree-node-outgoing (node)
+  (append (list (node-next node)
+                (node-target node)
+                (node-success-target node)
+                (node-failure-target node))
+          (node-minigame-outcomes node)
+          (map 'list #'choice-target (node-choices node))))
+
+(defun tree-node-ambiguous-p (id child-ids)
+  "True if ID's story continues in a way the visited tree does not show:
+a runtime-computed (function) target, or a choice/minigame branch that
+was not taken. A deterministic straight line does not count, so an
+ordinary node at the tip of the path stays a plain leaf."
+  (let ((node (gethash id *nodes*)))
+    (when node
+      (let ((targets (remove nil (tree-node-outgoing node))))
+        (or (some (lambda (target) (not (stringp target))) targets)
+            (and (or (typep node 'choice-node)
+                     (typep node 'minigame-node))
+                 (some (lambda (target)
+                         (and (stringp target)
+                              (not (member target child-ids :test #'equal))))
+                       targets)))))))
+
+(defun tree-scale (count)
+  "Shrink the tree toward a floor as it gathers more nodes."
+  (max +tree-min-scale+
+       (min 1.0 (sqrt (/ +tree-scale-ref+ (float (max +tree-scale-ref+ count)))))))
 
 (defun tree-layout-x (model id counter)
   "Assign each node an x-slot (leaves take sequential slots, parents
@@ -144,22 +145,42 @@ centre over their children) and collect ids. Depth is precomputed."
               (caar pairs)
               *story-start-node*))
     (tree-compute-depths model)
-    (tree-grow-frontier model)
+    ;; mark nodes whose continuation is dynamic or ambiguous, so a leaf
+    ;; there does not look like the story ended
+    (let ((questions (tree-model-questions model))
+          (depth (tree-model-depth model))
+          (count (hash-table-count placed)))
+      (loop for id being the hash-keys of placed
+            when (and (< count +tree-max-nodes+)
+                      (tree-node-ambiguous-p id (gethash id children)))
+              do (let ((q (format nil "?~a" id)))
+                   (setf (gethash q questions) t
+                         (gethash q parent) id
+                         (gethash q depth) (1+ (gethash id depth 0)))
+                   (push q (gethash id children))
+                   (incf count))))
     (maphash (lambda (id kids) (setf (gethash id children) (reverse kids)))
              children)
     (let ((root (tree-model-root model)))
       (when root
         (tree-layout-x model root (list 0.0))))
+    (setf (tree-model-scale model) (tree-scale (length (tree-model-ids model))))
     model))
 
 
 ;;; Geometry
 
 (defun tree-node-x (model id)
-  (+ +tree-base-x+ (* (gethash id (tree-model-x model) 0.0) +tree-x-gap+)))
+  (+ +tree-base-x+
+     (* (gethash id (tree-model-x model) 0.0)
+        +tree-x-gap+
+        (tree-model-scale model))))
 
 (defun tree-node-y (model id)
-  (- +tree-base-y+ (* (gethash id (tree-model-depth model) 0) +tree-y-gap+)))
+  (- +tree-base-y+
+     (* (gethash id (tree-model-depth model) 0)
+        +tree-y-gap+
+        (tree-model-scale model))))
 
 (defun tree-on-screen-p (x y)
   (and (<= -60.0 x (+ +virtual-width+ 60.0))
@@ -247,24 +268,30 @@ centre over their children) and collect ids. Depth is precomputed."
                                   60))))))))
 
 (defun tree-draw-beads (model)
-  (let ((current (and *state* (play-state-current-id *state*))))
+  (let ((current (and *state* (play-state-current-id *state*)))
+        (scale (tree-model-scale model)))
     (dolist (id (tree-model-ids model))
       (let ((sx (+ (tree-node-x model id) *tree-pan-x*))
             (sy (+ (tree-node-y model id) *tree-pan-y*)))
         (when (tree-on-screen-p sx sy)
-          (let* ((visited-p (gethash id (tree-model-visited model)))
-                 (current-p (equal id current))
-                 (radius (cond (current-p +tree-bead-current-radius+)
-                               (visited-p +tree-bead-visited-radius+)
-                               (t +tree-bead-frontier-radius+)))
-                 (alpha (if visited-p 255 70)))
-            (claylib/ll:draw-circle (round sx) (round sy) radius
-                                    (claylib::c-ptr
-                                     (make-color 255 255 255 alpha)))
-            (when current-p
-              (claylib/ll:draw-circle-lines (round sx) (round sy) 11.0
-                                            (claylib::c-ptr
-                                             (make-color 255 255 255 235))))))))))
+          (if (gethash id (tree-model-questions model))
+              (draw-centered-text "?" sx sy
+                                  (max 9 (round (* 17 scale)))
+                                  (make-color 255 255 255 95))
+              (let* ((current-p (equal id current))
+                     (radius (max 2.0
+                                  (* (if current-p
+                                         +tree-bead-current-radius+
+                                         +tree-bead-visited-radius+)
+                                     scale))))
+                (claylib/ll:draw-circle (round sx) (round sy) radius
+                                        (claylib::c-ptr
+                                         (make-color 255 255 255 255)))
+                (when current-p
+                  (claylib/ll:draw-circle-lines (round sx) (round sy)
+                                                (max 5.0 (* 11.0 scale))
+                                                (claylib::c-ptr
+                                                 (make-color 255 255 255 235)))))))))))
 
 (defun draw-tree-overlay ()
   (when *tree-open-p*
@@ -278,7 +305,7 @@ centre over their children) and collect ids. Depth is precomputed."
                           34.0
                           22
                           (make-color 255 255 255 235))
-      (draw-text-at "T/ESC CLOSE    WASD/ARROWS PAN    BRIGHT: TAKEN    DIM: AHEAD"
+      (draw-text-at "T/ESC CLOSE    WASD/ARROWS PAN    ? = A BRANCH YOU HAVE NOT TAKEN"
                     40.0
                     (- +virtual-height+ 34.0)
                     14
