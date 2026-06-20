@@ -259,7 +259,7 @@
                  "w/a/s/d or arrow keys steer. hold the ship in the open gates."
                  :game :wire-flight
                  :success "ship/threaded"
-                 :failure "ship/nap-reset")
+                 :failure "ship/loop-reset")
 
 (dialog-text "ship/threaded"
              "you thread the line. for one second, the ship is quiet."
@@ -358,7 +358,7 @@
                  "w/a/s/d or arrow keys steer. hold the ship in the open gates."
                  :game :wire-flight
                  :success "ship/aftermath"
-                 :failure "ship/nap-reset")
+                 :failure "ship/loop-reset")
 
 (dialog-text "ship/aftermath"
              "the crossing holds. the board goes green deck by deck. two decks stay dark. on the bridge nobody says anything."
@@ -582,22 +582,24 @@
              "you turn in at the bunk with the stenciled name. the stencil is worn now. it has been repainted at least once. the letters are traced over themselves, a little off true."
              :next "base/awake")
 
-;;; Flight failure does not read as a crash. The day quietly resets: you
-;;; wake in the chair, hours before the crossing, as if from a nap. The
-;;; ship-failures count climbs unseen and surfaces later as the galley
-;;; remembering what you would rather it did not.
-(dialog-on-enter "ship/nap-reset"
+;;; A catastrophic crossing does not kill you and does not loop on the
+;;; bridge. The captain's day resets. You wake in the bunk in a cold
+;;; sweat, and the failure reads at first like a dream you are shaking
+;;; off, until the day runs the same way again. It is a time loop; the
+;;; player is not told. ship-failures climbs unseen, surfacing later as
+;;; the galley remembering for you.
+(dialog-particles "ship/loop-reset" :stars :fade-seconds 4.0)
+
+(dialog-on-enter "ship/loop-reset"
                  '(setf (dialog-value "ship-failures")
                         (1+ (dialog-value "ship-failures" 0))))
 
-(dialog-particles "ship/nap-reset" :stars :fade-seconds 4.0)
+(dialog-text "ship/loop-reset"
+             "you wake in the bunk in a cold sweat, the blanket twisted, your heart going hard. for a moment the crossing and the gates have the thinness of a dream you are already losing."
+             :next "ship/loop-reset-2")
 
-(dialog-text "ship/nap-reset"
-             "your eyes are closed, and then they are open. the glass is cold in your hand. you are in the chair on the bridge, and you have been asleep."
-             :next "ship/nap-reset-wake")
-
-(dialog-text "ship/nap-reset-wake"
-             "the boards are green. the crossing is still hours off. a nap before a long watch, nothing the manual would mark against you. you sit up and shake it off."
+(dialog-text "ship/loop-reset-2"
+             "your name is stenciled at the foot of the bunk. the boards are quiet and green. it is hours yet before the crossing. you tell yourself it was a dream, and you almost hear it."
              :next "ship/alarm")
 
 
