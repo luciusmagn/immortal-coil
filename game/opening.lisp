@@ -233,14 +233,14 @@
 ;;; Ship captain
 
 (dialog-text "ship/wake"
-             "the glass is cold in your hand. in its reflection, you notice restraint straps beside the bed and indicator lights under the night stand."
+             "the glass is cold in your hand. in the reflection there are straps beside the bed. there are indicator lights under the night stand. they are lit."
              :next "ship/name")
 
 (dialog-particles "ship/wake-after" :stars :fade-seconds 6.5)
 (dialog-music "ship/wake-after" "audio/ship-lyria-drone.mp3" :volume 0.26)
 
 (dialog-text "ship/wake-after"
-             "the glass is cold in your hand. you drink it standing, without looking at the reflection, the way you have learned to."
+             "the glass is cold in your hand. you drink it standing. you do not look at the reflection."
              :next "ship/alarm")
 
 (dialog-string "ship/name"
@@ -266,7 +266,7 @@
              :next "ship/bridge")
 
 (dialog-text "ship/bridge"
-             "on the bridge, Imari logs the crossing without looking up. Voss is already plotting the next lane. someone has taped your old checklist to the console."
+             "on the bridge, Imari logs the crossing without looking up. Voss is plotting the next lane. someone has taped your old checklist to the console."
              :next "ship/praise")
 
 (dialog-conversation "ship/praise"
@@ -283,7 +283,7 @@
              :next "ship/voss-question")
 
 (dialog-text "ship/galley-remembered"
-             "in the galley, Voss pours two cups. mid-pour, her sleeve is burned to the elbow and the cup is in pieces on the floor. you blink. she hands you the cup, whole, and you hold it with both hands."
+             "in the galley, Voss pours two cups. her sleeve is burned to the elbow and the cup is in pieces on the floor. you blink. the sleeve is whole. she hands you the cup and you hold it with both hands."
              :next "ship/voss-question")
 
 (dialog-pick "ship/voss-question"
@@ -311,7 +311,7 @@
                  '(setf (dialog-value "ship-voss-answer") "quiet"))
 
 (dialog-text "ship/quiet"
-             "the cup is hot, then warm, then empty. Voss takes the silence as modesty."
+             "the cup is hot, then warm, then empty. Voss takes the silence for modesty."
              :next "ship/second-alarm")
 
 (dialog-text "ship/second-alarm"
@@ -337,21 +337,21 @@
                  '(setf (dialog-value "ship-lost-name") "Harrow"))
 
 (dialog-text "ship/seal-six"
-             "you seal six. the drive trunk holds because Harrow holds it, and the last thing through the channel is Harrow reading out trunk pressure, steady, until there is no more channel."
+             "you seal six. Harrow holds the trunk. the last thing on the channel is Harrow reading the pressure, steady, and then there is no more channel."
              :next "ship/second-flight")
 
 (dialog-on-enter "ship/seal-seven"
                  '(setf (dialog-value "ship-lost-name") "Okafor"))
 
 (dialog-text "ship/seal-seven"
-             "you seal seven. Okafor does not call the bridge. the two ratings with him are named Imre and Sel, and you make yourself think both names while the board goes red."
+             "you seal seven. Okafor does not call the bridge. the two ratings with him are Imre and Sel. you say both names to yourself while the board goes red."
              :next "ship/second-flight")
 
 (dialog-on-enter "ship/hold-open"
                  '(setf (dialog-value "ship-lost-name") "Dane"))
 
 (dialog-text "ship/hold-open"
-             "you hold both bulkheads for Dane. Dane clears seven with one rating under each arm, turns back for Okafor, and the trunk goes while the doors are still open. you seal onto silence."
+             "you hold both bulkheads for Dane. Dane clears seven with a rating under each arm and turns back for Okafor. the trunk goes while the doors are open. you seal them on nothing."
              :next "ship/second-flight")
 
 (dialog-minigame "ship/second-flight"
@@ -361,11 +361,11 @@
                  :failure "ship/crash-return")
 
 (dialog-text "ship/aftermath"
-             "the crossing holds. the board goes green deck by deck, except where it stays dark, and the bridge is very loud with no one saying anything."
+             "the crossing holds. the board goes green deck by deck. two decks stay dark. on the bridge nobody says anything."
              :next "ship/aftermath-walk")
 
 (dialog-text "ship/aftermath-walk"
-             "you walk the green decks first, because the manual says presence steadies a crew, and then you stand a while outside the dark ones, because no manual has a chapter for that, and a captain writes the missing chapters with their feet."
+             "you walk the green decks first. the manual says a crew steadies when it sees the captain. then you stand outside the dark ones. the manual has nothing for that. you stand there anyway."
              :next "ship/aftermath-praise")
 
 (dialog-conversation "ship/aftermath-praise"
@@ -378,7 +378,7 @@
                      :next "ship/letters")
 
 (dialog-text "ship/letters"
-             "you write to {ship-lost-name}'s family in the format the manual provides. the manual provides three sentences. you use all three and sit a long time over the fourth that is not provided."
+             "you write to {ship-lost-name}'s family. the manual gives you three sentences. you use all three. then you sit a long time over a fourth that is not in the manual."
              :next "ship/next-watch")
 
 (dialog-scene "ship/next-watch"
@@ -391,15 +391,15 @@
       "ship/watch-bridge"))
 
 (dialog-text "ship/mess"
-             "the mess at change of watch holds the whole crew minus one, which is a kind of arithmetic a captain does without deciding to. someone has set the empty place anyway: cup, tray, fork squared. nobody talks about it and nobody clears it."
+             "the mess at the change of watch holds the whole crew but one. someone has set the empty place anyway. cup, tray, fork squared. nobody talks about it and nobody clears it."
              :next #'ship-watch-bridge-target)
 
 (dialog-text "ship/watch-bridge"
-             "the bridge runs quiet and exact. Voss recalibrates the lane tables without being asked, twice, the second time more slowly, getting the same answer and not liking it any better."
+             "the bridge runs quiet and exact. Voss runs the lane tables again without being asked. she runs them a second time, slower. the answer is the same. she does not like it."
              :next "ship/log-sign")
 
 (dialog-text "ship/watch-bridge-doctrine"
-             "the bridge runs quiet and exact. the crossing manual lies open at Voss's station, and your guess about the drift sits in it as procedure, printed, consulted twice tonight already. she catches you looking and does not look away first."
+             "the bridge runs quiet and exact. the manual is open at Voss's station. your guess about the drift is printed in it now, as procedure. she has used it twice tonight. she catches you looking at it and does not look away."
              :next "ship/log-sign")
 
 (dialog-conversation "ship/log-sign"
@@ -421,14 +421,14 @@
                  '(setf (dialog-value "ship-log") "clean"))
 
 (dialog-text "ship/sign-clean"
-             "you sign under Imari's hand. the log closes with the soft click of a thing built to outlast everyone who writes in it."
+             "you sign under Imari's hand. the log closes with a soft click."
              :next "ship/watch-voss")
 
 (dialog-on-enter "ship/sign-commend"
                  '(setf (dialog-value "ship-log") "commended"))
 
 (dialog-text "ship/sign-commend"
-             "you add the commendation, posthumous, in the space reserved for it. there is a space reserved for it. you try not to think about how the manual knew."
+             "you add the commendation in the space kept for it. there is a space kept for it. you try not to think about that."
              :next "ship/watch-voss")
 
 (dialog-on-enter "ship/sign-amend"
@@ -446,7 +446,7 @@
                      :next "ship/watch-voss")
 
 (dialog-text "ship/watch-voss"
-             "at end of watch, Voss leaves a cup at your elbow without a word. it is exactly too hot to drink, which means she timed it to outlast the paperwork."
+             "at the end of the watch Voss sets a cup at your elbow and says nothing. it is too hot to drink. she timed it that way."
              :next "husk/contact")
 
 (dialog-conversation "ship/checklist"
@@ -467,19 +467,19 @@
       (t "ship/bunk"))))
 
 (dialog-text "ship/checklist-read"
-             "before lights-down you read the taped checklist on the console, every line, the way some people read letters they know by heart. item nine is in handwriting older than the tape over it. item nine says: count everyone twice."
+             "before lights-down you read the checklist taped to the console, every line. item nine is in older handwriting than the tape over it. it says: count everyone twice."
              :next #'ship-intrusion-target)
 
 (dialog-text "ship/intrusion-harrow"
-             "on the way to the bunk you pass the drive trunk access, and for the length of one stride Harrow is at the panel, reading out pressure, steady, sleeve whole. the stride ends. the panel is dark and dogged shut, the way you ordered it left."
+             "on the way to the bunk you pass the drive trunk access. for one stride Harrow is at the panel, reading the pressure, steady, his sleeve whole. then the stride ends. the panel is dark and dogged shut. you ordered it left that way."
              :next "ship/corridor-imari")
 
 (dialog-text "ship/intrusion-okafor"
-             "on the way to the bunk you pass deck seven's hatch, and for the length of one breath there is laughter behind it, three voices, the card game Okafor always claimed to be losing. the breath ends. the hatch reads SEALED in your own initials."
+             "on the way to the bunk you pass the deck seven hatch. for one breath there is laughter behind it. three voices. the card game Okafor always said he was losing. then the breath ends. the hatch reads SEALED, in your own initials."
              :next "ship/corridor-imari")
 
 (dialog-text "ship/intrusion-dane"
-             "on the way to the bunk you pass medbay, and for one step Dane is in the doorway with the kit over one shoulder, turning back the way Dane turned back. the step ends. the kit hangs on its peg, sealed, signed."
+             "on the way to the bunk you pass medbay. for one step Dane is in the doorway with the kit on one shoulder, turning back. then the step ends. the kit hangs on its peg, sealed and signed."
              :next "ship/corridor-imari")
 
 (dialog-conversation "ship/corridor-imari"
@@ -500,11 +500,11 @@
               :next "ship/later-bridge")
 
 (dialog-text "ship/later-bridge"
-             "the bridge is dark except for the console light. your checklist is still taped beside it. item nine says count everyone twice. both counts agree: one."
+             "the bridge is dark except for the console light. your checklist is still taped beside it. item nine says count everyone twice. both counts come to one."
              :next "ship/later-galley")
 
 (dialog-text "ship/later-galley"
-             "in the galley there is one cup on the rack. the crossing manual lies open to the page with your name beside the procedure, and someone has underlined it, twice, in two different inks, the second time with a steadier hand, and both hands are yours."
+             "in the galley there is one cup on the rack. the manual is open to the page with your name on it. someone has underlined the line twice, in two inks. the second hand is steadier than the first. both hands are yours."
              :next "ship/later-roster")
 
 (dialog-text "ship/later-roster"
@@ -516,23 +516,23 @@
              :next "ship/later-log")
 
 (dialog-text "ship/later-log"
-             "the watch log is current. it is always current. you write the date, the position held, the hail logged, in entries so alike that flipping back through them is like riffling a deck of one card, and somewhere in that sameness is a date where the handwriting steadies and never wavers again."
+             "the watch log is current. it is always current. you write the date, the position, the hail. the entries are all alike. you flip back through them and they do not change. somewhere back there the handwriting steadies, and after that it does not shake again."
              :next "ship/later-walk")
 
 (dialog-text "ship/later-walk"
-             "you do the rounds because the rounds are what there is. deck two: lights answer the motion sensors one section ahead of you, the way they would for anyone."
+             "you do the rounds. the rounds are what there is. on deck two the lights come on one section ahead of you. they would do that for anyone."
              :next "ship/later-mess")
 
 (dialog-text "ship/later-mess"
-             "the mess is stowed except one place setting, squared away under a film of dust you do not disturb: cup, tray, fork. you stopped clearing it before you stopped remembering why it was set."
+             "the mess is stowed except for one place setting. cup, tray, fork, under a film of dust. you do not touch it. you stopped clearing it a long time ago. you do not remember why it is set."
              :next "ship/later-medbay")
 
 (dialog-text "ship/later-medbay"
-             "medbay is stowed and clean. Dane's kit hangs on its peg, sealed, inventory tag signed off in Dane's hand. the date on the tag is not one you can place against anything."
+             "medbay is stowed and clean. Dane's kit hangs on its peg, sealed. the inventory tag is signed in Dane's hand. you cannot place the date on it against anything."
              :next "ship/later-quarters")
 
 (dialog-text "ship/later-quarters"
-             "the crew quarters are made up like the morning of an inspection. in Imari's there is a logbook of personal entries, and you stand in the doorway and do not read it, and are proud of that for the rest of the watch."
+             "the crew quarters are made up like the morning of an inspection. there is a logbook of Imari's own entries. you stand in the doorway and do not read it. you are proud of that for the rest of the watch."
              :next "ship/later-comms")
 
 (dialog-text "ship/later-comms"
@@ -540,11 +540,11 @@
              :next "ship/later-hail")
 
 (dialog-text "ship/later-hail"
-             "once per watch, the board hails the lane and listens. tonight, like every night you can remember, the lane answers with carrier tone: a clean, patient signal with nobody on it."
+             "once a watch the board hails the lane and listens. tonight the lane answers the way it always answers. carrier tone, clean and steady, with nobody on it."
              :next "ship/later-beacon")
 
 (dialog-text "ship/later-beacon"
-             "under the carrier, on the old port band, the beacon repeats its one recorded sentence: HOLD POSITION. RETRIEVAL FOLLOWS. the recording gives its own date each cycle, and the date does not bear thinking about."
+             "under the carrier, on the old port band, the beacon repeats one recorded sentence: HOLD POSITION. RETRIEVAL FOLLOWS. it gives its own date each time. you try not to think about the date."
              :next "ship/later-answer")
 
 (dialog-pick "ship/later-answer"
@@ -557,25 +557,25 @@
                  '(setf (dialog-value "ship-future-answer") "voice"))
 
 (dialog-text "ship/later-voice"
-             "you key the channel and say the ship's name, and yours, and that you are holding as instructed. your voice comes back off the lane a half second late, in your own voice, the way a call comes back from a hall. you log the hail as answered. you do not write by whom."
+             "you key the channel. you say the ship's name and your own and that you are holding as ordered. your voice comes back off the lane half a second late. you log the hail as answered. you do not write down by whom."
              :next "ship/later-bunk")
 
 (dialog-on-enter "ship/later-hold"
                  '(setf (dialog-value "ship-future-answer") "held"))
 
 (dialog-text "ship/later-hold"
-             "you hold position. the ship is good at holding position. it is the one order left that you can carry out perfectly, every watch, with no one to lose."
+             "you hold position. the ship is good at holding position. it is the one order left you can carry out clean, every watch, with no one to lose."
              :next "ship/later-bunk")
 
 (dialog-on-enter "ship/later-dark"
                  '(setf (dialog-value "ship-future-answer") "dark"))
 
 (dialog-text "ship/later-dark"
-             "you switch the board off. the silence afterward has a shape, and the shape is the mess hall with one place set: something kept ready for a return nobody schedules. you switch it back on before the next sweep. item nine. count everyone twice."
+             "you switch the board off. the quiet that comes is the quiet of the mess hall with one place set. you switch the board back on before the next sweep. item nine. count everyone twice."
              :next "ship/later-bunk")
 
 (dialog-text "ship/later-bunk"
-             "you turn in at the bunk with the stenciled name. the stencil is worn now, repainted at least once, the letters traced over themselves a little off true."
+             "you turn in at the bunk with the stenciled name. the stencil is worn now. it has been repainted at least once. the letters are traced over themselves, a little off true."
              :next "base/awake")
 
 (dialog-on-enter "ship/crash-return"
@@ -585,11 +585,11 @@
 (dialog-particles "ship/crash-return" :warp :immediate t)
 
 (dialog-text "ship/crash-return"
-             "white lines fill your eyes, all of them running away from a black point you cannot look away from."
+             "white lines fill your eyes. they all run from one black point. you cannot look away from it."
              :next "ship/crash-return-hands")
 
 (dialog-text "ship/crash-return-hands"
-             "your hands are still on the controls. the gloves have creased white at the knuckles. you cannot feel the pressure yet, only see where it should hurt."
+             "your hands are still on the controls. the gloves are creased white at the knuckles. you cannot feel the grip yet. you can see where it should hurt."
              :next "ship/crash-return-alarm")
 
 (dialog-text "ship/crash-return-alarm"
