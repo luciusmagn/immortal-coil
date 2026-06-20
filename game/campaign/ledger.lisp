@@ -4,7 +4,7 @@
 ;;; Entered from the asked-about-the-swords answer; rejoins at supper.
 
 (dialog-text "ledger/breakfast"
-             "breakfast is included, and it is good, and you eat all of it, because Mira watches your plate the way Oren watches the road, and nothing else happens until the plate is clean."
+             "breakfast is included and it is good. you eat all of it. Mira watches your plate the way Oren watches the road. nothing else happens until the plate is clean."
              :next "ledger/table-cleared")
 
 (dialog-text "ledger/table-cleared"
@@ -103,7 +103,7 @@
              :next "ledger/payouts-3")
 
 (dialog-text "ledger/payouts-3"
-             "you put your finger on the arithmetic and follow it around its one closed circle: the tower makes the left-behind, the left-behind cost the village, the village posts the notice, the notice feeds the tower. the circle has no door in it anywhere."
+             "you put your finger on the arithmetic and follow it around its one closed circle. the tower makes the left-behind. the left-behind cost the village. the village posts the notice. the notice feeds the tower. the circle has no door in it anywhere."
              :next "ledger/back-room")
 
 (dialog-text "ledger/back-room"
@@ -194,7 +194,7 @@
              :next "ledger/traveler-name")
 
 (dialog-text "ledger/traveler-name"
-             "Mira takes their name for the register, and you watch her hand, and you understand that the register and the other ledger are fed by the same pen, and that entry sixty-eight has just been opened while you stood holding your tea."
+             "Mira takes their name for the register. you watch her hand. the register and the other ledger are fed by the same pen. entry sixty-eight has just been opened, while you stood there holding your tea."
              :next "ledger/smith")
 
 (dialog-text "ledger/smith"
@@ -218,7 +218,7 @@
              :next "ledger/gate-dusk")
 
 (dialog-text "ledger/square-still"
-             "and it is still Oakbarrow. the bread still steams. Oren still polishes the spear nobody throws. both things are true at once, and the book's whole weight is that it never asks you to pick."
+             "and it is still Oakbarrow. the bread still steams. Oren still polishes the spear nobody throws. both things are true. the book's whole weight is that it never makes you choose between them."
              :next "ledger/oven-watch")
 
 (dialog-text "ledger/gate-dusk"
@@ -274,7 +274,7 @@
              :next "ledger/book-back")
 
 (dialog-text "ledger/book-back"
-             "before supper, the book goes back up: wrapped, tied, squared on the shelf above the till with both of Mira's hands, the way a thing is put away that is never being put away."
+             "before supper the book goes back up. wrapped, tied, squared on the shelf above the till with both of Mira's hands. she puts it away the way you put away a thing you will take down again tomorrow."
              :next "ledger/rejoin")
 
 (dialog-text "ledger/rejoin"
