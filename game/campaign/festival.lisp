@@ -220,7 +220,24 @@
 
 (dialog-text "festival/fortune-inside"
              "inside, it is Mira with a teapot and a deck of trade cards too worn to trade. she deals three face down, the way she rules a ledger line, and turns one."
-             :next #'festival-fortune-target)
+             :next "festival/fortune-questions")
+
+(dialog-interrogation "festival/fortune-questions"
+                      "two cards lie face down and one face up. Mira pours, and waits to see what you ask before she reads."
+                      (:next #'festival-fortune-target)
+                      (:continue-label "read what the card says")
+                      ("ask what the other two cards say"
+                       :id "others"
+                       :speaker "Mira"
+                       "the same as the turned one, in case you did not believe it. a deck this worn has a few opinions left, and it repeats them kindly.")
+                      ("ask whether the cards are real"
+                       :id "real"
+                       :speaker "Mira"
+                       "as real as a ledger line, which is only as real as what you do after reading it. drink your tea. the tea is certainly real.")
+                      ("ask whether you should go or stay"
+                       :id "go"
+                       :speaker "Mira"
+                       "the card will say go. cards always do; staying makes a dull card. i will say the inn keeps your room either way."))
 
 (dialog-text "festival/fortune-road"
              "the card is the road. you will go far, says Mira, and come back hungry. that is not fortune-telling, that is innkeeping, but the tea is good and the card looks like the north road in the right light."

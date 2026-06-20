@@ -81,7 +81,24 @@
                                    "how many took them?")
                      (dialog-left "the clerk"
                                   "all of them took one. that's not the question you asked, and i noticed, and you noticed. sister's has a spare room. the last bus runs thursday noon. or somebody keeps my pipes from freezing, and i'd sooner it was somebody the hill already nods at.")
-                     :next "winter/thursday")
+                     :next "winter/clerk-questions")
+
+(dialog-interrogation "winter/clerk-questions"
+                      "the clerk refills both cups without asking and lets the offer sit on the counter between you."
+                      (:next "winter/thursday")
+                      (:continue-label "let thursday come")
+                      ("ask where the ones who left ended up"
+                       :id "left"
+                       :speaker "the clerk"
+                       "the bus ones write the first winter and not the second. the sister ones i hear about at funerals, fondly. i don't grade the choices. i just keep the list.")
+                      ("ask who else she has made this offer to"
+                       :id "offer"
+                       :speaker "the clerk"
+                       "everyone the hill nodded at, and you'd be surprised who that is. some stayed a season, some a life. the pipes have never once cared which.")
+                      ("ask what staying is really for"
+                       :id "staying"
+                       :speaker "the clerk"
+                       "for the pipes, officially. for not being the only one who knows the store's quiet at four in the morning, honestly. i'm old, and the quiet got loud."))
 
 (dialog-pick "winter/thursday"
              "thursday comes with the sky lowered to the treetops."

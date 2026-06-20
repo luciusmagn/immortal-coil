@@ -36,7 +36,22 @@
                                    "you were the one on the trail. with the lantern.")
                      (dialog-left "the keeper"
                                   "somebody has to walk the trail when one of ours is out in the dark. eat. you can hate me warm as easy as cold.")
+                     :next "house/keeper-first-word")
+
+(dialog-choice-path "house/keeper-first-word"
+                    "the spoon is in your hand and the keeper waits, in no hurry, for whatever you mean to say first."
+                    ("i'm not staying."
+                     :id "leaving"
+                     "nobody says that warm, the keeper says. say it again in spring, with the door open all winter and you still at this table. i'll believe whichever one you say then."
                      :next "house/soup")
+                    ("you've done this before."
+                     :id "before"
+                     "more times than there are chairs, the keeper says, and fewer than there are plates. eat. the counting is mine to do, and it keeps me up enough already."
+                     :next "house/soup")
+                    ("thank you."
+                     :id "thanks"
+                     "don't thank me, the keeper says. thank the soup. i only carried it down the trail, and carrying is the part nobody should ever be thanked for."
+                     :next "house/soup"))
 
 (dialog-text "house/soup"
              "the soup is barley and carrot and exactly right, which you resent with your whole heart and eat anyway, because the body votes first."
@@ -174,7 +189,24 @@
                                    "how long?")
                      (dialog-left "the keeper"
                                   "long enough that the county stopped writing. long enough that the letters in the boxes went quiet. you are not kept here, understand. the door stands open. that is the whole of it. the door stands open and look how that has gone.")
-                     :next "house/washing")
+                     :next "house/keeper-questions")
+
+(dialog-interrogation "house/keeper-questions"
+                      "the keeper lets the kettle tick and waits, the way someone waits who has answered all of this before and minded none of it."
+                      (:next "house/washing")
+                      (:continue-label "take up the dish-cloth")
+                      ("ask about the names on the mailboxes"
+                       :id "boxes"
+                       :speaker "the keeper"
+                       "every one came off the hill and stayed. the boxes outlived the letters. i keep them painted. it is a small honest job and i am short of those.")
+                      ("ask what the letters said, before they stopped"
+                       :id "letters"
+                       :speaker "the keeper"
+                       "come home. they all said come home, in the hands of people who meant it. then the county went quiet and the meaning stayed in the boxes with nowhere to go.")
+                      ("ask how many have left and not come back"
+                       :id "left"
+                       :speaker "the keeper"
+                       "two. i think of them the way you think of a window left open in a house you loved. glad for the air. worried about the rain."))
 
 (dialog-text "house/washing"
              "after supper you dry while the keeper washes, because the cloth was put in your hand. the two of you stand at the basin in the lamplight, passing plates, like any kitchen anywhere."
