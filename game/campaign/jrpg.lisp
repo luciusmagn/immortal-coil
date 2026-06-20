@@ -662,7 +662,7 @@
       (t "jrpg/terms-asked"))))
 
 (dialog-text "jrpg/oven-warm"
-             "Toma's oven is still warm, and breakfast, one day late, is included. nobody asks about the tower at the table, which is how you know everyone wants to."
+             "Toma's oven is still warm. breakfast, one day late, is included. nobody asks about the tower at the table. that is how you know everyone wants to."
              :next #'jrpg-terms-target)
 
 (dialog-conversation "jrpg/terms-duel"
@@ -715,7 +715,7 @@
              (dialog-option "take the road at first light" "jrpg/room-four"))
 
 (dialog-text "jrpg/stair-night"
-             "on the landing, the inn holds its evening sounds the way a pot holds heat: the ledger closing, the stove settling, Oren's chain going up for the night with its own small ceremony."
+             "on the landing the inn holds its evening sounds the way a pot holds heat. the ledger closing. the stove settling. Oren's chain going up for the night, with its own small ceremony."
              :next "jrpg/room-four")
 
 (defun jrpg-room-four-target ()
