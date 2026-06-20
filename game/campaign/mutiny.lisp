@@ -60,7 +60,7 @@
              :next "mutiny/file-2")
 
 (dialog-text "mutiny/file-2"
-             "the record you thought was protecting you. Imari kept it well, out of love, in her way. now it reads as the chart of a man who cannot be what it says he is. so he must be something else."
+             "you thought the record was protecting you. Imari kept it well, out of love, in her way. now it reads as the chart of a man who cannot be what it says he is. so he must be something else."
              :next "mutiny/meeting-call")
 
 (dialog-text "mutiny/meeting-call"
