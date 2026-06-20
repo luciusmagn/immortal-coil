@@ -10,11 +10,11 @@
              :next "winter/doors-2")
 
 (dialog-text "winter/doors-2"
-             "the driver looks at you in the long mirror, not unkindly, for the length of a breath you recognize, and then the doors fold shut and the bus pulls out, and the sound of it goes down the valley and is gone, and the morning is very large."
+             "the driver looks at you in the long mirror, not unkindly, for the length of a breath you recognize. then the doors fold shut and the bus pulls out. the sound of it goes down the valley and is gone. the morning is very large."
              :next "winter/bench-after")
 
 (dialog-text "winter/bench-after"
-             "you sit on the bench in the porch light until the porch light clicks off, which it does on its own at full day, and the difference between missing a bus and letting a bus go is nothing anyone can see from outside, and you sit inside the difference and keep it."
+             "you sit on the bench in the porch light until the light clicks off on its own at full day. the difference between missing a bus and letting one go is nothing anyone can see from outside. you sit inside the difference and keep it."
              :next "winter/clerk-morning")
 
 (dialog-conversation "winter/clerk-morning"
@@ -31,7 +31,7 @@
              :next "winter/stacking-2")
 
 (dialog-text "winter/stacking-2"
-             "the work is plain and your hands like it, and you stop twice, both times for the same thought, which is that your hands have been liking work all over this county and you have stopped asking them why."
+             "the work is plain and your hands like it. you stop twice, both times for the same thought. your hands have liked work all over this county now. you have stopped asking them why."
              :next "winter/weeks")
 
 (dialog-scene "winter/weeks"
@@ -281,7 +281,7 @@
              :next "winter/melt-2")
 
 (dialog-text "winter/melt-2"
-             "the plates stop with the snow, exactly with the snow, the way a service ends when the need it answered ends, and you stand in the yard one morning and the stump is just a stump, and you miss it, and you make yourself stand there until you have admitted that."
+             "the plates stop with the snow, exactly with the snow, the way a thing ends when it is no longer needed. one morning you stand in the yard and the stump is just a stump. you miss it. you make yourself stand there until you have admitted that."
              :next "winter/clerk-back")
 
 (dialog-conversation "winter/clerk-back"
@@ -357,5 +357,5 @@
              :next "winter/end")
 
 (dialog-text "winter/end"
-             "that night sleep takes you all at once, the deep kind, wherever you have laid yourself down, and the last thing through is the sound of meltwater finding the culvert, which is the hill's country, talking in its sleep."
+             "that night sleep takes you all at once, the deep kind, wherever you have laid yourself down. the last thing through is the sound of meltwater finding the culvert. that is the hill's country, talking in its sleep."
              :next "base/awake")
