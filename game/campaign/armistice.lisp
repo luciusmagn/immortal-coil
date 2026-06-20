@@ -92,11 +92,11 @@
              :next "armistice/vey-2")
 
 (dialog-text "armistice/vey-2"
-             "some men are weather vanes, and the wind has changed, and there is a real and surprising comfort in watching the vane swing true."
+             "Vey turns with the wind, and the wind has changed. it is a comfort to watch, and you did not expect it to be."
              :next "armistice/coat")
 
 (dialog-text "armistice/coat"
-             "you walk out the front entrance without your coat, which you have not done in four years, past sentries who have stopped being sentries and become two young men standing in sunlight in heavy boots, and one of them has his helmet off and his face up like a sunflower."
+             "you walk out the front entrance without your coat, which you have not done in four years. the sentries have stopped being sentries. they are two young men standing in the sun in heavy boots. one of them has his helmet off and his face turned up to it."
              :next "armistice/sentry-cap")
 
 (dialog-text "armistice/sentry-cap"
@@ -116,7 +116,7 @@
              :next "armistice/unrecognized")
 
 (dialog-text "armistice/unrecognized"
-             "nobody knows you without the coat. you stand in your own capital holding a borrowed cup, one face in the standing crowd, and the anonymity is a kind of absolution you know better than to trust and accept anyway, for one morning, on the grounds that the column is closed."
+             "nobody knows you without the coat. you stand in your own capital holding a borrowed cup, one face in the crowd. it feels like being forgiven. you know better than to trust that. you take it anyway, for the one morning. the column is closed."
              :next "armistice/bells-other")
 
 (dialog-text "armistice/bread-queue"
@@ -144,7 +144,7 @@
              :next "armistice/cups-2")
 
 (dialog-text "armistice/cups-2"
-             "all over the city the kept things are coming out: the good plates, the saved sugar, the bottle at the back of the cupboard with a date on its mind. nothing is being saved anymore. saving is over."
+             "all over the city the kept things are coming out. the good plates, the saved sugar, the bottle at the back of the cupboard that someone was saving for a day. nothing is being saved now. saving is over."
              :next "armistice/table")
 
 (dialog-text "armistice/table"
@@ -199,11 +199,11 @@
              :next "armistice/bed-2")
 
 (dialog-text "armistice/bed-2"
-             "nobody wakes you, because there is nothing that cannot wait, and there has never once been nothing that cannot wait, and there is now."
+             "nobody wakes you. there is nothing that cannot wait. for four years there was always something that could not wait. today there is nothing."
              :next "armistice/evening")
 
 (dialog-text "armistice/evening"
-             "the evening comes on slow and gold, and the city lights itself early, every window, extravagant, four years of saved light spent in one go. no bell rings at dusk. the bells are all spent too, rung out, resting in their towers like runners."
+             "the evening comes on slow and gold, and the city lights itself early, every window, four years of saved light spent in one night. no bell rings at dusk. the bells are spent too, rung out, resting in their towers."
              :next "armistice/last")
 
 (dialog-text "armistice/last"
