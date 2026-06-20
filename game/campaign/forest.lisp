@@ -315,11 +315,11 @@
                      :next "forest/truck-cab")
 
 (dialog-text "forest/truck-cab"
-             "the cab smells of dog and diesel. the driver watches the mirrors more than the road, and at the county sign he lets out a breath he has been holding since the mailboxes."
+             "the cab smells of dog and diesel. the driver watches the mirrors more than the road. at the county sign he lets out a breath he has been holding since the mailboxes."
              :next "forest/truck-drop")
 
 (dialog-text "forest/truck-drop"
-             "he drops you at a crossroads store with a phone, says nothing you can thank him for, and is gone. through the store window, the clerk is already looking at you like a question she has asked before."
+             "he drops you at a crossroads store with a phone, says nothing you can thank him for, and is gone. through the store window the clerk is already looking at you. it is a look she has used before."
              :next "forest/store")
 
 (dialog-conversation "forest/store"
@@ -355,7 +355,7 @@
                  '(setf (dialog-value "forest-call") "none"))
 
 (dialog-text "forest/no-call"
-             "you set the receiver back. the clerk refills your coffee without being asked and writes nothing down, which out here is a kind of citizenship."
+             "you set the receiver back. the clerk refills your coffee without being asked and writes nothing down. out here that is a kind of citizenship."
              :next "forest/store-night")
 
 (dialog-text "forest/store-night"
@@ -389,7 +389,7 @@
                      :next "forest/passengers")
 
 (dialog-text "forest/passengers"
-             "there are four passengers and room for forty. nobody sits near you, and nobody makes it unkind. somewhere past the gravel pits, a woman in a postal jacket passes you half a sandwich over the seat back without turning around."
+             "there are four passengers and room for forty. nobody sits near you. nobody makes it unkind. past the gravel pits a woman in a postal jacket passes you half a sandwich over the seat back, without turning around."
              :next "forest/county-line")
 
 (dialog-pick "forest/county-line"
@@ -413,7 +413,7 @@
                  '(setf (dialog-value "forest-bus") "stayed"))
 
 (dialog-text "forest/stay-on"
-             "you stay on. the route runs the valley, turns with the river, and climbs. by the second hour you know the shape of it: the road does not leave the hill's country. it circles it, the way water circles a stone."
+             "you stay on. the route runs the valley, turns with the river, and climbs. by the second hour you know the shape of it. the road does not leave the hill's country. it circles it, the way water circles a stone."
              :next "forest/bus-end")
 
 (dialog-on-enter "forest/ask-driver"
@@ -429,7 +429,7 @@
                      :next "forest/bus-end")
 
 (dialog-text "forest/bus-end"
-             "wherever the day ends, it ends moving, with the hill somewhere over your shoulder, patient as an address. when you finally sleep, it is the deep kind, and it takes you all at once."
+             "wherever the day ends, it ends with you still moving, the hill somewhere over your shoulder, in no hurry. when you finally sleep it is the deep kind, and it takes you all at once."
              :next "base/awake")
 
 (dialog-on-enter "forest/truck-hide"
@@ -497,7 +497,7 @@
                  '(setf (dialog-value "forest-porch") "returned"))
 
 (dialog-text "forest/go-down"
-             "you walk down. they hold the door the way it has always been held for you, and the warmth inside smells like every winter you can remember, which is the problem with it."
+             "you walk down. they hold the door the way it has always been held for you. the warmth inside smells like every winter you can remember. that is the problem with it."
              :next "house/inside")
 
 (dialog-on-enter "forest/stay-still"
