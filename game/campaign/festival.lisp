@@ -243,7 +243,7 @@
              :next "festival/vane-toss")
 
 (dialog-text "festival/vane-toss"
-             "the demon lord of the north tower is terrible at ring toss. all three rings go wide, the last one into the pie. he pays for the pie. nobody makes a thing of it, which is Oakbarrow's whole genius, and he stays for another round."
+             "the demon lord of the north tower is terrible at ring toss. all three rings go wide, the last one into the pie. he pays for the pie. nobody makes a thing of it. that is Oakbarrow's whole genius. he stays for another round."
              :next "festival/vane-word")
 
 (dialog-conversation "festival/vane-word"
@@ -284,7 +284,7 @@
              :next "festival/launch")
 
 (dialog-text "festival/launch"
-             "the lanterns go up together on a count Oren gives like a gate order, and the whole sky over Oakbarrow fills with slow warm lights, and nobody says anything for a while, because there is nothing that needs improving."
+             "the lanterns go up together on a count Oren gives like a gate order. the whole sky over Oakbarrow fills with slow warm lights. nobody says anything for a while. there is nothing that needs improving."
              :next #'festival-lantern-target)
 
 (dialog-text "festival/lantern-mira"
@@ -300,7 +300,7 @@
              :next "festival/embers")
 
 (dialog-text "festival/lantern-companion"
-             "one lantern snags in the crooked oak, and it is {jrpg-companion}'s, and they go very quiet beside you, and then say, well. now you know where it lives, and do not explain, and take your arm for the walk down."
+             "one lantern snags in the crooked oak, and it is {jrpg-companion}'s. they go very quiet beside you. then they say, well. now you know where it lives. they do not explain. they take your arm for the walk down."
              :next "festival/embers")
 
 (dialog-text "festival/embers"
