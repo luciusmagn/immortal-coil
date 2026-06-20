@@ -148,7 +148,7 @@
              :next "war/figures-after")
 
 (dialog-text "war/figures-delay"
-             "you asked for an hour. the folder splits the night between both positions: neither held entirely, and the word pending appears eleven times."
+             "you asked for an hour. the folder splits the night between both positions. neither held. the word pending appears eleven times."
              :next "war/figures-after")
 
 (dialog-conversation "war/figures-after"
@@ -260,7 +260,7 @@
                  '(setf (dialog-value "war-decree") "signed"))
 
 (dialog-text "war/decree-signed"
-             "you sign. your hand shakes, and for once you are glad of it: this signature, at least, looks like yours."
+             "you sign. your hand shakes. for once you are glad of it. this signature at least looks like yours."
              :next "war/km-nine")
 
 (dialog-on-enter "war/decree-refused"
@@ -422,11 +422,11 @@
                  '(setf (dialog-value "war-day3") "waited"))
 
 (dialog-text "war/wait-move"
-             "you say nothing yet. Sorel copies the matched columns into her own ledger, in pencil, and gives you the original. some evidence survives better when it appears to be lost."
+             "you say nothing yet. Sorel copies the matched columns into her own ledger, in pencil, and gives you the original. some evidence keeps better when it looks lost."
              :next "war/day3-close")
 
 (dialog-text "war/day3-close"
-             "the eight o'clock bell rings. the cabinet takes its seats around the map, and whatever else is true, the war is still there, asking to be lost more slowly."
+             "the eight o'clock bell rings. the cabinet takes its seats around the map. whatever else is true, the war is still there. the most anyone can do is lose it slowly."
              :next "war/day3-night")
 
 (defun war-day3-night-target ()
@@ -449,7 +449,7 @@
              :next "war/arc-end")
 
 (dialog-text "war/night-waited"
-             "the broadcast resumes at midnight. you take down the new numbers beside the old. the head counts are smaller tonight. you are learning to read it, and you wish you were not."
+             "the broadcast resumes at midnight. you take down the new numbers beside the old. the head counts are smaller tonight. you are learning to read it. you wish you were not."
              :next "war/arc-end")
 
 (dialog-text "war/arc-end"
@@ -490,5 +490,5 @@
              (dialog-option "keep your own record, against the day" "tribunal/keep"))
 
 (dialog-text "war/day4-end"
-             "you take your seat. whatever the third district is counting tonight, the war is still there in front of everyone, asking to be lost more slowly, and you are still the one they ask."
+             "you take your seat. whatever the third district is counting tonight, the war is still there in front of everyone. the most anyone can do is lose it slowly. you are the one they ask to do it."
              :next "armistice/offer")
