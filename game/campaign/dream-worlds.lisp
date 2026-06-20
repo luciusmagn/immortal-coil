@@ -324,11 +324,19 @@
              :next "alice/inspection-window")
 
 (dialog-text "alice/inspection-window"
-             "the window: present, sometimes a wall, currently a window, curtained from the far side. the bailiff taps it once with the gavel handle and notes for the record that something on the other side stopped tapping back years ago, and that the court misses it."
+             "the window: present, sometimes a wall, currently a window, curtained from the far side."
+             :next "alice/inspection-window-s2")
+
+(dialog-text "alice/inspection-window-s2"
+             "the bailiff taps it once with the gavel handle and notes for the record that something on the other side stopped tapping back years ago, and that the court misses it."
              :next "alice/inspection-glass")
 
 (dialog-text "alice/inspection-glass"
-             "the glass of water is entered, lifted to the light, found full to the line, and set back to the millimeter. the foreman writes one word beside it. from where you stand the word is either evidence or offering, and the foreman's hand covers it before you can choose."
+             "the glass of water is entered, lifted to the light, found full to the line, and set back to the millimeter. the foreman writes one word beside it."
+             :next "alice/inspection-glass-s2")
+
+(dialog-text "alice/inspection-glass-s2"
+             "from where you stand the word is either evidence or offering, and the foreman's hand covers it before you can choose."
              :next "alice/inspection-close")
 
 (dialog-say "alice/inspection-close"
@@ -359,14 +367,22 @@
              :next "alice/garden-rows")
 
 (dialog-text "alice/garden-rows"
-             "walking the rows at night you finally see what daylight crowded out: the doors are planted in family plots. a row of fives, a row of sevens, and at the end, alone in turned earth with its number still wet, one door painted with the figure you gave the foreman, whatever it was, kept now, official."
+             "walking the rows at night you finally see what daylight crowded out: the doors are planted in family plots."
+             :next "alice/garden-rows-s2")
+
+(dialog-text "alice/garden-rows-s2"
+             "a row of fives, a row of sevens, and at the end, alone in turned earth with its number still wet, one door painted with the figure you gave the foreman, whatever it was, kept now, official."
              :next "alice/juror-gift")
 
 (dialog-on-enter "alice/juror-gift"
                  '(setf (dialog-value "alice-foreman-pencil") t))
 
 (dialog-text "alice/juror-gift"
-             "at the garden gate a juror is waiting, out of uniform, which for a playing card means standing with the plain side forward. they press something into your hand and leave before thanks can be arranged: the foreman's pencil, sharpened down to a thumb's length of use."
+             "at the garden gate a juror is waiting, out of uniform, which for a playing card means standing with the plain side forward."
+             :next "alice/juror-gift-s2")
+
+(dialog-text "alice/juror-gift-s2"
+             "they press something into your hand and leave before thanks can be arranged: the foreman's pencil, sharpened down to a thumb's length of use."
              :next "alice/gate-gardener")
 
 (dialog-conversation "alice/gate-gardener"
@@ -511,7 +527,11 @@
                  '(setf (dialog-value "rogue-floor2-room") "armory"))
 
 (dialog-text "rogue/armory"
-             "an armory, racks empty except one: a short sword, oiled, recently. the whetstone beside it is worn to a wafer, and the oil rag is folded in thirds over the rack arm, damp side in, the way someone folds who expects to need it again soon and does not expect to be thanked."
+             "an armory, racks empty except one: a short sword, oiled, recently."
+             :next "rogue/armory-s2")
+
+(dialog-text "rogue/armory-s2"
+             "the whetstone beside it is worn to a wafer, and the oil rag is folded in thirds over the rack arm, damp side in, the way someone folds who expects to need it again soon and does not expect to be thanked."
              :next "rogue/armory-choice")
 
 (dialog-pick "rogue/armory-choice"
@@ -534,7 +554,11 @@
                  '(setf (dialog-value "rogue-floor2-room") "cistern"))
 
 (dialog-text "rogue/cistern"
-             "a cistern room, ankle-deep. the water is clear and perfectly still except by the far wall, where it is still in a different way. held still, the way you hold a breath. you know that stillness from the inside now, from under the pines. you do it the courtesy of not staring."
+             "a cistern room, ankle-deep. the water is clear and perfectly still except by the far wall, where it is still in a different way."
+             :next "rogue/cistern-s2")
+
+(dialog-text "rogue/cistern-s2"
+             "held still, the way you hold a breath. you know that stillness from the inside now, from under the pines. you do it the courtesy of not staring."
              :next "rogue/cistern-choice")
 
 (dialog-pick "rogue/cistern-choice"
@@ -693,7 +717,11 @@
                  '(setf (dialog-value "rogue-delve-done") t))
 
 (dialog-text "rogue/delve-bottom-marked"
-             "past the last door the stair gives out into a small room you know by furniture: a bed, a small table, a door. the chalk marks you gathered on the way down have the same tidy strokes as the wall tally. on the bed lies one paper tag, ink fresh."
+             "past the last door the stair gives out into a small room you know by furniture: a bed, a small table, a door."
+             :next "rogue/delve-bottom-marked-s2")
+
+(dialog-text "rogue/delve-bottom-marked-s2"
+             "the chalk marks you gathered on the way down have the same tidy strokes as the wall tally. on the bed lies one paper tag, ink fresh."
              :next "rogue/bottom-choice")
 
 (dialog-pick "rogue/bottom-choice"
@@ -812,7 +840,11 @@
                  '(setf (dialog-value "rogue-matchbook") t))
 
 (dialog-text "rogue/pillow"
-             "under the pillow there is a paper matchbook, half used. inside the cover is a tally in pencil, the same clerk's hand as everywhere else down here, and one struck mark has been gone over twice, the way you redraw a line you wish you had not had to make."
+             "under the pillow there is a paper matchbook, half used."
+             :next "rogue/pillow-s2")
+
+(dialog-text "rogue/pillow-s2"
+             "inside the cover is a tally in pencil, the same clerk's hand as everywhere else down here, and one struck mark has been gone over twice, the way you redraw a line you wish you had not had to make."
              :next "rogue/sleep")
 
 (dialog-text "rogue/hands"
@@ -840,7 +872,11 @@
                  '(setf (dialog-value "rogue-saw-tally") t))
 
 (dialog-text "rogue/housekeeping"
-             "beside the torch bracket, chalked low on the stone in a tidy clerk's hand, is a tally you did not notice last night: rows of four struck through with a fifth, many rows, and one fresh mark at the end, still dusty. you wipe your thumb beside it and leave the mark alone."
+             "beside the torch bracket, chalked low on the stone in a tidy clerk's hand, is a tally you did not notice last night: rows of four struck through with a fifth, many rows, and one fresh mark at the end, still dusty."
+             :next "rogue/housekeeping-s2")
+
+(dialog-text "rogue/housekeeping-s2"
+             "you wipe your thumb beside it and leave the mark alone."
              :next "rogue/identify")
 
 (defun rogue-identify-target ()

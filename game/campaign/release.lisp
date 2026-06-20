@@ -71,15 +71,27 @@
             :next "release/trolley")
 
 (dialog-text "release/trolley"
-             "the returns trolley waits at the archive door, loaded for the last time. four files. the spines read: CROSSING. HILL HOUSE. THIRD DISTRICT. OAKBARROW. you have walked these four back to their shelf before. today the shelf is not the destination."
+             "the returns trolley waits at the archive door, loaded for the last time. four files. the spines read: CROSSING. HILL HOUSE. THIRD DISTRICT. OAKBARROW."
+             :next "release/trolley-s2")
+
+(dialog-text "release/trolley-s2"
+             "you have walked these four back to their shelf before. today the shelf is not the destination."
              :next "release/tide-out")
 
 (dialog-text "release/tide-out"
-             "the archive has been emptying for weeks, oldest first, the shelves clearing from the far end like a tide going out. the gaps are not relabeled. the gaps are the labels now: a wall of spaces in the rerouting hand, each exactly the size of what stood in it."
+             "the archive has been emptying for weeks, oldest first, the shelves clearing from the far end like a tide going out. the gaps are not relabeled."
+             :next "release/tide-out-s2")
+
+(dialog-text "release/tide-out-s2"
+             "the gaps are the labels now: a wall of spaces in the rerouting hand, each exactly the size of what stood in it."
              :next "release/incinerator")
 
 (dialog-text "release/incinerator"
-             "the incinerator room is small, clean, and warm the way the brass handle is warm. the hatch stands open at waist height. beside it, a sign-off sheet, ruled for four lines, and a pen on a chain that has never had to reach this far down the corridor before."
+             "the incinerator room is small, clean, and warm the way the brass handle is warm. the hatch stands open at waist height."
+             :next "release/incinerator-s2")
+
+(dialog-text "release/incinerator-s2"
+             "beside it, a sign-off sheet, ruled for four lines, and a pen on a chain that has never had to reach this far down the corridor before."
              :next "release/burn-choice")
 
 (dialog-pick "release/burn-choice"
@@ -193,14 +205,22 @@
                  '(setf (dialog-value "release-signed") "bed"))
 
 (dialog-text "release/sign-bed"
-             "you sign for the bed. just the bed. the signature comes out steadier than you meant it to, the way it did at the court of the long table, the way it does everywhere they hand you your own effects, and M-3 strikes the other lines with a ruler, fair to the last."
+             "you sign for the bed. just the bed."
+             :next "release/sign-bed-s2")
+
+(dialog-text "release/sign-bed-s2"
+             "the signature comes out steadier than you meant it to, the way it did at the court of the long table, the way it does everywhere they hand you your own effects, and M-3 strikes the other lines with a ruler, fair to the last."
              :next "release/carbon")
 
 (dialog-on-enter "release/sign-all"
                  '(setf (dialog-value "release-signed") "all"))
 
 (dialog-text "release/sign-all"
-             "you sign for all of it: bed, night stand, glass, desk with drawer. the whole room, against one signature, condition kept, and signing it feels less like acquiring furniture than like adopting a dog that has already been sleeping at your door for years."
+             "you sign for all of it: bed, night stand, glass, desk with drawer."
+             :next "release/sign-all-s2")
+
+(dialog-text "release/sign-all-s2"
+             "the whole room, against one signature, condition kept, and signing it feels less like acquiring furniture than like adopting a dog that has already been sleeping at your door for years."
              :next "release/carbon")
 
 (dialog-on-enter "release/decline"
@@ -291,7 +311,15 @@
              :next "release/handle")
 
 (dialog-text "release/handle"
-             "the handle is warm. on the other side of the door, nobody has just let go of it, for the first time, because the other side of the door is now where everything else is, and M-3 holds it for you, and follows, and lets it close. the latch takes. the wing concludes."
+             "the handle is warm."
+             :next "release/handle-s2")
+
+(dialog-text "release/handle-s2"
+             "on the other side of the door, nobody has just let go of it, for the first time, because the other side of the door is now where everything else is, and M-3 holds it for you, and follows, and lets it close."
+             :next "release/handle-s3")
+
+(dialog-text "release/handle-s3"
+             "the latch takes. the wing concludes."
              :next "release/hum-stops")
 
 (dialog-text "release/hum-stops"

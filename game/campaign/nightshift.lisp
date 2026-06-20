@@ -8,7 +8,11 @@
              :next "nightshift/m3-still")
 
 (dialog-text "nightshift/m3-still"
-             "M-3 is behind you, the way he is always behind you at the exact moments the procedure requires a witness. he looks at the sheet for a long time, and then he says, reassignment, then, in the voice of a man initialing something inside himself."
+             "M-3 is behind you, the way he is always behind you at the exact moments the procedure requires a witness."
+             :next "nightshift/m3-still-s2")
+
+(dialog-text "nightshift/m3-still-s2"
+             "he looks at the sheet for a long time, and then he says, reassignment, then, in the voice of a man initialing something inside himself."
              :next "nightshift/briefing")
 
 (dialog-say "nightshift/briefing"
@@ -25,7 +29,11 @@
              :next "nightshift/glass-inside")
 
 (dialog-text "nightshift/glass-inside"
-             "from this side, the observation window is a curtain, drawn. you can see the corridor's light along its hem when the corridor is lit, which is how the room tells its time: hem-light for rotations, dark for the long hours, and the long hours are most of them."
+             "from this side, the observation window is a curtain, drawn."
+             :next "nightshift/glass-inside-s2")
+
+(dialog-text "nightshift/glass-inside-s2"
+             "you can see the corridor's light along its hem when the corridor is lit, which is how the room tells its time: hem-light for rotations, dark for the long hours, and the long hours are most of them."
              :next "nightshift/drawer")
 
 (dialog-text "nightshift/drawer"
@@ -65,7 +73,11 @@
              :next "nightshift/palimpsest-relay")
 
 (dialog-text "nightshift/palimpsest-relay"
-             "the notes are a relay, you understand, passed room-keeper to room-keeper down years nobody totals, every generation erasing just enough to make space and never enough to lose the drill. you are not the next one. you are the latest one. the difference is company."
+             "the notes are a relay, you understand, passed room-keeper to room-keeper down years nobody totals, every generation erasing just enough to make space and never enough to lose the drill."
+             :next "nightshift/palimpsest-relay-s2")
+
+(dialog-text "nightshift/palimpsest-relay-s2"
+             "you are not the next one. you are the latest one. the difference is company."
              :next "nightshift/first-watch")
 
 (dialog-scene "nightshift/first-watch"
@@ -77,7 +89,11 @@
              :next "nightshift/being-read")
 
 (dialog-text "nightshift/being-read"
-             "through the wall, faintly, the binder's pages turn. someone is reading your 0552, your 0603, your eleven minutes. the log read from inside sounds like weather on a roof: above you, about you, and nothing you can do from under it except be accurately reported."
+             "through the wall, faintly, the binder's pages turn. someone is reading your 0552, your 0603, your eleven minutes."
+             :next "nightshift/being-read-s2")
+
+(dialog-text "nightshift/being-read-s2"
+             "the log read from inside sounds like weather on a roof: above you, about you, and nothing you can do from under it except be accurately reported."
              :next "nightshift/hem-shadows")
 
 (dialog-text "nightshift/hem-shadows"
@@ -89,7 +105,11 @@
              :next "nightshift/perform")
 
 (dialog-text "nightshift/perform"
-             "you drink before 0603, per the notes, and feel the watch relax through a wall and a curtain, which should not be a feeling and is one. spared a report, somewhere a grey coat initials a calm line, and the calm line is your doing. the room side has its competences."
+             "you drink before 0603, per the notes, and feel the watch relax through a wall and a curtain, which should not be a feeling and is one."
+             :next "nightshift/perform-s2")
+
+(dialog-text "nightshift/perform-s2"
+             "spared a report, somewhere a grey coat initials a calm line, and the calm line is your doing. the room side has its competences."
              :next "nightshift/meals")
 
 (dialog-text "nightshift/meals"
@@ -137,7 +157,11 @@
               :next "nightshift/new-voice")
 
 (dialog-text "nightshift/new-voice"
-             "a new watcher comes to the glass: you can tell by the curtain rings, drawn back too fast, and the breathing, unschooled, picking up the drill late. someone's first rotation. somewhere out there, M-3 is standing away from the glass, teaching by not helping."
+             "a new watcher comes to the glass: you can tell by the curtain rings, drawn back too fast, and the breathing, unschooled, picking up the drill late."
+             :next "nightshift/new-voice-s2")
+
+(dialog-text "nightshift/new-voice-s2"
+             "someone's first rotation. somewhere out there, M-3 is standing away from the glass, teaching by not helping."
              :next "nightshift/gift")
 
 (dialog-text "nightshift/gift"
@@ -169,7 +193,11 @@
               :next "nightshift/lights-dim")
 
 (dialog-text "nightshift/lights-dim"
-             "the corridor lights dim once, in order, away from the desk and back: you know the sequence from the hem. then the room's far wall has a door in it that the inventory disputes, open, unhurried, with a dark behind it that is not the corridor's."
+             "the corridor lights dim once, in order, away from the desk and back: you know the sequence from the hem."
+             :next "nightshift/lights-dim-s2")
+
+(dialog-text "nightshift/lights-dim-s2"
+             "then the room's far wall has a door in it that the inventory disputes, open, unhurried, with a dark behind it that is not the corridor's."
              :next "nightshift/card-inside")
 
 (dialog-text "nightshift/card-inside"
@@ -263,7 +291,17 @@
 
 (dialog-say "nightshift/offer"
             "M-3, through the glass"
-            "my rotation is ending, {facility-designation}. not the shift. the tenure. the desk will want someone who has read the log from both sides, and the room will want someone it has already kept. you may have either chair. the facility asks you not to want both."
+            "my rotation is ending, {facility-designation}. not the shift. the tenure."
+            :next "nightshift/offer-s2")
+
+(dialog-say "nightshift/offer-s2"
+            "M-3, through the glass"
+            "the desk will want someone who has read the log from both sides, and the room will want someone it has already kept. you may have either chair."
+            :next "nightshift/offer-s3")
+
+(dialog-say "nightshift/offer-s3"
+            "M-3, through the glass"
+            "the facility asks you not to want both."
             :next "nightshift/choice")
 
 (dialog-pick "nightshift/choice"

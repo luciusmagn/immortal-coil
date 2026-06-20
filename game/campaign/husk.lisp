@@ -134,7 +134,15 @@
              :next "husk/log")
 
 (dialog-text "husk/log"
-             "you turn the binder around with two fingers. the entries are in a captain's hand, small and even, slanted left at the ends of the lines when the writer is tired. you know the hand. you have signed a manual with it. you have signed letters home with it."
+             "you turn the binder around with two fingers."
+             :next "husk/log-s2")
+
+(dialog-text "husk/log-s2"
+             "the entries are in a captain's hand, small and even, slanted left at the ends of the lines when the writer is tired. you know the hand."
+             :next "husk/log-s3")
+
+(dialog-text "husk/log-s3"
+             "you have signed a manual with it. you have signed letters home with it."
              :next "husk/log-read")
 
 (dialog-text "husk/log-read"

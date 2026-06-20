@@ -24,7 +24,11 @@
              :next "kept/inventory")
 
 (dialog-text "kept/inventory"
-             "you sign the cell's inventory against receipt: one bed, one night stand, one glass, poured. one desk, one drawer, contents withheld. one window, condition variable. the bailiff countersigns, and his hand shakes on the window line, every time, you will learn."
+             "you sign the cell's inventory against receipt: one bed, one night stand, one glass, poured. one desk, one drawer, contents withheld."
+             :next "kept/inventory-s2")
+
+(dialog-text "kept/inventory-s2"
+             "one window, condition variable. the bailiff countersigns, and his hand shakes on the window line, every time, you will learn."
              :next "kept/cell")
 
 (dialog-text "kept/cell"
@@ -57,7 +61,11 @@
                      :next "kept/tea-ceremony")
 
 (dialog-text "kept/tea-ceremony"
-             "tea with the cup has rules the cup never states and always keeps: the kept pours, the visitor steams, nobody mentions the trial until the second cup, and then both of you mention nothing else. it is the best hour of the week and you both pretend it is ordinary."
+             "tea with the cup has rules the cup never states and always keeps: the kept pours, the visitor steams, nobody mentions the trial until the second cup, and then both of you mention nothing else."
+             :next "kept/tea-ceremony-s2")
+
+(dialog-text "kept/tea-ceremony-s2"
+             "it is the best hour of the week and you both pretend it is ordinary."
              :next "kept/chair-cushion")
 
 (dialog-text "kept/chair-cushion"
@@ -82,7 +90,11 @@
              :next "kept/weather")
 
 (dialog-text "kept/weather"
-             "the weather entitlement is honored monthly: the bailiff wheels it in on a tray. an hour of rain under glass. a box of frost, opened corner first. once, in some june, a full summer afternoon folded like linen, which you wore around your shoulders until it went through."
+             "the weather entitlement is honored monthly: the bailiff wheels it in on a tray. an hour of rain under glass. a box of frost, opened corner first."
+             :next "kept/weather-s2")
+
+(dialog-text "kept/weather-s2"
+             "once, in some june, a full summer afternoon folded like linen, which you wore around your shoulders until it went through."
              :next "kept/weather-after")
 
 (dialog-text "kept/weather-after"
@@ -123,7 +135,15 @@
                      :next "kept/appeal-back")
 
 (dialog-text "kept/appeal-back"
-             "you are walked back down. the cell has been dusted in your absence, and the glass has been refilled to the line, and the four sill doors have turned, all together, a degree or two, the way plants turn. toward the corridor. toward where you come back from."
+             "you are walked back down."
+             :next "kept/appeal-back-s2")
+
+(dialog-text "kept/appeal-back-s2"
+             "the cell has been dusted in your absence, and the glass has been refilled to the line, and the four sill doors have turned, all together, a degree or two, the way plants turn."
+             :next "kept/appeal-back-s3")
+
+(dialog-text "kept/appeal-back-s3"
+             "toward the corridor. toward where you come back from."
              :next "kept/frames-read")
 
 (dialog-text "kept/frames-read"
@@ -135,7 +155,11 @@
              :next "kept/twelfth-frame")
 
 (dialog-text "kept/twelfth-frame"
-             "at the corridor's end hangs a twelfth frame, empty, straight, dusted with the others. nobody has ever said it is yours. nobody has ever hung anything else in it. it is the most patient thing in the building, and the building contains the court."
+             "at the corridor's end hangs a twelfth frame, empty, straight, dusted with the others. nobody has ever said it is yours."
+             :next "kept/twelfth-frame-s2")
+
+(dialog-text "kept/twelfth-frame-s2"
+             "nobody has ever hung anything else in it. it is the most patient thing in the building, and the building contains the court."
              :next "kept/years")
 
 (dialog-scene "kept/years"
@@ -143,7 +167,11 @@
               :next "kept/routine")
 
 (dialog-text "kept/routine"
-             "the years take a shape: tea on the thursdays the corridor announces, the gardener's seedlings outgrowing their pots, the annual walk up to be denied with courtesy. you keep the glass on its ring mark. it is not nothing. it is the whole job, in here."
+             "the years take a shape: tea on the thursdays the corridor announces, the gardener's seedlings outgrowing their pots, the annual walk up to be denied with courtesy."
+             :next "kept/routine-s2")
+
+(dialog-text "kept/routine-s2"
+             "you keep the glass on its ring mark. it is not nothing. it is the whole job, in here."
              :next "kept/neighbor-visit")
 
 (dialog-conversation "kept/neighbor-visit"
@@ -160,7 +188,15 @@
              :next "kept/clock")
 
 (dialog-text "kept/clock"
-             "the cell's clock has no hands and keeps excellent time. you learn to read it by its face alone, the way the kept learn everything: by being present for all of it. when tea is near, the clock looks pleased. clocks have one expression more than people think."
+             "the cell's clock has no hands and keeps excellent time."
+             :next "kept/clock-s2")
+
+(dialog-text "kept/clock-s2"
+             "you learn to read it by its face alone, the way the kept learn everything: by being present for all of it. when tea is near, the clock looks pleased."
+             :next "kept/clock-s3")
+
+(dialog-text "kept/clock-s3"
+             "clocks have one expression more than people think."
              :next "kept/tap-one")
 
 (dialog-text "kept/tap-one"
@@ -189,7 +225,11 @@
              :next "kept/eleven")
 
 (dialog-text "kept/eleven"
-             "you ask the cup, one thursday, about the eleven who accepted. the cup is quiet for a steep's length. they keep their rooms, it says. the rooms report it. nobody has asked the rooms the other question, because cups are the only ones rude enough, and we are not."
+             "you ask the cup, one thursday, about the eleven who accepted. the cup is quiet for a steep's length. they keep their rooms, it says. the rooms report it."
+             :next "kept/eleven-s2")
+
+(dialog-text "kept/eleven-s2"
+             "nobody has asked the rooms the other question, because cups are the only ones rude enough, and we are not."
              :next "kept/second-courtesy")
 
 (dialog-text "kept/second-courtesy"
@@ -221,7 +261,11 @@
              :next "kept/reinventory")
 
 (dialog-text "kept/reinventory"
-             "the morning after the glass taps back, the bailiff arrives unscheduled with the inventory and amends one line: window, condition variable, reciprocal. you both sign. his hand is steady on it, for the first time, and he says nothing, and leaves you the carbon."
+             "the morning after the glass taps back, the bailiff arrives unscheduled with the inventory and amends one line: window, condition variable, reciprocal."
+             :next "kept/reinventory-s2")
+
+(dialog-text "kept/reinventory-s2"
+             "you both sign. his hand is steady on it, for the first time, and he says nothing, and leaves you the carbon."
              :next "kept/window-curtain")
 
 (dialog-text "kept/window-curtain"
@@ -246,7 +290,12 @@
 
 (dialog-say "kept/writ-read"
             "the card judge"
-            "the room moves for the return of its keeper, on the grounds that the glass has been filled by strangers for years, and is full, and has never once been drunk. the room states it did not raise a defendant to be kept by amateurs. the language is the room's. the court would never."
+            "the room moves for the return of its keeper, on the grounds that the glass has been filled by strangers for years, and is full, and has never once been drunk."
+            :next "kept/writ-read-s2")
+
+(dialog-say "kept/writ-read-s2"
+            "the card judge"
+            "the room states it did not raise a defendant to be kept by amateurs. the language is the room's. the court would never."
             :next "kept/recusal")
 
 (dialog-say "kept/recusal"
@@ -264,7 +313,11 @@
                  '(setf (dialog-value "kept-end") "returned"))
 
 (dialog-text "kept/go-home"
-             "you go home. the corridor of verdicts bows you out frame by frame, and the garden opens its gate without being asked, and the room receives you the way rooms do: by being exactly where you left it, with the water poured, and no questions, ever, about the years."
+             "you go home."
+             :next "kept/go-home-s2")
+
+(dialog-text "kept/go-home-s2"
+             "the corridor of verdicts bows you out frame by frame, and the garden opens its gate without being asked, and the room receives you the way rooms do: by being exactly where you left it, with the water poured, and no questions, ever, about the years."
              :next "kept/corridor-last")
 
 (dialog-on-enter "kept/stay"
@@ -294,11 +347,19 @@
              :next "kept/cups-row")
 
 (dialog-text "kept/cups-row"
-             "as the court empties, the cups file past you in a row, each pausing at your shoulder for the length of a steep. from a cup that is an embrace. the last one in line is yours, the witness. it says nothing, having testified enough for one lifetime, and steams."
+             "as the court empties, the cups file past you in a row, each pausing at your shoulder for the length of a steep. from a cup that is an embrace."
+             :next "kept/cups-row-s2")
+
+(dialog-text "kept/cups-row-s2"
+             "the last one in line is yours, the witness. it says nothing, having testified enough for one lifetime, and steams."
              :next "kept/corridor-last")
 
 (dialog-text "kept/corridor-last"
-             "on your last walk through the corridor of verdicts, however it has ended, the twelfth frame is filled: a verdict in a hand you know, because it is yours, in pencil, sharpened to a thumb of use. it says what the eleventh said, and one word more. kept. both ways."
+             "on your last walk through the corridor of verdicts, however it has ended, the twelfth frame is filled: a verdict in a hand you know, because it is yours, in pencil, sharpened to a thumb of use."
+             :next "kept/corridor-last-s2")
+
+(dialog-text "kept/corridor-last-s2"
+             "it says what the eleventh said, and one word more. kept. both ways."
              :next "kept/end")
 
 (dialog-text "kept/end"

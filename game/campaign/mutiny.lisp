@@ -106,7 +106,11 @@
                  '(setf (dialog-value "mutiny-answer") "bargained"))
 
 (dialog-text "mutiny/last-crossing"
-             "one last crossing. they give it to you the way a family gives in at a bedside. Voss preflights the lane twice. Imari opens a log page under your name and rank. she writes the word final in brackets, then rubs it out. the mark of it stays in the paper."
+             "one last crossing. they give it to you the way a family gives in at a bedside. Voss preflights the lane twice."
+             :next "mutiny/last-crossing-s2")
+
+(dialog-text "mutiny/last-crossing-s2"
+             "Imari opens a log page under your name and rank. she writes the word final in brackets, then rubs it out. the mark of it stays in the paper."
              :next "mutiny/crossing")
 
 (dialog-minigame "mutiny/crossing"
@@ -202,7 +206,15 @@
              :next "mutiny/tell-inspector-2")
 
 (dialog-text "mutiny/tell-inspector-2"
-             "she listens the way Dane listens, to you and to the wall. she writes nothing. when you finish she says, gently, that what you have described is in the file already. in the annex. in your own statement. dated the night you told your navigator."
+             "she listens the way Dane listens, to you and to the wall. she writes nothing."
+             :next "mutiny/tell-inspector-2-s2")
+
+(dialog-text "mutiny/tell-inspector-2-s2"
+             "when you finish she says, gently, that what you have described is in the file already. in the annex. in your own statement."
+             :next "mutiny/tell-inspector-2-s3")
+
+(dialog-text "mutiny/tell-inspector-2-s3"
+             "dated the night you told your navigator."
              :next "mutiny/tell-inspector-3")
 
 (dialog-text "mutiny/tell-inspector-3"
@@ -274,7 +286,11 @@
              :next "mutiny/letter")
 
 (dialog-text "mutiny/letter"
-             "in your quarters you write to Voss in the format no manual gives you. four sentences. you do not send it. you put it under the blotter with the pencil flat on top. a careful person tidying after you will find it someday. they will know it was meant to be found."
+             "in your quarters you write to Voss in the format no manual gives you. four sentences. you do not send it."
+             :next "mutiny/letter-s2")
+
+(dialog-text "mutiny/letter-s2"
+             "you put it under the blotter with the pencil flat on top. a careful person tidying after you will find it someday. they will know it was meant to be found."
              :next "mutiny/sleep")
 
 (defun mutiny-sleep-target ()
@@ -293,7 +309,11 @@
              :next "base/awake")
 
 (dialog-text "mutiny/sleep-refused"
-             "you lie down. you are still captain by your own record. captain of nothing. beloved, attended, kept. through the bulkhead the ship runs without you and runs well. that was always the cruelest thing it could do. you sleep inside the kindness of it."
+             "you lie down. you are still captain by your own record. captain of nothing. beloved, attended, kept."
+             :next "mutiny/sleep-refused-s2")
+
+(dialog-text "mutiny/sleep-refused-s2"
+             "through the bulkhead the ship runs without you and runs well. that was always the cruelest thing it could do. you sleep inside the kindness of it."
              :next "base/awake")
 
 (dialog-text "mutiny/sleep-bargained"

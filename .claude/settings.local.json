@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(curl -s --max-time 20 https://openrouter.ai/api/v1/models)",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s --max-time 10 -o /dev/null -w \"openrouter root HTTP %{http_code}\\\\n\" https://openrouter.ai)",
+      "Bash(python3 or_probe.py)",
+      "Bash(python3 *)",
+      "Bash(ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fasl/ sbcl --noinform --non-interactive --load /tmp/verify_mod.lisp)",
+      "Bash(/root/.local/share/vdhcoapp/ffmpeg -hide_banner -loglevel error -y -f lavfi -i 'aevalsrc='\\\\''0.5*exp\\(-t*3\\)*\\(1-exp\\(-t*18\\)\\)*sin\\(2*PI*68*t\\)+0.16*exp\\(-t*4\\)*\\(random\\(0\\)*2-1\\)'\\\\'':d=0.7:s=44100' -af lowpass=f=420,afade=t=out:st=0.55:d=0.15,volume=1.2 -ac 1 /root/common-lisp/immortal-coil/mods/one-pace/assets/audio/strain.wav)",
+      "Bash(/root/.local/share/vdhcoapp/ffmpeg -hide_banner -i /root/common-lisp/immortal-coil/mods/one-pace/assets/audio/strain.wav -f null -)",
+      "Bash(git check-ignore *)"
+    ]
+  }
+}

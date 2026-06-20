@@ -201,7 +201,11 @@
              :next "festival/stall-next-3")
 
 (dialog-text "festival/cups-pell"
-             "you call no cup. you call Pell's left sleeve. there is a silence, then Pell shakes the sleeve and the grain drops to the slate, and the whole square cheers, and Pell bows and pays double, beaming, like a man finally caught after years of honest signage."
+             "you call no cup. you call Pell's left sleeve."
+             :next "festival/cups-pell-s2")
+
+(dialog-text "festival/cups-pell-s2"
+             "there is a silence, then Pell shakes the sleeve and the grain drops to the slate, and the whole square cheers, and Pell bows and pays double, beaming, like a man finally caught after years of honest signage."
              :next "festival/stall-next-3")
 
 (dialog-text "festival/stall-next-3"

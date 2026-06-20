@@ -455,7 +455,15 @@
                  '(setf (dialog-value "forest-letter") "read"))
 
 (dialog-text "forest/letter-read"
-             "one page, in the round patient hand of someone writing to a child. it says the garden came in, that the dog found her way home, and that there is no shame in coming home the same way. it is signed with love, and no name, and you fold it along the old folds."
+             "one page, in the round patient hand of someone writing to a child."
+             :next "forest/letter-read-s2")
+
+(dialog-text "forest/letter-read-s2"
+             "it says the garden came in, that the dog found her way home, and that there is no shame in coming home the same way."
+             :next "forest/letter-read-s3")
+
+(dialog-text "forest/letter-read-s3"
+             "it is signed with love, and no name, and you fold it along the old folds."
              :next "forest/road-back")
 
 (dialog-on-enter "forest/letter-back"
@@ -480,7 +488,11 @@
              :next "forest/porch-choice")
 
 (dialog-text "forest/porch-again-call"
-             "you come out of the trees above the house. on the porch, someone is sweeping, humming two notes over and over, low and patient. they are the two notes of your own call into the hall. they stop, shade their eyes toward your stretch of woods, and wave."
+             "you come out of the trees above the house. on the porch, someone is sweeping, humming two notes over and over, low and patient."
+             :next "forest/porch-again-call-s2")
+
+(dialog-text "forest/porch-again-call-s2"
+             "they are the two notes of your own call into the hall. they stop, shade their eyes toward your stretch of woods, and wave."
              :next "forest/porch-choice")
 
 (dialog-text "forest/porch-again-lock"
@@ -511,7 +523,11 @@
                  '(setf (dialog-value "forest-two-plates") t))
 
 (dialog-text "forest/door-watch"
-             "you watch the open door the way you watched the hall sounds, cataloguing: lamplight, woodsmoke, the clink of one plate being laid. then a second plate. whoever sets the table sets it for two, every night, on the chance the second chair fills."
+             "you watch the open door the way you watched the hall sounds, cataloguing: lamplight, woodsmoke, the clink of one plate being laid. then a second plate."
+             :next "forest/door-watch-s2")
+
+(dialog-text "forest/door-watch-s2"
+             "whoever sets the table sets it for two, every night, on the chance the second chair fills."
              :next "forest/dawn-end")
 
 (dialog-on-enter "forest/keep-going"

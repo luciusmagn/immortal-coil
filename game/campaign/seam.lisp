@@ -12,7 +12,11 @@
              :next "seam/descent")
 
 (dialog-text "seam/descent"
-             "the banister is a rail of door handles, every pattern, every age, each one polished where a hand falls and dull where it does not. you go down holding strangers' grips, one after another, and they fit, every one. handles are the most forgiving furniture."
+             "the banister is a rail of door handles, every pattern, every age, each one polished where a hand falls and dull where it does not."
+             :next "seam/descent-s2")
+
+(dialog-text "seam/descent-s2"
+             "you go down holding strangers' grips, one after another, and they fit, every one. handles are the most forgiving furniture."
              :next "seam/smell")
 
 (dialog-text "seam/smell"
@@ -28,7 +32,11 @@
              :next "seam/lanes")
 
 (dialog-text "seam/lanes"
-             "the drifts have lanes between them, swept, and the lanes have a logic: wardrobes settle with wardrobes, sills with sills. one whole quarter is staircases, lying down at last, and you do not linger there, because a lying-down staircase is the saddest furniture there is."
+             "the drifts have lanes between them, swept, and the lanes have a logic: wardrobes settle with wardrobes, sills with sills."
+             :next "seam/lanes-s2")
+
+(dialog-text "seam/lanes-s2"
+             "one whole quarter is staircases, lying down at last, and you do not linger there, because a lying-down staircase is the saddest furniture there is."
              :next "seam/curtain-meadow")
 
 (dialog-text "seam/curtain-meadow"
@@ -36,7 +44,11 @@
              :next "seam/lullaby")
 
 (dialog-text "seam/lullaby"
-             "in the curtain meadow you hear it: the melody. the jury's deliberation tune, the lullaby with the intervals worn round. it circles the lanes low to the ground, going nowhere, the way a sound goes when its room was unpicked long ago and nobody rewound it."
+             "in the curtain meadow you hear it: the melody. the jury's deliberation tune, the lullaby with the intervals worn round."
+             :next "seam/lullaby-s2")
+
+(dialog-text "seam/lullaby-s2"
+             "it circles the lanes low to the ground, going nowhere, the way a sound goes when its room was unpicked long ago and nobody rewound it."
              :next "seam/lullaby-2")
 
 (dialog-text "seam/lullaby-2"
@@ -102,7 +114,11 @@
              :next "seam/glasses")
 
 (dialog-text "seam/glasses"
-             "along one wall, on a shelf that was a mantel, water glasses stand in rows, each full to its own line. the last glass of every unkept room, she says, carried down before the unpicking. nobody drinks them. she dusts them. some duties survive their rooms."
+             "along one wall, on a shelf that was a mantel, water glasses stand in rows, each full to its own line."
+             :next "seam/glasses-s2")
+
+(dialog-text "seam/glasses-s2"
+             "the last glass of every unkept room, she says, carried down before the unpicking. nobody drinks them. she dusts them. some duties survive their rooms."
              :next "seam/glass-count")
 
 (dialog-text "seam/glass-count"
@@ -139,11 +155,19 @@
                      :next "seam/stray-close")
 
 (dialog-text "seam/stray-close"
-             "the small room comes a board's width closer while you are not looking, and arranges its unraveled window to face you, the way a dog arranges its ears. through the gap in its corner you can see its lamp is still in it. unlit, but in it. it kept its lamp."
+             "the small room comes a board's width closer while you are not looking, and arranges its unraveled window to face you, the way a dog arranges its ears."
+             :next "seam/stray-close-s2")
+
+(dialog-text "seam/stray-close-s2"
+             "through the gap in its corner you can see its lamp is still in it. unlit, but in it. it kept its lamp."
              :next "seam/spool-yours")
 
 (dialog-text "seam/spool-yours"
-             "on the spool wall, among the chalk marks, one spool sits apart with its thread run out, taut, rising into the dark overhead. the chalk says nothing. it does not need to. the white thread on your wrist runs to it, and hums very slightly, like a held breath being managed."
+             "on the spool wall, among the chalk marks, one spool sits apart with its thread run out, taut, rising into the dark overhead. the chalk says nothing."
+             :next "seam/spool-yours-s2")
+
+(dialog-text "seam/spool-yours-s2"
+             "it does not need to. the white thread on your wrist runs to it, and hums very slightly, like a held breath being managed."
              :next "seam/spool-truth")
 
 (dialog-conversation "seam/spool-truth"
@@ -160,7 +184,11 @@
              :next "seam/tea-warm")
 
 (dialog-text "seam/tea-warm"
-             "while you drink, the small room edges to the table's leeward side and warms your tea from a board's width away, the way it must once have warmed socks and small fevers. it has one trick. it does its trick. the seamstress looks elsewhere with great skill."
+             "while you drink, the small room edges to the table's leeward side and warms your tea from a board's width away, the way it must once have warmed socks and small fevers."
+             :next "seam/tea-warm-s2")
+
+(dialog-text "seam/tea-warm-s2"
+             "it has one trick. it does its trick. the seamstress looks elsewhere with great skill."
              :next "seam/stray-choice")
 
 (dialog-pick "seam/stray-choice"
@@ -203,7 +231,11 @@
                  '(setf (dialog-value "seam-stray") "planted"))
 
 (dialog-text "seam/plant"
-             "the gardener comes down for it himself, which the seamstress says has not happened in her tenure. he pots the small room entire, lamp and all, in turned black earth, and promises nothing, which from him is the highest grade of promise available."
+             "the gardener comes down for it himself, which the seamstress says has not happened in her tenure."
+             :next "seam/plant-s2")
+
+(dialog-text "seam/plant-s2"
+             "he pots the small room entire, lamp and all, in turned black earth, and promises nothing, which from him is the highest grade of promise available."
              :next "seam/plant-2")
 
 (dialog-text "seam/plant-2"

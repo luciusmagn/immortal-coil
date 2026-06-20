@@ -203,7 +203,11 @@
              :next "winter/refuse-2")
 
 (dialog-text "winter/refuse-2"
-             "you last four days on flour and stubbornness while the plates come patient as weather, and on the fifth morning you eat, on the back step, fast, with your fingers, and the eating is a signature, and you sign, and the hill does not gloat. the next plate is just a plate."
+             "you last four days on flour and stubbornness while the plates come patient as weather, and on the fifth morning you eat, on the back step, fast, with your fingers, and the eating is a signature, and you sign, and the hill does not gloat."
+             :next "winter/refuse-2-s2")
+
+(dialog-text "winter/refuse-2-s2"
+             "the next plate is just a plate."
              :next "winter/plates-on")
 
 (dialog-on-enter "winter/trade"
@@ -281,7 +285,11 @@
              :next "winter/melt-2")
 
 (dialog-text "winter/melt-2"
-             "the plates stop with the snow, exactly with the snow, the way a thing ends when it is no longer needed. one morning you stand in the yard and the stump is just a stump. you miss it. you make yourself stand there until you have admitted that."
+             "the plates stop with the snow, exactly with the snow, the way a thing ends when it is no longer needed."
+             :next "winter/melt-2-s2")
+
+(dialog-text "winter/melt-2-s2"
+             "one morning you stand in the yard and the stump is just a stump. you miss it. you make yourself stand there until you have admitted that."
              :next "winter/clerk-back")
 
 (dialog-conversation "winter/clerk-back"

@@ -516,7 +516,11 @@
              :next "ship/later-log")
 
 (dialog-text "ship/later-log"
-             "the watch log is current. it is always current. you write the date, the position, the hail. the entries are all alike. you flip back through them and they do not change. somewhere back there the handwriting steadies, and after that it does not shake again."
+             "the watch log is current. it is always current. you write the date, the position, the hail. the entries are all alike."
+             :next "ship/later-log-s2")
+
+(dialog-text "ship/later-log-s2"
+             "you flip back through them and they do not change. somewhere back there the handwriting steadies, and after that it does not shake again."
              :next "ship/later-walk")
 
 (dialog-text "ship/later-walk"

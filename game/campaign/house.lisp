@@ -39,7 +39,11 @@
                      :next "house/soup")
 
 (dialog-text "house/soup"
-             "the soup is barley and carrot and exactly right, which you resent with your whole heart and eat anyway, because the body votes first. the keeper does not watch you eat. they wipe the counter and hum the two notes and leave the bread where your eyes keep going."
+             "the soup is barley and carrot and exactly right, which you resent with your whole heart and eat anyway, because the body votes first."
+             :next "house/soup-s2")
+
+(dialog-text "house/soup-s2"
+             "the keeper does not watch you eat. they wipe the counter and hum the two notes and leave the bread where your eyes keep going."
              :next "house/grace-fork")
 
 (defun house-grace-target ()
@@ -193,7 +197,11 @@
              :next "house/breakfast")
 
 (dialog-text "house/breakfast"
-             "morning is porridge with cream and the smell of the stove and frost going off the windows in lines. it is the best morning you can remember. you make yourself hold that thought still and look at it. the memory it sits on is shallow, and you know that. the porridge is warm anyway."
+             "morning is porridge with cream and the smell of the stove and frost going off the windows in lines. it is the best morning you can remember."
+             :next "house/breakfast-s2")
+
+(dialog-text "house/breakfast-s2"
+             "you make yourself hold that thought still and look at it. the memory it sits on is shallow, and you know that. the porridge is warm anyway."
              :next "house/chores")
 
 (dialog-conversation "house/chores"
@@ -282,7 +290,15 @@
              :next "house/stay-night")
 
 (dialog-text "house/stay-night"
-             "in the night the two notes move through the house below you, room to room. it is the sound a house makes when it is being checked on, when its people are being counted. the count includes you. you lie in your bed under your window and let it."
+             "in the night the two notes move through the house below you, room to room."
+             :next "house/stay-night-s2")
+
+(dialog-text "house/stay-night-s2"
+             "it is the sound a house makes when it is being checked on, when its people are being counted. the count includes you."
+             :next "house/stay-night-s3")
+
+(dialog-text "house/stay-night-s3"
+             "you lie in your bed under your window and let it."
              :next "house/last-notes")
 
 (dialog-on-enter "house/follow"

@@ -16,7 +16,11 @@
              :next "bellfall/mornings")
 
 (dialog-text "bellfall/mornings"
-             "mornings you work the oven with Toma, whose shoulder has opinions now, and who has begun, without ceremony, teaching you the travel loaf. evenings you walk the chain with Oren, whose knee predicts weather better than Nio's half charm ever did."
+             "mornings you work the oven with Toma, whose shoulder has opinions now, and who has begun, without ceremony, teaching you the travel loaf."
+             :next "bellfall/mornings-s2")
+
+(dialog-text "bellfall/mornings-s2"
+             "evenings you walk the chain with Oren, whose knee predicts weather better than Nio's half charm ever did."
              :next "bellfall/room-yours")
 
 (dialog-text "bellfall/room-yours"
@@ -57,7 +61,11 @@
              :next "bellfall/lanterns-relit")
 
 (dialog-text "bellfall/lanterns-relit"
-             "before dawn, unasked, the midsummer lanterns come out of cupboards all over the village and are lit in the windows, paper by paper, until the square is ringed with small warm lights facing north. grief reaches for whatever festival gear it can find."
+             "before dawn, unasked, the midsummer lanterns come out of cupboards all over the village and are lit in the windows, paper by paper, until the square is ringed with small warm lights facing north."
+             :next "bellfall/lanterns-relit-s2")
+
+(dialog-text "bellfall/lanterns-relit-s2"
+             "grief reaches for whatever festival gear it can find."
              :next "bellfall/pell-comes")
 
 (dialog-conversation "bellfall/pell-comes"
@@ -87,7 +95,11 @@
               :next "bellfall/set-aside")
 
 (dialog-text "bellfall/set-aside"
-             "Toma bakes through the night, and the loaf he sets at the head of the baskets is the set-aside loaf, the one his count has kept aside every day for years, unexplained, in case. this is the case. he knew it would come and not what it would be."
+             "Toma bakes through the night, and the loaf he sets at the head of the baskets is the set-aside loaf, the one his count has kept aside every day for years, unexplained, in case."
+             :next "bellfall/set-aside-s2")
+
+(dialog-text "bellfall/set-aside-s2"
+             "this is the case. he knew it would come and not what it would be."
              :next "bellfall/procession")
 
 (dialog-text "bellfall/procession"
@@ -128,7 +140,11 @@
                      :next "bellfall/grave-goods")
 
 (dialog-text "bellfall/grave-goods"
-             "the village leaves things, one at a time, nobody organizing it: the set-aside loaf, broken to share with the grave. a stick of Oren's chalk. a tin star. somebody's paper lantern, saved dry since midsummer, weighted with a pebble against the hill wind."
+             "the village leaves things, one at a time, nobody organizing it: the set-aside loaf, broken to share with the grave. a stick of Oren's chalk. a tin star."
+             :next "bellfall/grave-goods-s2")
+
+(dialog-text "bellfall/grave-goods-s2"
+             "somebody's paper lantern, saved dry since midsummer, weighted with a pebble against the hill wind."
              :next "bellfall/walk-down")
 
 (dialog-text "bellfall/walk-down"
@@ -196,7 +212,11 @@
                  '(setf (jrpg-value "bellfall-choice") "posted"))
 
 (dialog-text "bellfall/post"
-             "you write it yourself. Mira watches your spacing, corrects the weight of WAITS, and lets the kind line stand exactly as you set it: BREAKFAST INCLUDED. the notice goes south with the spring carts, two valleys over, where they do not know the hand."
+             "you write it yourself. Mira watches your spacing, corrects the weight of WAITS, and lets the kind line stand exactly as you set it: BREAKFAST INCLUDED."
+             :next "bellfall/post-s2")
+
+(dialog-text "bellfall/post-s2"
+             "the notice goes south with the spring carts, two valleys over, where they do not know the hand."
              :next "bellfall/post-spring")
 
 (dialog-text "bellfall/post-spring"

@@ -20,15 +20,27 @@
              :next "below/tally-wall")
 
 (dialog-text "below/tally-wall"
-             "one wall is the tally wall. every chalk mark you have ever seen upstairs is here in master: rows of four struck with a fifth, floor by floor, years deep. under each tally, a shelf mark. the marks upstairs are totals. the books are down here."
+             "one wall is the tally wall. every chalk mark you have ever seen upstairs is here in master: rows of four struck with a fifth, floor by floor, years deep."
+             :next "below/tally-wall-s2")
+
+(dialog-text "below/tally-wall-s2"
+             "under each tally, a shelf mark. the marks upstairs are totals. the books are down here."
              :next "below/your-shelf")
 
 (dialog-text "below/your-shelf"
-             "you find your floor's shelf because your hand finds it, the way hands do now. one ledger stands prouder than its row, recently used. the spine chalk is the name carved into the first step, letter for letter. the carving was never a warning. it is a spine label."
+             "you find your floor's shelf because your hand finds it, the way hands do now. one ledger stands prouder than its row, recently used."
+             :next "below/your-shelf-s2")
+
+(dialog-text "below/your-shelf-s2"
+             "the spine chalk is the name carved into the first step, letter for letter. the carving was never a warning. it is a spine label."
              :next "below/reading")
 
 (dialog-text "below/reading"
-             "you pull the book and open it on the shelf edge. last night, in the clerk's hand: bar lifted, third watch, lifted quiet. slept. tin balanced against door, dungeon custom, noted with approval. woke below. read the tally. left the fresh mark alone."
+             "you pull the book and open it on the shelf edge. last night, in the clerk's hand: bar lifted, third watch, lifted quiet. slept."
+             :next "below/reading-s2")
+
+(dialog-text "below/reading-s2"
+             "tin balanced against door, dungeon custom, noted with approval. woke below. read the tally. left the fresh mark alone."
              :next "below/ink-wet")
 
 (dialog-text "below/ink-wet"
@@ -48,15 +60,31 @@
              :next "below/two-walls")
 
 (dialog-text "below/two-walls"
-             "and the pacing finds you again, in the left wall, patient as bookkeeping. then, for the first time, an answer to it: a second pacing, in the right wall, half a step offset. two of them now, stereo, bracketing the stacks. the dark down here is audited in pairs."
+             "and the pacing finds you again, in the left wall, patient as bookkeeping."
+             :next "below/two-walls-s2")
+
+(dialog-text "below/two-walls-s2"
+             "then, for the first time, an answer to it: a second pacing, in the right wall, half a step offset. two of them now, stereo, bracketing the stacks."
+             :next "below/two-walls-s3")
+
+(dialog-text "below/two-walls-s3"
+             "the dark down here is audited in pairs."
              :next "below/descent-choice")
 
 (dialog-text "below/descent-choice"
-             "the stacks descend by ramps, floor under floor, and the lower floors are older: the ruled lines go brown, the spines go to leather, then to wood, then to clay. somewhere below all of it, a lamp is burning. you can smell the warm oil of it between the paper."
+             "the stacks descend by ramps, floor under floor, and the lower floors are older: the ruled lines go brown, the spines go to leather, then to wood, then to clay."
+             :next "below/descent-choice-s2")
+
+(dialog-text "below/descent-choice-s2"
+             "somewhere below all of it, a lamp is burning. you can smell the warm oil of it between the paper."
              :next "below/clay")
 
 (dialog-text "below/clay"
-             "on the last ramp you pass the oldest shelf: no books, one clay tablet, fired hard, holding a single ruled line in a hand that is the tidy hand's grandmother. you cannot read it. you do not need to. there is only one thing a building's first minute ever says: expected."
+             "on the last ramp you pass the oldest shelf: no books, one clay tablet, fired hard, holding a single ruled line in a hand that is the tidy hand's grandmother."
+             :next "below/clay-s2")
+
+(dialog-text "below/clay-s2"
+             "you cannot read it. you do not need to. there is only one thing a building's first minute ever says: expected."
              :next "below/delve")
 
 (dialog-minigame "below/delve"
@@ -172,15 +200,27 @@
                        "i am employed at the narrow place where those wants can share a desk without tearing the paper. it is not dignified work. it is necessary work."))
 
 (dialog-text "below/ribbon-book"
-             "on the desk's far corner lies one ledger apart from all the others, closed, tied shut with a ribbon gone grey. the discrepancy's book. the clerk does not look at it, with the particular skill of someone who has practiced not looking at one thing for a very long time."
+             "on the desk's far corner lies one ledger apart from all the others, closed, tied shut with a ribbon gone grey. the discrepancy's book."
+             :next "below/ribbon-book-s2")
+
+(dialog-text "below/ribbon-book-s2"
+             "the clerk does not look at it, with the particular skill of someone who has practiced not looking at one thing for a very long time."
              :next "below/your-book")
 
 (dialog-text "below/your-book"
-             "your book is already on the desk, fetched ahead of you, because the floors move what is wanted. the clerk turns it around to face you and opens it at the first page: the inn before the stairs, the stairs before the name, the name carved fresh, the dust not yet on it."
+             "your book is already on the desk, fetched ahead of you, because the floors move what is wanted."
+             :next "below/your-book-s2")
+
+(dialog-text "below/your-book-s2"
+             "the clerk turns it around to face you and opens it at the first page: the inn before the stairs, the stairs before the name, the name carved fresh, the dust not yet on it."
              :next "below/first-line")
 
 (dialog-text "below/first-line"
-             "the first line of your account predates your first step. it says: expected. the clerk taps it once. everyone's says that, the clerk says. it is the only line i am given. everything after it, you write and i take down. people get the order wrong and it costs them years."
+             "the first line of your account predates your first step. it says: expected. the clerk taps it once. everyone's says that, the clerk says."
+             :next "below/first-line-s2")
+
+(dialog-text "below/first-line-s2"
+             "it is the only line i am given. everything after it, you write and i take down. people get the order wrong and it costs them years."
              :next "below/ask-choice")
 
 (dialog-pick "below/ask-choice"
@@ -233,7 +273,11 @@
                  '(setf (dialog-value "below-asked") "took"))
 
 (dialog-text "below/take-book"
-             "you pick the book up. the clerk does not stop you, which should have been the warning. it is heavier than pages, heavier each step, and at the third step the walls go silent, both of them, because your hours have nowhere to be kept while the book is in your hands."
+             "you pick the book up. the clerk does not stop you, which should have been the warning."
+             :next "below/take-book-s2")
+
+(dialog-text "below/take-book-s2"
+             "it is heavier than pages, heavier each step, and at the third step the walls go silent, both of them, because your hours have nowhere to be kept while the book is in your hands."
              :next "below/take-book-2")
 
 (dialog-text "below/take-book-2"
@@ -261,7 +305,11 @@
              :next "below/escort")
 
 (dialog-text "below/escort"
-             "when it is time, the clerk stands, caps the pen, and the pair in the walls falls in, one each side, and the floors fold the ramps short for you, which is the building being polite. at your shelf, the book goes back in its place, prouder than its row."
+             "when it is time, the clerk stands, caps the pen, and the pair in the walls falls in, one each side, and the floors fold the ramps short for you, which is the building being polite."
+             :next "below/escort-s2")
+
+(dialog-text "below/escort-s2"
+             "at your shelf, the book goes back in its place, prouder than its row."
              :next "below/escort-pace")
 
 (dialog-text "below/escort-pace"
@@ -277,7 +325,15 @@
              :next "below/tag-truth")
 
 (dialog-text "below/tag-truth"
-             "at the bottom room the tag still lies on the made bed, ink fresh, first line legible. RETURN IF FOUND. you understand it now, from the shelving side: it is not a plea. it is processing language. everything down here is logged out, and back in, and the tag is the slip."
+             "at the bottom room the tag still lies on the made bed, ink fresh, first line legible. RETURN IF FOUND."
+             :next "below/tag-truth-s2")
+
+(dialog-text "below/tag-truth-s2"
+             "you understand it now, from the shelving side: it is not a plea. it is processing language."
+             :next "below/tag-truth-s3")
+
+(dialog-text "below/tag-truth-s3"
+             "everything down here is logged out, and back in, and the tag is the slip."
              :next "below/close-door")
 
 (dialog-text "below/close-door"

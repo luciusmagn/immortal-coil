@@ -320,7 +320,11 @@
              :next "tribunal/verdict-claimed-2")
 
 (dialog-text "tribunal/verdict-claimed-2"
-             "the sentence is read slowly, in the gymnasium, inside the painted lines: custody of years, forfeiture of honors, and the entry of his name, in ink, on the consolidated list, in order of street and not of rank. you asked for the office. the office is what you get."
+             "the sentence is read slowly, in the gymnasium, inside the painted lines: custody of years, forfeiture of honors, and the entry of his name, in ink, on the consolidated list, in order of street and not of rank."
+             :next "tribunal/verdict-claimed-2-s2")
+
+(dialog-text "tribunal/verdict-claimed-2-s2"
+             "you asked for the office. the office is what you get."
              :next "tribunal/after")
 
 (dialog-text "tribunal/verdict-denied"

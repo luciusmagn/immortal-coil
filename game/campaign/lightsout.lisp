@@ -85,7 +85,11 @@
              :next "lightsout/taper")
 
 (dialog-text "lightsout/taper"
-             "the taper itself is never offered. it rides cupped in the lamplighter's off hand, fed first at every stop, shielded with a shoulder when the dark leans in. the one protected flame on the round. the dark respects it the way a table respects the serving spoon."
+             "the taper itself is never offered. it rides cupped in the lamplighter's off hand, fed first at every stop, shielded with a shoulder when the dark leans in."
+             :next "lightsout/taper-s2")
+
+(dialog-text "lightsout/taper-s2"
+             "the one protected flame on the round. the dark respects it the way a table respects the serving spoon."
              :next "lightsout/taper-2")
 
 (dialog-text "lightsout/taper-2"
@@ -105,7 +109,11 @@
              :next "lightsout/ration-manners")
 
 (dialog-text "lightsout/ration-manners"
-             "somewhere on the round your stomach states its business, and your hand finds the ration in your pocket and stops there. never eat in front of it, you remember, before the rule was given. the lamplighter, not turning: you will do, for a surface person."
+             "somewhere on the round your stomach states its business, and your hand finds the ration in your pocket and stops there."
+             :next "lightsout/ration-manners-s2")
+
+(dialog-text "lightsout/ration-manners-s2"
+             "never eat in front of it, you remember, before the rule was given. the lamplighter, not turning: you will do, for a surface person."
              :next "lightsout/shrine-maps")
 
 (dialog-text "lightsout/shrine-maps"
@@ -162,7 +170,11 @@
              :next "lightsout/fed-after")
 
 (dialog-text "lightsout/fed-after"
-             "the change is immediate and impossible to point at: the dark around you goes from standing to sitting. the corridor's pressure eases off your ears. fed, the lamplighter says, approvingly, and to the dark, not to you: there now. and the dark, demonstrably, is there."
+             "the change is immediate and impossible to point at: the dark around you goes from standing to sitting. the corridor's pressure eases off your ears."
+             :next "lightsout/fed-after-s2")
+
+(dialog-text "lightsout/fed-after-s2"
+             "fed, the lamplighter says, approvingly, and to the dark, not to you: there now. and the dark, demonstrably, is there."
              :next "lightsout/fed-after-2")
 
 (dialog-text "lightsout/fed-after-2"
@@ -197,7 +209,11 @@
              :next "lightsout/long-count-knock")
 
 (dialog-text "lightsout/long-count-knock"
-             "the warm wall stayed, is the thing you will keep from it. unfed, unobliged, the pacing held its half step the whole way, and at the last crossing it knocked once, low, level with your hand, and you knocked back, because some accounts are kept in older coin than light."
+             "the warm wall stayed, is the thing you will keep from it."
+             :next "lightsout/long-count-knock-s2")
+
+(dialog-text "lightsout/long-count-knock-s2"
+             "unfed, unobliged, the pacing held its half step the whole way, and at the last crossing it knocked once, low, level with your hand, and you knocked back, because some accounts are kept in older coin than light."
              :next "lightsout/bracket-relit")
 
 (dialog-text "lightsout/bracket-relit"
@@ -209,7 +225,11 @@
              :next "lightsout/goodbye")
 
 (dialog-text "lightsout/goodbye"
-             "the lamplighter does not say goodbye, exactly. the taper dips once in your direction, the smallest light in the building acknowledging you over the new torch's shoulder, and the round goes on, bracket by bracket, into the dark it keeps, which keeps it back."
+             "the lamplighter does not say goodbye, exactly."
+             :next "lightsout/goodbye-s2")
+
+(dialog-text "lightsout/goodbye-s2"
+             "the taper dips once in your direction, the smallest light in the building acknowledging you over the new torch's shoulder, and the round goes on, bracket by bracket, into the dark it keeps, which keeps it back."
              :next "lightsout/rota-board")
 
 (dialog-text "lightsout/rota-board"

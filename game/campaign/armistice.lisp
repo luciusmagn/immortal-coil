@@ -21,11 +21,19 @@
              :next "armistice/corridor")
 
 (dialog-text "armistice/corridor"
-             "the corridors fill with people who have stopped walking. clerks stand with folders against their chests, looking up, the way you look up at weather. somebody laughs once, high and frightened, and claps a hand over it. the silence goes on being silence. it holds."
+             "the corridors fill with people who have stopped walking. clerks stand with folders against their chests, looking up, the way you look up at weather."
+             :next "armistice/corridor-s2")
+
+(dialog-text "armistice/corridor-s2"
+             "somebody laughs once, high and frightened, and claps a hand over it. the silence goes on being silence. it holds."
              :next "armistice/second-minute")
 
 (dialog-text "armistice/second-minute"
-             "in the second minute, somewhere down the stairwell, a door opens that has been closed for four years, by sound alone: swollen wood, a shoulder, then daylight where daylight has not been. the building begins, room by room, to remember its windows."
+             "in the second minute, somewhere down the stairwell, a door opens that has been closed for four years, by sound alone: swollen wood, a shoulder, then daylight where daylight has not been."
+             :next "armistice/second-minute-s2")
+
+(dialog-text "armistice/second-minute-s2"
+             "the building begins, room by room, to remember its windows."
              :next "armistice/tape")
 
 (dialog-text "armistice/tape"
@@ -75,7 +83,15 @@
              :next "armistice/dead-air")
 
 (dialog-text "armistice/dead-air"
-             "dead air. a minute of it. you stand with your hand on the shelf and let it run. then the voice comes back, off protocol, unprofessional, close to the microphone, and says: go home. and the clear band, for the first time in four years, goes clear."
+             "dead air. a minute of it. you stand with your hand on the shelf and let it run."
+             :next "armistice/dead-air-s2")
+
+(dialog-text "armistice/dead-air-s2"
+             "then the voice comes back, off protocol, unprofessional, close to the microphone, and says: go home."
+             :next "armistice/dead-air-s3")
+
+(dialog-text "armistice/dead-air-s3"
+             "and the clear band, for the first time in four years, goes clear."
              :next "armistice/olen-map")
 
 (dialog-conversation "armistice/olen-map"
@@ -96,7 +112,11 @@
              :next "armistice/coat")
 
 (dialog-text "armistice/coat"
-             "you walk out the front entrance without your coat, which you have not done in four years. the sentries have stopped being sentries. they are two young men standing in the sun in heavy boots. one of them has his helmet off and his face turned up to it."
+             "you walk out the front entrance without your coat, which you have not done in four years. the sentries have stopped being sentries."
+             :next "armistice/coat-s2")
+
+(dialog-text "armistice/coat-s2"
+             "they are two young men standing in the sun in heavy boots. one of them has his helmet off and his face turned up to it."
              :next "armistice/sentry-cap")
 
 (dialog-text "armistice/sentry-cap"

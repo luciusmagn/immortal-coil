@@ -349,7 +349,11 @@
             :next "facility/kettle")
 
 (dialog-text "facility/kettle"
-             "the staff room kettle is warm. there is one mug, grey, designation stenciled, and a tin of the kind of tea that exists to be acceptable to everyone. you drink it standing up, reading the notice board, the way you would in any job. for four minutes it works."
+             "the staff room kettle is warm. there is one mug, grey, designation stenciled, and a tin of the kind of tea that exists to be acceptable to everyone."
+             :next "facility/kettle-s2")
+
+(dialog-text "facility/kettle-s2"
+             "you drink it standing up, reading the notice board, the way you would in any job. for four minutes it works."
              :next "facility/locker")
 
 (dialog-on-enter "facility/locker"
@@ -380,11 +384,19 @@
                      :next "facility/notice-board")
 
 (dialog-text "facility/notice-board"
-             "by the staff room door there is a notice board, mostly thumbtacks. the one notice reads: ROTATION SCHEDULES ARE POSTED IN ADVANCE. ANY STAFF MEMBER FINDING THEIR OWN NAME FURTHER DOWN THE SCHEDULE THAN EXPECTED SHOULD CONSULT APPENDIX TWO RATHER THAN THE SCHEDULE."
+             "by the staff room door there is a notice board, mostly thumbtacks. the one notice reads: ROTATION SCHEDULES ARE POSTED IN ADVANCE."
+             :next "facility/notice-board-s2")
+
+(dialog-text "facility/notice-board-s2"
+             "ANY STAFF MEMBER FINDING THEIR OWN NAME FURTHER DOWN THE SCHEDULE THAN EXPECTED SHOULD CONSULT APPENDIX TWO RATHER THAN THE SCHEDULE."
              :next "release/second-notice")
 
 (dialog-text "facility/walk3"
-             "the walk out is yours alone tonight; M-3 stays with the binder. the painted line carries you past the curtained window, and you keep your eyes on the line the whole way, and the curtain stays a curtain, and that is the first rotation you would call easy."
+             "the walk out is yours alone tonight; M-3 stays with the binder."
+             :next "facility/walk3-s2")
+
+(dialog-text "facility/walk3-s2"
+             "the painted line carries you past the curtained window, and you keep your eyes on the line the whole way, and the curtain stays a curtain, and that is the first rotation you would call easy."
              :next "facility/clipboard")
 
 (dialog-text "facility/clipboard"

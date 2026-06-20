@@ -87,7 +87,11 @@
              :next "ledger/toma-loaf")
 
 (dialog-text "ledger/toma-loaf"
-             "the travel loaf survives the bridge because the bridge is as far as most of them get, and a loaf that comes back can be sold twice. Toma does not know that is why his recipe matters. or he knows the way bakers know things, in the hands and not the head."
+             "the travel loaf survives the bridge because the bridge is as far as most of them get, and a loaf that comes back can be sold twice."
+             :next "ledger/toma-loaf-s2")
+
+(dialog-text "ledger/toma-loaf-s2"
+             "Toma does not know that is why his recipe matters. or he knows the way bakers know things, in the hands and not the head."
              :next "ledger/oren-count")
 
 (dialog-text "ledger/oren-count"
@@ -103,7 +107,11 @@
              :next "ledger/payouts-3")
 
 (dialog-text "ledger/payouts-3"
-             "you put your finger on the arithmetic and follow it around its one closed circle. the tower makes the left-behind. the left-behind cost the village. the village posts the notice. the notice feeds the tower. the circle has no door in it anywhere."
+             "you put your finger on the arithmetic and follow it around its one closed circle. the tower makes the left-behind. the left-behind cost the village."
+             :next "ledger/payouts-3-s2")
+
+(dialog-text "ledger/payouts-3-s2"
+             "the village posts the notice. the notice feeds the tower. the circle has no door in it anywhere."
              :next "ledger/back-room")
 
 (dialog-text "ledger/back-room"
@@ -198,11 +206,19 @@
              :next "ledger/smith")
 
 (dialog-text "ledger/smith"
-             "all afternoon, from the forge at the square's edge, the sound of a sword taking an edge. the smith works with his back to the road. you ask Oren once how the smith feels about the work, and Oren says, he charges fair, in the tone of a closed gate."
+             "all afternoon, from the forge at the square's edge, the sound of a sword taking an edge. the smith works with his back to the road."
+             :next "ledger/smith-s2")
+
+(dialog-text "ledger/smith-s2"
+             "you ask Oren once how the smith feels about the work, and Oren says, he charges fair, in the tone of a closed gate."
              :next "ledger/notice-craft")
 
 (dialog-text "ledger/notice-craft"
-             "later you find the till drawer open and the blank notices in their stack, and beside them Mira's practice slate: the same words worked over and over, spacing, weight, where the kind line sits. WAITS, not LURKS. INCLUDED, not PROVIDED. craft."
+             "later you find the till drawer open and the blank notices in their stack, and beside them Mira's practice slate: the same words worked over and over, spacing, weight, where the kind line sits."
+             :next "ledger/notice-craft-s2")
+
+(dialog-text "ledger/notice-craft-s2"
+             "WAITS, not LURKS. INCLUDED, not PROVIDED. craft."
              :next "ledger/square-after")
 
 (dialog-text "ledger/square-after"

@@ -52,7 +52,11 @@
              :next "district/bells")
 
 (dialog-text "district/streets-patrol"
-             "a patrol takes you the last three streets, politely, two boys with one lantern, who believe the depot story because believing it is easier for everyone. they leave you at the parish hall. the bell is overhead now, each strike arriving through the soles of your boots."
+             "a patrol takes you the last three streets, politely, two boys with one lantern, who believe the depot story because believing it is easier for everyone."
+             :next "district/streets-patrol-s2")
+
+(dialog-text "district/streets-patrol-s2"
+             "they leave you at the parish hall. the bell is overhead now, each strike arriving through the soles of your boots."
              :next "district/bells")
 
 (dialog-text "district/bells"
@@ -139,11 +143,23 @@
                  '(setf (dialog-value "district-train") "unseen"))
 
 (dialog-text "district/enough"
-             "you turn back at the head of the rail cut. behind you, far down the grade, metal couples to metal once, softly, the way it does when a train is being made longer in the dark. you do not turn around. you will think about this later, more than the rest of it."
+             "you turn back at the head of the rail cut."
+             :next "district/enough-s2")
+
+(dialog-text "district/enough-s2"
+             "behind you, far down the grade, metal couples to metal once, softly, the way it does when a train is being made longer in the dark. you do not turn around."
+             :next "district/enough-s3")
+
+(dialog-text "district/enough-s3"
+             "you will think about this later, more than the rest of it."
              :next "district/walk-back")
 
 (dialog-text "district/siding"
-             "the siding is lit by one lamp on one pole. the train is twelve cars, doors sealed, chalk marks fresh. the cars do not steam, but the night is cold enough that they should not be warm, and when you put your glove near the boards, they are warm."
+             "the siding is lit by one lamp on one pole. the train is twelve cars, doors sealed, chalk marks fresh."
+             :next "district/siding-s2")
+
+(dialog-text "district/siding-s2"
+             "the cars do not steam, but the night is cold enough that they should not be warm, and when you put your glove near the boards, they are warm."
              :next "district/sentry")
 
 (dialog-conversation "district/sentry"
@@ -184,7 +200,11 @@
                  '(setf (dialog-value "district-train") "touched"))
 
 (dialog-text "district/hand"
-             "you stand with your glove flat against the boards. the warmth is bodies. through the wood, very small, a knock answers your hand, once, level with it, and you do not knock back, because you are the chancellor, and there is nothing your knock would be except a promise."
+             "you stand with your glove flat against the boards. the warmth is bodies."
+             :next "district/hand-s2")
+
+(dialog-text "district/hand-s2"
+             "through the wood, very small, a knock answers your hand, once, level with it, and you do not knock back, because you are the chancellor, and there is nothing your knock would be except a promise."
              :next "district/shed")
 
 (dialog-on-enter "district/back"
@@ -216,7 +236,11 @@
                      :next "district/walk-back")
 
 (dialog-text "district/walk-back"
-             "the walk back is the same streets in reverse and nothing about them is the same. the lists on the doors have stopped being paper. Brandt returns the candle to the parish hall and you wait outside, under the silent bell, in a dead man's coat."
+             "the walk back is the same streets in reverse and nothing about them is the same. the lists on the doors have stopped being paper."
+             :next "district/walk-back-s2")
+
+(dialog-text "district/walk-back-s2"
+             "Brandt returns the candle to the parish hall and you wait outside, under the silent bell, in a dead man's coat."
              :next "district/canal")
 
 (dialog-text "district/canal"
@@ -232,7 +256,15 @@
               :next "district/kitchen")
 
 (dialog-text "district/kitchen"
-             "you come in by the kitchen entrance at five. the cook does not look up. on the table by your office door, someone has left the gate log's carbon, folded once, with your name in it twice: kilometer nine, and last night. there is no note attached. the carbon is the note."
+             "you come in by the kitchen entrance at five. the cook does not look up."
+             :next "district/kitchen-s2")
+
+(dialog-text "district/kitchen-s2"
+             "on the table by your office door, someone has left the gate log's carbon, folded once, with your name in it twice: kilometer nine, and last night."
+             :next "district/kitchen-s3")
+
+(dialog-text "district/kitchen-s3"
+             "there is no note attached. the carbon is the note."
              :next "district/boots")
 
 (dialog-text "district/boots"
@@ -290,7 +322,11 @@
                  '(setf (dialog-value "district-decision") "record"))
 
 (dialog-text "district/to-record"
-             "you copy the carbon in pencil, in the small even hand, and Sorel files it where things are found again. the original you leave in the desk, slightly wrong in the drawer, so that whoever reads your drawers will believe they have found everything."
+             "you copy the carbon in pencil, in the small even hand, and Sorel files it where things are found again."
+             :next "district/to-record-s2")
+
+(dialog-text "district/to-record-s2"
+             "the original you leave in the desk, slightly wrong in the drawer, so that whoever reads your drawers will believe they have found everything."
              :next "district/rejoin")
 
 (dialog-on-enter "district/to-ash"
