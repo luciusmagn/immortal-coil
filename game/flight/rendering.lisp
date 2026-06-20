@@ -1,22 +1,7 @@
 (in-package #:immortal-coil)
 
-;;; Projection
-
-(-> flight-project (scalar scalar scalar) (values scalar scalar))
-(defun flight-project (x y z)
-  (let* ((depth (+ z 0.75))
-         (scale (/ 1.0 depth)))
-    (values (+ +flight-center-x+
-               (* x +flight-view-width+ 0.5 scale))
-            (+ +flight-center-y+
-               (* y +flight-view-height+ 0.5 scale)))))
-
-(-> flight-cockpit-position (scalar scalar) (values scalar scalar))
-(defun flight-cockpit-position (x y)
-  (values (+ +flight-center-x+
-             (* x +flight-view-width+ +flight-cockpit-scale+))
-          (+ +flight-center-y+
-             (* y +flight-view-height+ +flight-cockpit-scale+))))
+;;; Projection helpers (flight-project, flight-cockpit-position) live in
+;;; flight/minigame.lisp so the collision test can share them.
 
 (-> flight-view-left () scalar)
 (defun flight-view-left ()
@@ -64,40 +49,46 @@
           (draw-thick-line-between x4 y4 x1 y1 color thickness))))))
 
 
-;;; Tunnel
+;;; Starfield. The 3d space used to be a stack of identical bounding
+;;; rectangles. now it is star lines streaking past, which read as depth
+;;; and speed without boxing the gates in.
 
-(-> draw-flight-tunnel-rail (list) t)
-(defun draw-flight-tunnel-rail (corner)
-  (multiple-value-bind (near-x near-y)
-      (flight-project (first corner) (second corner) 0.65)
-    (multiple-value-bind (far-x far-y)
-        (flight-project (first corner) (second corner) +flight-visible-depth+)
-      (draw-thick-line-between near-x
-                               near-y
-                               far-x
-                               far-y
-                               (make-color 255 255 255 46)
-                               1.0))))
+(defconstant +flight-star-count+ 72)
 
-(-> draw-flight-tunnel-rails () t)
-(defun draw-flight-tunnel-rails ()
-  (dolist (corner '((-1.0 -1.0)
-                    (1.0 -1.0)
-                    (1.0 1.0)
-                    (-1.0 1.0)))
-    (draw-flight-tunnel-rail corner)))
+(-> flight-star-unit (flight-gate-index flight-gate-index) scalar)
+(defun flight-star-unit (index salt)
+  (let* ((h (logand (+ (* (1+ index) 374761393) (* salt 2246822519))
+                    #xffffffff))
+         (h (logand (* (logxor h (ash h -15)) 2246822519) #xffffffff))
+         (h (logand (* (logxor h (ash h -13)) 3266489917) #xffffffff)))
+    (/ (float (logxor h (ash h -16)) 1.0) 4294967296.0)))
 
-(-> draw-flight-tunnel-frames () t)
-(defun draw-flight-tunnel-frames ()
-  (loop for z from 0.7 to +flight-visible-depth+ by 0.7
-        for alpha = (flight-depth-alpha z 18 70)
-        do (draw-flight-rectangle -1.0
-                                  -1.0
-                                  1.0
-                                  1.0
-                                  z
-                                  (make-color 255 255 255 alpha)))
-  (draw-flight-tunnel-rails))
+(-> draw-flight-star (flight-gate-index scalar) t)
+(defun draw-flight-star (index distance)
+  (let* ((span +flight-visible-depth+)
+         (star-x (- (* (flight-star-unit index 1) 3.2) 1.6))
+         (star-y (- (* (flight-star-unit index 2) 2.2) 1.1))
+         (phase (* (flight-star-unit index 3) span))
+         (z (- span (mod (+ distance phase) span)))
+         (z-tail (min span (+ z 0.55))))
+    (when (> z 0.05)
+      (multiple-value-bind (near-x near-y)
+          (flight-project star-x star-y z)
+        (multiple-value-bind (far-x far-y)
+            (flight-project star-x star-y z-tail)
+          (draw-thick-line-between near-x
+                                   near-y
+                                   far-x
+                                   far-y
+                                   (make-color 255 255 255
+                                               (flight-depth-alpha z 0 150))
+                                   1.0))))))
+
+(-> draw-flight-starfield (flight-minigame) t)
+(defun draw-flight-starfield (game)
+  (let ((distance (flight-minigame-distance game)))
+    (dotimes (index +flight-star-count+)
+      (draw-flight-star index distance))))
 
 (-> draw-flight-view-border () t)
 (defun draw-flight-view-border ()
@@ -132,7 +123,7 @@
 
 (-> flight-target-gate-index (flight-minigame) flight-gate-index)
 (defun flight-target-gate-index (game)
-  (max 1 (ceiling (+ (flight-minigame-distance game) 0.25))))
+  (max 1 (ceiling (flight-minigame-distance game))))
 
 (-> draw-flight-gate-highlight (scalar scalar scalar scalar) t)
 (defun draw-flight-gate-highlight (gate-x gate-y half-size z)
@@ -165,7 +156,7 @@
 (-> draw-flight-gate (flight-minigame flight-gate-index boolean) t)
 (defun draw-flight-gate (game gate-index active-p)
   (let ((z (- gate-index (flight-minigame-distance game))))
-    (when (and (> z 0.25)
+    (when (and (> z 0.06)
                (< z +flight-visible-depth+))
       (multiple-value-bind (gate-x gate-y)
           (flight-gate-center gate-index)
@@ -425,7 +416,7 @@
 (-> draw-flight-minigame (node t) t)
 (defun draw-flight-minigame (node color)
   (let ((game (ensure-flight-minigame node)))
-    (draw-flight-tunnel-frames)
+    (draw-flight-starfield game)
     (draw-flight-gates game)
     (draw-flight-guidance game)
     (draw-flight-player game color)
