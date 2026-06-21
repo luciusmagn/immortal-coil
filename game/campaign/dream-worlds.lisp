@@ -31,14 +31,20 @@
              "the way to the court runs through a garden of doors planted in rows, each with a number painted on it, fresh. a gardener moves down the row with a brush and a bucket of white."
              :next "alice/gardener")
 
-(dialog-conversation "alice/gardener"
-                     (dialog-left "the gardener"
-                                  "mind the wet ones. we repaint the numbers nightly. they will not hold still otherwise.")
-                     (dialog-right "you"
-                                   "what were they before you painted them?")
-                     (dialog-left "the gardener"
-                                  "numbered. that is the trouble. a door takes whatever number you give it, and someone has been generous.")
-                     :next "alice/garden-count")
+(dialog-say "alice/gardener"
+            "the gardener"
+            "mind the wet ones. we repaint the numbers nightly. they will not hold still otherwise."
+            :next "alice/gardener-2")
+
+(dialog-say "alice/gardener-2"
+            "you"
+            "what were they before you painted them?"
+            :next "alice/gardener-3")
+
+(dialog-say "alice/gardener-3"
+            "the gardener"
+            "numbered. that is the trouble. a door takes whatever number you give it, and someone has been generous."
+            :next "alice/garden-count")
 
 (dialog-text "alice/garden-count"
              "you pass the painted rows without counting them. it takes more effort than it should."
@@ -48,14 +54,20 @@
              "outside the court there is a queue: the cup on a velvet cushion, the chair standing with its back straight, and the white thread coiled neatly on a nail, waiting to be called."
              :next "alice/queue-talk")
 
-(dialog-conversation "alice/queue-talk"
-                     (dialog-left "the chair"
-                                  "the defendant. good. we were told you would be late, so you are exactly on time.")
-                     (dialog-right "you"
-                                   "what are you all witnesses to?")
-                     (dialog-left "the chair"
-                                  "the room, of course. everyone here is a witness to the room. you are the only one they had to send for.")
-                     :next "alice/court")
+(dialog-say "alice/queue-talk"
+            "the chair"
+            "the defendant. good. we were told you would be late, so you are exactly on time."
+            :next "alice/queue-talk-2")
+
+(dialog-say "alice/queue-talk-2"
+            "you"
+            "what are you all witnesses to?"
+            :next "alice/queue-talk-3")
+
+(dialog-say "alice/queue-talk-3"
+            "the chair"
+            "the room, of course. everyone here is a witness to the room. you are the only one they had to send for."
+            :next "alice/court")
 
 (dialog-say "alice/court"
             "the card judge"
@@ -101,32 +113,50 @@
              "three witnesses are sworn in: the cup, the chair, and the white thread. the cup is carried. the chair walks."
              :next "alice/cup-stand")
 
-(dialog-conversation "alice/cup-stand"
-                     (dialog-left "the cup"
-                                  "i was set down full and turned over empty, or set down empty and turned over full. it was dark in the cupboard either way.")
-                     (dialog-right "you"
-                                   "is that testimony?")
-                     (dialog-left "the cup"
-                                  "it is the whole of my experience. the court asked for nothing less.")
-                     :next "alice/chair-stand")
+(dialog-say "alice/cup-stand"
+            "the cup"
+            "i was set down full and turned over empty, or set down empty and turned over full. it was dark in the cupboard either way."
+            :next "alice/cup-stand-2")
 
-(dialog-conversation "alice/chair-stand"
-                     (dialog-left "the chair"
-                                  "i asked the defendant whether they were awake. i am still waiting. i have been sat on while waiting, which i note without complaint.")
-                     (dialog-right "you"
-                                   "i never answered because i did not know.")
-                     (dialog-left "the chair"
-                                  "the witness thanks the defendant for answering at last, and notes the answer was given in court, under oath, three days late.")
-                     :next "alice/thread-stand")
+(dialog-say "alice/cup-stand-2"
+            "you"
+            "is that testimony?"
+            :next "alice/cup-stand-3")
 
-(dialog-conversation "alice/thread-stand"
-                     (dialog-left "the white thread"
-                                  "i have measured the room. four walls. one window that is sometimes a wall. doors as numbered, numbering disputed.")
-                     (dialog-right "you"
-                                   "how many doors did you find?")
-                     (dialog-left "the white thread"
-                                  "i found all of them. the court will not like the figure, so i have tied it in a knot.")
-                     :next "alice/cross-choice")
+(dialog-say "alice/cup-stand-3"
+            "the cup"
+            "it is the whole of my experience. the court asked for nothing less."
+            :next "alice/chair-stand")
+
+(dialog-say "alice/chair-stand"
+            "the chair"
+            "i asked the defendant whether they were awake. i am still waiting. i have been sat on while waiting, which i note without complaint."
+            :next "alice/chair-stand-2")
+
+(dialog-say "alice/chair-stand-2"
+            "you"
+            "i never answered because i did not know."
+            :next "alice/chair-stand-3")
+
+(dialog-say "alice/chair-stand-3"
+            "the chair"
+            "the witness thanks the defendant for answering at last, and notes the answer was given in court, under oath, three days late."
+            :next "alice/thread-stand")
+
+(dialog-say "alice/thread-stand"
+            "the white thread"
+            "i have measured the room. four walls. one window that is sometimes a wall. doors as numbered, numbering disputed."
+            :next "alice/thread-stand-2")
+
+(dialog-say "alice/thread-stand-2"
+            "you"
+            "how many doors did you find?"
+            :next "alice/thread-stand-3")
+
+(dialog-say "alice/thread-stand-3"
+            "the white thread"
+            "i found all of them. the court will not like the figure, so i have tied it in a knot."
+            :next "alice/cross-choice")
 
 (dialog-pick "alice/cross-choice"
              "the judge allows one cross-examination, on courtesy grounds."
@@ -137,44 +167,71 @@
 (dialog-on-enter "alice/cross-cup"
                  '(setf (dialog-value "alice-crossed") "cup"))
 
-(dialog-conversation "alice/cross-cup"
-                     (dialog-right "you"
-                                   "who fills you each night?")
-                     (dialog-left "the cup"
-                                  "someone with steady hands and no reflection i can hold. water has a poor memory for faces.")
-                     (dialog-right "you"
-                                   "then your testimony is hearsay.")
-                     (dialog-left "the cup"
-                                  "all water is hearsay. the court drinks it anyway.")
-                     :next "alice/unfinished")
+(dialog-say "alice/cross-cup"
+            "you"
+            "who fills you each night?"
+            :next "alice/cross-cup-2")
+
+(dialog-say "alice/cross-cup-2"
+            "the cup"
+            "someone with steady hands and no reflection i can hold. water has a poor memory for faces."
+            :next "alice/cross-cup-3")
+
+(dialog-say "alice/cross-cup-3"
+            "you"
+            "then your testimony is hearsay."
+            :next "alice/cross-cup-4")
+
+(dialog-say "alice/cross-cup-4"
+            "the cup"
+            "all water is hearsay. the court drinks it anyway."
+            :next "alice/unfinished")
 
 (dialog-on-enter "alice/cross-chair"
                  '(setf (dialog-value "alice-crossed") "chair"))
 
-(dialog-conversation "alice/cross-chair"
-                     (dialog-right "you"
-                                   "why did you ask if i was awake?")
-                     (dialog-left "the chair"
-                                  "because it is the polite form. one does not ask what one actually wonders, which is whether you can stop.")
-                     (dialog-right "you"
-                                   "stop what?")
-                     (dialog-left "the chair"
-                                  "the witness has answered enough questions truthfully for one trial, and requests a cushion.")
-                     :next "alice/unfinished")
+(dialog-say "alice/cross-chair"
+            "you"
+            "why did you ask if i was awake?"
+            :next "alice/cross-chair-2")
+
+(dialog-say "alice/cross-chair-2"
+            "the chair"
+            "because it is the polite form. one does not ask what one actually wonders, which is whether you can stop."
+            :next "alice/cross-chair-3")
+
+(dialog-say "alice/cross-chair-3"
+            "you"
+            "stop what?"
+            :next "alice/cross-chair-4")
+
+(dialog-say "alice/cross-chair-4"
+            "the chair"
+            "the witness has answered enough questions truthfully for one trial, and requests a cushion."
+            :next "alice/unfinished")
 
 (dialog-on-enter "alice/cross-thread"
                  '(setf (dialog-value "alice-crossed") "thread"))
 
-(dialog-conversation "alice/cross-thread"
-                     (dialog-right "you"
-                                   "untie the knot. how many doors?")
-                     (dialog-left "the white thread"
-                                  "objection. the knot is load-bearing.")
-                     (dialog-right "you"
-                                   "overruled. how many?")
-                     (dialog-left "the white thread"
-                                  "as many as you counted, plus the one you use. the court may do its own arithmetic.")
-                     :next "alice/unfinished")
+(dialog-say "alice/cross-thread"
+            "you"
+            "untie the knot. how many doors?"
+            :next "alice/cross-thread-2")
+
+(dialog-say "alice/cross-thread-2"
+            "the white thread"
+            "objection. the knot is load-bearing."
+            :next "alice/cross-thread-3")
+
+(dialog-say "alice/cross-thread-3"
+            "you"
+            "overruled. how many?"
+            :next "alice/cross-thread-4")
+
+(dialog-say "alice/cross-thread-4"
+            "the white thread"
+            "as many as you counted, plus the one you use. the court may do its own arithmetic."
+            :next "alice/unfinished")
 
 (dialog-text "alice/unfinished"
              "the jury writes down the room before you finish describing it."
@@ -353,14 +410,20 @@
             "a word in chambers before you go. unofficially. which is to say, pour the tea."
             :next "alice/chambers-talk")
 
-(dialog-conversation "alice/chambers-talk"
-                     (dialog-left "the card judge"
-                                  "i have sentenced eleven defendants to keep that room. you are the first the room has kept back. the court does not know what to do with reciprocity. it is not in the rules.")
-                     (dialog-right "you"
-                                   "what happened to the other eleven?")
-                     (dialog-left "the card judge"
-                                  "they wake elsewhere now, by every account comfortably. drink your tea. you take it with both hands, i am told. that will do, where you are going.")
-                     :next "alice/garden-night")
+(dialog-say "alice/chambers-talk"
+            "the card judge"
+            "i have sentenced eleven defendants to keep that room. you are the first the room has kept back. the court does not know what to do with reciprocity. it is not in the rules."
+            :next "alice/chambers-talk-2")
+
+(dialog-say "alice/chambers-talk-2"
+            "you"
+            "what happened to the other eleven?"
+            :next "alice/chambers-talk-3")
+
+(dialog-say "alice/chambers-talk-3"
+            "the card judge"
+            "they wake elsewhere now, by every account comfortably. drink your tea. you take it with both hands, i am told. that will do, where you are going."
+            :next "alice/garden-night")
 
 (dialog-text "alice/garden-night"
              "the way out runs back through the garden of doors. at night the painted numbers are drying, and the gardener walks the rows blowing on them gently, one by one, like candles he has decided not to put out."
@@ -385,14 +448,20 @@
              "they press something into your hand and leave before thanks can be arranged: the foreman's pencil, sharpened down to a thumb's length of use."
              :next "alice/gate-gardener")
 
-(dialog-conversation "alice/gate-gardener"
-                     (dialog-left "the gardener"
-                                  "leaving by the gate. good. most defendants go over the wall, and the wall counts them, and then we have to repaint.")
-                     (dialog-right "you"
-                                   "what do i owe for the gate?")
-                     (dialog-left "the gardener"
-                                  "the gate is free. the garden was the toll, and you paid it the day you walked through without counting. not many manage. the ones who do, we leave the gate unlocked for.")
-                     :next "alice/thread-out")
+(dialog-say "alice/gate-gardener"
+            "the gardener"
+            "leaving by the gate. good. most defendants go over the wall, and the wall counts them, and then we have to repaint."
+            :next "alice/gate-gardener-2")
+
+(dialog-say "alice/gate-gardener-2"
+            "you"
+            "what do i owe for the gate?"
+            :next "alice/gate-gardener-3")
+
+(dialog-say "alice/gate-gardener-3"
+            "the gardener"
+            "the gate is free. the garden was the toll, and you paid it the day you walked through without counting. not many manage. the ones who do, we leave the gate unlocked for."
+            :next "alice/thread-out")
 
 (dialog-text "alice/thread-out"
              "the white thread is tied to your wrist now. it runs out under the courtroom door, and you follow it."
@@ -407,14 +476,20 @@
              "the thread crosses the long table, between the upturned cups, and they are all upright now, all full, all steaming faintly, a table set for everyone who has ever been sentenced to a room. your old place is cleared."
              :next "alice/goodbyes")
 
-(dialog-conversation "alice/goodbyes"
-                     (dialog-left "the cup"
-                                  "you will not see us again, or you will see us constantly. the distinction is administrative.")
-                     (dialog-right "you"
-                                   "which administration?")
-                     (dialog-left "the chair"
-                                  "the room's. mind the stair. it pretends to be longer going up.")
-                     :next "alice/cups-last")
+(dialog-say "alice/goodbyes"
+            "the cup"
+            "you will not see us again, or you will see us constantly. the distinction is administrative."
+            :next "alice/goodbyes-2")
+
+(dialog-say "alice/goodbyes-2"
+            "you"
+            "which administration?"
+            :next "alice/goodbyes-3")
+
+(dialog-say "alice/goodbyes-3"
+            "the chair"
+            "the room's. mind the stair. it pretends to be longer going up."
+            :next "alice/cups-last")
 
 (dialog-on-enter "alice/cups-last"
                  '(setf (dialog-value "alice-thread-pocket") t))
