@@ -53,14 +53,20 @@
              "visiting hours are thursdays, the notice says, most days. the notice does not say which days are thursdays. you learn to tell by the corridor: on thursdays it smells faintly of tea."
              :next "kept/cup-visit")
 
-(dialog-conversation "kept/cup-visit"
-                     (dialog-left "the cup"
-                                  "i testified against you, you will recall. i have brought you tea, which is how witnesses apologize.")
-                     (dialog-right "you"
-                                   "is it from the long table?")
-                     (dialog-left "the cup"
-                                  "it is from your place at it. your place is kept cleared. that is not the same as kept empty, whatever the chair tells you.")
-                     :next "kept/cup-questions")
+(dialog-say "kept/cup-visit"
+            "the cup"
+            "i testified against you, you will recall. i have brought you tea, which is how witnesses apologize."
+            :next "kept/cup-visit-2")
+
+(dialog-say "kept/cup-visit-2"
+            "you"
+            "is it from the long table?"
+            :next "kept/cup-visit-3")
+
+(dialog-say "kept/cup-visit-3"
+            "the cup"
+            "it is from your place at it. your place is kept cleared. that is not the same as kept empty, whatever the chair tells you."
+            :next "kept/cup-questions")
 
 (dialog-interrogation "kept/cup-questions"
                       "the tea steams between you and the cup waits, with the patience of something that has nowhere it would rather be."
@@ -95,14 +101,20 @@
              "it sends a cushion instead, embroidered with a wall and a window, and the window is rendered in thread that catches the light only from where you sit. chairs know about sitting. it is their one subject, held deeply."
              :next "kept/gardener-visit")
 
-(dialog-conversation "kept/gardener-visit"
-                     (dialog-left "the gardener"
-                                  "i am not supposed to bring these in. so i have brought them in. mind the soil.")
-                     (dialog-right "you"
-                                   "doors. in pots.")
-                     (dialog-left "the gardener"
-                                  "seedlings. fives, mostly. they do well on a sill. a door does not need to open to be company. mostly they are company by leaning.")
-                     :next "kept/sill-doors")
+(dialog-say "kept/gardener-visit"
+            "the gardener"
+            "i am not supposed to bring these in. so i have brought them in. mind the soil."
+            :next "kept/gardener-visit-2")
+
+(dialog-say "kept/gardener-visit-2"
+            "you"
+            "doors. in pots."
+            :next "kept/gardener-visit-3")
+
+(dialog-say "kept/gardener-visit-3"
+            "the gardener"
+            "seedlings. fives, mostly. they do well on a sill. a door does not need to open to be company. mostly they are company by leaning."
+            :next "kept/sill-doors")
 
 (dialog-text "kept/sill-doors"
              "the door seedlings take to the sill. by the end of the season there are four small doors leaning into the light, none of them taller than the water glass, their painted numbers still wet. they do not open. they lean. it is company."
@@ -144,14 +156,20 @@
              "the appeal is heard in the same court, which has been redecorated, being moved. you are walked up through the corridor of verdicts, and the frames nod as you pass, very slightly, which frames learn to do where dusting is regular."
              :next "kept/appeal-hearing")
 
-(dialog-conversation "kept/appeal-hearing"
-                     (dialog-left "the card judge"
-                                  "the appellant appeals the keeping. the court has read the appeal twice, enjoyed it once, and denies it with courtesy. the courtesy is this: the court will also miss you when this ends, and the court does not say that to the kept.")
-                     (dialog-right "you"
-                                   "when does it end?")
-                     (dialog-left "the card judge"
-                                  "when the room forgives you. the court has no jurisdiction over that and resents it annually.")
-                     :next "kept/appeal-back")
+(dialog-say "kept/appeal-hearing"
+            "the card judge"
+            "the appellant appeals the keeping. the court has read the appeal twice, enjoyed it once, and denies it with courtesy. the courtesy is this: the court will also miss you when this ends, and the court does not say that to the kept."
+            :next "kept/appeal-hearing-2")
+
+(dialog-say "kept/appeal-hearing-2"
+            "you"
+            "when does it end?"
+            :next "kept/appeal-hearing-3")
+
+(dialog-say "kept/appeal-hearing-3"
+            "the card judge"
+            "when the room forgives you. the court has no jurisdiction over that and resents it annually."
+            :next "kept/appeal-back")
 
 (dialog-text "kept/appeal-back"
              "you are walked back down."
@@ -193,14 +211,20 @@
              "you keep the glass on its ring mark. it is not nothing. it is the whole job, in here."
              :next "kept/neighbor-visit")
 
-(dialog-conversation "kept/neighbor-visit"
-                     (dialog-left "the defendant from the queue"
-                                  "i was ahead of you in the plea line. unlawful possession of a staircase. i got the staircase. you got all this. visiting is allowed between my hearings, so i visit.")
-                     (dialog-right "you"
-                                   "how is the staircase?")
-                     (dialog-left "the defendant from the queue"
-                                  "longer going up. it pretends, you know. they all pretend. yours taps, i hear. mine creaks on the third step out of sympathy. we are luckier than the ones whose furniture says nothing.")
-                     :next "kept/seedlings-grown")
+(dialog-say "kept/neighbor-visit"
+            "the defendant from the queue"
+            "i was ahead of you in the plea line. unlawful possession of a staircase. i got the staircase. you got all this. visiting is allowed between my hearings, so i visit."
+            :next "kept/neighbor-visit-2")
+
+(dialog-say "kept/neighbor-visit-2"
+            "you"
+            "how is the staircase?"
+            :next "kept/neighbor-visit-3")
+
+(dialog-say "kept/neighbor-visit-3"
+            "the defendant from the queue"
+            "longer going up. it pretends, you know. they all pretend. yours taps, i hear. mine creaks on the third step out of sympathy. we are luckier than the ones whose furniture says nothing."
+            :next "kept/seedlings-grown")
 
 (dialog-text "kept/seedlings-grown"
              "the sill doors outgrow the sill in their fourth year and stand on the floor now, shoulder height, and the gardener measures them against the wall on visits, pencil marks and dates, the way doors are measured in houses where someone is growing."
@@ -226,14 +250,20 @@
              "you do it again the next night, once, the same place, and the night after, and it becomes the day's last entry, logged on glass."
              :next "kept/foreman-visit")
 
-(dialog-conversation "kept/foreman-visit"
-                     (dialog-left "the foreman"
-                                  "i never visit defendants. i am visiting the pencil. how is the pencil?")
-                     (dialog-right "you"
-                                   "i was never given it, here. it went to the other one. the one who went back.")
-                     (dialog-left "the foreman"
-                                  "there is no other one. there is only ever the one of you. the pencil is in your coat, where i put it. look later, not now. the bailiff counts what i carry out.")
-                     :next "kept/pencil")
+(dialog-say "kept/foreman-visit"
+            "the foreman"
+            "i never visit defendants. i am visiting the pencil. how is the pencil?"
+            :next "kept/foreman-visit-2")
+
+(dialog-say "kept/foreman-visit-2"
+            "you"
+            "i was never given it, here. it went to the other one. the one who went back."
+            :next "kept/foreman-visit-3")
+
+(dialog-say "kept/foreman-visit-3"
+            "the foreman"
+            "there is no other one. there is only ever the one of you. the pencil is in your coat, where i put it. look later, not now. the bailiff counts what i carry out."
+            :next "kept/pencil")
 
 (dialog-text "kept/pencil"
              "later, alone, you find it in the coat you did not arrive with: the foreman's pencil, sharpened to a thumb of use."

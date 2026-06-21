@@ -29,14 +29,20 @@
              "you were in it on the store bench, in one of the pieces of sleep, and you woke from it warm and frightened, and here is the warmth, keeping its side of the bargain."
              :next "house/keeper")
 
-(dialog-conversation "house/keeper"
-                     (dialog-left "the keeper"
-                                  "you found your way back. they mostly do, off the hill. sit. soup first. questions keep, soup doesn't.")
-                     (dialog-right "you"
-                                   "you were the one on the trail. with the lantern.")
-                     (dialog-left "the keeper"
-                                  "somebody has to walk the trail when one of ours is out in the dark. eat. you can hate me warm as easy as cold.")
-                     :next "house/keeper-first-word")
+(dialog-say "house/keeper"
+            "the keeper"
+            "you found your way back. they mostly do, off the hill. sit. soup first. questions keep, soup doesn't."
+            :next "house/keeper-2")
+
+(dialog-say "house/keeper-2"
+            "you"
+            "you were the one on the trail. with the lantern."
+            :next "house/keeper-3")
+
+(dialog-say "house/keeper-3"
+            "the keeper"
+            "somebody has to walk the trail when one of ours is out in the dark. eat. you can hate me warm as easy as cold."
+            :next "house/keeper-first-word")
 
 (dialog-choice-path "house/keeper-first-word"
                     "the spoon is in your hand and the keeper waits, in no hurry, for whatever you mean to say first."
@@ -119,14 +125,20 @@
 (dialog-on-enter "house/ask-cot"
                  '(setf (dialog-value "house-night") "asked"))
 
-(dialog-conversation "house/ask-cot"
-                     (dialog-left "the keeper"
-                                  "the cot. yes. that one is out on the hill tonight. second winter running. some of ours take longer to come back than others.")
-                     (dialog-right "you"
-                                   "ours.")
-                     (dialog-left "the keeper"
-                                  "you slept on that cot your first winter, before you earned the bed. you do not remember, and that is fine, and it is also why the tags. the hill is hard on remembering. eat your supper.")
-                     :next "house/supper")
+(dialog-say "house/ask-cot"
+            "the keeper"
+            "the cot. yes. that one is out on the hill tonight. second winter running. some of ours take longer to come back than others."
+            :next "house/ask-cot-2")
+
+(dialog-say "house/ask-cot-2"
+            "you"
+            "ours."
+            :next "house/ask-cot-3")
+
+(dialog-say "house/ask-cot-3"
+            "the keeper"
+            "you slept on that cot your first winter, before you earned the bed. you do not remember, and that is fine, and it is also why the tags. the hill is hard on remembering. eat your supper."
+            :next "house/supper")
 
 (dialog-on-enter "house/quiet-night"
                  '(setf (dialog-value "house-night") "quiet"))
@@ -182,14 +194,20 @@
              "you put the album back the way evidence goes back: exactly. on the stairs the third step takes your weight without a sound, because you stepped over the creak, because you knew where the creak was."
              :next "house/morning")
 
-(dialog-conversation "house/supper"
-                     (dialog-left "the keeper"
-                                  "you want to know how long. they all want how long, as if the number would do something for them.")
-                     (dialog-right "you"
-                                   "how long?")
-                     (dialog-left "the keeper"
-                                  "long enough that the county stopped writing. long enough that the letters in the boxes went quiet. you are not kept here, understand. the door stands open. that is the whole of it. the door stands open and look how that has gone.")
-                     :next "house/keeper-questions")
+(dialog-say "house/supper"
+            "the keeper"
+            "you want to know how long. they all want how long, as if the number would do something for them."
+            :next "house/supper-2")
+
+(dialog-say "house/supper-2"
+            "you"
+            "how long?"
+            :next "house/supper-3")
+
+(dialog-say "house/supper-3"
+            "the keeper"
+            "long enough that the county stopped writing. long enough that the letters in the boxes went quiet. you are not kept here, understand. the door stands open. that is the whole of it. the door stands open and look how that has gone."
+            :next "house/keeper-questions")
 
 (dialog-interrogation "house/keeper-questions"
                       "the keeper lets the kettle tick and waits, the way someone waits who has answered all of this before and minded none of it."
@@ -236,14 +254,20 @@
              "you make yourself hold that thought still and look at it. the memory it sits on is shallow, and you know that. the porridge is warm anyway."
              :next "house/chores")
 
-(dialog-conversation "house/chores"
-                     (dialog-left "the keeper"
-                                  "the wood wants splitting. only if you like. the hill brings down weather early this year.")
-                     (dialog-right "you"
-                                   "and if i don't like?")
-                     (dialog-left "the keeper"
-                                  "then the wood stays whole and you stay warm anyway. nobody pays their way here. that has never once been the arrangement. the arrangement is older and worse: you are looked after.")
-                     :next "house/woodpile")
+(dialog-say "house/chores"
+            "the keeper"
+            "the wood wants splitting. only if you like. the hill brings down weather early this year."
+            :next "house/chores-2")
+
+(dialog-say "house/chores-2"
+            "you"
+            "and if i don't like?"
+            :next "house/chores-3")
+
+(dialog-say "house/chores-3"
+            "the keeper"
+            "then the wood stays whole and you stay warm anyway. nobody pays their way here. that has never once been the arrangement. the arrangement is older and worse: you are looked after."
+            :next "house/woodpile")
 
 (dialog-text "house/woodpile"
              "you split wood until noon because your hands wanted it. the maul is the right weight. the rounds stand the right height."
@@ -344,14 +368,20 @@
              "where the creek cuts under the roots you find him: the cot's owner, grey-faced, tag on his wrist, pressed into the dark under the boughs exactly where you pressed yourself two nights ago."
              :next "house/mirror")
 
-(dialog-conversation "house/mirror"
-                     (dialog-left "the man from the cot"
-                                  "stay back. stay where you are.")
-                     (dialog-right "you"
-                                   "i'm not with the house. i ran too. two nights ago i was under these same trees.")
-                     (dialog-left "the man from the cot"
-                                  "look at your hands. they're scrubbed. there's a key on your belt and bread on your breath, and you walked up here the way they walk. two nights. it took you two nights.")
-                     :next "house/mirror-after")
+(dialog-say "house/mirror"
+            "the man from the cot"
+            "stay back. stay where you are."
+            :next "house/mirror-2")
+
+(dialog-say "house/mirror-2"
+            "you"
+            "i'm not with the house. i ran too. two nights ago i was under these same trees."
+            :next "house/mirror-3")
+
+(dialog-say "house/mirror-3"
+            "the man from the cot"
+            "look at your hands. they're scrubbed. there's a key on your belt and bread on your breath, and you walked up here the way they walk. two nights. it took you two nights."
+            :next "house/mirror-after")
 
 (dialog-text "house/mirror-after"
              "he goes off through the pines, quiet and practiced, and does not look back, and you stand by the creek with your scrubbed hands out from your sides like things you are carrying for someone else."

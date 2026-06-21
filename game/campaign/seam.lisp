@@ -79,14 +79,20 @@
              "one is enough, she says, taking the needle back. now you know the weight of the work, and you will not tell anyone above that it is cruel, because you have felt it, and it is not cruel. it is exact. they are different trades."
              :next "seam/seamstress-talk")
 
-(dialog-conversation "seam/seamstress-talk"
-                     (dialog-left "the seamstress"
-                                  "you came down the thread. that is allowed and not advised, which describes most of the ways people arrive anywhere.")
-                     (dialog-right "you"
-                                   "what is this place?")
-                     (dialog-left "the seamstress"
-                                  "where rooms go when nobody keeps them. somebody has to take them apart kindly. the alternative is that they come apart unkindly, up there, around whoever is left in them.")
-                     :next "seam/seamstress-questions")
+(dialog-say "seam/seamstress-talk"
+            "the seamstress"
+            "you came down the thread. that is allowed and not advised, which describes most of the ways people arrive anywhere."
+            :next "seam/seamstress-talk-2")
+
+(dialog-say "seam/seamstress-talk-2"
+            "you"
+            "what is this place?"
+            :next "seam/seamstress-talk-3")
+
+(dialog-say "seam/seamstress-talk-3"
+            "the seamstress"
+            "where rooms go when nobody keeps them. somebody has to take them apart kindly. the alternative is that they come apart unkindly, up there, around whoever is left in them."
+            :next "seam/seamstress-questions")
 
 (dialog-interrogation "seam/seamstress-questions"
                       "her needle does not stop moving while she talks. there is room to ask, between one stitch and the next."
@@ -105,14 +111,20 @@
                        :speaker "the seamstress"
                        "longer than the rooms i unpick, shorter than the thread. time is measured in stitches here, and i have lost the count kindly, which is the only way to lose it."))
 
-(dialog-conversation "seam/economy"
-                     (dialog-left "the seamstress"
-                                  "the thread goes to the spools. the spools go to the gardener. he plants what i wind, and doors come up, and rooms are sewn from them for the next keepers. nothing here is lost. it is only no longer addressed.")
-                     (dialog-right "you"
-                                   "the garden grows out of this?")
-                     (dialog-left "the seamstress"
-                                  "every garden grows out of something like this. the gardener and i do not socialize. compost and seed never do. the thread manages the relationship.")
-                     :next "seam/number-tin")
+(dialog-say "seam/economy"
+            "the seamstress"
+            "the thread goes to the spools. the spools go to the gardener. he plants what i wind, and doors come up, and rooms are sewn from them for the next keepers. nothing here is lost. it is only no longer addressed."
+            :next "seam/economy-2")
+
+(dialog-say "seam/economy-2"
+            "you"
+            "the garden grows out of this?"
+            :next "seam/economy-3")
+
+(dialog-say "seam/economy-3"
+            "the seamstress"
+            "every garden grows out of something like this. the gardener and i do not socialize. compost and seed never do. the thread manages the relationship."
+            :next "seam/number-tin")
 
 (dialog-text "seam/number-tin"
              "by her elbow, a biscuit tin of flaked-off numbers, swept from the corners: threes gone soft, sevens curled like bark. the gardener paints his new doors from this tin, she says. numbers are reused."
@@ -162,14 +174,20 @@
              "it stops when you stop. it pretends to be a drift. rooms are bad at pretending."
              :next "seam/stray-history")
 
-(dialog-conversation "seam/stray-history"
-                     (dialog-left "the seamstress"
-                                  "that one came down early. its keeper grew, which is not the keeper's fault and not the room's, and it will not lie flat for the needle. it has been following my visitors for years. ignore it and it will settle.")
-                     (dialog-right "you"
-                                   "and if i don't ignore it?")
-                     (dialog-left "the seamstress"
-                                  "then you will be making a promise, and i sew promises, so i can tell you the thread they take. all of it. promises take all of it.")
-                     :next "seam/stray-close")
+(dialog-say "seam/stray-history"
+            "the seamstress"
+            "that one came down early. its keeper grew, which is not the keeper's fault and not the room's, and it will not lie flat for the needle. it has been following my visitors for years. ignore it and it will settle."
+            :next "seam/stray-history-2")
+
+(dialog-say "seam/stray-history-2"
+            "you"
+            "and if i don't ignore it?"
+            :next "seam/stray-history-3")
+
+(dialog-say "seam/stray-history-3"
+            "the seamstress"
+            "then you will be making a promise, and i sew promises, so i can tell you the thread they take. all of it. promises take all of it."
+            :next "seam/stray-close")
 
 (dialog-text "seam/stray-close"
              "the small room comes a board's width closer while you are not looking, and arranges its unraveled window to face you, the way a dog arranges its ears."
@@ -187,14 +205,20 @@
              "it does not need to. the white thread on your wrist runs to it, and hums very slightly, like a held breath."
              :next "seam/spool-truth")
 
-(dialog-conversation "seam/spool-truth"
-                     (dialog-left "the seamstress"
-                                  "yes. your room is sewn from here, like all of them. the court's thread was never the court's. keeping a room is what keeps the stitches in. that is all keeping has ever been.")
-                     (dialog-right "you"
-                                   "and if i stop?")
-                     (dialog-left "the seamstress"
-                                  "then one day the thread goes slack, and i wind, and the spool fills, and the glass comes down to the shelf, full, at its line. i am not threatening you. i am telling you what i do for a living. somebody tells the keepers. it has come to be me.")
-                     :next "seam/sit")
+(dialog-say "seam/spool-truth"
+            "the seamstress"
+            "yes. your room is sewn from here, like all of them. the court's thread was never the court's. keeping a room is what keeps the stitches in. that is all keeping has ever been."
+            :next "seam/spool-truth-2")
+
+(dialog-say "seam/spool-truth-2"
+            "you"
+            "and if i stop?"
+            :next "seam/spool-truth-3")
+
+(dialog-say "seam/spool-truth-3"
+            "the seamstress"
+            "then one day the thread goes slack, and i wind, and the spool fills, and the glass comes down to the shelf, full, at its line. i am not threatening you. i am telling you what i do for a living. somebody tells the keepers. it has come to be me."
+            :next "seam/sit")
 
 (dialog-text "seam/sit"
              "she pours you tea. some hospitality is structural. the cup she pours it into has a chip you recognize. you do not ask. the not-asking is in your voice when you thank her, and she nods. learned manners. the kind this place teaches."
@@ -303,14 +327,20 @@
              "the same breath. the whole garden breathes it."
              :next "seam/gate-out")
 
-(dialog-conversation "seam/gate-out"
-                     (dialog-left "the gardener"
-                                  "you have been to see her. the coat says so. the gate is still free. the toll for down there is paid in different coin, and you have paid it, by the look of you.")
-                     (dialog-right "you"
-                                   "she says she sews straight.")
-                     (dialog-left "the gardener"
-                                  "she does. tell nobody up here i agreed. compost and seed, you understand. the thread manages the relationship.")
-                     :next "seam/gate-look-back")
+(dialog-say "seam/gate-out"
+            "the gardener"
+            "you have been to see her. the coat says so. the gate is still free. the toll for down there is paid in different coin, and you have paid it, by the look of you."
+            :next "seam/gate-out-2")
+
+(dialog-say "seam/gate-out-2"
+            "you"
+            "she says she sews straight."
+            :next "seam/gate-out-3")
+
+(dialog-say "seam/gate-out-3"
+            "the gardener"
+            "she does. tell nobody up here i agreed. compost and seed, you understand. the thread manages the relationship."
+            :next "seam/gate-look-back")
 
 (dialog-text "seam/gate-look-back"
              "at the gate you look back once, which is allowed from gates, and the garden at night is doing what it always does: rows of doors asleep on their feet."
