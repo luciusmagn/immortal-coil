@@ -5,14 +5,20 @@
 
 (dialog-particles "district/advice" :ash :fade-seconds 4.0)
 
-(dialog-conversation "district/advice"
-                     (dialog-left "Sorel"
-                                  "chancellor, no. the gate logs. whatever you see there, the log will say you saw it, and the log will not say why.")
-                     (dialog-right "you"
-                                   "i have read your columns twice. i want to read the district once.")
-                     (dialog-left "Sorel"
-                                  "then take Brandt, take a plain coat, and do not sign anything. not a receipt. not a condolence. nothing with your hand on it leaves that district.")
-                     :next "district/coat")
+(dialog-say "district/advice"
+            "Sorel"
+            "chancellor, no. the gate logs. whatever you see there, the log will say you saw it, and the log will not say why."
+            :next "district/advice-2")
+
+(dialog-say "district/advice-2"
+            "you"
+            "i have read your columns twice. i want to read the district once."
+            :next "district/advice-3")
+
+(dialog-say "district/advice-3"
+            "Sorel"
+            "then take Brandt, take a plain coat, and do not sign anything. not a receipt. not a condolence. nothing with your hand on it leaves that district."
+            :next "district/coat")
 
 (dialog-text "district/coat"
              "Brandt brings two coats from the clerks' rack, wool, unmarked, smelling of other men's tobacco. yours is tight across the shoulders. his fits. neither of you says anything about the rack having coats to spare."
@@ -30,14 +36,20 @@
              "the bells start when you cross the canal. not an alarm. a slow count, struck by hand, the strikes uneven the way a tired arm is uneven. in the office, behind glass and tape, you had taken the unevenness for distance."
              :next "district/checkpoint")
 
-(dialog-conversation "district/checkpoint"
-                     (dialog-left "a sentry"
-                                  "curfew, grandfathers. papers.")
-                     (dialog-right "you"
-                                   "night shift, rail depot. we are late.")
-                     (dialog-left "a sentry"
-                                  "everyone at the depot is late. it is that kind of depot. go by Tanners Row, the long way. you do not want the short way tonight.")
-                     :next "district/maze-setup")
+(dialog-say "district/checkpoint"
+            "a sentry"
+            "curfew, grandfathers. papers."
+            :next "district/checkpoint-2")
+
+(dialog-say "district/checkpoint-2"
+            "you"
+            "night shift, rail depot. we are late."
+            :next "district/checkpoint-3")
+
+(dialog-say "district/checkpoint-3"
+            "a sentry"
+            "everyone at the depot is late. it is that kind of depot. go by Tanners Row, the long way. you do not want the short way tonight."
+            :next "district/maze-setup")
 
 (dialog-text "district/maze-setup"
              "Tanners Row is barricaded at the far end. the long way becomes the longer way, lefts and rights through a district closed up tight around the curfew."
@@ -65,14 +77,20 @@
              "the ringer is not a priest. he is a clerk in fingerless gloves with a list nailed to the post beside the rope, and he strikes once per name, reading by a shielded candle, pausing between names to rest his arm."
              :next "district/ringer")
 
-(dialog-conversation "district/ringer"
-                     (dialog-left "the ringer"
-                                  "if you are here for someone, the list is in order of street, not name. take the candle. bring it back.")
-                     (dialog-right "you"
-                                   "how long is the list tonight?")
-                     (dialog-left "the ringer"
-                                  "shorter than the bell makes it sound. longer than yesterday. it has been longer than yesterday for eleven days.")
-                     :next "district/lists")
+(dialog-say "district/ringer"
+            "the ringer"
+            "if you are here for someone, the list is in order of street, not name. take the candle. bring it back."
+            :next "district/ringer-2")
+
+(dialog-say "district/ringer-2"
+            "you"
+            "how long is the list tonight?"
+            :next "district/ringer-3")
+
+(dialog-say "district/ringer-3"
+            "the ringer"
+            "shorter than the bell makes it sound. longer than yesterday. it has been longer than yesterday for eleven days."
+            :next "district/lists")
 
 (dialog-text "district/lists"
              "the lists are everywhere once you know their shape. nailed to doors, slid behind window glass, chalked on the school gate and half washed off."
@@ -82,14 +100,20 @@
              "names in ink, and against the names, in pencil, single words: REROUTED. HELD. ASK. the pencil hand is always the same. someone walks this district every day, keeping the lists agreeing."
              :next "district/woman")
 
-(dialog-conversation "district/woman"
-                     (dialog-left "an old woman"
-                                  "sir. you have a list face. is Anders Vasik on yours? car four, they said. three weeks monday.")
-                     (dialog-right "you"
-                                   "i do not have a list. i am sorry.")
-                     (dialog-left "an old woman"
-                                  "no, you have one. yours is the big one, i think. when you find it, he is spelled with one s. they keep adding the second s and then he is two people, and nobody can find either of them.")
-                     :next "district/vasik")
+(dialog-say "district/woman"
+            "an old woman"
+            "sir. you have a list face. is Anders Vasik on yours? car four, they said. three weeks monday."
+            :next "district/woman-2")
+
+(dialog-say "district/woman-2"
+            "you"
+            "i do not have a list. i am sorry."
+            :next "district/woman-3")
+
+(dialog-say "district/woman-3"
+            "an old woman"
+            "no, you have one. yours is the big one, i think. when you find it, he is spelled with one s. they keep adding the second s and then he is two people, and nobody can find either of them."
+            :next "district/vasik")
 
 (dialog-text "district/vasik"
              "at the parish hall, while the ringer rests his arm, Brandt runs a finger down the bell list by candlelight. Vasik, Anders, with two s's, struck once eleven days ago."
@@ -127,14 +151,20 @@
              "numbers, in groups, with the receiver lying on the desk beside a tin clock. nobody is on the other end at this hour. the protocol does not say the line must be answered. it says the count must be read."
              :next "district/counting")
 
-(dialog-conversation "district/counting"
-                     (dialog-left "Brandt"
-                                  "that is the broadcast, chancellor. or its little brother. the station reads what the clerks read in. there will be a room like this in every district.")
-                     (dialog-right "you"
-                                   "and the clear band carries it to whoever keeps the big list.")
-                     (dialog-left "Brandt"
-                                  "to whoever keeps the big list. which is kept where lists are kept. one floor under your office, i would think. i have never checked. checking is on the list of things that get a man rerouted.")
-                     :next "district/siding-choice")
+(dialog-say "district/counting"
+            "Brandt"
+            "that is the broadcast, chancellor. or its little brother. the station reads what the clerks read in. there will be a room like this in every district."
+            :next "district/counting-2")
+
+(dialog-say "district/counting-2"
+            "you"
+            "and the clear band carries it to whoever keeps the big list."
+            :next "district/counting-3")
+
+(dialog-say "district/counting-3"
+            "Brandt"
+            "to whoever keeps the big list. which is kept where lists are kept. one floor under your office, i would think. i have never checked. checking is on the list of things that get a man rerouted."
+            :next "district/siding-choice")
 
 (dialog-pick "district/siding-choice"
              "past the barn, the rail cut runs toward the siding. the bell has stopped. your feet are already cold."
@@ -164,14 +194,20 @@
              "the cars do not steam, but the night is cold enough that they should not be warm, and when you put your glove near the boards, they are warm."
              :next "district/sentry")
 
-(dialog-conversation "district/sentry"
-                     (dialog-left "the sentry"
-                                  "good evening, chancellor.")
-                     (dialog-right "you"
-                                   "you know me.")
-                     (dialog-left "the sentry"
-                                  "i opened a gate for you once, at kilometer nine. or i will have. the gate log is not particular about order. it only wants your name, and it has it.")
-                     :next "district/train-choice")
+(dialog-say "district/sentry"
+            "the sentry"
+            "good evening, chancellor."
+            :next "district/sentry-2")
+
+(dialog-say "district/sentry-2"
+            "you"
+            "you know me."
+            :next "district/sentry-3")
+
+(dialog-say "district/sentry-3"
+            "the sentry"
+            "i opened a gate for you once, at kilometer nine. or i will have. the gate log is not particular about order. it only wants your name, and it has it."
+            :next "district/train-choice")
 
 (dialog-pick "district/train-choice"
              "the sentry stands aside from the nearest car. it is an invitation, or it is a record being made. maybe both."
@@ -228,14 +264,20 @@
              "the shed is full and the train is twelve cars and the arithmetic of that stands in the doorway with you."
              :next "district/receipts")
 
-(dialog-conversation "district/receipts"
-                     (dialog-left "the sentry"
-                                  "we issue a receipt for everything. that is the regulation and i keep it. fourteen hundred receipts since the spring.")
-                     (dialog-right "you"
-                                   "how many have been reclaimed?")
-                     (dialog-left "the sentry"
-                                  "the regulation does not have a column for that. i added one myself, in pencil, on the last page. it is easy to keep. it has one number in it and the number has not changed.")
-                     :next "district/walk-back")
+(dialog-say "district/receipts"
+            "the sentry"
+            "we issue a receipt for everything. that is the regulation and i keep it. fourteen hundred receipts since the spring."
+            :next "district/receipts-2")
+
+(dialog-say "district/receipts-2"
+            "you"
+            "how many have been reclaimed?"
+            :next "district/receipts-3")
+
+(dialog-say "district/receipts-3"
+            "the sentry"
+            "the regulation does not have a column for that. i added one myself, in pencil, on the last page. it is easy to keep. it has one number in it and the number has not changed."
+            :next "district/walk-back")
 
 (dialog-text "district/walk-back"
              "the walk back is the same streets in reverse and nothing about them is the same. the lists on the doors have stopped being paper."
@@ -281,23 +323,35 @@
              "you put on the clean boots. they fit exactly as well as yesterday. this morning that feels like an accusation."
              :next "district/vey")
 
-(dialog-conversation "district/vey"
-                     (dialog-left "Vey"
-                                  "you were seen, chancellor. i say this as a friend. a chancellor in a borrowed coat, at a siding, at night. there are two stories that explains, and only one of them keeps the government standing.")
-                     (dialog-right "you"
-                                   "the cars are warm, Vey.")
-                     (dialog-left "Vey"
-                                  "the cars are the district's contribution, moving on schedule, over a signature this office honors. you have seen the war from the map for two years. i would not recommend seeing it from the ground. the ground is not your office.")
-                     :next "district/sorel-after")
+(dialog-say "district/vey"
+            "Vey"
+            "you were seen, chancellor. i say this as a friend. a chancellor in a borrowed coat, at a siding, at night. there are two stories that explains, and only one of them keeps the government standing."
+            :next "district/vey-2")
 
-(dialog-conversation "district/sorel-after"
-                     (dialog-left "Sorel"
-                                  "you went. i can see it on you. nothing you signed, i hope.")
-                     (dialog-right "you"
-                                   "nothing i signed. Sorel, the lists in pencil. one hand, all of them, the whole district.")
-                     (dialog-left "Sorel"
-                                  "yes. mine. somebody must keep the district's books agreeing, chancellor, or when this is over, nobody will be findable again. i go thursdays, with the bread van. you are not the only one who reads columns until they are streets.")
-                     :next "district/sorel-questions")
+(dialog-say "district/vey-2"
+            "you"
+            "the cars are warm, Vey."
+            :next "district/vey-3")
+
+(dialog-say "district/vey-3"
+            "Vey"
+            "the cars are the district's contribution, moving on schedule, over a signature this office honors. you have seen the war from the map for two years. i would not recommend seeing it from the ground. the ground is not your office."
+            :next "district/sorel-after")
+
+(dialog-say "district/sorel-after"
+            "Sorel"
+            "you went. i can see it on you. nothing you signed, i hope."
+            :next "district/sorel-after-2")
+
+(dialog-say "district/sorel-after-2"
+            "you"
+            "nothing i signed. Sorel, the lists in pencil. one hand, all of them, the whole district."
+            :next "district/sorel-after-3")
+
+(dialog-say "district/sorel-after-3"
+            "Sorel"
+            "yes. mine. somebody must keep the district's books agreeing, chancellor, or when this is over, nobody will be findable again. i go thursdays, with the bread van. you are not the only one who reads columns until they are streets."
+            :next "district/sorel-questions")
 
 (dialog-interrogation "district/sorel-questions"
                       "Sorel sets the pencil down. there are twenty minutes before the bell, and she does not spend them hurrying."
