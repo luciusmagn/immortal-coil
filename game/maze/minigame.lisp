@@ -82,13 +82,22 @@
 (defun dream-maze-clamp-value (value min max)
   (min max (max min value)))
 
+(defun dream-maze-spawn-angle ()
+  "Face an open neighbour of the (1,1) spawn so the player never opens the
+maze staring straight into a wall."
+  (flet ((open-p (cell-x cell-y)
+           (char/= (char (aref *dream-maze-map* cell-y) cell-x) #\#)))
+    (cond ((open-p 2 1) 0.0)                 ; east
+          ((open-p 1 2) (float (/ pi 2) 1.0)) ; south
+          (t 0.0))))
+
 (-> make-fresh-dream-maze-minigame (node) dream-maze-minigame)
 (defun make-fresh-dream-maze-minigame (node)
   (setf *dream-maze-map* (generate-dream-maze-map))
   (make-dream-maze-minigame :node-id (node-id node)
                             :x 1.5
                             :y 1.5
-                            :angle 0.0
+                            :angle (dream-maze-spawn-angle)
                             :elapsed 0.0
                             :step-distance 0.0))
 

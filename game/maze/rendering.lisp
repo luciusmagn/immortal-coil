@@ -185,7 +185,6 @@
 
 (-> draw-dream-maze-exit-frame (scalar scalar scalar character) t)
 (defun draw-dream-maze-exit-frame (screen-x center-y distance cell)
-  (declare (ignore cell))
   (let* ((height (max 58.0
                       (min +dream-maze-view-height+
                            (* (dream-maze-wall-height distance) 0.9))))
@@ -195,7 +194,10 @@
          (top (max +dream-maze-view-top+ (- center-y (/ height 2.0))))
          (bottom (min (dream-maze-view-bottom) (+ center-y (/ height 2.0))))
          (label-size (round (max 12.0 (min 22.0 (/ width 3.4)))))
-         (label-y (+ top (* (- bottom top) 0.23))))
+         (label-y (+ top (* (- bottom top) 0.23)))
+         ;; each exit names itself (left / upper / right) so the three are
+         ;; told apart, not three identical "EXIT" doorways
+         (label (string-upcase (dream-maze-exit-name cell))))
     (draw-dream-maze-black-rect (+ left 5)
                                 (+ top 5)
                                 (max 1 (- width 10))
@@ -225,7 +227,7 @@
                              bottom
                              (make-color 255 255 255 245)
                              3.0)
-    (draw-centered-text "EXIT"
+    (draw-centered-text label
                         screen-x
                         label-y
                         label-size
