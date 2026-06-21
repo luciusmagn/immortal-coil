@@ -8,7 +8,7 @@
              :next "release/notice-choice")
 
 (dialog-pick "release/notice-choice"
-             "the thumbtacks hold the notice the way thumbtacks hold everything here: provisionally, forever."
+             "the thumbtacks hold the notice the way they hold everything here. loosely, and for years."
              (dialog-option "leave it for the day staff" "facility/walk3")
              (dialog-option "take it down to M-3" "release/ask"))
 
@@ -26,15 +26,15 @@
               :next "release/wind-down")
 
 (dialog-text "release/wind-down"
-             "the decommissioning is not a day. it is a season of rotations, each quieter. the kettle's tea tin is not replaced when it empties."
+             "the decommissioning is not a day. it is a season of rotations, each one quieter. the tea tin is not replaced when it empties."
              :next "release/wind-down-2")
 
 (dialog-text "release/wind-down-2"
-             "the staff sheet's column of designations grows shorter from the bottom, departures initialed by departures, until most mornings the page is you, M-3, and the date."
+             "the column of designations on the staff sheet grows shorter from the bottom, departures initialed by departures. most mornings the page is you, M-3, and the date."
              :next "release/schedule-climb")
 
 (dialog-text "release/schedule-climb"
-             "you find your own name climbing the rotation schedule week by week as the names below it conclude, and you consult appendix two about it, per the notice, and appendix two says what it has always said: do not correct the subject."
+             "your own name climbs the rotation schedule week by week, as the names below it conclude. you consult appendix two, per the notice. it says what it always says. do not correct the subject."
              :next "release/schedule-climb-2")
 
 (dialog-text "release/schedule-climb-2"
@@ -46,7 +46,7 @@
              :next "release/quiet-wing-2")
 
 (dialog-text "release/quiet-wing-2"
-             "half the doors stand propped open on rubber wedges, rooms with their curtains down folded on the beds, and the corridor's air moves differently with nothing closed against it. buildings go loose at the end, like handwriting."
+             "half the doors stand propped open on rubber wedges. inside, curtains are down, folded on the beds. the corridor air moves differently with nothing closed against it."
              :next "release/even-doors")
 
 (dialog-text "release/even-doors"
@@ -54,11 +54,11 @@
              :next "release/even-doors-2")
 
 (dialog-text "release/even-doors-2"
-             "rooms, all of them, each with its bed and night stand and small table, each made, each empty, their curtains already down. some have been empty so long the air inside has its own weather."
+             "rooms, all of them. each with a bed, a night stand, a small table. each made, each empty, the curtains already down. some have been empty a long time."
              :next "release/even-files")
 
 (dialog-text "release/even-files"
-             "their files came through the archive thin as letters: subjects concluded, subjects transferred, subjects released in years signed by initials that stopped being letters generations of staff ago."
+             "their files came through the archive thin as letters. subjects concluded, subjects transferred, subjects released, in years signed by initials worn down generations ago."
              :next "release/even-files-2")
 
 (dialog-text "release/even-files-2"
@@ -79,19 +79,19 @@
              :next "release/tide-out")
 
 (dialog-text "release/tide-out"
-             "the archive has been emptying for weeks, oldest first, the shelves clearing from the far end like a tide going out. the gaps are not relabeled."
+             "the archive has been emptying for weeks, oldest first, the shelves clearing from the far end. the gaps are not relabeled."
              :next "release/tide-out-s2")
 
 (dialog-text "release/tide-out-s2"
-             "the gaps are the labels now: a wall of spaces in the rerouting hand, each exactly the size of what stood in it."
+             "the gaps are the labels now. a wall of spaces, each the size of what stood in it."
              :next "release/incinerator")
 
 (dialog-text "release/incinerator"
-             "the incinerator room is small, clean, and warm the way the brass handle is warm. the hatch stands open at waist height."
+             "the incinerator room is small and clean, and warm the way the brass handle is warm. the hatch stands open at waist height."
              :next "release/incinerator-s2")
 
 (dialog-text "release/incinerator-s2"
-             "beside it, a sign-off sheet, ruled for four lines, and a pen on a chain that has never had to reach this far down the corridor before."
+             "beside it, a sign-off sheet, ruled for four lines, and a pen on a chain."
              :next "release/burn-choice")
 
 (dialog-pick "release/burn-choice"
@@ -104,7 +104,7 @@
                  '(setf (dialog-value "release-burn") "order"))
 
 (dialog-text "release/burn-order"
-             "you process them in order, spine out to the last inch, each one going in warm-edge-first the way files go that have been read recently, or that are always warm, and you initial four lines in a hand that stays steady because you have given it no chance to read."
+             "you process them in order, spine out to the last inch. each goes in warm-edge first. you initial four lines. your hand stays steady because you have given it no chance to read."
              :next "release/smoke")
 
 (dialog-on-enter "release/burn-read"
@@ -127,19 +127,19 @@
                      (dialog-right "you"
                                    "and the places in the files?")
                      (dialog-left "M-3"
-                                  "places get on with themselves. the files were never the places. they were the looking. we are not burning anywhere. we are closing our eyes politely.")
+                                  "places get on with themselves. the files were never the places. they were the looking. we are not burning anywhere. we are only stopping looking.")
                      :next "release/burn-after-ask")
 
 (dialog-text "release/burn-after-ask"
-             "you process them with that held in both hands like the trolley bar. four files, four lines, four sets of initials, and the obligation to keep current going up the flue in order."
+             "you process them with that in mind. four files, four lines, four sets of initials. the obligation to keep them current goes up the flue in order."
              :next "release/smoke")
 
 (dialog-text "release/smoke"
-             "the smoke is supposed to smell like paper. it does not. it goes salt, then pine, then bell metal, then warm bread, in order, one breath each, and M-3 stands with you through all four breaths with his eyes shut, which for M-3 is a wake."
+             "the smoke is supposed to smell like paper. it does not. it goes salt, then pine, then bell metal, then warm bread, one breath each. M-3 stands with you through all four breaths with his eyes shut."
              :next "release/room-file")
 
 (dialog-text "release/room-file"
-             "the heavy file is last on the trolley, alone now. ROOM. you lift it toward the hatch and M-3's hand arrives on the spine, flat, final. ROOM is not processed, he says. ROOM is released. different chapter. bring the trolley."
+             "the heavy file is last on the trolley, alone now. ROOM. you lift it toward the hatch. M-3's hand comes down on the spine, flat. ROOM is not processed, he says. ROOM is released. different chapter. bring the trolley."
              :next "release/rooms")
 
 (dialog-scene "release/rooms"
@@ -147,15 +147,15 @@
               :next "release/curtain-down")
 
 (dialog-text "release/curtain-down"
-             "at the observation window, M-3 takes the curtain down himself, rings one at a time, slower than anyone, and folds it into a square that gets smaller than cloth should fold."
+             "at the observation window, M-3 takes the curtain down himself, rings one at a time, slower than anyone, and folds it into a small square."
              :next "release/curtain-down-2")
 
 (dialog-text "release/curtain-down-2"
-             "the glass is just glass with both sides lit. the room beyond is made, empty, and waiting the way furniture waits."
+             "the glass is just glass with both sides lit. the room beyond is made and empty."
              :next "release/bed-empty")
 
 (dialog-text "release/bed-empty"
-             "the bed is empty and the subject is not in containment and nobody says missing, and nobody ever will again, because release means this: not that the subject goes, but that the looking stops."
+             "the bed is empty. the subject is not in containment. nobody says missing, and nobody will again. release does not mean the subject goes. it means the looking stops."
              :next "release/bed-empty-2")
 
 (dialog-text "release/bed-empty-2"
@@ -163,11 +163,11 @@
              :next "release/each-room")
 
 (dialog-text "release/each-room"
-             "the releasing goes room by room, M-3 and you, down the even doors. in each: the inventory read aloud once, bed one, night stand one, the room's last sentence spoken into it by a human voice."
+             "the releasing goes room by room, you and M-3, down the even doors. in each, the inventory read aloud once. bed, one. night stand, one. the room's last sentence, in a human voice."
              :next "release/each-room-2")
 
 (dialog-text "release/each-room-2"
-             "then the wedge under the door, kicked true. a room is released the way a colleague is seen off. the handbook does not require the reading aloud. M-3 requires it."
+             "then the wedge under the door, kicked true. the handbook does not require the reading aloud. M-3 requires it."
              :next "release/glass-walk")
 
 (dialog-text "release/glass-walk"
@@ -175,20 +175,20 @@
              :next "release/glass-walk-2")
 
 (dialog-text "release/glass-walk-2"
-             "M-3 carries it out of the room himself, level, full to the line, down the painted line at a procession's pace, and stands it on the standing desk beside the sign-in sheet. someone will be along, he says, to the desk, not to you."
+             "M-3 carries it out of the room himself, level, full to the line, down the painted line at a slow pace. he stands it on the desk beside the sign-in sheet. someone will be along, he says, to the desk, not to you."
              :next "release/last-tea")
 
 (dialog-text "release/last-tea"
-             "the kettle has enough in the tin for two last mugs, and you have them standing up at the notice board, you and M-3, reading thumbtacks."
+             "the tin has enough for two last mugs. you have them standing at the notice board, you and M-3, reading thumbtacks."
              :next "release/last-tea-2")
 
 (dialog-text "release/last-tea-2"
-             "you drink them the way you would in any job, on any last day. for four minutes it works, which you both know is the tea's full operating range."
+             "you drink them the way you would in any job, on any last day. for four minutes it works. you both know that is all it does."
              :next "release/surplus")
 
 (dialog-say "release/surplus"
             "M-3"
-            "now the surplus. staff may claim released furnishings against signature. it is the handbook's one kindness and it is in the last chapter with everything else true. the form is short."
+            "now the surplus. staff may claim released furnishings against signature. it is the handbook's one kindness, in the last chapter with everything else true. the form is short."
             :next "release/form")
 
 (dialog-text "release/form"
@@ -209,7 +209,7 @@
              :next "release/sign-bed-s2")
 
 (dialog-text "release/sign-bed-s2"
-             "the signature comes out steadier than you meant it to, the way it did at the court of the long table, the way it does everywhere they hand you your own effects, and M-3 strikes the other lines with a ruler, fair to the last."
+             "the signature comes out steadier than you meant it to. M-3 strikes the other lines with a ruler, fair to the last."
              :next "release/carbon")
 
 (dialog-on-enter "release/sign-all"
@@ -220,14 +220,14 @@
              :next "release/sign-all-s2")
 
 (dialog-text "release/sign-all-s2"
-             "the whole room, against one signature, condition kept, and signing it feels less like acquiring furniture than like adopting a dog that has already been sleeping at your door for years."
+             "the whole room, against one signature, condition kept. it does not feel like acquiring furniture. it feels like keeping something that was already yours."
              :next "release/carbon")
 
 (dialog-on-enter "release/decline"
                  '(setf (dialog-value "release-signed") "declined"))
 
 (dialog-text "release/decline"
-             "you decline. M-3 nods, rules the form void, and the furnishings are carried to the corridor's end, where they stand together under a dust sheet like a held breath."
+             "you decline. M-3 nods and rules the form void. the furnishings are carried to the corridor's end and stand together under a dust sheet."
              :next "release/decline-2")
 
 (dialog-text "release/decline-2"
@@ -235,23 +235,23 @@
              :next "release/carbon")
 
 (dialog-text "release/carbon"
-             "the form's carbon goes into the heavy file. ROOM takes it the way the shelf used to take returns, with a soft fit, and M-3 ties the file shut with archive ribbon, grey."
+             "the form's carbon goes into the heavy file. ROOM takes it with a soft fit. M-3 ties the file shut with grey archive ribbon."
              :next "release/carbon-2")
 
 (dialog-text "release/carbon-2"
-             "he carries it to the archive, which is now one room long and holds exactly one file, correctly shelved, in a building with no one left to sign it out."
+             "he carries it to the archive. one room, one file, correctly shelved, in a building with no one left to sign it out."
              :next "release/chit")
 
 (dialog-text "release/chit"
-             "your copy of the form folds into a chit that sits in your pocket with no weight at all, and you keep your hand on it anyway. it is the first document this building has ever issued you to keep."
+             "your copy folds into a chit. it sits in your pocket weightless, and you keep your hand on it anyway. it is the first document this building has issued you to keep."
              :next "release/chit-2")
 
 (dialog-text "release/chit-2"
-             "everything else was initialed and surrendered. this one is yours, the way the bed is now yours: by the last chapter."
+             "everything else was initialed and surrendered. this one is yours, the way the bed is yours now. by the last chapter."
              :next "release/m3-out")
 
 (dialog-text "release/m3-out"
-             "M-3 signs the staff sheet last, all the way down at the bottom of a column of his own initials going back further than the paper should hold, and from the binder he takes one page, folds it once, and puts it inside his coat."
+             "M-3 signs the staff sheet last, at the bottom of a long column of his own initials. from the binder he takes one page, folds it once, and puts it inside his coat."
              :next "release/m3-out-2")
 
 (dialog-text "release/m3-out-2"
@@ -263,7 +263,7 @@
              :next "release/page-guess-2")
 
 (dialog-text "release/page-guess-2"
-             "you have read his column long enough to know where the paper has been touched soft: it is the line, years down, where his initials change from one letter to another, the morning a designation became a name to somebody, or stopped being one."
+             "you have read his column long enough to know where the paper is worn soft. it is the line, years down, where his initials change from one letter to another. the morning a designation became a name, or stopped being one."
              :next "release/page-guess-3")
 
 (dialog-text "release/page-guess-3"
@@ -271,15 +271,15 @@
              :next "release/coats")
 
 (dialog-text "release/coats"
-             "at the lockers he hangs his grey coat on the rack, and you understand the older coat that has always hung behind yours."
+             "at the lockers he hangs his grey coat on the rack. now you understand the older coat that always hung behind yours."
              :next "release/coats-2")
 
 (dialog-text "release/coats-2"
-             "its elbows are gone soft. every locker in this row holds two coats, the issued one and the predecessor's, all the way down the row, all the way down the years. the facility does not hire. it rotates. today the rotation ends."
+             "its elbows are gone soft. every locker in the row holds two coats, the issued one and the predecessor's, all the way down. the facility does not hire. it rotates. today the rotation ends."
              :next "release/scrubber")
 
 (dialog-text "release/scrubber"
-             "behind you, at the wing's far end, a machine you have never seen comes out of a door you have never counted and begins to follow the painted line, scrubbing it up as it goes, slow, thorough, at procession pace."
+             "behind you, at the far end, a machine you have never seen comes out of a door you have never counted. it follows the painted line, scrubbing it up as it goes, slow and thorough."
              :next "release/scrubber-2")
 
 (dialog-text "release/scrubber-2"
@@ -287,27 +287,27 @@
              :next "release/scrubber-window")
 
 (dialog-text "release/scrubber-window"
-             "at the observation window the scrubber pauses, sensor down, over the place where the line bends toward the glass, where every watcher who ever walked this wing slowed without knowing it."
+             "at the observation window the scrubber pauses, sensor down, over the place where the line bends toward the glass. every watcher who walked this wing slowed there without knowing it."
              :next "release/scrubber-window-2")
 
 (dialog-text "release/scrubber-window-2"
-             "the machine holds there the length of a held breath, four counts, then scrubs the bend like any other yard of paint. that is the difference between procedure and the people who keep it."
+             "the machine holds there four counts, then scrubs the bend like any other yard of paint."
              :next "release/walk-ahead")
 
 (dialog-text "release/walk-ahead"
-             "you and M-3 walk the line out ahead of the scrubber, your pace set by its hum, and there is no hurry in it and no stopping either."
+             "you and M-3 walk the line out ahead of the scrubber, your pace set by its hum. there is no hurry in it, and no stopping either."
              :next "release/walk-ahead-2")
 
 (dialog-text "release/walk-ahead-2"
-             "every step you take lasts exactly as long as you need it to. that is a fair description of every corridor you have ever walked."
+             "every step takes as long as it needs to."
              :next "release/lights")
 
 (dialog-text "release/lights"
-             "at the door with the brass handle, the building's lights go off in order, away from the desk and back, the dimming you know from the hem and the drill."
+             "at the door with the brass handle, the building's lights go off in order, away from the desk and back. you know the sequence from the hem, and the drill."
              :next "release/lights-2")
 
 (dialog-text "release/lights-2"
-             "it is performed once at full scale, unhurried. the last light to go is the one over the standing desk, where the glass of water stands full to the line in the dark."
+             "it runs once, at full scale, unhurried. the last light to go is over the standing desk, where the glass of water stands full to the line in the dark."
              :next "release/handle")
 
 (dialog-text "release/handle"
@@ -315,7 +315,7 @@
              :next "release/handle-s2")
 
 (dialog-text "release/handle-s2"
-             "on the other side of the door, nobody has just let go of it, for the first time, because the other side of the door is now where everything else is, and M-3 holds it for you, and follows, and lets it close."
+             "on the other side of the door, for the first time, nobody has just let go of it. M-3 holds it for you, and follows, and lets it close."
              :next "release/handle-s3")
 
 (dialog-text "release/handle-s3"
@@ -323,11 +323,11 @@
              :next "release/hum-stops")
 
 (dialog-text "release/hum-stops"
-             "through the closed door, faint, the scrubber's hum finishes its last yard and stops, and the silence after it is the building's first unlogged minute in living procedure."
+             "through the closed door, faint, the scrubber's hum finishes its last yard and stops. the silence after it is the building's first unlogged minute."
              :next "release/hum-stops-2")
 
 (dialog-text "release/hum-stops-2"
-             "it goes on, and nobody initials it, and that is what released means, finally: minutes that belong to no column."
+             "it goes on, and nobody initials it. that is what released means. minutes that belong to no column."
              :next "release/goodbye")
 
 (dialog-conversation "release/goodbye"
@@ -340,9 +340,9 @@
                      :next "release/delivery")
 
 (dialog-text "release/delivery"
-             "delivery is immediate. sleep arrives the way the trays arrived, during an interval that contains no one, and somewhere a bed, one, night stand, one, glass, one, full to the line."
+             "delivery is immediate. sleep arrives the way the trays did, during an interval that contains no one. somewhere a bed, one. night stand, one. glass, one, full to the line."
              :next "release/delivery-2")
 
 (dialog-text "release/delivery-2"
-             "condition kept. it stands ready where it has always stood, in the room you wake in, which you have signed for now, which was always going to be the last line of the form."
+             "condition kept. it stands ready where it has always stood, in the room you wake in. you have signed for it now. that was always going to be the last line of the form."
              :next "base/awake")
