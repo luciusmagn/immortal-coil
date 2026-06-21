@@ -73,6 +73,9 @@
         (when (and (eq *mode* :game)
                    (editor-active-p))
           (draw-editor-overlay))
+        ;; corner HUD on top of the world, but never over the editor chrome
+        (unless (and (eq *mode* :game) (editor-active-p))
+          (draw-hud))
         (when (eq *mode* :menu)
           (draw-company-label))
         (draw-screen-fade)

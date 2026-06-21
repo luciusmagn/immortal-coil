@@ -171,6 +171,8 @@
 
                  (:file "pause")
 
+                 (:file "hud")
+
                  (:file "renderer")
                  (:file "main")))))
 
