@@ -8,8 +8,7 @@
 ;;; player or mod renders whatever it likes. The HUD is suppressed while the
 ;;; editor is active so it never overlaps the editor chrome.
 
-(defconstant +hud-text-size+ 16)
-(defconstant +hud-margin+ 14.0)
+(defconstant +hud-text-size+ 18)
 
 (defparameter *hud-build-sbcl-version* (lisp-implementation-version)
   "The SBCL version captured when this file loads, i.e. the build's SBCL.")
@@ -73,9 +72,14 @@ point: (set-hud-slot :bottom-right (lambda () (format nil \"fps ~d\" (fps))))."
 
 (-> draw-hud () t)
 (defun draw-hud ()
-  (let ((right  (- +virtual-width+ +hud-margin+))
-        (bottom (- +virtual-height+ +hud-margin+ +hud-text-size+)))
-    (draw-hud-slot :top-left     +hud-margin+ +hud-margin+ nil)
-    (draw-hud-slot :top-right    right        +hud-margin+ t)
-    (draw-hud-slot :bottom-left  +hud-margin+ bottom       nil)
-    (draw-hud-slot :bottom-right right        bottom       t)))
+  ;; share the company label's insets so the corners match its padding exactly
+  (let ((left   +company-label-left-padding+)
+        (right  (- +virtual-width+ +company-label-right-padding+))
+        (top    +company-label-bottom-padding+)
+        (bottom (- +virtual-height+
+                   +company-label-bottom-padding+
+                   +hud-text-size+)))
+    (draw-hud-slot :top-left     left  top    nil)
+    (draw-hud-slot :top-right    right top    t)
+    (draw-hud-slot :bottom-left  left  bottom nil)
+    (draw-hud-slot :bottom-right right bottom t)))
