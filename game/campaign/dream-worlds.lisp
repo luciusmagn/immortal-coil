@@ -436,7 +436,7 @@
                  :success "rogue/entrance"
                  :failure "rogue/entrance")
 
-(dialog-particles "rogue/entrance" :rising :fade-seconds 2.5)
+(dialog-particles "rogue/entrance" :rogue-glyphs :fade-seconds 2.5)
 
 (dialog-text "rogue/entrance"
              "the upper exit opens onto a dungeon floor drawn in hard white lines."

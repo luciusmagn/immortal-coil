@@ -100,6 +100,7 @@
                    (:file "snow")
                    (:file "ash")
                    (:file "motes")
+                   (:file "rogue-glyphs")
                    (:file "field")))
 
                  (:file "play-state")
