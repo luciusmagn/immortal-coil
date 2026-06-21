@@ -220,6 +220,14 @@ Future writing should soften the branch trigger. The player should not feel that
 
 The matchbook path leads to a straight-faced fantasy adventure.
 
+REWRITE IN PROGRESS (2026-06-22): the path's worldbuilding is being reset into
+Carcosa, the world of *The King in Yellow*. The demon lord becomes the King in
+Yellow — the maddened ship-captain from the `mutiny/` bad branch, whose loop
+broke into Carcosa. The familiar JRPG frame is kept as the surface. Full design
+in `docs/king-in-yellow.md`. The path carries the one sanctioned color in the
+B&W game: a yellow (`#ffff00`) crown marker. The "Author truth" below is the
+original frame, preserved because the early route still reads that way.
+
 Author truth:
 
 - It should initially read as a bog-standard JRPG demon-lord quest.
