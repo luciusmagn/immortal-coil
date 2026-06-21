@@ -34,14 +34,20 @@
              "two knocks, a pause, one knock. you are awake before the second knock, and dressed."
              :next "war/aide")
 
-(dialog-conversation "war/aide"
-                     (dialog-left "Brandt"
-                                  "you slept four hours, chancellor. the eastern line held.")
-                     (dialog-right "you"
-                                   "and the city?")
-                     (dialog-left "Brandt"
-                                  "the third district is still ringing. the cabinet is waiting.")
-                     :next "war/corridor")
+(dialog-say "war/aide"
+            "Brandt"
+            "you slept four hours, chancellor. the eastern line held."
+            :next "war/aide-2")
+
+(dialog-say "war/aide-2"
+            "you"
+            "and the city?"
+            :next "war/aide-3")
+
+(dialog-say "war/aide-3"
+            "Brandt"
+            "the third district is still ringing. the cabinet is waiting."
+            :next "war/corridor")
 
 (dialog-text "war/corridor"
              "the corridor is carpeted and dim, every window taped and curtained. Brandt walks half a step behind with a folder he does not offer you."
@@ -155,14 +161,20 @@
              "you asked for an hour. the folder splits the night between both positions. neither held. the word pending appears eleven times."
              :next "war/figures-after")
 
-(dialog-conversation "war/figures-after"
-                     (dialog-left "Brandt"
-                                  "the cabinet convenes at eight. minister Vey asked for you beforehand. alone.")
-                     (dialog-right "you"
-                                   "and the thick folder?")
-                     (dialog-left "Brandt"
-                                  "supply manifests. Sorel flagged them. i would read them first, chancellor.")
-                     :next "war/manifests")
+(dialog-say "war/figures-after"
+            "Brandt"
+            "the cabinet convenes at eight. minister Vey asked for you beforehand. alone."
+            :next "war/figures-after-2")
+
+(dialog-say "war/figures-after-2"
+            "you"
+            "and the thick folder?"
+            :next "war/figures-after-3")
+
+(dialog-say "war/figures-after-3"
+            "Brandt"
+            "supply manifests. Sorel flagged them. i would read them first, chancellor."
+            :next "war/manifests")
 
 (dialog-text "war/manifests"
              "the manifests cover the tuesday trains. four were rerouted from the third district the night the bells began. Sorel has paired what was loaded against what arrived."
@@ -199,38 +211,56 @@
 (dialog-on-enter "war/vey"
                  '(setf (dialog-value "war-confidant") "vey"))
 
-(dialog-conversation "war/vey"
-                     (dialog-left "Vey"
-                                  "the third district is asking who moved their trains. i can give them an answer that is not your signature.")
-                     (dialog-right "you"
-                                   "in exchange for what?")
-                     (dialog-left "Vey"
-                                  "emergency powers, on the table this morning. signed in front of the cabinet, in your steadiest hand.")
-                     :next "war/day2-bell")
+(dialog-say "war/vey"
+            "Vey"
+            "the third district is asking who moved their trains. i can give them an answer that is not your signature."
+            :next "war/vey-2")
+
+(dialog-say "war/vey-2"
+            "you"
+            "in exchange for what?"
+            :next "war/vey-3")
+
+(dialog-say "war/vey-3"
+            "Vey"
+            "emergency powers, on the table this morning. signed in front of the cabinet, in your steadiest hand."
+            :next "war/day2-bell")
 
 (dialog-on-enter "war/sorel"
                  '(setf (dialog-value "war-confidant") "sorel"))
 
-(dialog-conversation "war/sorel"
-                     (dialog-left "Sorel"
-                                  "four trains, chancellor. flour, fuel, winter coats, and one car that is not on any manifest at all.")
-                     (dialog-right "you"
-                                   "where did they go?")
-                     (dialog-left "Sorel"
-                                  "the order says the depot at kilometer nine. there is no depot at kilometer nine. there is a fence.")
-                     :next "war/day2-bell")
+(dialog-say "war/sorel"
+            "Sorel"
+            "four trains, chancellor. flour, fuel, winter coats, and one car that is not on any manifest at all."
+            :next "war/sorel-2")
+
+(dialog-say "war/sorel-2"
+            "you"
+            "where did they go?"
+            :next "war/sorel-3")
+
+(dialog-say "war/sorel-3"
+            "Sorel"
+            "the order says the depot at kilometer nine. there is no depot at kilometer nine. there is a fence."
+            :next "war/day2-bell")
 
 (dialog-on-enter "war/olen"
                  '(setf (dialog-value "war-confidant") "olen"))
 
-(dialog-conversation "war/olen"
-                     (dialog-left "Olen"
-                                  "i know this order. a courier woke me for it tuesday night. you dictated it through the door.")
-                     (dialog-right "you"
-                                   "you heard my voice?")
-                     (dialog-left "Olen"
-                                  "i heard a voice that knew the codes, chancellor. at two in the morning, through a door, that is the same thing.")
-                     :next "war/day2-bell")
+(dialog-say "war/olen"
+            "Olen"
+            "i know this order. a courier woke me for it tuesday night. you dictated it through the door."
+            :next "war/olen-2")
+
+(dialog-say "war/olen-2"
+            "you"
+            "you heard my voice?"
+            :next "war/olen-3")
+
+(dialog-say "war/olen-3"
+            "Olen"
+            "i heard a voice that knew the codes, chancellor. at two in the morning, through a door, that is the same thing."
+            :next "war/day2-bell")
 
 (dialog-text "war/day2-bell"
              "the eight o'clock bell rings once. under it, for a moment, the distant bells of the third district keep their own time."
@@ -243,16 +273,25 @@
               "the cabinet room. eight o'clock."
               :next "war/decree")
 
-(dialog-conversation "war/decree"
-                     (dialog-left "Vey"
-                                  "the decree consolidates rail, censorship, and the district police under this office until the all-clear.")
-                     (dialog-left "Olen"
-                                  "there has been no all-clear since tuesday. minister Vey is asking for them permanently.")
-                     (dialog-right "you"
-                                   "and if i do not sign?")
-                     (dialog-left "Vey"
-                                  "then the third district learns whose signature moved their winter coats.")
-                     :next "war/decree-choice")
+(dialog-say "war/decree"
+            "Vey"
+            "the decree consolidates rail, censorship, and the district police under this office until the all-clear."
+            :next "war/decree-2")
+
+(dialog-say "war/decree-2"
+            "Olen"
+            "there has been no all-clear since tuesday. minister Vey is asking for them permanently."
+            :next "war/decree-3")
+
+(dialog-say "war/decree-3"
+            "you"
+            "and if i do not sign?"
+            :next "war/decree-4")
+
+(dialog-say "war/decree-4"
+            "Vey"
+            "then the third district learns whose signature moved their winter coats."
+            :next "war/decree-choice")
 
 (dialog-pick "war/decree-choice"
              "the decree lies beside the rerouting order. the hands match."
@@ -290,14 +329,20 @@
 (dialog-on-enter "war/km-brandt"
                  '(setf (dialog-value "war-km-nine") "brandt"))
 
-(dialog-conversation "war/km-brandt"
-                     (dialog-left "Brandt"
-                                  "there is a fence and a gate and a siding. the unlisted car is there, sealed.")
-                     (dialog-right "you"
-                                   "and inside?")
-                     (dialog-left "Brandt"
-                                  "i was not cleared to open it. chancellor, the gate log already had my name in it. i have never been there.")
-                     :next "war/night-office")
+(dialog-say "war/km-brandt"
+            "Brandt"
+            "there is a fence and a gate and a siding. the unlisted car is there, sealed."
+            :next "war/km-brandt-2")
+
+(dialog-say "war/km-brandt-2"
+            "you"
+            "and inside?"
+            :next "war/km-brandt-3")
+
+(dialog-say "war/km-brandt-3"
+            "Brandt"
+            "i was not cleared to open it. chancellor, the gate log already had my name in it. i have never been there."
+            :next "war/night-office")
 
 (dialog-on-enter "war/km-night"
                  '(setf (dialog-value "war-km-nine") "self"))
@@ -365,14 +410,20 @@
              "the table that passed the decree met again last night, without you. the minutes list you as absent with apologies. you sent no apologies."
              :next "war/day3-brandt")
 
-(dialog-conversation "war/day3-brandt"
-                     (dialog-left "Brandt"
-                                  "Sorel is waiting in the map room. she has been there since five.")
-                     (dialog-right "you"
-                                   "with the ledger?")
-                     (dialog-left "Brandt"
-                                  "with the ledger, and with yesterday's broadcast log. chancellor, she found what the numbers are.")
-                     :next #'war-numbers-target)
+(dialog-say "war/day3-brandt"
+            "Brandt"
+            "Sorel is waiting in the map room. she has been there since five."
+            :next "war/day3-brandt-2")
+
+(dialog-say "war/day3-brandt-2"
+            "you"
+            "with the ledger?"
+            :next "war/day3-brandt-3")
+
+(dialog-say "war/day3-brandt-3"
+            "Brandt"
+            "with the ledger, and with yesterday's broadcast log. chancellor, she found what the numbers are."
+            :next #'war-numbers-target)
 
 (dialog-text "war/numbers-yours"
              "you bring the page you wrote at the night office. Sorel sets it beside the kilometer nine manifest, and the columns agree: car weights, head counts, departure times. the station has been reading inventory."
@@ -382,14 +433,20 @@
              "Sorel transcribed last night's broadcast herself. set against the kilometer nine manifest, the columns agree: car weights, head counts, departure times. the station has been reading inventory."
              :next "war/numbers-after")
 
-(dialog-conversation "war/numbers-after"
-                     (dialog-left "Sorel"
-                                  "head counts, chancellor. the cars are not carrying coats.")
-                     (dialog-right "you"
-                                   "whose counts?")
-                     (dialog-left "Sorel"
-                                  "the third district's. the bells have been ringing exactly as long as the broadcasts. i checked twice.")
-                     :next "war/day3-choice")
+(dialog-say "war/numbers-after"
+            "Sorel"
+            "head counts, chancellor. the cars are not carrying coats."
+            :next "war/numbers-after-2")
+
+(dialog-say "war/numbers-after-2"
+            "you"
+            "whose counts?"
+            :next "war/numbers-after-3")
+
+(dialog-say "war/numbers-after-3"
+            "Sorel"
+            "the third district's. the bells have been ringing exactly as long as the broadcasts. i checked twice."
+            :next "war/day3-choice")
 
 (dialog-pick "war/day3-choice"
              "Sorel closes the ledger and waits. the map room has one door."
@@ -401,26 +458,38 @@
 (dialog-on-enter "war/accuse"
                  '(setf (dialog-value "war-day3") "accused"))
 
-(dialog-conversation "war/accuse"
-                     (dialog-left "Vey"
-                                  "an inventory broadcast. yes. continuity of government requires knowing what the districts hold.")
-                     (dialog-right "you"
-                                   "the cars hold people.")
-                     (dialog-left "Vey"
-                                  "the cars hold the district's contribution, chancellor, ordered over your signature. shall i read it to the table?")
-                     :next "war/day3-close")
+(dialog-say "war/accuse"
+            "Vey"
+            "an inventory broadcast. yes. continuity of government requires knowing what the districts hold."
+            :next "war/accuse-2")
+
+(dialog-say "war/accuse-2"
+            "you"
+            "the cars hold people."
+            :next "war/accuse-3")
+
+(dialog-say "war/accuse-3"
+            "Vey"
+            "the cars hold the district's contribution, chancellor, ordered over your signature. shall i read it to the table?"
+            :next "war/day3-close")
 
 (dialog-on-enter "war/seal"
                  '(setf (dialog-value "war-day3") "sealed"))
 
-(dialog-conversation "war/seal"
-                     (dialog-left "Olen"
-                                  "i can put a company on the siding by noon. they will need a written order.")
-                     (dialog-right "you"
-                                   "you will have it in my hand.")
-                     (dialog-left "Olen"
-                                  "in your hand, chancellor. watch it being written, and so will i.")
-                     :next "war/day3-close")
+(dialog-say "war/seal"
+            "Olen"
+            "i can put a company on the siding by noon. they will need a written order."
+            :next "war/seal-2")
+
+(dialog-say "war/seal-2"
+            "you"
+            "you will have it in my hand."
+            :next "war/seal-3")
+
+(dialog-say "war/seal-3"
+            "Olen"
+            "in your hand, chancellor. watch it being written, and so will i."
+            :next "war/day3-close")
 
 (dialog-on-enter "war/wait-move"
                  '(setf (dialog-value "war-day3") "waited"))
@@ -464,14 +533,20 @@
               "the fourth morning."
               :next "war/brandt-last")
 
-(dialog-conversation "war/brandt-last"
-                     (dialog-left "Brandt"
-                                  "the pencil copy is filed, chancellor. filed where things are found again, which is not the same cabinet as filed.")
-                     (dialog-right "you"
-                                   "Brandt. when this is over. what will it have been for?")
-                     (dialog-left "Brandt"
-                                  "for the ones who get the version with the all-clear in it. someone has to live in that version. it will not be us.")
-                     :next "war/day4-close")
+(dialog-say "war/brandt-last"
+            "Brandt"
+            "the pencil copy is filed, chancellor. filed where things are found again, which is not the same cabinet as filed."
+            :next "war/brandt-last-2")
+
+(dialog-say "war/brandt-last-2"
+            "you"
+            "Brandt. when this is over. what will it have been for?"
+            :next "war/brandt-last-3")
+
+(dialog-say "war/brandt-last-3"
+            "Brandt"
+            "for the ones who get the version with the all-clear in it. someone has to live in that version. it will not be us."
+            :next "war/day4-close")
 
 (dialog-text "war/day4-close"
              "the eight o'clock bell rings. you put on yesterday's coat, take the new key, and go down to the cabinet room."
