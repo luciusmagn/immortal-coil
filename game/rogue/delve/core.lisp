@@ -4,7 +4,7 @@
 ;;; a config prefix so autosaves can resume a long delve.
 ;;;
 ;;; Map glyphs: # wall, . floor, @ spawn, * chalk mark, m hunter,
-;;; G/B/O monsters, ^ trap, : ration, ! potion, ? map scroll,
+;;; b/g/o monsters (bat/goblin/orc), ^ trap, : ration, ! potion, ? map scroll,
 ;;; >/< stairs internally render as %, , is the bottom.
 
 (defconstant +delve-cell+ 28)
@@ -169,7 +169,7 @@ failed tries, one open interior room with synthesized centers."
                      (setf (aref grid cy cx) glyph))))))
         (scatter #\m hunters)
         (dotimes (i monsters)
-          (scatter (nth (get-random-value 0 2) '(#\G #\B #\O)) 1))
+          (scatter (nth (get-random-value 0 2) '(#\g #\b #\o)) 1))
         (scatter #\* (max 1 (floor items 2)))
         (scatter #\: (max 1 (floor (1+ items) 3)))
         (scatter #\! 1)
@@ -307,22 +307,22 @@ failed tries, one open interior room with synthesized centers."
             control)))
 
 (defun delve-monster-name (glyph)
-  (case (char-upcase glyph)
-    (#\B "bat")
-    (#\G "goblin")
-    (#\O "orc")
+  (case (char-downcase glyph)
+    (#\b "bat")
+    (#\g "goblin")
+    (#\o "orc")
     (t nil)))
 
 (defun delve-monster-attack-text (glyph)
-  (case (char-upcase glyph)
-    (#\B "the bat tears at your face.")
-    (#\G "the goblin jabs under your guard.")
-    (#\O "the orc drives you back a step.")
+  (case (char-downcase glyph)
+    (#\b "the bat tears at your face.")
+    (#\g "the goblin jabs under your guard.")
+    (#\o "the orc drives you back a step.")
     (t "the monster hits you.")))
 
 (defun delve-monster-damage (glyph)
-  (case (char-upcase glyph)
-    (#\O 2)
+  (case (char-downcase glyph)
+    (#\o 2)
     (t 1)))
 
 (defun delve-goal-p (glyph)
@@ -534,12 +534,25 @@ has not yet noticed the player can be taken from behind."
         (remove mon (delve-floor-monsters session floor) :test #'eq)))
 
 (defun delve-monster-wake-radius (session)
-  (max 2 (- 4 (floor (delve-class-value session :stealth 1) 2))))
+  ;; How near you can get before a monster may notice you. A loud class is
+  ;; spotted from across the room; a stealthy one can nearly step on them.
+  (max 2 (- 6 (delve-class-value session :stealth 1))))
+
+(defun delve-random-step (mx my)
+  "A random orthogonal neighbour of MX,MY, or the cell itself (a fifth of
+the time, so an idle monster sometimes just holds where it is)."
+  (case (get-random-value 0 4)
+    (0 (cons (1+ mx) my))
+    (1 (cons (1- mx) my))
+    (2 (cons mx (1+ my)))
+    (3 (cons mx (1- my)))
+    (t (cons mx my))))
 
 (defun delve-move-monsters (session node)
-  "A roused monster within range pursues and bites. An unroused monster
-may fail to notice the player on a stealth roll and stay put; once it
-notices, it stays roused. Returns NIL if a bite finishes the player."
+  "A roused monster in range pursues and bites. An unroused one may fail a
+stealth roll and not notice you (and can then be backstabbed). Whatever it
+is doing, an idle monster drifts a step now and then, so the floor is never
+a room of frozen statues. Returns NIL if a bite finishes the player."
   (let* ((floor (delve-floor-index session))
          (px (delve-state session "x"))
          (py (delve-state session "y"))
@@ -558,24 +571,7 @@ notices, it stays roused. Returns NIL if a bite finishes the player."
              (nx mx)
              (ny my)
              (dist (max (abs (- px mx)) (abs (- py my)))))
-        (cond
-          ((not alive))
-          ((> dist wake))
-          ((and (not roused) (<= (get-random-value 1 6) stealth)))
-          (t
-           (setf roused t)
-           (if (<= dist 1)
-               (progn
-                 (delve-set-message session (delve-monster-attack-text glyph))
-                 (delve-sound session :hit-sound 0.40)
-                 (unless (delve-hurt session node (delve-monster-damage glyph))
-                   (setf alive nil)))
-               (let* ((dx (cond ((< mx px) 1) ((> mx px) -1) (t 0)))
-                      (dy (cond ((< my py) 1) ((> my py) -1) (t 0)))
-                      (prefer-x (>= (abs (- px mx)) (abs (- py my))))
-                      (cands (if prefer-x
-                                 (list (cons (+ mx dx) my) (cons mx (+ my dy)))
-                                 (list (cons mx (+ my dy)) (cons (+ mx dx) my)))))
+        (flet ((step-to (cands)
                  (dolist (cand cands)
                    (let ((cx (car cand))
                          (cy (cdr cand)))
@@ -584,7 +580,29 @@ notices, it stays roused. Returns NIL if a bite finishes the player."
                                 (not (and (= cx px) (= cy py)))
                                 (not (gethash (cons cx cy) occupied)))
                        (setf nx cx ny cy)
-                       (return))))))))
+                       (return))))))
+          (cond
+            ((not alive))
+            ;; in notice range, and either already roused or it spots you now
+            ((and (<= dist wake)
+                  (or roused (> (get-random-value 1 6) stealth)))
+             (setf roused t)
+             (if (<= dist 1)
+                 (progn
+                   (delve-set-message session (delve-monster-attack-text glyph))
+                   (delve-sound session :hit-sound 0.40)
+                   (unless (delve-hurt session node (delve-monster-damage glyph))
+                     (setf alive nil)))
+                 (let* ((dx (cond ((< mx px) 1) ((> mx px) -1) (t 0)))
+                        (dy (cond ((< my py) 1) ((> my py) -1) (t 0)))
+                        (prefer-x (>= (abs (- px mx)) (abs (- py my)))))
+                   (step-to (if prefer-x
+                                (list (cons (+ mx dx) my) (cons mx (+ my dy)))
+                                (list (cons mx (+ my dy)) (cons (+ mx dx) my)))))))
+            ;; idle (out of range, or dormant in range): drift about half the
+            ;; time so the dungeon feels lived-in rather than paused
+            ((zerop (get-random-value 0 1))
+             (step-to (list (delve-random-step mx my))))))
         (remhash (cons mx my) occupied)
         (setf (gethash (cons nx ny) occupied) t)
         (push (list nx ny glyph roused) result)))
@@ -600,7 +618,7 @@ notices, it stays roused. Returns NIL if a bite finishes the player."
 ;;; pass much nearer before it stirs.
 
 (defun delve-hunter-detect-radius (session)
-  (max 2 (- 7 (delve-class-value session :stealth 1))))
+  (max 3 (- 8 (delve-class-value session :stealth 1))))
 
 (defun delve-hunter-pursue (session hx hy px py)
   (let* ((dx (cond ((< hx px) 1) ((> hx px) -1) (t 0)))
@@ -628,7 +646,18 @@ notices, it stays roused. Returns NIL if a bite finishes the player."
       (when (plusp (delve-state session "hunter-alert" 0))
         (setf (delve-state session "hunter-alert")
               (1- (delve-state session "hunter-alert" 0)))
-        (delve-hunter-pursue session hx hy px py)))))
+        (delve-hunter-pursue session hx hy px py)
+        ;; Closing burst. At walking pace it could never run anyone down, so
+        ;; once it has the scent it takes a second step when already near, and
+        ;; now and then even at range, gaining ground over a long chase. Break
+        ;; its line for long enough (alert decays over 9 turns) and you slip it.
+        (let* ((nhx (delve-state session "hunter-x"))
+               (nhy (delve-state session "hunter-y"))
+               (ndist (max (abs (- px nhx)) (abs (- py nhy)))))
+          (when (and (plusp ndist)
+                     (or (<= ndist 3)
+                         (zerop (get-random-value 0 2))))
+            (delve-hunter-pursue session nhx nhy px py)))))))
 
 (defun delve-hunter-rob (session)
   "The hunter reaches the player. It is not fatal and never ends the
