@@ -122,6 +122,24 @@
   (min (* +dream-maze-view-height+ 1.8)
        (/ (* +dream-maze-view-height+ 0.82) distance)))
 
+(-> draw-dream-maze-door-column (scalar scalar scalar scalar) t)
+(defun draw-dream-maze-door-column (x top bottom width)
+  "Carve a recessed door into one exit-wall column. Because every column uses
+its own perspective-scaled TOP/BOTTOM, the lintel, the recessed panel, and the
+plank seams all bend with the wall instead of floating like a flat billboard."
+  (let* ((height    (- bottom top))
+         (lintel-y  (+ top (* height 0.17)))     ; bright header above the door
+         (panel-h   (- bottom lintel-y))
+         (plank     (max 1.0 (* height 0.014))))
+    ;; recess the panel so the door reads as set back into the bright frame
+    (draw-dream-maze-black-rect x lintel-y width panel-h 150)
+    ;; the lintel beam across the top of the opening
+    (draw-dream-maze-rect x (- lintel-y plank) width (* plank 2.0) 235)
+    ;; horizontal plank seams down the door
+    (loop for k from 1 to 3
+          for y = (+ lintel-y (* (/ k 4.0) panel-h))
+          do (draw-dream-maze-rect x y width plank 150))))
+
 (-> draw-dream-maze-wall-column (integer scalar scalar scalar scalar boolean)
     t)
 (defun draw-dream-maze-wall-column (column x top bottom brightness exit-p)
@@ -135,13 +153,7 @@
                                      +dream-maze-dither-size+
                                      (if exit-p 238 218)))
     (when exit-p
-      (let ((center-x (+ x (/ column-width 2.0))))
-        (draw-thick-line-between center-x
-                                 top
-                                 center-x
-                                 bottom
-                                 (make-color 255 255 255 190)
-                                 1.0)))))
+      (draw-dream-maze-door-column x top bottom column-width))))
 
 (-> dream-maze-visible-exit-p (dream-maze-minigame integer integer) boolean)
 (defun dream-maze-visible-exit-p (game cell-x cell-y)
@@ -185,21 +197,16 @@
 
 (-> draw-dream-maze-exit-sign (scalar scalar scalar string) t)
 (defun draw-dream-maze-exit-sign (screen-x center-y distance sign)
-  "Paint the door's sign onto its wall: sized to the wall at this
-distance, on a small dark backing, with no floating frame around it."
+  "Paint the door's sign directly onto its recessed panel, sized to the wall
+at this distance and set high on the door, with no floating backing box."
   (let* ((wall-height (dream-maze-wall-height distance))
-         (size (round (dream-maze-clamp-value (* wall-height 0.46) 13.0 70.0)))
-         (pad (* size 0.62)))
-    (draw-dream-maze-black-rect (- screen-x pad)
-                                (- center-y pad)
-                                (* pad 2.0)
-                                (* pad 2.0)
-                                188)
+         (size (round (dream-maze-clamp-value (* wall-height 0.30) 11.0 54.0)))
+         (sign-y (- center-y (* wall-height 0.07))))
     (draw-centered-text sign
                         screen-x
-                        center-y
+                        sign-y
                         size
-                        (make-color 255 255 255 248))))
+                        (make-color 255 255 255 255))))
 
 (-> draw-dream-maze-visible-exits (dream-maze-minigame) t)
 (defun draw-dream-maze-visible-exits (game)
