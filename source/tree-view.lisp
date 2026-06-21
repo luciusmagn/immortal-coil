@@ -1,14 +1,14 @@
 (in-package #:immortal-coil)
 
 ;;; The story tree: a pannable overlay (T) that visualizes the sprawling
-;;; shape of the graph. It shows ONLY the nodes you have actually
-;;; entered, joined by dotted threads and growing upward from the root.
-;;; Nothing ahead of the player is revealed, not even a straight line, so
-;;; the branches are the alternatives you really explored across a looping
-;;; playthrough. A node whose continuation is dynamic or ambiguous (a
-;;; choice, a minigame, a runtime-computed target, with a branch not
-;;; taken) sprouts a dim "?" child so it does not read as an ending. The
-;;; whole tree shrinks toward a floor as it gathers more nodes.
+;;; shape of the graph. It shows the nodes you have entered (bright),
+;;; joined by dotted threads and growing upward from the root. Where your
+;;; path split, the off-main branches are revealed one node at a time
+;;; (dim), so the shape of the choices around you is visible. A straight
+;;; line ahead of the player is never revealed. A branch whose next node
+;;; is indeterminate because it is computed at runtime is capped with a
+;;; dim "?" terminator. The whole tree shrinks toward a floor as it
+;;; gathers more nodes.
 
 (defvar *tree-open-p* nil)
 (defvar *tree-pan-x* 0.0)
@@ -90,22 +90,6 @@ of every visited node."
           (node-minigame-outcomes node)
           (map 'list #'choice-target (node-choices node))))
 
-(defun tree-node-ambiguous-p (id child-ids)
-  "True if ID's story continues in a way the visited tree does not show:
-a runtime-computed (function) target, or a choice/minigame branch that
-was not taken. A deterministic straight line does not count, so an
-ordinary node at the tip of the path stays a plain leaf."
-  (let ((node (gethash id *nodes*)))
-    (when node
-      (let ((targets (remove nil (tree-node-outgoing node))))
-        (or (some (lambda (target) (not (stringp target))) targets)
-            (and (or (typep node 'choice-node)
-                     (typep node 'minigame-node))
-                 (some (lambda (target)
-                         (and (stringp target)
-                              (not (member target child-ids :test #'equal))))
-                       targets)))))))
-
 (defun tree-scale (count)
   "Shrink the tree toward a floor as it gathers more nodes."
   (max +tree-min-scale+
@@ -145,20 +129,50 @@ centre over their children) and collect ids. Depth is precomputed."
               (caar pairs)
               *story-start-node*))
     (tree-compute-depths model)
-    ;; mark nodes whose continuation is dynamic or ambiguous, so a leaf
-    ;; there does not look like the story ended
+    ;; reveal the off-main branches of splits one node at a time (dim), and
+    ;; cap a branch whose next is computed at runtime with a "?"
     (let ((questions (tree-model-questions model))
           (depth (tree-model-depth model))
+          (revealed (make-hash-table :test #'equal))
           (count (hash-table-count placed)))
+      (maphash (lambda (id present)
+                 (declare (ignore present))
+                 (setf (gethash id revealed) t))
+               placed)
       (loop for id being the hash-keys of placed
-            when (and (< count +tree-max-nodes+)
-                      (tree-node-ambiguous-p id (gethash id children)))
-              do (let ((q (format nil "?~a" id)))
-                   (setf (gethash q questions) t
-                         (gethash q parent) id
-                         (gethash q depth) (1+ (gethash id depth 0)))
-                   (push q (gethash id children))
-                   (incf count))))
+            for node = (gethash id *nodes*)
+            when node
+              do (let* ((targets (remove nil (tree-node-outgoing node)))
+                        (statics (remove-duplicates
+                                  (remove-if-not #'stringp targets)
+                                  :test #'equal))
+                        (dynamic-p (some (lambda (target) (not (stringp target)))
+                                         targets))
+                        (directions (+ (length statics) (if dynamic-p 1 0)))
+                        (vchildren (gethash id children)))
+                   ;; off-main branches: the first node of each untaken
+                   ;; static branch, but only where the path actually splits
+                   (when (>= directions 2)
+                     (dolist (target statics)
+                       (when (and (< count +tree-max-nodes+)
+                                  (not (gethash target revealed)))
+                         (setf (gethash target revealed) t
+                               (gethash target parent) id
+                               (gethash target depth) (1+ (gethash id depth 0)))
+                         (push target (gethash id children))
+                         (incf count))))
+                   ;; "?" terminator: a dynamically computed next we could
+                   ;; not follow and have not already taken
+                   (when (and dynamic-p
+                              (< count +tree-max-nodes+)
+                              (every (lambda (child) (member child statics :test #'equal))
+                                     vchildren))
+                     (let ((q (format nil "?~a" id)))
+                       (setf (gethash q questions) t
+                             (gethash q parent) id
+                             (gethash q depth) (1+ (gethash id depth 0)))
+                       (push q (gethash id children))
+                       (incf count))))))
     (maphash (lambda (id kids) (setf (gethash id children) (reverse kids)))
              children)
     (let ((root (tree-model-root model)))
@@ -274,24 +288,32 @@ centre over their children) and collect ids. Depth is precomputed."
       (let ((sx (+ (tree-node-x model id) *tree-pan-x*))
             (sy (+ (tree-node-y model id) *tree-pan-y*)))
         (when (tree-on-screen-p sx sy)
-          (if (gethash id (tree-model-questions model))
-              (draw-centered-text "?" sx sy
-                                  (max 9 (round (* 17 scale)))
-                                  (make-color 255 255 255 95))
-              (let* ((current-p (equal id current))
-                     (radius (max 2.0
-                                  (* (if current-p
-                                         +tree-bead-current-radius+
-                                         +tree-bead-visited-radius+)
-                                     scale))))
-                (claylib/ll:draw-circle (round sx) (round sy) radius
-                                        (claylib::c-ptr
-                                         (make-color 255 255 255 255)))
-                (when current-p
-                  (claylib/ll:draw-circle-lines (round sx) (round sy)
-                                                (max 5.0 (* 11.0 scale))
-                                                (claylib::c-ptr
-                                                 (make-color 255 255 255 235)))))))))))
+          (cond
+            ((gethash id (tree-model-questions model))
+             (draw-centered-text "?" sx sy
+                                 (max 9 (round (* 17 scale)))
+                                 (make-color 255 255 255 95)))
+            ((gethash id (tree-model-visited model))
+             (let* ((current-p (equal id current))
+                    (radius (max 2.0
+                                 (* (if current-p
+                                        +tree-bead-current-radius+
+                                        +tree-bead-visited-radius+)
+                                    scale))))
+               (claylib/ll:draw-circle (round sx) (round sy) radius
+                                       (claylib::c-ptr
+                                        (make-color 255 255 255 255)))
+               (when current-p
+                 (claylib/ll:draw-circle-lines (round sx) (round sy)
+                                               (max 5.0 (* 11.0 scale))
+                                               (claylib::c-ptr
+                                                (make-color 255 255 255 235))))))
+            (t
+             ;; an off-main branch you have not taken
+             (claylib/ll:draw-circle (round sx) (round sy)
+                                     (max 2.0 (* +tree-bead-visited-radius+ scale 0.82))
+                                     (claylib::c-ptr
+                                      (make-color 255 255 255 80))))))))))
 
 (defun draw-tree-overlay ()
   (when *tree-open-p*
@@ -305,7 +327,7 @@ centre over their children) and collect ids. Depth is precomputed."
                           34.0
                           22
                           (make-color 255 255 255 235))
-      (draw-text-at "T/ESC CLOSE    WASD/ARROWS PAN    ? = A BRANCH YOU HAVE NOT TAKEN"
+      (draw-text-at "T/ESC CLOSE   WASD/ARROWS PAN   DIM = BRANCH NOT TAKEN   ? = COMPUTED NEXT"
                     40.0
                     (- +virtual-height+ 34.0)
                     14
