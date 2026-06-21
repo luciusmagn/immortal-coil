@@ -55,6 +55,30 @@ These are the tells of the voice straining. Cut them.
 Read the line aloud. If it sounds like it is performing, it is wrong. If it
 sounds like a tired person telling you exactly what happened, it is right.
 
+## The arc: concrete deepens
+
+A path may open strange. As it goes, it must resolve. The deeper in, the more
+concrete and the less mysterious: name the place, the people, the rule, the
+cost. Mystery that never pays out reads as evasion, and the player stops
+caring. By a path's end the world should have carved itself out — specific,
+settled, the consequence on the table. Spend ambiguity at the threshold; spend
+the depths on fact. If the world does not become more real as the player walks
+into it, the walk is not worth taking.
+
+## Conversations vs. the player speaking
+
+Two constructs, two jobs. Do not mix them up.
+
+- **Eavesdropping → `dialog-conversation`.** The two-column (left/right) layout
+  is for the player *overhearing* others. Both speakers are other people. The
+  player is not in it.
+- **The player speaking → `dialog-say` + `dialog-pick`.** When the player is in
+  the conversation, each character's turn is a `dialog-say`, and the player's
+  turns are `dialog-pick` choices — the player chooses what to say. For a fixed
+  player beat with no choice, a single `dialog-say` in the player's own voice is
+  fine. Never seat the player in a two-column conversation as the right-hand
+  speaker.
+
 ## Names
 
 Real names for human characters; fantasy names only for creatures and aliens.
