@@ -37,6 +37,7 @@
   (parent    (make-hash-table :test #'equal))
   (depth     (make-hash-table :test #'equal))
   (x         (make-hash-table :test #'equal))
+  (size      (make-hash-table :test #'equal))
   (visited   (make-hash-table :test #'equal))
   (questions (make-hash-table :test #'equal)))
 
@@ -95,45 +96,128 @@ of every visited node."
   (max +tree-min-scale+
        (min 1.0 (sqrt (/ +tree-scale-ref+ (float (max +tree-scale-ref+ count)))))))
 
-(defun tree-layout-x (model id counter)
-  "Assign each node an x-slot (leaves take sequential slots, parents
-centre over their children) and collect ids. Depth is precomputed."
+(defun tree-add-question (model id)
+  "Cap ID's branch with a dim ? terminator (its next is computed)."
+  (let ((q (format nil "?~a" id)))
+    (setf (gethash q (tree-model-questions model)) t
+          (gethash q (tree-model-parent model)) id
+          (gethash q (tree-model-depth model))
+          (1+ (gethash id (tree-model-depth model) 0)))
+    (push q (gethash id (tree-model-children model)))
+    q))
+
+(defun tree-reveal-chain (model start parent budget revealed count)
+  "Follow ONE static continuation out from an off-main branch, adding a
+node at a time up to BUDGET (turns since the split), and cap it with a ?
+when the next step is computed at runtime. Returns the new node count."
+  (let ((children (tree-model-children model))
+        (parents (tree-model-parent model))
+        (depth (tree-model-depth model))
+        (node start)
+        (prev parent)
+        (steps 0))
+    (loop
+      (when (or (null node)
+                (>= steps budget)
+                (>= count +tree-max-nodes+)
+                (gethash node revealed))
+        (return))
+      (setf (gethash node revealed) t
+            (gethash node parents) prev
+            (gethash node depth) (1+ (gethash prev depth 0)))
+      (push node (gethash prev children))
+      (incf count)
+      (incf steps)
+      (let* ((n (gethash node *nodes*))
+             (targets (and n (remove nil (tree-node-outgoing n))))
+             (statics (remove-duplicates (remove-if-not #'stringp targets)
+                                         :test #'equal))
+             (dynamic-p (some (lambda (target) (not (stringp target))) targets))
+             (next (find-if (lambda (s) (not (gethash s revealed))) statics)))
+        (cond
+          (dynamic-p
+           (when (< count +tree-max-nodes+)
+             (tree-add-question model node)
+             (incf count))
+           (return))
+          ((null next) (return))
+          (t (setf prev node
+                   node next)))))
+    count))
+
+(defun tree-compute-sizes (model)
+  "Subtree node counts, so the main path (the largest subtree) can be
+placed to keep the spine centred."
+  (let ((size (tree-model-size model))
+        (children (tree-model-children model)))
+    (labels ((sz (id)
+               (or (gethash id size)
+                   (setf (gethash id size)
+                         (1+ (loop for child in (gethash id children)
+                                   sum (sz child)))))))
+      (when (tree-model-root model)
+        (sz (tree-model-root model))))))
+
+(defun tree-order-children (model kids depth)
+  "Put the largest-subtree child (the main path) at the left end on even
+depths and the right end on odd depths, so the spine zig-zags around the
+centre instead of drifting to one side."
+  (if (<= (length kids) 1)
+      kids
+      (let* ((size (tree-model-size model))
+             (primary (reduce (lambda (a b)
+                                (if (>= (gethash a size 0) (gethash b size 0)) a b))
+                              kids))
+             (rest (remove primary kids :count 1 :test #'equal)))
+        (if (evenp depth)
+            (cons primary rest)
+            (append rest (list primary))))))
+
+(defun tree-layout-x (model id depth counter)
+  "Assign each node an x-slot (leaves sequential, parents centred over
+their children) and collect ids. DEPTH drives the centring alternation."
   (push id (tree-model-ids model))
   (let ((kids (gethash id (tree-model-children model))))
     (if (null kids)
         (progn
           (setf (gethash id (tree-model-x model)) (car counter))
           (incf (car counter)))
-        (progn
-          (dolist (child kids)
-            (tree-layout-x model child counter))
+        (let ((ordered (tree-order-children model kids depth)))
+          (dolist (child ordered)
+            (tree-layout-x model child (1+ depth) counter))
           (setf (gethash id (tree-model-x model))
-                (/ (loop for child in kids
+                (/ (loop for child in ordered
                          sum (gethash child (tree-model-x model)))
-                   (length kids)))))))
+                   (length ordered)))))))
 
 (defun build-tree-model ()
   (let* ((model (make-tree-model))
          (pairs (tree-visited-pairs))
          (placed (tree-model-visited model))
          (children (tree-model-children model))
-         (parent (tree-model-parent model)))
-    ;; trunk: the nodes you actually entered, parented to where you came from
-    (loop for (id . par) in pairs
+         (parent (tree-model-parent model))
+         (index (make-hash-table :test #'equal)))
+    ;; trunk: the nodes you entered, parented to where you came from, with
+    ;; each one's first-visit order (its "turn") recorded
+    (loop for pair in pairs
+          for i from 0
+          for id = (car pair)
+          for par = (cdr pair)
           do (setf (gethash id placed) t
-                   (gethash id parent) par)
+                   (gethash id parent) par
+                   (gethash id index) i)
              (when (and par (gethash par placed))
                (push id (gethash par children))))
     (setf (tree-model-root model)
-          (or (loop for (id . par) in pairs when (null par) return id)
+          (or (loop for pair in pairs when (null (cdr pair)) return (car pair))
               (caar pairs)
               *story-start-node*))
     (tree-compute-depths model)
-    ;; reveal the off-main branches of splits one node at a time (dim), and
-    ;; cap a branch whose next is computed at runtime with a "?"
-    (let ((questions (tree-model-questions model))
-          (depth (tree-model-depth model))
-          (revealed (make-hash-table :test #'equal))
+    ;; off-main branches grow one node per turn elapsed since their split,
+    ;; following one static continuation until it is capped by a "?"; a
+    ;; visited node whose own next is computed gets a "?" too
+    (let ((revealed (make-hash-table :test #'equal))
+          (latest (1- (length pairs)))
           (count (hash-table-count placed)))
       (maphash (lambda (id present)
                  (declare (ignore present))
@@ -149,35 +233,26 @@ centre over their children) and collect ids. Depth is precomputed."
                         (dynamic-p (some (lambda (target) (not (stringp target)))
                                          targets))
                         (directions (+ (length statics) (if dynamic-p 1 0)))
-                        (vchildren (gethash id children)))
-                   ;; off-main branches: the first node of each untaken
-                   ;; static branch, but only where the path actually splits
+                        (vchildren (gethash id children))
+                        (budget (min 40 (1+ (- latest (gethash id index 0))))))
                    (when (>= directions 2)
                      (dolist (target statics)
-                       (when (and (< count +tree-max-nodes+)
-                                  (not (gethash target revealed)))
-                         (setf (gethash target revealed) t
-                               (gethash target parent) id
-                               (gethash target depth) (1+ (gethash id depth 0)))
-                         (push target (gethash id children))
-                         (incf count))))
-                   ;; "?" terminator: a dynamically computed next we could
-                   ;; not follow and have not already taken
+                       (unless (gethash target revealed)
+                         (setf count (tree-reveal-chain model target id
+                                                        budget revealed count)))))
                    (when (and dynamic-p
                               (< count +tree-max-nodes+)
-                              (every (lambda (child) (member child statics :test #'equal))
+                              (every (lambda (child)
+                                       (member child statics :test #'equal))
                                      vchildren))
-                     (let ((q (format nil "?~a" id)))
-                       (setf (gethash q questions) t
-                             (gethash q parent) id
-                             (gethash q depth) (1+ (gethash id depth 0)))
-                       (push q (gethash id children))
-                       (incf count))))))
+                     (tree-add-question model id)
+                     (incf count)))))
     (maphash (lambda (id kids) (setf (gethash id children) (reverse kids)))
              children)
+    (tree-compute-sizes model)
     (let ((root (tree-model-root model)))
       (when root
-        (tree-layout-x model root (list 0.0))))
+        (tree-layout-x model root 0 (list 0.0))))
     (setf (tree-model-scale model) (tree-scale (length (tree-model-ids model))))
     model))
 
