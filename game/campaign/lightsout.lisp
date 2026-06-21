@@ -41,14 +41,20 @@
              "farther on, around no corner you can point to, there is almost-light: not a glow, the memory of one, the way a room holds the shape of a lamp just out. and a sound you know from somewhere upstairs: a taper, being carried with care."
              :next "lightsout/lamplighter")
 
-(dialog-conversation "lightsout/lamplighter"
-                     (dialog-left "the lamplighter"
-                                  "mind the bracket. wet oil. you are the one whose torch was levied. that was not mine. i light fair, whatever the season.")
-                     (dialog-right "you"
-                                   "you light torches you cannot see, in the dark, to feed the dark.")
-                     (dialog-left "the lamplighter"
-                                  "i light by touch, to a rota, and what the dark does with the light afterward is the dark's business and the ledger's. you want it to be sinister. it is groceries.")
-                     :next "lightsout/lamplighter-questions")
+(dialog-say "lightsout/lamplighter"
+            "the lamplighter"
+            "mind the bracket. wet oil. you are the one whose torch was levied. that was not mine. i light fair, whatever the season."
+            :next "lightsout/lamplighter-2")
+
+(dialog-say "lightsout/lamplighter-2"
+            "you"
+            "you light torches you cannot see, in the dark, to feed the dark."
+            :next "lightsout/lamplighter-3")
+
+(dialog-say "lightsout/lamplighter-3"
+            "the lamplighter"
+            "i light by touch, to a rota, and what the dark does with the light afterward is the dark's business and the ledger's. you want it to be sinister. it is groceries."
+            :next "lightsout/lamplighter-questions")
 
 (dialog-interrogation "lightsout/lamplighter-questions"
                       "the lamplighter waits at the bracket with the taper unlit, in no apparent hurry to explain himself further unless asked."
@@ -67,23 +73,35 @@
                        :speaker "the lamplighter"
                        "never. it is the most grateful thing i tend. a mouth that says thank you is not a monster. it is a guest, and i keep it fed like one."))
 
-(dialog-conversation "lightsout/etiquette"
-                     (dialog-left "the lamplighter"
-                                  "since you are walking my round: rules. never strike a light without offering it. announce yourself at the crossings. and if you feed it by hand, feed it small and feed it finished. the dark keeps what it is given. give it nothing you want back.")
-                     (dialog-right "you"
-                                   "has it ever given anything back?")
-                     (dialog-left "the lamplighter"
-                                  "once. a candle, spent, returned to the upper shrine, stood back in its socket, guttered. nobody knows whose. the dark kept the burning and returned the wax. that is the dark being generous. study it.")
-                     :next "lightsout/one-dark")
+(dialog-say "lightsout/etiquette"
+            "the lamplighter"
+            "since you are walking my round: rules. never strike a light without offering it. announce yourself at the crossings. and if you feed it by hand, feed it small and feed it finished. the dark keeps what it is given. give it nothing you want back."
+            :next "lightsout/etiquette-2")
 
-(dialog-conversation "lightsout/one-dark"
-                     (dialog-left "the lamplighter"
-                                  "you are wondering if it is one dark or many. everyone walks a round wondering that.")
-                     (dialog-right "you"
-                                   "which is it?")
-                     (dialog-left "the lamplighter"
-                                  "one, the way a river is one river. what you feed at this bracket is drunk at every bracket, and somewhere a dark that has never met you is a little less hungry because you stood here. that is either comforting or enormous. most people need it to be one or the other. it is both.")
-                     :next "lightsout/round")
+(dialog-say "lightsout/etiquette-2"
+            "you"
+            "has it ever given anything back?"
+            :next "lightsout/etiquette-3")
+
+(dialog-say "lightsout/etiquette-3"
+            "the lamplighter"
+            "once. a candle, spent, returned to the upper shrine, stood back in its socket, guttered. nobody knows whose. the dark kept the burning and returned the wax. that is the dark being generous. study it."
+            :next "lightsout/one-dark")
+
+(dialog-say "lightsout/one-dark"
+            "the lamplighter"
+            "you are wondering if it is one dark or many. everyone walks a round wondering that."
+            :next "lightsout/one-dark-2")
+
+(dialog-say "lightsout/one-dark-2"
+            "you"
+            "which is it?"
+            :next "lightsout/one-dark-3")
+
+(dialog-say "lightsout/one-dark-3"
+            "the lamplighter"
+            "one, the way a river is one river. what you feed at this bracket is drunk at every bracket, and somewhere a dark that has never met you is a little less hungry because you stood here. that is either comforting or enormous. most people need it to be one or the other. it is both."
+            :next "lightsout/round")
 
 (dialog-text "lightsout/round"
              "you walk the round with the lamplighter, bracket to bracket, and learn the work by sound: the scrape of the taper, the catch of the wick."

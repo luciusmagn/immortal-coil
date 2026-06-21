@@ -147,14 +147,20 @@
              "the bottom floor of the stacks is one room wide and all desk: a single lamp, a single chair for visitors, and the clerk, in person, mid-line, who finishes the line before looking up, because the line is about you arriving and it would be wrong twice if interrupted."
              :next "below/clerk")
 
-(dialog-conversation "below/clerk"
-                     (dialog-left "the clerk"
-                                  "sit. you found the door ajar. i leave it ajar once a tenure, on instinct, and the instinct has never yet been wrong about who comes down.")
-                     (dialog-right "you"
-                                   "you keep all of it. every floor. every step.")
-                     (dialog-left "the clerk"
-                                  "somebody has to. a dungeon is a building that has decided to keep happening. the deciding takes minutes. the minutes are these. sit, i said. the chair is for sitting, not for symbolism.")
-                     :next "below/clerk-questions")
+(dialog-say "below/clerk"
+            "the clerk"
+            "sit. you found the door ajar. i leave it ajar once a tenure, on instinct, and the instinct has never yet been wrong about who comes down."
+            :next "below/clerk-2")
+
+(dialog-say "below/clerk-2"
+            "you"
+            "you keep all of it. every floor. every step."
+            :next "below/clerk-3")
+
+(dialog-say "below/clerk-3"
+            "the clerk"
+            "somebody has to. a dungeon is a building that has decided to keep happening. the deciding takes minutes. the minutes are these. sit, i said. the chair is for sitting, not for symbolism."
+            :next "below/clerk-questions")
 
 (dialog-interrogation "below/clerk-questions"
                       "the clerk leaves the pen uncapped, point resting on a blotter cut to the size of a cell."
@@ -210,14 +216,20 @@
 (dialog-on-enter "below/unlogged"
                  '(setf (dialog-value "below-asked") "unlogged"))
 
-(dialog-conversation "below/unlogged"
-                     (dialog-left "the clerk"
-                                  "i did that once. you saw the ribbon. but you have asked, and the asking is entered, and the rules let me offer the lesser form: one hour. unlogged. starting when you stand.")
-                     (dialog-right "you"
-                                   "and then?")
-                     (dialog-left "the clerk"
-                                  "and then you will come back and sit down and ask me to resume, and i will not say anything unkind about it, because nobody has lasted the hour yet, and the trying is honorable.")
-                     :next "below/unlogged-hour")
+(dialog-say "below/unlogged"
+            "the clerk"
+            "i did that once. you saw the ribbon. but you have asked, and the asking is entered, and the rules let me offer the lesser form: one hour. unlogged. starting when you stand."
+            :next "below/unlogged-2")
+
+(dialog-say "below/unlogged-2"
+            "you"
+            "and then?"
+            :next "below/unlogged-3")
+
+(dialog-say "below/unlogged-3"
+            "the clerk"
+            "and then you will come back and sit down and ask me to resume, and i will not say anything unkind about it, because nobody has lasted the hour yet, and the trying is honorable."
+            :next "below/unlogged-hour")
 
 (dialog-text "below/unlogged-hour"
              "you stand, and the pen stops, and the walls go silent, both of them, total, and you walk the stacks unkept. no pacing. no pen. your steps land and are not received."
@@ -238,14 +250,20 @@
              "the clerk turns to the last page without hunting for it. the page is ruled and blank except for one line, entered at the bottom, undated, in the tidy hand: climbed out. kept moving."
              :next "below/ending-2")
 
-(dialog-conversation "below/ending-2"
-                     (dialog-left "the clerk"
-                                  "we enter the ending first, for some. it is not a prediction. the floors do not predict. it is a vote.")
-                     (dialog-right "you"
-                                   "whose vote?")
-                     (dialog-left "the clerk"
-                                  "the building's. it is allowed one per account, and it spends them rarely, and it does not explain itself to me, and i have stopped asking, because the votes have a way of being embarrassingly correct.")
-                     :next "below/margin")
+(dialog-say "below/ending-2"
+            "the clerk"
+            "we enter the ending first, for some. it is not a prediction. the floors do not predict. it is a vote."
+            :next "below/ending-3")
+
+(dialog-say "below/ending-3"
+            "you"
+            "whose vote?"
+            :next "below/ending-4")
+
+(dialog-say "below/ending-4"
+            "the clerk"
+            "the building's. it is allowed one per account, and it spends them rarely, and it does not explain itself to me, and i have stopped asking, because the votes have a way of being embarrassingly correct."
+            :next "below/margin")
 
 (dialog-on-enter "below/take-book"
                  '(setf (dialog-value "below-asked") "took"))

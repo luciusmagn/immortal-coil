@@ -52,14 +52,20 @@
              "Olen stands at the map at attention, punctual to the last morning, and he is weeping, without noise, without moving, the way a wall sheds rain."
              :next "armistice/sorel-line")
 
-(dialog-conversation "armistice/sorel-line"
-                     (dialog-left "Sorel"
-                                  "i have ruled a line under the casualty column. there is nothing to enter after it. chancellor, i have kept books for thirty years and i have never once ruled a line that stayed ruled.")
-                     (dialog-right "you"
-                                   "will this one stay?")
-                     (dialog-left "Sorel"
-                                  "the column is closed. let some other ledger worry about staying. today the figure is final, and the figure has stopped growing, and i am going to sit down for a moment on the good chair.")
-                     :next "armistice/sorel-questions")
+(dialog-say "armistice/sorel-line"
+            "Sorel"
+            "i have ruled a line under the casualty column. there is nothing to enter after it. chancellor, i have kept books for thirty years and i have never once ruled a line that stayed ruled."
+            :next "armistice/sorel-line-2")
+
+(dialog-say "armistice/sorel-line-2"
+            "you"
+            "will this one stay?"
+            :next "armistice/sorel-line-3")
+
+(dialog-say "armistice/sorel-line-3"
+            "Sorel"
+            "the column is closed. let some other ledger worry about staying. today the figure is final, and the figure has stopped growing, and i am going to sit down for a moment on the good chair."
+            :next "armistice/sorel-questions")
 
 (dialog-interrogation "armistice/sorel-questions"
                       "Sorel has not sat down yet. he stands by the closed column with the pen still in his hand, willing to be kept a moment longer."
@@ -78,14 +84,20 @@
                        :speaker "Sorel"
                        "i do not know. books are easier than men. but i am told you begin by sitting on the good chair, and i intend to test the method directly."))
 
-(dialog-conversation "armistice/brandt"
-                     (dialog-left "Brandt"
-                                  "chancellor. the all-clear version. the one i said someone else would live in.")
-                     (dialog-right "you"
-                                   "you were wrong, Brandt.")
-                     (dialog-left "Brandt"
-                                  "i was wrong. i have never been so happy to file an error in my life. i am going to be wrong about more things. i am going to take it up as a discipline.")
-                     :next "armistice/brandt-laugh")
+(dialog-say "armistice/brandt"
+            "Brandt"
+            "chancellor. the all-clear version. the one i said someone else would live in."
+            :next "armistice/brandt-2")
+
+(dialog-say "armistice/brandt-2"
+            "you"
+            "you were wrong, Brandt."
+            :next "armistice/brandt-3")
+
+(dialog-say "armistice/brandt-3"
+            "Brandt"
+            "i was wrong. i have never been so happy to file an error in my life. i am going to be wrong about more things. i am going to take it up as a discipline."
+            :next "armistice/brandt-laugh")
 
 (dialog-text "armistice/brandt-laugh"
              "and Brandt laughs. you have never heard it."
@@ -111,14 +123,20 @@
              "and the clear band, for the first time in four years, goes clear."
              :next "armistice/olen-map")
 
-(dialog-conversation "armistice/olen-map"
-                     (dialog-left "Olen"
-                                  "chancellor. i have stood at this map for four years. i find i do not know where to stand in a room that does not have one.")
-                     (dialog-right "you"
-                                   "by the window, Olen. it is the new map. everything on it is ours to lose slowly.")
-                     (dialog-left "Olen"
-                                  "by the window. yes. i will require new habits. i am told the river is good to look at, now that it is only a river.")
-                     :next "armistice/olen-questions")
+(dialog-say "armistice/olen-map"
+            "Olen"
+            "chancellor. i have stood at this map for four years. i find i do not know where to stand in a room that does not have one."
+            :next "armistice/olen-map-2")
+
+(dialog-say "armistice/olen-map-2"
+            "you"
+            "by the window, Olen. it is the new map. everything on it is ours to lose slowly."
+            :next "armistice/olen-map-3")
+
+(dialog-say "armistice/olen-map-3"
+            "Olen"
+            "by the window. yes. i will require new habits. i am told the river is good to look at, now that it is only a river."
+            :next "armistice/olen-questions")
 
 (dialog-interrogation "armistice/olen-questions"
                       "Olen has not moved to the window yet. he stands where the map was, hands half-raised toward a thing that is no longer there."
