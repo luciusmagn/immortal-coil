@@ -3,12 +3,12 @@
 ;;; The story tree: a pannable overlay (T) that visualizes the sprawling
 ;;; shape of the graph. It shows the nodes you have entered (bright),
 ;;; joined by dotted threads and growing upward from the root. Where your
-;;; path split, the off-main branches are revealed one node at a time
-;;; (dim), so the shape of the choices around you is visible. A straight
-;;; line ahead of the player is never revealed. A branch whose next node
-;;; is indeterminate because it is computed at runtime is capped with a
-;;; dim "?" terminator. The whole tree shrinks toward a floor as it
-;;; gathers more nodes.
+;;; path split, the off-main branches are revealed (dim) as whole subtrees,
+;;; fanning out at every sub-split, one depth-level deeper per move elapsed
+;;; since the split. A straight line ahead of the player is never revealed.
+;;; A node whose real next is indeterminate because it is computed at
+;;; runtime is capped with a dim "?". The whole tree shrinks toward a floor
+;;; as it gathers more nodes.
 
 (defvar *tree-open-p* nil)
 (defvar *tree-pan-x* 0.0)
@@ -106,43 +106,46 @@ of every visited node."
     (push q (gethash id (tree-model-children model)))
     q))
 
-(defun tree-reveal-chain (model start parent budget revealed count)
-  "Follow ONE static continuation out from an off-main branch, adding a
-node at a time up to BUDGET (turns since the split), and cap it with a ?
-when the next step is computed at runtime. Returns the new node count."
+(defun tree-reveal-subtree (model start parent budget revealed count)
+  "Grow an off-main branch as a whole SUBTREE, not a single thread: from
+START, follow every static continuation, fanning out at each sub-split, to
+depth BUDGET (the moves elapsed since the split). Each revealed node whose
+real next is computed at runtime is capped with a dim ?. A breadth-first
+frontier means every branch advances one level per move. Returns the new
+node count."
   (let ((children (tree-model-children model))
         (parents (tree-model-parent model))
         (depth (tree-model-depth model))
-        (node start)
-        (prev parent)
-        (steps 0))
+        ;; frontier of (node prev steps); steps is depth from the split
+        (queue (list (list start parent 1))))
     (loop
-      (when (or (null node)
-                (>= steps budget)
-                (>= count +tree-max-nodes+)
-                (gethash node revealed))
+      (when (or (null queue) (>= count +tree-max-nodes+))
         (return))
-      (setf (gethash node revealed) t
-            (gethash node parents) prev
-            (gethash node depth) (1+ (gethash prev depth 0)))
-      (push node (gethash prev children))
-      (incf count)
-      (incf steps)
-      (let* ((n (gethash node *nodes*))
-             (targets (and n (remove nil (tree-node-outgoing n))))
-             (statics (remove-duplicates (remove-if-not #'stringp targets)
-                                         :test #'equal))
-             (dynamic-p (some (lambda (target) (not (stringp target))) targets))
-             (next (find-if (lambda (s) (not (gethash s revealed))) statics)))
-        (cond
-          (dynamic-p
-           (when (< count +tree-max-nodes+)
-             (tree-add-question model node)
-             (incf count))
-           (return))
-          ((null next) (return))
-          (t (setf prev node
-                   node next)))))
+      (destructuring-bind (node prev steps) (pop queue)
+        (unless (or (null node)
+                    (> steps budget)
+                    (gethash node revealed))
+          (setf (gethash node revealed) t
+                (gethash node parents) prev
+                (gethash node depth) (1+ (gethash prev depth 0)))
+          (push node (gethash prev children))
+          (incf count)
+          (let* ((n (gethash node *nodes*))
+                 (targets (and n (remove nil (tree-node-outgoing n))))
+                 (statics (remove-duplicates (remove-if-not #'stringp targets)
+                                             :test #'equal))
+                 (dynamic-p (some (lambda (target) (not (stringp target)))
+                                  targets)))
+            ;; a node with a computed next shows its ? straight away
+            (when (and dynamic-p (< count +tree-max-nodes+))
+              (tree-add-question model node)
+              (incf count))
+            ;; expand every static child until the depth budget is spent;
+            ;; the frontier left over grows another level next move
+            (when (< steps budget)
+              (dolist (s statics)
+                (unless (gethash s revealed)
+                  (setf queue (nconc queue (list (list s node (1+ steps))))))))))))
     count))
 
 (defun tree-compute-sizes (model)
@@ -213,9 +216,9 @@ their children) and collect ids. DEPTH drives the centring alternation."
               (caar pairs)
               *story-start-node*))
     (tree-compute-depths model)
-    ;; off-main branches grow one node per turn elapsed since their split,
-    ;; following one static continuation until it is capped by a "?"; a
-    ;; visited node whose own next is computed gets a "?" too
+    ;; off-main branches grow one depth-level per turn elapsed since their
+    ;; split, fanning out at every sub-split, with computed nexts capped by
+    ;; a "?"; a visited node whose own next is computed gets a "?" too
     (let ((revealed (make-hash-table :test #'equal))
           (latest (1- (length pairs)))
           (count (hash-table-count placed)))
@@ -238,8 +241,8 @@ their children) and collect ids. DEPTH drives the centring alternation."
                    (when (>= directions 2)
                      (dolist (target statics)
                        (unless (gethash target revealed)
-                         (setf count (tree-reveal-chain model target id
-                                                        budget revealed count)))))
+                         (setf count (tree-reveal-subtree model target id
+                                                          budget revealed count)))))
                    (when (and dynamic-p
                               (< count +tree-max-nodes+)
                               (every (lambda (child)
