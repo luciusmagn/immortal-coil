@@ -400,7 +400,7 @@ their children) and collect ids. DEPTH drives the centring alternation."
                                  (claylib::c-ptr (make-color 0 0 0 234)))
       (tree-draw-connectors model)
       (tree-draw-beads model)
-      (draw-centered-text "THE STORY SO FAR"
+      (draw-centered-text "THE COIL"
                           +virtual-center-x+
                           34.0
                           22
