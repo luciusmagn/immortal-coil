@@ -374,16 +374,25 @@
             "before you go. appendix one, in full, since you have earned it: the subject is whoever is in the room when you look. that is the whole text. i could add a sentence by now, if i wanted to."
             :next "facility/appendix-ask")
 
-(dialog-conversation "facility/appendix-ask"
-                     (dialog-right "you"
-                                   "what sentence would you add?")
-                     (dialog-left "M-3"
-                                  "look less.")
-                     (dialog-right "you"
-                                   "is that advice or procedure?")
-                     (dialog-left "M-3"
-                                  "here, {facility-designation}, the difference is seniority. same time.")
-                     :next "facility/notice-board")
+(dialog-say "facility/appendix-ask"
+            "you"
+            "what sentence would you add?"
+            :next "facility/appendix-ask-2")
+
+(dialog-say "facility/appendix-ask-2"
+            "M-3"
+            "look less."
+            :next "facility/appendix-ask-3")
+
+(dialog-say "facility/appendix-ask-3"
+            "you"
+            "is that advice or procedure?"
+            :next "facility/appendix-ask-4")
+
+(dialog-say "facility/appendix-ask-4"
+            "M-3"
+            "here, {facility-designation}, the difference is seniority. same time."
+            :next "facility/notice-board")
 
 (dialog-text "facility/notice-board"
              "by the staff room door there is a notice board, mostly thumbtacks. the one notice reads: ROTATION SCHEDULES ARE POSTED IN ADVANCE."

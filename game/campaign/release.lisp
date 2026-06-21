@@ -12,14 +12,20 @@
              (dialog-option "leave it for the day staff" "facility/walk3")
              (dialog-option "take it down to M-3" "release/ask"))
 
-(dialog-conversation "release/ask"
-                     (dialog-left "M-3"
-                                  "so you read the board. yes. the wing concludes. wings conclude, {facility-designation}. it is in the handbook, the last chapter, which nobody reads because of where it is.")
-                     (dialog-right "you"
-                                   "what happens to the room?")
-                     (dialog-left "M-3"
-                                  "the room is released. the files are processed. the furnishings are surplus. you will be on the rotation, because the last rotation needs someone who initials honestly, and your column says you do.")
-                     :next "release/last-rotation")
+(dialog-say "release/ask"
+            "M-3"
+            "so you read the board. yes. the wing concludes. wings conclude, {facility-designation}. it is in the handbook, the last chapter, which nobody reads because of where it is."
+            :next "release/ask-2")
+
+(dialog-say "release/ask-2"
+            "you"
+            "what happens to the room?"
+            :next "release/ask-3")
+
+(dialog-say "release/ask-3"
+            "M-3"
+            "the room is released. the files are processed. the furnishings are surplus. you will be on the rotation, because the last rotation needs someone who initials honestly, and your column says you do."
+            :next "release/last-rotation")
 
 (dialog-scene "release/last-rotation"
               "the last rotation."
@@ -121,14 +127,20 @@
 (dialog-on-enter "release/burn-ask"
                  '(setf (dialog-value "release-burn") "asked"))
 
-(dialog-conversation "release/burn-ask"
-                     (dialog-left "M-3"
-                                  "what does burning release. the obligation to keep current, {facility-designation}. a live file must be true. a processed file is only history, and history is allowed to rest.")
-                     (dialog-right "you"
-                                   "and the places in the files?")
-                     (dialog-left "M-3"
-                                  "places get on with themselves. the files were never the places. they were the looking. we are not burning anywhere. we are only stopping looking.")
-                     :next "release/burn-after-ask")
+(dialog-say "release/burn-ask"
+            "M-3"
+            "what does burning release. the obligation to keep current, {facility-designation}. a live file must be true. a processed file is only history, and history is allowed to rest."
+            :next "release/burn-ask-2")
+
+(dialog-say "release/burn-ask-2"
+            "you"
+            "and the places in the files?"
+            :next "release/burn-ask-3")
+
+(dialog-say "release/burn-ask-3"
+            "M-3"
+            "places get on with themselves. the files were never the places. they were the looking. we are not burning anywhere. we are only stopping looking."
+            :next "release/burn-after-ask")
 
 (dialog-text "release/burn-after-ask"
              "you process them with that in mind. four files, four lines, four sets of initials. the obligation to keep them current goes up the flue in order."
@@ -330,14 +342,20 @@
              "it goes on, and nobody initials it. that is what released means. minutes that belong to no column."
              :next "release/goodbye")
 
-(dialog-conversation "release/goodbye"
-                     (dialog-left "M-3"
-                                  "your signature says delivery is immediate, {facility-designation}. go and receive it. that is the whole of the last chapter, by the way. one sentence. go and receive it.")
-                     (dialog-right "you"
-                                   "and you?")
-                     (dialog-left "M-3"
-                                  "i have my page. same time, somewhere. the handle was always warm because of who was holding it next. i am old enough to say that out loud, once, on a last day.")
-                     :next "release/delivery")
+(dialog-say "release/goodbye"
+            "M-3"
+            "your signature says delivery is immediate, {facility-designation}. go and receive it. that is the whole of the last chapter, by the way. one sentence. go and receive it."
+            :next "release/goodbye-2")
+
+(dialog-say "release/goodbye-2"
+            "you"
+            "and you?"
+            :next "release/goodbye-3")
+
+(dialog-say "release/goodbye-3"
+            "M-3"
+            "i have my page. same time, somewhere. the handle was always warm because of who was holding it next. i am old enough to say that out loud, once, on a last day."
+            :next "release/delivery")
 
 (dialog-text "release/delivery"
              "delivery is immediate. sleep arrives the way the trays did, during an interval that contains no one. somewhere a bed, one. night stand, one. glass, one, full to the line."

@@ -264,14 +264,20 @@
              "he was on the room side once. nobody breathes like that from reading a handbook. the drill is what you take with you when they let you out."
              :next "nightshift/wall-talk")
 
-(dialog-conversation "nightshift/wall-talk"
-                     (dialog-left "M-3, through the glass"
-                                  "the curtain stays shut, {facility-designation}, per procedure. procedure does not mention the wall. the wall carries sound. i am old enough to stand near it. how is the room.")
-                     (dialog-right "you"
-                                   "breathing. the figure is still disputed.")
-                     (dialog-left "M-3, through the glass"
-                                  "good. when the figure settles, that is when we worry. the notes in the drawer. they were mine. i never knew who got them. file that wherever you file things now.")
-                     :next "nightshift/bad-nights")
+(dialog-say "nightshift/wall-talk"
+            "M-3, through the glass"
+            "the curtain stays shut, {facility-designation}, per procedure. procedure does not mention the wall. the wall carries sound. i am old enough to stand near it. how is the room."
+            :next "nightshift/wall-talk-2")
+
+(dialog-say "nightshift/wall-talk-2"
+            "you"
+            "breathing. the figure is still disputed."
+            :next "nightshift/wall-talk-3")
+
+(dialog-say "nightshift/wall-talk-3"
+            "M-3, through the glass"
+            "good. when the figure settles, that is when we worry. the notes in the drawer. they were mine. i never knew who got them. file that wherever you file things now."
+            :next "nightshift/bad-nights")
 
 (dialog-text "nightshift/bad-nights"
              "on the bad nights, and the room side has them, M-3 stands at the wall after hours and reads you the day's log line, low, against every procedure he has initialed. subject slept."
