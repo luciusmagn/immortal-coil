@@ -27,6 +27,9 @@
   (kind        :text :type journal-entry-kind)
   (entry-index 0 :type nonnegative-integer)
   (first-p     nil :type boolean)
+  ;; on the first line of a spoken entry, the leading label (the speaker, or
+  ;; YOU) so it can be drawn in its own colour instead of bleeding into the body
+  (label       "" :type string)
   (gap-p       nil :type boolean))
 
 
@@ -296,17 +299,29 @@
                    +journal-text-size+
                    (journal-entry-wrap-width entry)))
 
+(-> journal-entry-leading-label (plist) string)
+(defun journal-entry-leading-label (entry)
+  "The label that opens an entry's first line, so the renderer can colour it
+apart from the body. Speakers (and the player's YOU) only; the structural
+labels keep their markers and indents instead."
+  (case (getf entry :kind)
+    ((:say :conversation) (journal-speaker-label entry))
+    (:input "YOU")
+    (t "")))
+
 (-> journal-entry-render-lines (plist nonnegative-integer)
     (list-of journal-render-line))
 (defun journal-entry-render-lines (entry entry-index)
-  (let ((kind (getf entry :kind)))
+  (let ((kind (getf entry :kind))
+        (label (journal-entry-leading-label entry)))
     (append
      (loop for text in (journal-entry-lines entry)
            for first-p = t then nil
            collect (make-journal-render-line :text text
                                              :kind kind
                                              :entry-index entry-index
-                                             :first-p first-p))
+                                             :first-p first-p
+                                             :label (if first-p label "")))
      (loop repeat +journal-entry-gap-lines+
            collect (make-journal-render-line :kind kind
                                              :entry-index entry-index
@@ -491,6 +506,35 @@
       ((:say :conversation) (draw-journal-speech-marker x y color))
       (:input (draw-journal-input-marker x y color)))))
 
+(-> journal-text-has-prefix-p (string string) boolean)
+(defun journal-text-has-prefix-p (text prefix)
+  (and (plusp (length prefix))
+       (<= (length prefix) (length text))
+       (string= text prefix :end1 (length prefix))))
+
+(-> journal-speaker-accent-color () t)
+(defun journal-speaker-accent-color ()
+  ;; a warm amber, so a speaker's name reads as a name and not as the first
+  ;; words of what they said
+  (make-color 245 208 140 255))
+
+(-> draw-journal-line-text (journal-render-line scalar scalar t) t)
+(defun draw-journal-line-text (line x y body-color)
+  "Draw the line. On a spoken entry's first line, paint the leading label
+(speaker / YOU) in the accent colour and the rest in the body colour."
+  (let ((text  (journal-render-line-text line))
+        (label (journal-render-line-label line)))
+    (if (and (journal-render-line-first-p line)
+             (journal-text-has-prefix-p text label))
+        (let* ((rest     (string-left-trim " " (subseq text (length label))))
+               (consumed (subseq text 0 (- (length text) (length rest))))
+               (offset   (text-width consumed +journal-text-size+)))
+          (draw-text-at label x y +journal-text-size+
+                        (journal-speaker-accent-color))
+          (when (plusp (length rest))
+            (draw-text-at rest (+ x offset) y +journal-text-size+ body-color)))
+        (draw-text-at text x y +journal-text-size+ body-color))))
+
 (-> draw-journal-lines ((list-of journal-render-line) t) t)
 (defun draw-journal-lines (lines color)
   (loop for line in lines
@@ -503,11 +547,10 @@
                                        (journal-content-left)
                                        y
                                        line-color)
-             (draw-text-at (journal-render-line-text line)
-                           (journal-render-line-x line)
-                           y
-                           +journal-text-size+
-                           line-color)))
+             (draw-journal-line-text line
+                                     (journal-render-line-x line)
+                                     y
+                                     line-color)))
 
 (-> draw-journal-scrollbar ((list-of journal-render-line) t) t)
 (defun draw-journal-scrollbar (lines color)
