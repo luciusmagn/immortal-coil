@@ -371,6 +371,38 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
                         (delve-resolve-floor-rows session))
                 'vector)))
 
+;;; Carrying stats between consecutive delves
+;;;
+;;; A delve remembers its ending stats on success under a global key. A
+;;; delve placed right after another (config :inherit t) seeds itself from
+;;; them and skips the class menu, so a two-stage descent keeps its run.
+
+(defun delve-store-carry (session)
+  (setf (dialog-value "delve-carry")
+        (list :class (delve-state session "class")
+              :hp (delve-current-hp session)
+              :rations (delve-state session "rations" 0)
+              :scrolls (delve-state session "scrolls" 0)
+              :digs (delve-state session "digs" 0)
+              :xp (delve-state session "xp" 0)
+              :marks (delve-state session "marks" 0))))
+
+(defun delve-apply-carry (session carry)
+  (when (getf carry :class)
+    (setf (delve-state session "class") (getf carry :class)))
+  (setf (delve-state session "phase") :crawl
+        (delve-state session "rations") (or (getf carry :rations) 0)
+        (delve-state session "scrolls") (or (getf carry :scrolls) 0)
+        (delve-state session "digs") (or (getf carry :digs) 0)
+        (delve-state session "xp") (or (getf carry :xp) 0)
+        (delve-state session "marks") (or (getf carry :marks) 0)
+        (delve-state session "inventory-index") 0
+        (delve-state session "hp")
+        (max 1 (min (or (getf carry :hp) (delve-max-hp session))
+                    (delve-max-hp session))))
+  (delve-set-message session
+                     "you go down again, carrying what the last dark left you."))
+
 (defmethod initialize-instance :after ((session rogue-delve-session) &key)
   (unless (delve-state session "started")
     (with-batched-store-saves ()
@@ -389,7 +421,10 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
             (delve-state session "floor-data") nil
             (delve-state session "message") "choose a class.")
       (delve-load-floors session)
-      (delve-initialize-position session)))
+      (delve-initialize-position session)
+      (when (and (session-config-value session :inherit)
+                 (dialog-value "delve-carry"))
+        (delve-apply-carry session (dialog-value "delve-carry")))))
   (delve-load-floors session)
   (unless (delve-state session "phase")
     (setf (delve-state session "phase")
@@ -427,6 +462,8 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
        (= (delve-state session "hunter-y") (delve-state session "y"))))
 
 (defun delve-finish (session node outcome-key fallback)
+  (when (eq outcome-key :goal-target)
+    (delve-store-carry session))
   (setf (delve-state session "started") nil)
   (finish-minigame-node node
                         (or (session-config-value session outcome-key)
@@ -463,11 +500,13 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
 ;;; wandered. The static grid glyphs themselves render as plain floor.
 
 (defun delve-scan-monsters (grid)
+  "Each monster is (x y glyph roused). They start unroused: a monster that
+has not yet noticed the player can be taken from behind."
   (loop for y below (length grid)
         nconc (loop for x below (length (aref grid y))
                     for glyph = (aref (aref grid y) x)
                     when (delve-monster-p glyph)
-                      collect (list x y glyph))))
+                      collect (list x y glyph nil))))
 
 (defun delve-floor-monsters (session floor)
   (cdr (assoc floor (delve-state session "monsters") :test #'eql)))
@@ -498,11 +537,14 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
   (max 2 (- 4 (floor (delve-class-value session :stealth 1) 2))))
 
 (defun delve-move-monsters (session node)
-  "Wake, pursue, and bite. Returns NIL if a bite finishes the player."
+  "A roused monster within range pursues and bites. An unroused monster
+may fail to notice the player on a stealth roll and stay put; once it
+notices, it stays roused. Returns NIL if a bite finishes the player."
   (let* ((floor (delve-floor-index session))
          (px (delve-state session "x"))
          (py (delve-state session "y"))
          (wake (delve-monster-wake-radius session))
+         (stealth (delve-class-value session :stealth 1))
          (occupied (make-hash-table :test #'equal))
          (result nil)
          (alive t))
@@ -512,35 +554,40 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
       (let* ((mx (first mon))
              (my (second mon))
              (glyph (third mon))
+             (roused (fourth mon))
              (nx mx)
              (ny my)
              (dist (max (abs (- px mx)) (abs (- py my)))))
         (cond
           ((not alive))
-          ((and (<= dist wake) (<= dist 1))
-           (delve-set-message session (delve-monster-attack-text glyph))
-           (delve-sound session :hit-sound 0.40)
-           (unless (delve-hurt session node (delve-monster-damage glyph))
-             (setf alive nil)))
-          ((<= dist wake)
-           (let* ((dx (cond ((< mx px) 1) ((> mx px) -1) (t 0)))
-                  (dy (cond ((< my py) 1) ((> my py) -1) (t 0)))
-                  (prefer-x (>= (abs (- px mx)) (abs (- py my))))
-                  (cands (if prefer-x
-                             (list (cons (+ mx dx) my) (cons mx (+ my dy)))
-                             (list (cons mx (+ my dy)) (cons (+ mx dx) my)))))
-             (dolist (cand cands)
-               (let ((cx (car cand))
-                     (cy (cdr cand)))
-                 (when (and (or (/= cx mx) (/= cy my))
-                            (delve-walkable-p session cx cy)
-                            (not (and (= cx px) (= cy py)))
-                            (not (gethash (cons cx cy) occupied)))
-                   (setf nx cx ny cy)
-                   (return)))))))
+          ((> dist wake))
+          ((and (not roused) (<= (get-random-value 1 6) stealth)))
+          (t
+           (setf roused t)
+           (if (<= dist 1)
+               (progn
+                 (delve-set-message session (delve-monster-attack-text glyph))
+                 (delve-sound session :hit-sound 0.40)
+                 (unless (delve-hurt session node (delve-monster-damage glyph))
+                   (setf alive nil)))
+               (let* ((dx (cond ((< mx px) 1) ((> mx px) -1) (t 0)))
+                      (dy (cond ((< my py) 1) ((> my py) -1) (t 0)))
+                      (prefer-x (>= (abs (- px mx)) (abs (- py my))))
+                      (cands (if prefer-x
+                                 (list (cons (+ mx dx) my) (cons mx (+ my dy)))
+                                 (list (cons mx (+ my dy)) (cons (+ mx dx) my)))))
+                 (dolist (cand cands)
+                   (let ((cx (car cand))
+                         (cy (cdr cand)))
+                     (when (and (or (/= cx mx) (/= cy my))
+                                (delve-walkable-p session cx cy)
+                                (not (and (= cx px) (= cy py)))
+                                (not (gethash (cons cx cy) occupied)))
+                       (setf nx cx ny cy)
+                       (return))))))))
         (remhash (cons mx my) occupied)
         (setf (gethash (cons nx ny) occupied) t)
-        (push (list nx ny glyph) result)))
+        (push (list nx ny glyph roused) result)))
     (setf (delve-floor-monsters session floor) (nreverse result))
     alive))
 
@@ -583,6 +630,19 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
               (1- (delve-state session "hunter-alert" 0)))
         (delve-hunter-pursue session hx hy px py)))))
 
+(defun delve-hunter-rob (session)
+  "The hunter reaches the player. It is not fatal and never ends the
+crawl: it takes the gathered chalk and a ration, and falls back to its
+round while the player tears free into the dark. A stealthy class is
+sensed late enough to avoid it; a loud one pays the toll."
+  (setf (delve-state session "marks") 0)
+  (when (plusp (delve-state session "rations" 0))
+    (decf (delve-state session "rations")))
+  (delve-place-hunter session (delve-floor-index session))
+  (delve-set-message session
+                     "the hunter has you a breath. it takes your chalk and a ration; you tear loose into the dark.")
+  (delve-sound session :hit-sound 0.5))
+
 (defun delve-advance-turn (session node)
   (incf (delve-state session "turns"))
   (when (and (zerop (mod (delve-state session "turns") 26))
@@ -593,25 +653,27 @@ else a freshly generated dungeon. Persisted so a resume keeps its map."
   (unless (delve-move-monsters session node)
     (return-from delve-advance-turn nil))
   (delve-hunter-step session)
-  (if (delve-hunter-caught-p session)
-      (progn
-        (delve-finish session node :caught-target (node-failure-target node))
-        nil)
-      t))
+  (when (delve-hunter-caught-p session)
+    (delve-hunter-rob session))
+  t)
 
 (defun delve-resolve-monster (session node x y mon floor-index)
   (let* ((glyph (third mon))
+         (roused (fourth mon))
          (name (or (delve-monster-name glyph) "monster"))
-         (roll (get-random-value 1 10))
-         (attack (delve-player-attack session))
-         (hit-p (<= roll attack)))
+         ;; a monster that has not noticed you is taken from behind: a
+         ;; backstab always lands, rewarding a quiet approach
+         (hit-p (or (not roused)
+                    (<= (get-random-value 1 10) (delve-player-attack session)))))
     (if hit-p
         (progn
           (delve-remove-monster session floor-index mon)
           (incf (delve-state session "xp"))
           (setf (delve-state session "x") x
                 (delve-state session "y") y)
-          (delve-set-message session "you kill the ~a." name)
+          (if roused
+              (delve-set-message session "you kill the ~a." name)
+              (delve-set-message session "you take the ~a from behind, before it wakes." name))
           (delve-sound session :kill-sound 0.48)
           (delve-advance-turn session node))
         (progn
