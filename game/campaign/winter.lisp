@@ -18,14 +18,20 @@
              "you sit on the bench in the porch light until the light clicks off on its own at full day. the difference between missing a bus and letting one go is nothing anyone can see from outside. you sit inside the difference and keep it."
              :next "winter/clerk-morning")
 
-(dialog-conversation "winter/clerk-morning"
-                     (dialog-left "the clerk"
-                                  "missed it, or let it go? there's a difference, and i can tell it at this range.")
-                     (dialog-right "you"
-                                   "let it go.")
-                     (dialog-left "the clerk"
-                                  "thought so. the ones who miss it pace. you sat like a man keeping an appointment. there's coffee, and the winter delivery wants stacking, and i don't pay wages, i pay lunch.")
-                     :next "winter/stacking")
+(dialog-say "winter/clerk-morning"
+            "the clerk"
+            "missed it, or let it go? there's a difference, and i can tell it at this range."
+            :next "winter/clerk-morning-2")
+
+(dialog-say "winter/clerk-morning-2"
+            "you"
+            "let it go."
+            :next "winter/clerk-morning-3")
+
+(dialog-say "winter/clerk-morning-3"
+            "the clerk"
+            "thought so. the ones who miss it pace. you sat like a man keeping an appointment. there's coffee, and the winter delivery wants stacking, and i don't pay wages, i pay lunch."
+            :next "winter/stacking")
 
 (dialog-text "winter/stacking"
              "you stack the winter delivery: flour in paper, salt in sacks, lamp oil, matches by the gross."
@@ -75,14 +81,20 @@
              "the clerk winters with her sister in the valley, she tells you, always has, since the store was her father's. the plows stop thursday. after thursday the road is the hill's."
              :next "winter/offer")
 
-(dialog-conversation "winter/offer"
-                     (dialog-left "the clerk"
-                                  "so. thursday. you have three ways out of this crossroads and i have told all three of them to people standing where you're standing.")
-                     (dialog-right "you"
-                                   "how many took them?")
-                     (dialog-left "the clerk"
-                                  "all of them took one. that's not the question you asked, and i noticed, and you noticed. sister's has a spare room. the last bus runs thursday noon. or somebody keeps my pipes from freezing, and i'd sooner it was somebody the hill already nods at.")
-                     :next "winter/clerk-questions")
+(dialog-say "winter/offer"
+            "the clerk"
+            "so. thursday. you have three ways out of this crossroads and i have told all three of them to people standing where you're standing."
+            :next "winter/offer-2")
+
+(dialog-say "winter/offer-2"
+            "you"
+            "how many took them?"
+            :next "winter/offer-3")
+
+(dialog-say "winter/offer-3"
+            "the clerk"
+            "all of them took one. that's not the question you asked, and i noticed, and you noticed. sister's has a spare room. the last bus runs thursday noon. or somebody keeps my pipes from freezing, and i'd sooner it was somebody the hill already nods at."
+            :next "winter/clerk-questions")
 
 (dialog-interrogation "winter/clerk-questions"
                       "the clerk refills both cups without asking and lets the offer sit on the counter between you."
@@ -310,14 +322,20 @@
              "one morning you stand in the yard and the stump is just a stump. you miss it. you make yourself stand there until you have admitted that."
              :next "winter/clerk-back")
 
-(dialog-conversation "winter/clerk-back"
-                     (dialog-left "the clerk"
-                                  "pipes held. stove's going. ledger's kept. and you wintered.")
-                     (dialog-right "you"
-                                   "i wintered.")
-                     (dialog-left "the clerk"
-                                  "up here that's not a word for a season, you understand. it's a word for a person. there's maybe six of you in the county and the rest of them were born to it. sit down. i'll make the coffee. mine's better than yours, i can smell yours from here.")
-                     :next "winter/spring-bus")
+(dialog-say "winter/clerk-back"
+            "the clerk"
+            "pipes held. stove's going. ledger's kept. and you wintered."
+            :next "winter/clerk-back-2")
+
+(dialog-say "winter/clerk-back-2"
+            "you"
+            "i wintered."
+            :next "winter/clerk-back-3")
+
+(dialog-say "winter/clerk-back-3"
+            "the clerk"
+            "up here that's not a word for a season, you understand. it's a word for a person. there's maybe six of you in the county and the rest of them were born to it. sit down. i'll make the coffee. mine's better than yours, i can smell yours from here."
+            :next "winter/spring-bus")
 
 (dialog-text "winter/spring-bus"
              "the first bus of spring comes through on a tuesday."

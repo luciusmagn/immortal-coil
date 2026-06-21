@@ -305,14 +305,20 @@
 (dialog-on-enter "forest/truck-wave"
                  '(setf (dialog-value "forest-dawn") "waved"))
 
-(dialog-conversation "forest/truck-wave"
-                     (dialog-left "the driver"
-                                  "morning. you're from the place up the hill, then.")
-                     (dialog-right "you"
-                                   "what place up the hill?")
-                     (dialog-left "the driver"
-                                  "the one folk don't ask about. get in if you're getting in. i don't idle here.")
-                     :next "forest/truck-cab")
+(dialog-say "forest/truck-wave"
+            "the driver"
+            "morning. you're from the place up the hill, then."
+            :next "forest/truck-wave-2")
+
+(dialog-say "forest/truck-wave-2"
+            "you"
+            "what place up the hill?"
+            :next "forest/truck-wave-3")
+
+(dialog-say "forest/truck-wave-3"
+            "the driver"
+            "the one folk don't ask about. get in if you're getting in. i don't idle here."
+            :next "forest/truck-cab")
 
 (dialog-text "forest/truck-cab"
              "the cab smells of dog and diesel. the driver watches the mirrors more than the road. at the county sign he lets out a breath he has been holding since the mailboxes."
@@ -339,14 +345,20 @@
              "he drops you at a crossroads store with a phone, says nothing you can thank him for, and is gone. through the store window the clerk is already looking at you. it is a look she has used before."
              :next "forest/store")
 
-(dialog-conversation "forest/store"
-                     (dialog-left "the clerk"
-                                  "phone's by the cooler. local's free. you'll want coffee first. you all want coffee first.")
-                     (dialog-right "you"
-                                   "you all?")
-                     (dialog-left "the clerk"
-                                  "hill folk. you come down maybe one a winter. drink your coffee. the phone will still be there.")
-                     :next "forest/clerk-questions")
+(dialog-say "forest/store"
+            "the clerk"
+            "phone's by the cooler. local's free. you'll want coffee first. you all want coffee first."
+            :next "forest/store-2")
+
+(dialog-say "forest/store-2"
+            "you"
+            "you all?"
+            :next "forest/store-3")
+
+(dialog-say "forest/store-3"
+            "the clerk"
+            "hill folk. you come down maybe one a winter. drink your coffee. the phone will still be there."
+            :next "forest/clerk-questions")
 
 (dialog-interrogation "forest/clerk-questions"
                       "the coffee is hot and bad. the clerk leans on the register and lets you take the time you need to take."
@@ -413,14 +425,20 @@
              (dialog-option "get on" "forest/fare")
              (dialog-option "stay on the bench" "winter/doors"))
 
-(dialog-conversation "forest/fare"
-                     (dialog-left "the driver"
-                                  "county line's free going out. coming back costs. that's not the company, that's me.")
-                     (dialog-right "you"
-                                   "why coming back?")
-                     (dialog-left "the driver"
-                                  "because going out i'm helping. coming back i'm just driving. sit anywhere behind the line.")
-                     :next "forest/passengers")
+(dialog-say "forest/fare"
+            "the driver"
+            "county line's free going out. coming back costs. that's not the company, that's me."
+            :next "forest/fare-2")
+
+(dialog-say "forest/fare-2"
+            "you"
+            "why coming back?"
+            :next "forest/fare-3")
+
+(dialog-say "forest/fare-3"
+            "the driver"
+            "because going out i'm helping. coming back i'm just driving. sit anywhere behind the line."
+            :next "forest/passengers")
 
 (dialog-text "forest/passengers"
              "there are four passengers and room for forty. nobody sits near you. nobody makes it unkind. past the gravel pits a woman in a postal jacket passes you half a sandwich over the seat back, without turning around."
@@ -453,14 +471,20 @@
 (dialog-on-enter "forest/ask-driver"
                  '(setf (dialog-value "forest-bus") "asked"))
 
-(dialog-conversation "forest/ask-driver"
-                     (dialog-left "the driver"
-                                  "the hill. you want to know if anyone's gone up and asked.")
-                     (dialog-right "you"
-                                   "have they?")
-                     (dialog-left "the driver"
-                                  "twice that i know. county went up in my father's day and came down satisfied. nobody can tell you satisfied with what. that's the part that keeps the rest of us on the road.")
-                     :next "forest/bus-end")
+(dialog-say "forest/ask-driver"
+            "the driver"
+            "the hill. you want to know if anyone's gone up and asked."
+            :next "forest/ask-driver-2")
+
+(dialog-say "forest/ask-driver-2"
+            "you"
+            "have they?"
+            :next "forest/ask-driver-3")
+
+(dialog-say "forest/ask-driver-3"
+            "the driver"
+            "twice that i know. county went up in my father's day and came down satisfied. nobody can tell you satisfied with what. that's the part that keeps the rest of us on the road."
+            :next "forest/bus-end")
 
 (dialog-text "forest/bus-end"
              "wherever the day ends, it ends with you still moving, the hill somewhere over your shoulder, in no hurry. when you finally sleep it is the deep kind, and it takes you all at once."

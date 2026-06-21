@@ -43,14 +43,20 @@
              "the lines of old ball games are still painted on the floor, and the commission's tables are arranged inside them, neatly, as if the rules of some earlier game still applied and everyone had agreed not to step out of bounds."
              :next "tribunal/oath")
 
-(dialog-conversation "tribunal/oath"
-                     (dialog-left "the presiding judge"
-                                  "you were chancellor from the spring of the second year. you held the seals. you will be heard as a witness. whether you remain a witness is a matter for the evidence, not for me, and not for you. do you understand this?")
-                     (dialog-right "you"
-                                   "better than anything else i have been told in three years.")
-                     (dialog-left "the presiding judge"
-                                  "then you are sworn. sit. the commission reads slowly and the chairs are hard. both of these are deliberate.")
-                     :next "tribunal/gallery-look")
+(dialog-say "tribunal/oath"
+            "the presiding judge"
+            "you were chancellor from the spring of the second year. you held the seals. you will be heard as a witness. whether you remain a witness is a matter for the evidence, not for me, and not for you. do you understand this?"
+            :next "tribunal/oath-2")
+
+(dialog-say "tribunal/oath-2"
+            "you"
+            "better than anything else i have been told in three years."
+            :next "tribunal/oath-3")
+
+(dialog-say "tribunal/oath-3"
+            "the presiding judge"
+            "then you are sworn. sit. the commission reads slowly and the chairs are hard. both of these are deliberate."
+            :next "tribunal/gallery-look")
 
 (defun tribunal-gallery-target ()
   (if (dialog-value "district-train")
@@ -73,14 +79,20 @@
              "she has been waiting three years for you to find her, and her face says that the waiting was the easy part."
              :next "tribunal/charge")
 
-(dialog-conversation "tribunal/charge"
-                     (dialog-left "the prosecutor"
-                                  "exhibit one. a rerouting order, dated tuesday, oh two hundred, moving the third district's winter allocation to kilometer nine. the commission will hear that nothing about this order is what it says. for now, one question. is this your signature?")
-                     (dialog-right "you"
-                                   "may i see it closer?")
-                     (dialog-left "the prosecutor"
-                                  "you may hold it. it has been three years. take your time. the commission is interested in your hands as well as your answer.")
-                     :next "tribunal/signature-look")
+(dialog-say "tribunal/charge"
+            "the prosecutor"
+            "exhibit one. a rerouting order, dated tuesday, oh two hundred, moving the third district's winter allocation to kilometer nine. the commission will hear that nothing about this order is what it says. for now, one question. is this your signature?"
+            :next "tribunal/charge-2")
+
+(dialog-say "tribunal/charge-2"
+            "you"
+            "may i see it closer?"
+            :next "tribunal/charge-3")
+
+(dialog-say "tribunal/charge-3"
+            "the prosecutor"
+            "you may hold it. it has been three years. take your time. the commission is interested in your hands as well as your answer."
+            :next "tribunal/signature-look")
 
 (dialog-text "tribunal/signature-look"
              "you hold the order. the hand is small and even, slanted left at the line ends, steadier than your hand was that week, steadier than your hand is now."
@@ -133,14 +145,20 @@
              "it is the truest thing said in the gymnasium all morning. you watch it land as the worst possible answer. the commission has a column for guilt and a column for innocence. it has no column for this."
              :next "tribunal/vey")
 
-(dialog-conversation "tribunal/vey"
-                     (dialog-left "Vey"
-                                  "the chancellor was thorough. i wish to be exact about this. nothing moved in that building without the chancellor's office. i served the office. the office served the chancellor. the commission may draw the arrows itself.")
-                     (dialog-right "you"
-                                   "you wrote the decree, Vey.")
-                     (dialog-left "Vey"
-                                  "i drafted many documents. drafting is a clerk's act. signing is a sovereign's. the commission has the signature. i am only here to confirm the office was orderly, and it was. it was the most orderly office i ever served.")
-                     :next "tribunal/vey-press")
+(dialog-say "tribunal/vey"
+            "Vey"
+            "the chancellor was thorough. i wish to be exact about this. nothing moved in that building without the chancellor's office. i served the office. the office served the chancellor. the commission may draw the arrows itself."
+            :next "tribunal/vey-2")
+
+(dialog-say "tribunal/vey-2"
+            "you"
+            "you wrote the decree, Vey."
+            :next "tribunal/vey-3")
+
+(dialog-say "tribunal/vey-3"
+            "Vey"
+            "i drafted many documents. drafting is a clerk's act. signing is a sovereign's. the commission has the signature. i am only here to confirm the office was orderly, and it was. it was the most orderly office i ever served."
+            :next "tribunal/vey-press")
 
 (dialog-choice-path "tribunal/vey-press"
                     "Vey waits with his hands folded, a man who has never once been late with a document."
@@ -205,14 +223,20 @@
               "the recess."
               :next "tribunal/sorel")
 
-(dialog-conversation "tribunal/sorel"
-                     (dialog-left "Sorel"
-                                  "they have had my ledgers since the spring. both sets. the ink for the building and the pencil for the truth. i am told i am a witness for the prosecution, a witness for the defense, and an unindicted question, depending on the day.")
-                     (dialog-right "you"
-                                   "which are you today?")
-                     (dialog-left "Sorel"
-                                  "today i am the person who taught the commission to read the numbers. somebody had to. it went faster than teaching you, chancellor. they wanted to learn.")
-                     :next "tribunal/sorel-questions")
+(dialog-say "tribunal/sorel"
+            "Sorel"
+            "they have had my ledgers since the spring. both sets. the ink for the building and the pencil for the truth. i am told i am a witness for the prosecution, a witness for the defense, and an unindicted question, depending on the day."
+            :next "tribunal/sorel-2")
+
+(dialog-say "tribunal/sorel-2"
+            "you"
+            "which are you today?"
+            :next "tribunal/sorel-3")
+
+(dialog-say "tribunal/sorel-3"
+            "Sorel"
+            "today i am the person who taught the commission to read the numbers. somebody had to. it went faster than teaching you, chancellor. they wanted to learn."
+            :next "tribunal/sorel-questions")
 
 (dialog-interrogation "tribunal/sorel-questions"
                       "the recess has its own quiet. Sorel folds his hands on the rail and waits, the way he always could."
