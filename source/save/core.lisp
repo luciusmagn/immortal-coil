@@ -42,6 +42,8 @@
         :player-name (dialog-value "player-name" "")
         :slot *active-save-slot*
         :current-id (play-state-current-id *state*)
+        :current-hash (node-content-hash
+                       (gethash (play-state-current-id *state*) *nodes*))
         :visible-count (play-state-visible-count *state*)
         :selected-index (play-state-selected-index *state*)
         :conversation-index (play-state-conversation-index *state*)
@@ -84,6 +86,90 @@
     (if (listp value)
         value
         nil)))
+
+
+;;; Graph drift
+;;;
+;;; A save points at a node by id. The graph it was written against can move
+;;; under it: the node may be edited (a different hash) or deleted entirely.
+;;; We hash the node's content into the save, and on restore we resolve where
+;;; to actually land: the saved node if it is intact, otherwise the most
+;;; recent visited node that still exists.
+
+(-> node-content-signature (t) string)
+(defun node-content-signature (node)
+  "A canonical string of a node's content for hashing. Dynamic (computed)
+targets collapse to a marker, since they have no stable printed form."
+  (flet ((tgt (target) (cond ((stringp target) target)
+                             (target "<dyn>")
+                             (t "<none>"))))
+    (with-output-to-string (out)
+      (format out "~a~%~a~%~a~%~a~%"
+              (node-id node)
+              (or (node-text node) "")
+              (or (node-speaker node) "")
+              (or (node-minigame node) ""))
+      (format out "next:~a target:~a ok:~a fail:~a~%"
+              (tgt (node-next node)) (tgt (node-target node))
+              (tgt (node-success-target node)) (tgt (node-failure-target node)))
+      (map nil
+           (lambda (choice)
+             (format out "choice:~a>~a~%"
+                     (choice-label choice) (tgt (choice-target choice))))
+           (node-choices node))
+      (map nil
+           (lambda (entry)
+             (format out "line:~a:~a>~a~%"
+                     (conversation-entry-side entry)
+                     (conversation-entry-speaker entry)
+                     (conversation-entry-text entry)))
+           (node-conversation node)))))
+
+(-> node-content-hash (t) (option integer))
+(defun node-content-hash (node)
+  (when node
+    (sxhash (node-content-signature node))))
+
+(-> most-recent-existing-visited-node (save-data) (option string))
+(defun most-recent-existing-visited-node (data)
+  "The newest visited node (the visited log is kept newest-first) that still
+exists in the loaded graph, other than the saved current node."
+  (let ((current (save-data-current-id data)))
+    (loop for entry in (save-data-list data :visited)
+          for id = (and (consp entry) (car entry))
+          when (and (stringp id)
+                    (not (equal id current))
+                    (node-exists-p id))
+            return id)))
+
+(defvar *save-landing-status* :ok
+  "Status of the last save restore: :ok, :missing, or :changed.")
+
+(-> save-landing (save-data) (values string keyword))
+(defun save-landing (data)
+  "Where a save should resume. Returns (values target status): :ok if the
+saved node is intact; :missing if it is gone; :changed if it still exists but
+its content differs from when the save was written. For :missing or :changed,
+target is the most recent visited node that still exists, otherwise the saved
+node (if any) or the story start."
+  (let* ((current   (save-data-current-id data))
+         (node      (and (stringp current) (gethash current *nodes*)))
+         (saved-hash (getf data :current-hash))
+         (fallback  (or (most-recent-existing-visited-node data)
+                        (and node current)
+                        *story-start-node*)))
+    (cond
+      ((null node) (values fallback :missing))
+      ((and (integerp saved-hash)
+            (not (eql saved-hash (node-content-hash node))))
+       (values fallback :changed))
+      (t (values current :ok)))))
+
+(-> save-needs-confirmation-p (save-data) boolean)
+(defun save-needs-confirmation-p (data)
+  "True when a save points at a node that no longer exists or has changed, so
+the player should be asked before resuming at the fallback node."
+  (not (eq (nth-value 1 (save-landing data)) :ok)))
 
 
 ;;; File IO
@@ -172,7 +258,11 @@
 
 (-> restore-play-state-from-save (save-data) t)
 (defun restore-play-state-from-save (data)
-  (let ((current-id (resolve-node-id (save-data-current-id data))))
+  (multiple-value-bind (current-id status) (save-landing data)
+    (setf *save-landing-status* status)
+    (unless (eq status :ok)
+      (runtime-warn "Saved node ~s is ~a; resuming at ~s"
+                    (save-data-current-id data) status current-id))
     (setf *playtime-seconds*
           (float (save-data-nonnegative-integer data :playtime)))
     (when (getf data :slot)
@@ -183,13 +273,21 @@
            :current-id current-id
            :elapsed 0.0
            :type-delay 0.0
-           :visible-count (save-data-nonnegative-integer data :visible-count)
-           :selected-index (save-data-nonnegative-integer data :selected-index)
+           ;; a relocated landing node enters fresh; only an intact node keeps
+           ;; its saved typewriter / selection / conversation position
+           :visible-count (if (eq status :ok)
+                              (save-data-nonnegative-integer data :visible-count)
+                              0)
+           :selected-index (if (eq status :ok)
+                               (save-data-nonnegative-integer data :selected-index)
+                               0)
            :choice-preview-index 0
            :choice-preview-elapsed 0.0
            :choice-preview-visible-count 0
            :conversation-index
-           (save-data-nonnegative-integer data :conversation-index)
+           (if (eq status :ok)
+               (save-data-nonnegative-integer data :conversation-index)
+               0)
            :input-buffer (save-data-string data :input-buffer)
            :journal-entries (save-data-list data :journal-entries)
            :journal-open-p nil
