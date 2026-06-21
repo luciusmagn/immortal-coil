@@ -6,7 +6,7 @@
 (defconstant +dream-maze-view-height+ 420)
 (defconstant +dream-maze-ray-count+ 170)
 (defconstant +dream-maze-fov+ 1.08)
-(defconstant +dream-maze-dither-size+ 5)
+(defconstant +dream-maze-dither-size+ 3)
 
 (defparameter *dream-maze-bayer-4x4*
   #(0 8 2 10
@@ -183,70 +183,34 @@
             (dream-maze-view-center-y)
             (max 0.05 forward))))
 
-(-> draw-dream-maze-exit-frame (scalar scalar scalar character) t)
-(defun draw-dream-maze-exit-frame (screen-x center-y distance cell)
-  (let* ((height (max 58.0
-                      (min +dream-maze-view-height+
-                           (* (dream-maze-wall-height distance) 0.9))))
-         (width (max 58.0 (* height 0.42)))
-         (left (- screen-x (/ width 2.0)))
-         (right (+ screen-x (/ width 2.0)))
-         (top (max +dream-maze-view-top+ (- center-y (/ height 2.0))))
-         (bottom (min (dream-maze-view-bottom) (+ center-y (/ height 2.0))))
-         (label-size (round (max 12.0 (min 22.0 (/ width 3.4)))))
-         (label-y (+ top (* (- bottom top) 0.23)))
-         ;; each exit names itself (left / upper / right) so the three are
-         ;; told apart, not three identical "EXIT" doorways
-         (label (string-upcase (dream-maze-exit-name cell))))
-    (draw-dream-maze-black-rect (+ left 5)
-                                (+ top 5)
-                                (max 1 (- width 10))
-                                (max 1 (- (- bottom top) 10))
-                                232)
-    (draw-thick-line-between left
-                             top
-                             right
-                             top
-                             (make-color 255 255 255 245)
-                             3.0)
-    (draw-thick-line-between left
-                             bottom
-                             right
-                             bottom
-                             (make-color 255 255 255 245)
-                             3.0)
-    (draw-thick-line-between left
-                             top
-                             left
-                             bottom
-                             (make-color 255 255 255 245)
-                             3.0)
-    (draw-thick-line-between right
-                             top
-                             right
-                             bottom
-                             (make-color 255 255 255 245)
-                             3.0)
-    (draw-centered-text label
+(-> draw-dream-maze-exit-sign (scalar scalar scalar string) t)
+(defun draw-dream-maze-exit-sign (screen-x center-y distance sign)
+  "Paint the door's sign onto its wall: sized to the wall at this
+distance, on a small dark backing, with no floating frame around it."
+  (let* ((wall-height (dream-maze-wall-height distance))
+         (size (round (dream-maze-clamp-value (* wall-height 0.46) 13.0 70.0)))
+         (pad (* size 0.62)))
+    (draw-dream-maze-black-rect (- screen-x pad)
+                                (- center-y pad)
+                                (* pad 2.0)
+                                (* pad 2.0)
+                                188)
+    (draw-centered-text sign
                         screen-x
-                        label-y
-                        label-size
-                        (make-color 255 255 255 245))
-    (draw-thick-line-between (- screen-x 12)
-                             (+ label-y label-size 10)
-                             (+ screen-x 12)
-                             (+ label-y label-size 10)
-                             (make-color 255 255 255 210)
-                             2.0)))
+                        center-y
+                        size
+                        (make-color 255 255 255 248))))
 
 (-> draw-dream-maze-visible-exits (dream-maze-minigame) t)
 (defun draw-dream-maze-visible-exits (game)
-  (dolist (exit (dream-maze-exit-cells))
-    (destructuring-bind (cell-x cell-y cell) exit
+  (dolist (exit *dream-maze-exits*)
+    (let ((cell-x (dream-maze-exit-x exit))
+          (cell-y (dream-maze-exit-y exit)))
       (when (dream-maze-visible-exit-p game cell-x cell-y)
         (multiple-value-bind (screen-x center-y distance)
             (dream-maze-exit-screen-position game cell-x cell-y)
-          (draw-dream-maze-exit-frame screen-x center-y distance cell))))))
+          (draw-dream-maze-exit-sign screen-x center-y distance
+                                     (dream-maze-exit-sign exit)))))))
 
 (-> draw-dream-maze-ray-column (dream-maze-minigame nonnegative-integer) t)
 (defun draw-dream-maze-ray-column (game column)

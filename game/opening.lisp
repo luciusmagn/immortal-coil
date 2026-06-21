@@ -610,9 +610,9 @@
                  :game :dream-maze
                  :success "dream/maze-lost"
                  :failure "dream/maze-lost"
-                 :config (list :left "alice/fall"
-                               :upper "rogue/ascii-reveal"
-                               :right "dream/right-exit")
+                 :config (list :doors '(("?" "alice/fall")
+                                        ("@" "rogue/ascii-reveal")
+                                        ("=" "dream/right-exit")))
                  :outcomes (list "alice/fall"
                                  "rogue/ascii-reveal"
                                  "dream/right-exit"))

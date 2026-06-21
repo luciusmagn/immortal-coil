@@ -1,26 +1,43 @@
 (in-package #:immortal-coil)
 
-(defconstant +dream-maze-width+ 15)
-(defconstant +dream-maze-height+ 9)
+(defconstant +dream-maze-base-width+ 9)
+(defconstant +dream-maze-base-height+ 5)
 (defconstant +dream-maze-player-radius+ 0.18)
 (defconstant +dream-maze-move-speed+ 2.0)
 (defconstant +dream-maze-turn-speed+ 2.2)
-(defconstant +dream-maze-max-depth+ 16.0)
-(defconstant +dream-maze-max-steps+ 48)
+(defconstant +dream-maze-max-depth+ 26.0)
+(defconstant +dream-maze-max-steps+ 80)
+(defconstant +dream-maze-exit-glyph+ #\$)
+(defconstant +dream-maze-braid-chance+ 4)  ; in 10: how often a dead end opens
 
-;;; Current maze grid. Regenerated per visit (see make-fresh) so the
-;;; corridors are never twice the same. Holds a valid fallback layout
-;;; until the first generation runs.
+;;; Doors carry an abstract sign and a target node, both from the dialog
+;;; config (:doors), so a mod can add as many doors as it likes and draw
+;;; whatever sign it wants. The maze grows with the door count and a
+;;; config :size multiplier. *dream-maze-exits* records where each door
+;;; landed; the grid marks those cells with +dream-maze-exit-glyph+.
+(defstruct dream-maze-exit
+  (x      1 :type fixnum)
+  (y      1 :type fixnum)
+  (sign   "?" :type string)
+  (target nil))
+
+(defvar *dream-maze-exits* nil)
+
+;;; Fallback grid (with two marked doors) until the first generation runs.
 (defvar *dream-maze-map*
-  #("###############"
-    "#     #   # B #"
-    "# ### # # # # #"
-    "# #   # #   # #"
-    "# # ### ##### #"
-    "# #           #"
-    "# ### ##### # #"
-    "#A        # C #"
-    "###############"))
+  #("#######"
+    "#  $  #"
+    "# ### #"
+    "#  $  #"
+    "#######"))
+
+(defun dream-maze-grid-height ()
+  (length *dream-maze-map*))
+
+(defun dream-maze-grid-width ()
+  (if (plusp (length *dream-maze-map*))
+      (length (aref *dream-maze-map* 0))
+      0))
 
 (-> dream-maze-shuffle (list) list)
 (defun dream-maze-shuffle (items)
@@ -30,14 +47,78 @@
           do (rotatef (aref vec i) (aref vec j)))
     (coerce vec 'list)))
 
-;;; Carve a perfect maze with a randomized depth-first backtracker on the
-;;; odd cells, then mark three far cells as the A/B/C exits. Every cell is
-;;; reachable from the (1,1) spawn by construction, so all three exits and
-;;; the bottom always solve.
-(-> generate-dream-maze-map () simple-vector)
-(defun generate-dream-maze-map ()
-  (let ((w +dream-maze-width+)
-        (h +dream-maze-height+))
+(defun dream-maze-make-odd (n)
+  (let ((v (max 5 (round n))))
+    (if (oddp v) v (1+ v))))
+
+(defun dream-maze-dimensions (door-count size-mult)
+  "Maze size grows with the door count and the config size multiplier."
+  (let ((m (max 0.5 (if (realp size-mult) size-mult 1.0)))
+        (n (max 1 door-count)))
+    (values (dream-maze-make-odd (* (+ +dream-maze-base-width+ (* 2 n)) m))
+            (dream-maze-make-odd (* (+ +dream-maze-base-height+ (* 2 n)) m)))))
+
+(defun dream-maze-cell-passages (grid x y w h)
+  "How many of the four neighbour cells X,Y already connects to."
+  (loop for step in '((2 . 0) (-2 . 0) (0 . 2) (0 . -2))
+        count (let ((nx (+ x (car step)))
+                    (ny (+ y (cdr step)))
+                    (wx (+ x (truncate (car step) 2)))
+                    (wy (+ y (truncate (cdr step) 2))))
+                (and (< 0 nx (1- w)) (< 0 ny (1- h))
+                     (char/= (aref grid wy wx) #\#)))))
+
+(defun dream-maze-cell-distances (grid w h)
+  "BFS cell distances from the (1,1) spawn over open passages."
+  (let ((dist (make-hash-table :test #'equal))
+        (queue (list (cons 1 1))))
+    (setf (gethash (cons 1 1) dist) 0)
+    (loop while queue
+          for cell = (pop queue)
+          for cx = (car cell)
+          for cy = (cdr cell)
+          do (dolist (step '((2 . 0) (-2 . 0) (0 . 2) (0 . -2)))
+               (let ((nx (+ cx (car step)))
+                     (ny (+ cy (cdr step)))
+                     (wx (+ cx (truncate (car step) 2)))
+                     (wy (+ cy (truncate (cdr step) 2))))
+                 (when (and (< 0 nx (1- w)) (< 0 ny (1- h))
+                            (char/= (aref grid wy wx) #\#)
+                            (not (gethash (cons nx ny) dist)))
+                   (setf (gethash (cons nx ny) dist)
+                         (1+ (gethash cell dist)))
+                   (setf queue (nconc queue (list (cons nx ny))))))))
+    dist))
+
+(defun dream-maze-pick-door-cells (dist door-count)
+  "Pick DOOR-COUNT distinct cells, spread out and far from the spawn:
+the farthest first, then each one maximising distance to those chosen."
+  (let ((cells (loop for k being the hash-keys of dist
+                     unless (equal k (cons 1 1)) collect k))
+        (chosen nil))
+    (when cells
+      (push (reduce (lambda (a b)
+                      (if (>= (gethash a dist 0) (gethash b dist 0)) a b))
+                    cells)
+            chosen)
+      (loop while (and (< (length chosen) door-count)
+                       (> (length cells) (length chosen)))
+            do (let ((best nil) (best-score -1))
+                 (dolist (c cells)
+                   (unless (member c chosen :test #'equal)
+                     (let ((score (loop for p in chosen
+                                        minimize (+ (abs (- (car c) (car p)))
+                                                    (abs (- (cdr c) (cdr p)))))))
+                       (when (> score best-score)
+                         (setf best-score score best c)))))
+                 (if best (push best chosen) (return)))))
+    (nreverse chosen)))
+
+;;; Carve a randomized depth-first maze, braid it (open some dead ends so
+;;; it loops and is easy to cross), then drop one door per DOORS entry at a
+;;; well-spread reachable cell. Returns (values grid-vector exits-list).
+(defun generate-dream-maze-map (doors size-mult)
+  (multiple-value-bind (w h) (dream-maze-dimensions (length doors) size-mult)
     (let ((grid (make-array (list h w) :initial-element #\#)))
       (labels ((cell-p (x y)
                  (and (oddp x) (oddp y) (< 0 x (1- w)) (< 0 y (1- h))))
@@ -53,15 +134,39 @@
                                   (+ x (truncate (car step) 2)))
                              #\Space)
                        (carve nx ny))))))
-        (carve 1 1))
-      (setf (aref grid (- h 2) 1) #\A
-            (aref grid 1 (- w 2)) #\B
-            (aref grid (- h 2) (- w 2)) #\C)
-      (coerce (loop for y below h
-                    collect (coerce (loop for x below w
-                                          collect (aref grid y x))
-                                    'string))
-              'vector))))
+        (carve 1 1)
+        ;; Braid: open about +dream-maze-braid-chance+/10 of the dead ends
+        ;; so the maze loops and is crossable instead of one winding thread.
+        (loop for y from 1 below (1- h) by 2 do
+          (loop for x from 1 below (1- w) by 2 do
+            (when (and (= 1 (dream-maze-cell-passages grid x y w h))
+                       (< (get-random-value 0 9) +dream-maze-braid-chance+))
+              (dolist (step (dream-maze-shuffle
+                             '((2 . 0) (-2 . 0) (0 . 2) (0 . -2))))
+                (let ((nx (+ x (car step)))
+                      (ny (+ y (cdr step)))
+                      (wx (+ x (truncate (car step) 2)))
+                      (wy (+ y (truncate (cdr step) 2))))
+                  (when (and (cell-p nx ny) (char= (aref grid wy wx) #\#))
+                    (setf (aref grid wy wx) #\Space)
+                    (return))))))))
+      (let* ((dist (dream-maze-cell-distances grid w h))
+             (cells (dream-maze-pick-door-cells dist (length doors)))
+             (exits nil))
+        (loop for door in doors
+              for cell in cells
+              do (setf (aref grid (cdr cell) (car cell)) +dream-maze-exit-glyph+)
+                 (push (make-dream-maze-exit :x (car cell)
+                                             :y (cdr cell)
+                                             :sign (first door)
+                                             :target (second door))
+                       exits))
+        (values (coerce (loop for y below h
+                              collect (coerce (loop for x below w
+                                                    collect (aref grid y x))
+                                              'string))
+                        'vector)
+                (nreverse exits))))))
 
 (defvar *dream-maze-minigame* nil)
 
@@ -91,9 +196,26 @@ maze staring straight into a wall."
           ((open-p 1 2) (float (/ pi 2) 1.0)) ; south
           (t 0.0))))
 
+(defun dream-maze-config-doors (node)
+  "The doors from the node's :doors config as (sign target) lists. Each
+entry may be (sign target) or a bare target; falls back to one door at the
+success target so an unconfigured maze still works."
+  (let ((doors (minigame-config-value node :doors)))
+    (or (and (consp doors)
+             (loop for door in doors
+                   for sign = (if (consp door) (first door) "?")
+                   for target = (if (consp door) (second door) door)
+                   collect (list (if (stringp sign) sign (princ-to-string sign))
+                                 target)))
+        (list (list "?" (node-success-target node))))))
+
 (-> make-fresh-dream-maze-minigame (node) dream-maze-minigame)
 (defun make-fresh-dream-maze-minigame (node)
-  (setf *dream-maze-map* (generate-dream-maze-map))
+  (multiple-value-bind (grid exits)
+      (generate-dream-maze-map (dream-maze-config-doors node)
+                               (minigame-config-value node :size 1.0))
+    (setf *dream-maze-map* grid
+          *dream-maze-exits* exits))
   (make-dream-maze-minigame :node-id (node-id node)
                             :x 1.5
                             :y 1.5
@@ -112,25 +234,24 @@ maze staring straight into a wall."
 
 (-> dream-maze-cell (integer integer) character)
 (defun dream-maze-cell (cell-x cell-y)
-  (if (and (<= 0 cell-x)
-           (< cell-x +dream-maze-width+)
-           (<= 0 cell-y)
-           (< cell-y +dream-maze-height+))
-      (char (aref *dream-maze-map* cell-y) cell-x)
-      #\#))
+  (let ((h (dream-maze-grid-height)))
+    (if (and (<= 0 cell-y) (< cell-y h))
+        (let* ((row (aref *dream-maze-map* cell-y))
+               (w (length row)))
+          (if (and (<= 0 cell-x) (< cell-x w))
+              (char row cell-x)
+              #\#))
+        #\#)))
 
 (-> dream-maze-exit-cell-p (character) boolean)
 (defun dream-maze-exit-cell-p (cell)
-  (not (null (member cell '(#\A #\B #\C) :test #'char=))))
+  (char= cell +dream-maze-exit-glyph+))
 
-(-> dream-maze-exit-cells () list)
-(defun dream-maze-exit-cells ()
-  (loop for y from 0 below +dream-maze-height+
-        append
-        (loop for x from 0 below +dream-maze-width+
-              for cell = (dream-maze-cell x y)
-              when (dream-maze-exit-cell-p cell)
-                collect (list x y cell))))
+(defun dream-maze-exit-at (cell-x cell-y)
+  (find-if (lambda (exit)
+             (and (= (dream-maze-exit-x exit) cell-x)
+                  (= (dream-maze-exit-y exit) cell-y)))
+           *dream-maze-exits*))
 
 (-> dream-maze-solid-cell-p (character) boolean)
 (defun dream-maze-solid-cell-p (cell)
@@ -222,37 +343,22 @@ maze staring straight into a wall."
                                game
                                moved-distance))
 
-(-> dream-maze-exit-name (character) string)
-(defun dream-maze-exit-name (cell)
-  (case cell
-    (#\A "left")
-    (#\B "upper")
-    (#\C "right")
-    (t "unknown")))
-
-(-> dream-maze-current-cell (dream-maze-minigame) character)
-(defun dream-maze-current-cell (game)
-  (dream-maze-cell (floor (dream-maze-minigame-x game))
-                   (floor (dream-maze-minigame-y game))))
-
-(-> finish-dream-maze-minigame (node dream-maze-minigame character) t)
-(defun finish-dream-maze-minigame (node game exit-cell)
+(-> finish-dream-maze-minigame (node dream-maze-minigame dream-maze-exit) t)
+(defun finish-dream-maze-minigame (node game exit)
   (declare (ignore game))
   (stop-dream-maze-audio)
-  (let ((exit-name (dream-maze-exit-name exit-cell)))
-    (setf (dialog-value "dream-maze-exit") exit-name
-          *dream-maze-minigame* nil)
-    (finish-minigame-node node
-                          (or (minigame-config-value
-                               node
-                               (intern (string-upcase exit-name) :keyword))
-                              (node-success-target node)))))
+  (setf (dialog-value "dream-maze-exit") (dream-maze-exit-sign exit)
+        *dream-maze-minigame* nil)
+  (finish-minigame-node node
+                        (or (dream-maze-exit-target exit)
+                            (node-success-target node))))
 
 (-> check-dream-maze-exit (node dream-maze-minigame) t)
 (defun check-dream-maze-exit (node game)
-  (let ((cell (dream-maze-current-cell game)))
-    (when (dream-maze-exit-cell-p cell)
-      (finish-dream-maze-minigame node game cell))))
+  (let ((exit (dream-maze-exit-at (floor (dream-maze-minigame-x game))
+                                  (floor (dream-maze-minigame-y game)))))
+    (when exit
+      (finish-dream-maze-minigame node game exit))))
 
 (-> dream-maze-inverse-component (scalar) scalar)
 (defun dream-maze-inverse-component (value)

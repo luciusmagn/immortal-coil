@@ -101,26 +101,24 @@
   (let ((best-distance +dream-maze-max-depth+)
         (best-pan 0.5)
         (best-closeness 0.0))
-    (dolist (exit (dream-maze-exit-cells))
-      (destructuring-bind (cell-x cell-y cell) exit
-        (declare (ignore cell))
-        (let* ((exit-x (+ cell-x 0.5))
-               (exit-y (+ cell-y 0.5))
-               (dx (- exit-x (dream-maze-minigame-x game)))
-               (dy (- exit-y (dream-maze-minigame-y game)))
-               (distance (sqrt (+ (* dx dx) (* dy dy)))))
-          (when (< distance best-distance)
-            (let* ((side (+ (* (- dx) (sin (dream-maze-minigame-angle game)))
-                            (* dy (cos (dream-maze-minigame-angle game)))))
-                   (side-ratio (/ side (max 0.01 distance)))
-                   (closeness
-                     (clamp01
-                      (/ (- *dream-maze-static-far-distance* distance)
-                         (- *dream-maze-static-far-distance*
-                            *dream-maze-static-near-distance*)))))
-              (setf best-distance distance
-                    best-pan (clamp01 (+ 0.5 (* 0.44 side-ratio)))
-                    best-closeness closeness))))))
+    (dolist (exit *dream-maze-exits*)
+      (let* ((exit-x (+ (dream-maze-exit-x exit) 0.5))
+             (exit-y (+ (dream-maze-exit-y exit) 0.5))
+             (dx (- exit-x (dream-maze-minigame-x game)))
+             (dy (- exit-y (dream-maze-minigame-y game)))
+             (distance (sqrt (+ (* dx dx) (* dy dy)))))
+        (when (< distance best-distance)
+          (let* ((side (+ (* (- dx) (sin (dream-maze-minigame-angle game)))
+                          (* dy (cos (dream-maze-minigame-angle game)))))
+                 (side-ratio (/ side (max 0.01 distance)))
+                 (closeness
+                   (clamp01
+                    (/ (- *dream-maze-static-far-distance* distance)
+                       (- *dream-maze-static-far-distance*
+                          *dream-maze-static-near-distance*)))))
+            (setf best-distance distance
+                  best-pan (clamp01 (+ 0.5 (* 0.44 side-ratio)))
+                  best-closeness closeness)))))
     (values best-distance best-pan best-closeness)))
 
 (-> dream-maze-static-volume-for-closeness (scalar) scalar)

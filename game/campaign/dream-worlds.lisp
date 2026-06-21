@@ -774,7 +774,11 @@
                  "w/s or up/down move. a/d or left/right turn. find the stairs."
                  :game :dream-maze
                  :success "rogue/stair-found"
-                 :failure "rogue/stair-lost")
+                 :failure "rogue/stair-lost"
+                 :config (list :doors '(("@" "rogue/stair-found")
+                                        ("?" "rogue/stair-lost")))
+                 :outcomes (list "rogue/stair-found"
+                                 "rogue/stair-lost"))
 
 (dialog-text "rogue/stair-found"
              "the stairs are at the end you had not tried yet. going up, the carved name on the first step reads the same from below. carved names should not do that."
