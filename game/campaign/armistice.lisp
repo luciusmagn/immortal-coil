@@ -9,7 +9,7 @@
 
 (dialog-pick "armistice/offer-choice"
              "the bell will ring at eight, or it will not."
-             (dialog-option "wake now" "base/awake")
+             (dialog-option "wake now" "sys/reboot")
              (dialog-option "stay for the morning it ends" "armistice/quiet"))
 
 (dialog-scene "armistice/quiet"
@@ -270,4 +270,4 @@
 
 (dialog-text "armistice/wake"
              "sleep, when it comes, comes easy, the first easy sleep of the whole long dream, and it carries you up and out with the windows open the whole way."
-             :next "base/awake")
+             :next "sys/reboot")

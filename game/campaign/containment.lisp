@@ -412,4 +412,4 @@
 
 (dialog-text "facility/clipboard-today"
              "you initial today. you leave tomorrow to whoever keeps arriving."
-             :next "base/awake")
+             :next "sys/reboot")

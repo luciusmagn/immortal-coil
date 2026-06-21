@@ -580,7 +580,7 @@
 
 (dialog-text "ship/later-bunk"
              "you turn in at the bunk with the stenciled name. the stencil is worn now. it has been repainted at least once. the letters are traced over themselves, a little off true."
-             :next "base/awake")
+             :next "sys/reboot")
 
 ;;; A catastrophic crossing does not kill you and does not loop on the
 ;;; bridge. The captain's day resets. You wake in the bunk in a cold

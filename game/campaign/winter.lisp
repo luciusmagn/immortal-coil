@@ -384,4 +384,4 @@
 
 (dialog-text "winter/end"
              "that night sleep takes you all at once, the deep kind, wherever you have laid yourself down. the last thing through is the sound of meltwater finding the culvert. that is the hill's country, talking in its sleep."
-             :next "base/awake")
+             :next "sys/reboot")

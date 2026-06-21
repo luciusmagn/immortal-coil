@@ -334,4 +334,4 @@
 
 (dialog-text "festival/room-end"
              "room four. one candle, one basin, one blanket, and on the nail above the basin, where the notices used to hang, somebody has hung a small paper lantern, unlit, for next year. you are asleep before the candle is out."
-             :next "base/awake")
+             :next "sys/reboot")

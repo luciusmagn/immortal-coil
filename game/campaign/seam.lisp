@@ -338,4 +338,4 @@
 
 (dialog-text "seam/sleep"
              "sleep comes up the stairwell to meet you, at exactly the length it always was, and takes you on the top step, all at once, the deep kind, the kind that is sewn in long stitches, loose on purpose."
-             :next "base/awake")
+             :next "sys/reboot")

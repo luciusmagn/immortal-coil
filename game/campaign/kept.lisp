@@ -383,4 +383,4 @@
 
 (dialog-text "kept/end"
              "the sill doors come with you, wherever you have ended, four small numbered things leaning into whatever light there is, and sleep arrives the way the bailiff once did: offering its arm."
-             :next "base/awake")
+             :next "sys/reboot")

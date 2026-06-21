@@ -345,4 +345,4 @@
 
 (dialog-text "release/delivery-2"
              "condition kept. it stands ready where it has always stood, in the room you wake in. you have signed for it now. that was always going to be the last line of the form."
-             :next "base/awake")
+             :next "sys/reboot")

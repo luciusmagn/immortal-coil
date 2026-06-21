@@ -357,4 +357,4 @@
 
 (dialog-text "nightshift/end"
              "every rotation ends the same way. a bed, a night stand, a glass of water full to the line. sleep arrives per schedule, during an interval that contains no one, to refill you."
-             :next "base/awake")
+             :next "sys/reboot")

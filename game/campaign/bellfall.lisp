@@ -303,4 +303,4 @@
 
 (dialog-text "bellfall/end"
              "whatever Oakbarrow chose, the supper bell still rings, ordinary as weather, and sleep, when it takes you, takes you all at once, with the deep bell of the north tower somewhere under it, patient, keeping its own count."
-             :next "base/awake")
+             :next "sys/reboot")

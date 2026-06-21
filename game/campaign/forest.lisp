@@ -464,7 +464,7 @@
 
 (dialog-text "forest/bus-end"
              "wherever the day ends, it ends with you still moving, the hill somewhere over your shoulder, in no hurry. when you finally sleep it is the deep kind, and it takes you all at once."
-             :next "base/awake")
+             :next "sys/reboot")
 
 (dialog-on-enter "forest/truck-hide"
                  '(setf (dialog-value "forest-dawn") "hid"))
@@ -595,4 +595,4 @@
 
 (dialog-text "forest/dawn-end"
              "you walk until walking is all there is. when you finally sleep, it is sudden and dreamless, in the needles, with your back against a fence post you did not check for carvings."
-             :next "base/awake")
+             :next "sys/reboot")

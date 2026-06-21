@@ -317,7 +317,7 @@
 
 (dialog-text "mutiny/sleep-signed"
              "you lie down in a bed other hands made for you. your name is on your own relief. it is the truest thing you ever signed. sleep comes scheduled and gentle. it is not yours to refuse."
-             :next "base/awake")
+             :next "sys/reboot")
 
 (dialog-text "mutiny/sleep-refused"
              "you lie down. you are still captain by your own record. captain of nothing. beloved, attended, kept."
@@ -325,7 +325,7 @@
 
 (dialog-text "mutiny/sleep-refused-s2"
              "through the bulkhead the ship runs without you and runs well. that was always the cruelest thing it could do. you sleep inside the kindness of it."
-             :next "base/awake")
+             :next "sys/reboot")
 
 (dialog-text "mutiny/sleep-bargained"
              "you lie down. the last crossing is still in your hands. you can feel it there."
@@ -333,4 +333,4 @@
 
 (dialog-text "mutiny/sleep-bargained-2"
              "whatever the log says of it, it was flying, and it was yours. they gave it to you because they loved you. they took everything else for the same reason. you sleep."
-             :next "base/awake")
+             :next "sys/reboot")

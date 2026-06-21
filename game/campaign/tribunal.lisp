@@ -385,4 +385,4 @@
 
 (dialog-text "tribunal/after-2"
              "you lie listening with your eyes open, keeping your own count, and somewhere between one name and the next the counting becomes the old counting, backward, from ten."
-             :next "base/awake")
+             :next "sys/reboot")

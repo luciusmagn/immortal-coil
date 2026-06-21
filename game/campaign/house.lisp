@@ -379,4 +379,4 @@
 
 (dialog-text "house/end"
              "sleep, when it takes you, takes you all at once, the deep kind, the kind the house keeps on the shelf for its own."
-             :next "base/awake")
+             :next "sys/reboot")

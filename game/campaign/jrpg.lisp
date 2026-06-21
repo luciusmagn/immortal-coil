@@ -748,7 +748,7 @@
 (defun jrpg-room-four-target ()
   (if (equal (jrpg-value "jrpg-vane-answer") "terms")
       "bellfall/asleep"
-      "base/awake"))
+      "sys/reboot"))
 
 (dialog-text "jrpg/room-four"
              "room four: one candle, one basin, one blanket, all on credit, all earned now. the quest notice is gone from above the basin, and the nail it hung on has been polished by years of notices. you are asleep before the candle is out."

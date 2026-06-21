@@ -3,7 +3,8 @@
  :version "0.0.1"
  :description "Bundled story graph."
  :depends-on ()
- :scripts ("maze/minigame.lisp"
+ :scripts ("sys/reboot.lisp"
+           "maze/minigame.lisp"
            "maze/audio.lisp"
            "maze/rendering.lisp"
            "flight/minigame.lisp"

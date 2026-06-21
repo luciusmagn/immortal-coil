@@ -425,7 +425,7 @@
 
 (dialog-text "alice/stairwell-up"
              "at the top of the stairwell, the thread goes slack and slips off your wrist. you wind it twice around two fingers and put it in your pocket."
-             :next "base/awake")
+             :next "sys/reboot")
 
 
 (dialog-music "rogue/ascii-reveal" "audio/rogue/chiptune-crypt.wav" :volume 0.20)
@@ -939,4 +939,4 @@
 
 (dialog-text "rogue/service-door"
              "past the shrine is a service door. you open it. beyond are boards, stale air, and a room without torchlight."
-             :next "base/awake")
+             :next "sys/reboot")

@@ -282,16 +282,16 @@
 
 (dialog-text "husk/sleep-log"
              "you do not open the safe. you put your hand flat on it once. then you lie down in the bunk with your name stenciled at the foot. the name is freshly yours tonight. you sleep."
-             :next "base/awake")
+             :next "sys/reboot")
 
 (dialog-text "husk/sleep-sealed"
              "on the last sweep before lights-down the return is there, cold, a kilometer of wire holding her shut. the display calls it station-keeping. keeping, anyway. you sleep. the sweep finds her all night, every pass."
-             :next "base/awake")
+             :next "sys/reboot")
 
 (dialog-text "husk/sleep-scuttled"
              "the lane is clean on every sweep. in the bunk you listen to your own ship. when the carrier tone marks the hour it comes half a second late. or you are tired. you choose tired. you sleep."
-             :next "base/awake")
+             :next "sys/reboot")
 
 (dialog-text "husk/sleep-plain"
              "you lie down in the bunk with your name stenciled at the foot. out on the lane the cold return rides its long orbit, unboarded and unread. that is a decision too. you sleep on it."
-             :next "base/awake")
+             :next "sys/reboot")
