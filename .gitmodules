@@ -1,0 +1,3 @@
+[submodule "game"]
+	path = game
+	url = git@github.com:luciusmagn/immortal-coil-story.git

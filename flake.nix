@@ -83,6 +83,10 @@
             '';
           };
 
+          # The story graph lives in the immortal-coil-story submodule, mounted
+          # at game/. A pure flake build excludes submodule content, so build
+          # with submodules pulled in, e.g. `nix build '.?submodules=1#default'`
+          # (or run with submodules checked out via a non-flake path).
           source = pkgs.lib.cleanSourceWith {
             src = ./.;
             filter = path: type:
