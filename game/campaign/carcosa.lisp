@@ -9,9 +9,16 @@
 
 (dialog-particles "carcosa/cross" :motes :fade-seconds 5.0)
 (dialog-particles "carcosa/causeway-intro" :motes :fade-seconds 3.0)
-(dialog-particles "carcosa/king-hall" :ash :fade-seconds 4.0)
+(dialog-particles "carcosa/court" :tatters :fade-seconds 3.0)
+(dialog-particles "carcosa/king-hall" :tatters :fade-seconds 4.0)
+(dialog-particles "carcosa/throne-choice" :tatters :fade-seconds 2.0)
 (dialog-sound "carcosa/courtier-combat" "audio/jrpg/sword.wav" :volume 0.32)
 (dialog-sound "carcosa/king-loop" "audio/jrpg/bell.wav" :volume 0.24)
+
+;; Lyria's Carcosa drone bed, the lake of Hali, the crown's shimmer.
+(dialog-music "carcosa/cross" "audio/jrpg-carcosa.mp3" :volume 0.20)
+(dialog-sound "carcosa/causeway-intro" "audio/jrpg/lake.wav" :volume 0.30)
+(dialog-sound "carcosa/take-crown" "audio/jrpg/crown.wav" :volume 0.40)
 
 (dialog-text "carcosa/cross"
              "you cross without a step in between. the night city is behind you and was never ahead of you. a still lake, two suns caught half under it, a smell of wet and old paper. the Yellow Sign in your coat is warm against you, like a hand."

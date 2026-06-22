@@ -15,6 +15,17 @@
 (dialog-sound "jrpg/clasp" "audio/jrpg/coin.wav" :volume 0.26)
 (dialog-sound "jrpg/watchman-combat" "audio/jrpg/sword.wav" :volume 0.32)
 
+;; Lyria ambient beds (generated via scripts/gen-lyria-music.sh) and the
+;; night-city sound effects (scripts/gen-jrpg-sfx.lisp).
+(dialog-music "jrpg/city-hub" "audio/jrpg-city-night.mp3" :volume 0.20)
+(dialog-music "jrpg/flight" "audio/jrpg-court.mp3" :volume 0.22)
+(dialog-music "jrpg/dys-meet" "audio/jrpg-dys.mp3" :volume 0.20)
+(dialog-sound "jrpg/studio-door" "audio/jrpg/door.wav" :volume 0.30)
+(dialog-sound "jrpg/church" "audio/jrpg/organ.wav" :volume 0.32)
+(dialog-sound "jrpg/dys-viper" "audio/jrpg/viper.wav" :volume 0.40)
+(dialog-sound "jrpg/marble-fluid" "audio/jrpg/chime.wav" :volume 0.34)
+(dialog-sound "jrpg/crown-flash" "audio/jrpg/crown.wav" :volume 0.40)
+
 (dialog-on-enter "jrpg/inn"
                  '(jrpg-init-state))
 
