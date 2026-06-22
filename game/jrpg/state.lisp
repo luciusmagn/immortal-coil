@@ -14,7 +14,16 @@
     ("jrpg-companion" . "Lena")
     ("jrpg-companion-role" . "childhood friend")
     ("jrpg-village-errand" . "none")
-    ("jrpg-route" . "north road")))
+    ("jrpg-route" . "shore road")
+    ;; Carcosa: composure is the will to keep your own face on. the King, the
+    ;; masque, and the second act of the Play spend it; the lake and rest mend
+    ;; it. the world's recoverable things live here too.
+    ("jrpg-composure" . 10)
+    ("jrpg-composure-max" . 10)
+    ("jrpg-play-scraps" . 0)
+    ("jrpg-second-act" . 0)
+    ("jrpg-mask-shard" . 0)
+    ("jrpg-yellow-sign" . nil)))
 
 (defun jrpg-value (key &optional default)
   (dialog-value key default))
@@ -66,6 +75,40 @@
     (jrpg-adjust-number "jrpg-potions" -1)
     (jrpg-heal 9)
     t))
+
+;;; Carcosa: composure (the will to keep your own face on) and the world's
+;;; recoverable things.
+
+(defun jrpg-composure ()
+  (jrpg-number "jrpg-composure" 10))
+
+(defun jrpg-composure-max ()
+  (jrpg-number "jrpg-composure-max" 10))
+
+(defun jrpg-spend-composure (amount)
+  "Lose composure; never below zero. Returns the remaining composure."
+  (jrpg-set-number "jrpg-composure" (max 0 (- (jrpg-composure) amount)))
+  (jrpg-composure))
+
+(defun jrpg-restore-composure (amount)
+  (jrpg-set-number "jrpg-composure"
+                   (min (jrpg-composure-max) (+ (jrpg-composure) amount))))
+
+(defun jrpg-composed-p ()
+  "True while the player can still hold their own face — refuse the throne,
+leave the masque, keep the mask on."
+  (plusp (jrpg-composure)))
+
+(defun jrpg-grant-item (key &optional (amount 1))
+  "Recover something from the world (a scrap of the Play, a mask shard, a
+flask of Hali-water). Stored so later scenes and mods can read the haul."
+  (jrpg-adjust-number key amount))
+
+(defun jrpg-mark-yellow-sign ()
+  (setf (jrpg-value "jrpg-yellow-sign") t))
+
+(defun jrpg-has-yellow-sign-p ()
+  (and (jrpg-value "jrpg-yellow-sign") t))
 
 (defun jrpg-xp-to-next (level)
   "Experience needed to clear the given level."

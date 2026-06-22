@@ -62,6 +62,9 @@
              "the lantern steadies. an inn room above the water: checked blanket, wooden chest, wash basin, and a summons nailed over the basin. outside, two suns go down behind the lake."
              :next "jrpg/notice")
 
+(dialog-on-enter "jrpg/notice"
+                 '(jrpg-mark-yellow-sign))
+
 (dialog-text "jrpg/notice"
              " THE KING WAITS IN THE HIGH TOWER. END HIM, AND THE SONGS COME BACK. BREAKFAST INCLUDED. a small sign is inked in the corner, yellow, the only colour on the page."
              :next "jrpg/notice-number")
@@ -312,13 +315,16 @@
              "you wake beside the ditch. {jrpg-companion} has one hand on your shoulder and mud on both knees."
              :next "jrpg/road-rest")
 
+(dialog-on-enter "jrpg/road-clear"
+                 '(jrpg-grant-item "jrpg-play-scraps"))
+
 (dialog-conversation "jrpg/road-clear"
                      (dialog-left "{jrpg-companion}"
-                                  "one tatter. six coins. no thread on you.")
+                                  "one tatter. six coins. and a scrap of yellow writing, caught in the thread.")
                      (dialog-right "{player-name}"
                                    "is that good?")
                      (dialog-left "{jrpg-companion}"
-                                  "for a first mile, yes.")
+                                  "for a first mile, yes. keep the scrap. everyone up this road collects them.")
                      :next "jrpg/road-rest")
 
 (dialog-text "jrpg/road-rest"
