@@ -442,7 +442,7 @@ tree scale. Marks the King-in-Yellow path, the one colour in the game."
                           34.0
                           22
                           (make-color 255 255 255 235))
-      (draw-text-at "T/ESC CLOSE   WASD/ARROWS PAN   DIM = BRANCH NOT TAKEN   ? = COMPUTED NEXT   CROWN = THE KING"
+      (draw-text-at "T/ESC CLOSE   WASD/ARROWS PAN"
                     40.0
                     (- +virtual-height+ 34.0)
                     14
