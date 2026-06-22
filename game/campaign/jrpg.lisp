@@ -263,13 +263,73 @@
 
 (dialog-text "jrpg/after-castaigne"
              "Hildred sits down hard, the title gone out of him, and weeps that the cat has got Mr. Wilde. the cat has: the small scarred man bleeds from the throat in his high chair, the ledger fallen open at your name, twice. you go before the noise brings anyone. the cabinet you leave shut, this time."
-             :next "jrpg/church")
+             :next "jrpg/mask-street")
 
 (dialog-on-enter "jrpg/castaigne-down"
                  '(jrpg-heal 6))
 
 (dialog-text "jrpg/castaigne-down"
              "he has your collar and the razor at it when the cat, for its own reasons, takes Mr. Wilde's throat instead, and Hildred forgets you entirely for the man who promised him a crown. you leave them to it. the ledger lies open at your name, twice."
+             :next "jrpg/mask-street")
+
+
+;;; THE MASK — Boris's studio and the marble pool
+
+(dialog-particles "jrpg/boris" :motes :fade-seconds 3.0)
+
+(dialog-text "jrpg/mask-street"
+             "the streets give out into a court you do not remember entering. one door stands open on white light, and the white is not lamplight: it is marble, far too much of it, all of it too lifelike."
+             :next "jrpg/boris")
+
+(dialog-conversation "jrpg/boris"
+                     (dialog-left "Boris"
+                                  "mind the pool. it is clear, and it is not water. i found a fluid that turns the living to marble, every pore. i meant it for lilies. it did not stay meant for lilies.")
+                     (dialog-right "{player-name}"
+                                   "and the woman by the pool?")
+                     (dialog-left "Boris"
+                                  "Geneviève. the best thing i ever made, and i did not make her. ask, if you must. everyone who comes through asks.")
+                     :next "jrpg/boris-questions")
+
+(dialog-interrogation "jrpg/boris-questions"
+                      "Boris stands between you and the pool, the way a man stands between you and a window he is thinking of using."
+                      (:next "jrpg/marble-fluid")
+                      (:continue-label "to the pool")
+                      ("ask what the fluid does to a person"
+                       :id "fluid"
+                       :speaker "Boris"
+                       "keeps them. perfectly, in the last pose they chose. it is the only keeping that does not lie about what it is. the King's keeping lies. this only stops you.")
+                      ("ask about Geneviève"
+                       :id "genevieve"
+                       :speaker "Boris"
+                       "she loved someone who was not me and could not say it, so she said it to the pool instead. i am told she will soften and step out, in time. i am told a great many soothing things in this studio.")
+                      ("ask why he is telling you"
+                       :id "why"
+                       :speaker "Boris"
+                       "you carry the Sign, and the Sign means you are going up to the lake, and the lake keeps people worse than my pool does. take some of the fluid. it is a kinder way to stop, if it comes to that."))
+
+(dialog-on-enter "jrpg/marble-fluid"
+                 '(jrpg-grant-item "jrpg-mask-shard"))
+
+(dialog-text "jrpg/marble-fluid"
+             "you fill a small phial from the pool, clear and heavy and faintly warm. Boris watches you do it the way a man watches someone pocket the thing he could not bring himself to use."
+             :next "jrpg/marble-combat")
+
+(dialog-minigame "jrpg/marble-combat"
+                 "choose a command. arrows or wasd move. enter or space confirms."
+                 :game :jrpg-combat
+                 :success "jrpg/after-marble"
+                 :failure "jrpg/after-marble"
+                 :config (list :enemy-name "THE MARBLE-TOUCHED"
+                               :enemy-kind "phantom"
+                               :enemy-hp 24
+                               :enemy-attack-min 3
+                               :enemy-attack-max 7
+                               :victory-xp 10
+                               :victory-gold 4
+                               :message "the marble by the wall finishes softening, steps down, and remembers how it died."))
+
+(dialog-text "jrpg/after-marble"
+             "the marble-touched goes still again, mid-step, a better statue than before. Boris does not look up from the pool. you leave him to his keeping. outside, where there was no church, a church stands with its door open and an organ going inside."
              :next "jrpg/church")
 
 
