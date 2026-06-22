@@ -20,6 +20,7 @@
            "jrpg/overworld.lisp"
            "jrpg/city.lisp"
            "jrpg/reveal.lisp"
+           "jrpg/rites.lisp"
            "opening.lisp"
            "campaign/forest.lisp"
            "campaign/jrpg.lisp"

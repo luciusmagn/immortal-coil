@@ -240,7 +240,7 @@
 
 (dialog-interrogation "jrpg/wilde-questions"
                       "the cat opens one eye. Mr. Wilde keeps a finger in the ledger, at a page he would like you to ask about."
-                      (:next "jrpg/castaigne")
+                      (:next "jrpg/register-choice")
                       (:continue-label "the cabinet, then")
                       ("ask about the ledger of names"
                        :id "register"
@@ -254,6 +254,11 @@
                        :id "king"
                        :speaker "Mr. Wilde"
                        "the son of Hastur, who keeps the black stars over Carcosa and the cloudy depths of Demhe and the Lake of Hali. he was a man, the manuscript holds, before he was the answer to a question no one should ask. you have been asking it for some pages now."))
+
+(dialog-pick "jrpg/register-choice"
+             "Mr. Wilde turns the ledger to a blank line beneath your name. the second entry is yours to write, in a hand you have not used yet."
+             (dialog-option "add your name in the Sign's own hand" "jrpg/trace-sign")
+             (dialog-option "leave the ledger as it lies" "jrpg/castaigne"))
 
 (dialog-text "jrpg/castaigne"
              "a man rises from a dark corner you had not searched. he gives his name as Hildred and his title as Rex, says the crown is promised to him and a rival claimant must be exiled or die. he has read further than you. he comes for the Sign with a clean razor and a writ already signed."
@@ -356,7 +361,7 @@
 
 (dialog-text "jrpg/church"
              "inside, the organ plays badly and on purpose. the organist watches you in a small mirror set over the keys, and keeps watching while his hands hold the wrong time. when you leave, he leaves. when you stop, the music stops, nearer."
-             :next "jrpg/flight")
+             :next "jrpg/organ-game")
 
 (dialog-minigame "jrpg/flight"
                  "arrows or wasd move. lose the organist in the streets."
