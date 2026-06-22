@@ -114,7 +114,14 @@
   (encounter-target nil)
   (encounter-rate   0)
   (encounter-cool   3)
-  (message          "arrows or wasd move."))
+  (message          "arrows or wasd move.")
+  ;; :city is an orthogonal street grid whose lettered doors each lead to their
+  ;; own target (the DOORS alist); :road is the winding inter-place road.
+  (mode             :road)
+  (doors            nil)
+  ;; facing (for the figure) and a short breadcrumb trail of recent cells
+  (facing           1)
+  (visited          nil))
 
 (defun jrpg-overworld-width (game)
   (length (aref (jrpg-overworld-map game) 0)))
@@ -217,12 +224,17 @@
                      node :start-message
                      "arrows or wasd move."))))))
 
-(defun ensure-jrpg-overworld (node)
+(defun ensure-jrpg-overworld-session (node builder)
+  "Build the walk with BUILDER on first entry to a node and keep it until the
+node changes, so a returning walk resumes (encounters do not reset it)."
   (unless (and *jrpg-overworld*
                (equal (jrpg-overworld-node-id *jrpg-overworld*)
                       (node-id node)))
-    (setf *jrpg-overworld* (make-fresh-jrpg-overworld node)))
+    (setf *jrpg-overworld* (funcall builder node)))
   *jrpg-overworld*)
+
+(defun ensure-jrpg-overworld (node)
+  (ensure-jrpg-overworld-session node #'make-fresh-jrpg-overworld))
 
 (defun jrpg-overworld-cell (game x y)
   (if (and (<= 0 x)
@@ -233,7 +245,7 @@
       #\^))
 
 (defun jrpg-overworld-passable-p (cell)
-  (not (member cell '(#\^ #\~) :test #'char=)))
+  (not (member cell '(#\^ #\~ #\#) :test #'char=)))
 
 (defun jrpg-overworld-input-direction ()
   (cond
@@ -328,9 +340,15 @@ message and are taken only once."
                      (jrpg-overworld-finish-glyphs game)
                      :test #'char=))))
 
-(defun jrpg-overworld-finish (node)
-  (setf *jrpg-overworld* nil)
-  (jump-to-dialog-target (node-success-target node)))
+(defun jrpg-overworld-finish (node game cell)
+  "Leave the walk. In a city, the lettered door CELL goes to its own target;
+on a road the single finish glyph goes to the node's success target."
+  (let ((target (or (and (eq (jrpg-overworld-mode game) :city)
+                         (cdr (assoc cell (jrpg-overworld-doors game)
+                                     :test #'char=)))
+                    (node-success-target node))))
+    (setf *jrpg-overworld* nil)
+    (jump-to-dialog-target target)))
 
 (defun jrpg-overworld-maybe-encounter (node game)
   "After a step, roll for a random encounter. On a hit, drop into the
@@ -347,12 +365,26 @@ steps and the steps just after a fight safe."
             (setf (jrpg-overworld-encounter-cool game) 3)
             (jump-to-dialog-target target))))))
 
+(defun jrpg-overworld-remember-visited (game x y)
+  "Keep a short breadcrumb trail of recently-stepped cells, newest first."
+  (let ((cell (list x y)))
+    (unless (equal cell (first (jrpg-overworld-visited game)))
+      (push cell (jrpg-overworld-visited game))
+      (when (> (length (jrpg-overworld-visited game)) 48)
+        (setf (jrpg-overworld-visited game)
+              (subseq (jrpg-overworld-visited game) 0 48))))))
+
 (defun jrpg-overworld-move (node game dx dy)
   (let* ((next-x (+ (jrpg-overworld-x game) dx))
          (next-y (+ (jrpg-overworld-y game) dy))
          (cell (jrpg-overworld-cell game next-x next-y)))
+    (unless (zerop dx)
+      (setf (jrpg-overworld-facing game) (if (plusp dx) 1 -1)))
     (if (jrpg-overworld-passable-p cell)
         (progn
+          (jrpg-overworld-remember-visited game
+                                           (jrpg-overworld-x game)
+                                           (jrpg-overworld-y game))
           (setf (jrpg-overworld-x game) next-x
                 (jrpg-overworld-y game) next-y
                 (jrpg-overworld-message game)
@@ -363,7 +395,7 @@ steps and the steps just after a fight safe."
           (jrpg-overworld-tile-effects game next-x next-y cell)
           (cond
             ((jrpg-overworld-finish-cell-p game cell)
-             (jrpg-overworld-finish node))
+             (jrpg-overworld-finish node game cell))
             (t
              (jrpg-overworld-maybe-encounter node game))))
         (setf (jrpg-overworld-message game)
@@ -371,13 +403,16 @@ steps and the steps just after a fight safe."
                   "the water is too deep to wade."
                   "you cannot get through that way.")))))
 
+(defun jrpg-overworld-step (node game)
+  "One frame of walking input; shared by the road and the city."
+  (let ((direction (jrpg-overworld-input-direction)))
+    (when direction
+      (destructuring-bind (dx dy) direction
+        (jrpg-overworld-move node game dx dy)))))
+
 (defun update-jrpg-overworld-minigame (node dt)
   (declare (ignore dt))
-  (let ((game (ensure-jrpg-overworld node)))
-    (let ((direction (jrpg-overworld-input-direction)))
-      (when direction
-        (destructuring-bind (dx dy) direction
-          (jrpg-overworld-move node game dx dy))))))
+  (jrpg-overworld-step node (ensure-jrpg-overworld node)))
 
 (defun jrpg-overworld-camera (game)
   "Top-left viewport tile, scrolled to keep the player centered and
@@ -405,33 +440,59 @@ clamped to the map edges."
     (#\~ "~")
     (t ".")))
 
+(defun jrpg-ow-fill (x y w h alpha)
+  (claylib/ll:draw-rectangle (round x) (round y)
+                             (max 1 (round w)) (max 1 (round h))
+                             (claylib::c-ptr (make-color 255 255 255 alpha))))
+
+(defun jrpg-overworld-cell-screen (col row)
+  "Screen x,y of the top-left of a viewport tile."
+  (values (+ +jrpg-overworld-left+ (* col +jrpg-overworld-tile-size+))
+          (+ +jrpg-overworld-top+ (* row +jrpg-overworld-tile-size+))))
+
+(defun jrpg-overworld-draw-grid ()
+  "Faint guide lines, so the walk reads as a grid and not floating specks."
+  (let ((w (* +jrpg-overworld-view-cols+ +jrpg-overworld-tile-size+))
+        (h (* +jrpg-overworld-view-rows+ +jrpg-overworld-tile-size+)))
+    (loop for c from 0 to +jrpg-overworld-view-cols+
+          for x = (+ +jrpg-overworld-left+ (* c +jrpg-overworld-tile-size+))
+          do (jrpg-ow-fill x +jrpg-overworld-top+ 1 h 14))
+    (loop for r from 0 to +jrpg-overworld-view-rows+
+          for y = (+ +jrpg-overworld-top+ (* r +jrpg-overworld-tile-size+))
+          do (jrpg-ow-fill +jrpg-overworld-left+ y w 1 14))))
+
+(defun jrpg-overworld-draw-trail (game cam-x cam-y)
+  "Faint marks where the traveller has lately stepped."
+  (let ((s +jrpg-overworld-tile-size+))
+    (dolist (cell (jrpg-overworld-visited game))
+      (destructuring-bind (mx my) cell
+        (let ((col (- mx cam-x)) (row (- my cam-y)))
+          (when (and (<= 0 col) (< col +jrpg-overworld-view-cols+)
+                     (<= 0 row) (< row +jrpg-overworld-view-rows+))
+            (multiple-value-bind (sx sy) (jrpg-overworld-cell-screen col row)
+              (jrpg-ow-fill (+ sx (/ s 2) -1) (+ sy (/ s 2) -1) 3 3 30))))))))
+
 (defun draw-jrpg-overworld-cell (cell screen-x screen-y)
-  "Distinct, readable tiles: open ground is a faint dot, blocks are solid
-fills, water a low band, and landmarks/pickups bold glyphs — so the route
-and its marks are not a field of identical specks."
+  "Distinct tiles over the grid: blocks are shaded solids with a lit top edge,
+water a glinting band, and landmarks/pickups bold glyphs."
   (let* ((s  +jrpg-overworld-tile-size+)
          (cx (+ screen-x (/ s 2)))
          (cy (+ screen-y (/ s 2))))
-    (flet ((fill-rect (x y w h alpha)
-             (claylib/ll:draw-rectangle (round x) (round y)
-                                        (max 1 (round w)) (max 1 (round h))
-                                        (claylib::c-ptr
-                                         (make-color 255 255 255 alpha)))))
-      (case cell
-        (#\.                              ; open ground
-         (fill-rect (- cx 1) (- cy 1) 2 2 38))
-        (#\^                              ; obstacle: a solid block
-         (fill-rect (+ screen-x 3) (+ screen-y 3) (- s 6) (- s 6) 150))
-        (#\~                              ; water: a low filled band
-         (fill-rect (+ screen-x 2) cy (- s 4) (- (/ s 2) 2) 80))
-        (t                               ; landmark / pickup / finish
-         (draw-centered-text (jrpg-overworld-tile-label cell)
-                             cx cy 20
-                             (make-color 255 255 255 235)))))))
+    (case cell
+      (#\.)                              ; open ground: the grid carries it
+      (#\^                               ; obstacle: a shaded block
+       (jrpg-ow-fill (+ screen-x 3) (+ screen-y 3) (- s 6) (- s 6) 150)
+       (jrpg-ow-fill (+ screen-x 3) (+ screen-y 3) (- s 6) 3 215))
+      (#\~                               ; water: a low band with a glint
+       (jrpg-ow-fill (+ screen-x 2) (+ cy 1) (- s 4) (- (/ s 2) 2) 70)
+       (jrpg-ow-fill (+ screen-x 2) (+ cy 1) (- s 4) 2 120))
+      (t                                 ; landmark / pickup / finish
+       (draw-centered-text (jrpg-overworld-tile-label cell)
+                           cx cy 20 (make-color 255 255 255 235))))))
 
-(defun jrpg-draw-overworld-figure (cx cy)
-  "A small standing figure — the traveller. Drawn from rectangles so it
-reads as a person, not the dungeon @."
+(defun jrpg-draw-overworld-figure (cx cy &optional (facing 1))
+  "The traveller, drawn from rectangles, with a short arm in the heading so
+the way they face reads at a glance."
   (flet ((fill-rect (x y w h)
            (claylib/ll:draw-rectangle (round x) (round y)
                                       (max 1 (round w)) (max 1 (round h))
@@ -439,51 +500,55 @@ reads as a person, not the dungeon @."
     (fill-rect (- cx 3) (- cy 9) 6 5)     ; head
     (fill-rect (- cx 4) (- cy 3) 8 8)     ; body
     (fill-rect (- cx 4) (+ cy 5) 3 4)     ; left leg
-    (fill-rect (+ cx 1) (+ cy 5) 3 4)))   ; right leg
+    (fill-rect (+ cx 1) (+ cy 5) 3 4)     ; right leg
+    (if (plusp facing)
+        (fill-rect (+ cx 4) (- cy 2) 3 4)     ; arm, facing right
+        (fill-rect (- cx 7) (- cy 2) 3 4))))  ; arm, facing left
 
 (defun draw-jrpg-overworld-map (game)
   (multiple-value-bind (cam-x cam-y) (jrpg-overworld-camera game)
+    (jrpg-overworld-draw-grid)
+    (jrpg-overworld-draw-trail game cam-x cam-y)
     (loop for row below +jrpg-overworld-view-rows+
           do (loop for col below +jrpg-overworld-view-cols+
                    for mx = (+ cam-x col)
                    for my = (+ cam-y row)
                    when (and (< mx (jrpg-overworld-width game))
                              (< my (jrpg-overworld-height game)))
-                     do (draw-jrpg-overworld-cell
-                         (jrpg-overworld-effective-cell game mx my)
-                         (+ +jrpg-overworld-left+ (* col +jrpg-overworld-tile-size+))
-                         (+ +jrpg-overworld-top+ (* row +jrpg-overworld-tile-size+)))))
-    (jrpg-draw-overworld-figure
-     (+ +jrpg-overworld-left+
-        (* (- (jrpg-overworld-x game) cam-x) +jrpg-overworld-tile-size+)
-        (/ +jrpg-overworld-tile-size+ 2))
-     (+ +jrpg-overworld-top+
-        (* (- (jrpg-overworld-y game) cam-y) +jrpg-overworld-tile-size+)
-        (/ +jrpg-overworld-tile-size+ 2)))))
+                     do (multiple-value-bind (sx sy)
+                            (jrpg-overworld-cell-screen col row)
+                          (draw-jrpg-overworld-cell
+                           (jrpg-overworld-effective-cell game mx my)
+                           sx sy))))))
+
+(defun jrpg-overworld-draw-player (game)
+  (multiple-value-bind (cam-x cam-y) (jrpg-overworld-camera game)
+    (let ((s +jrpg-overworld-tile-size+))
+      (jrpg-draw-overworld-figure
+       (+ +jrpg-overworld-left+ (* (- (jrpg-overworld-x game) cam-x) s) (/ s 2))
+       (+ +jrpg-overworld-top+ (* (- (jrpg-overworld-y game) cam-y) s) (/ s 2))
+       (jrpg-overworld-facing game)))))
+
+(defun jrpg-overworld-render-frame (game map-fn)
+  "Shared chrome: the arena box, the chosen map, the player, and the HUD."
+  (draw-jrpg-box 220 132 840 432 208)
+  (funcall map-fn game)
+  (jrpg-overworld-draw-player game)
+  (draw-jrpg-box 250 392 480 92)
+  (draw-jrpg-line (jrpg-overworld-message game) 270 414 17)
+  (draw-jrpg-line (jrpg-overworld-legend game) 270 444 15 194)
+  (draw-jrpg-box 760 392 260 92)
+  (draw-jrpg-line (format nil "hp ~d/~d"
+                          (jrpg-number "jrpg-hero-hp")
+                          (jrpg-number "jrpg-hero-max-hp" 18))
+                  782 414 17)
+  (draw-jrpg-line (format nil "gold ~d" (jrpg-number "jrpg-gold"))
+                  782 444 17))
 
 (defun draw-jrpg-overworld-minigame (node color)
   (declare (ignore color))
-  (let ((game (ensure-jrpg-overworld node)))
-    (draw-jrpg-box 220 132 840 432 208)
-    (draw-jrpg-overworld-map game)
-    (draw-jrpg-box 250 392 480 92)
-    (draw-jrpg-line (jrpg-overworld-message game) 270 414 17)
-    (draw-jrpg-line (jrpg-overworld-legend game)
-                    270
-                    444
-                    15
-                    194)
-    (draw-jrpg-box 760 392 260 92)
-    (draw-jrpg-line (format nil "hp ~d/~d"
-                            (jrpg-number "jrpg-hero-hp")
-                            (jrpg-number "jrpg-hero-max-hp" 18))
-                    782
-                    414
-                    17)
-    (draw-jrpg-line (format nil "gold ~d" (jrpg-number "jrpg-gold"))
-                    782
-                    444
-                    17)))
+  (jrpg-overworld-render-frame (ensure-jrpg-overworld node)
+                               #'draw-jrpg-overworld-map))
 
 (dialog-minigame-kind :jrpg-overworld
                       :update #'update-jrpg-overworld-minigame
