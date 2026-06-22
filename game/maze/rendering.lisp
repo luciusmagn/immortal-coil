@@ -124,21 +124,20 @@
 
 (-> draw-dream-maze-door-column (scalar scalar scalar scalar) t)
 (defun draw-dream-maze-door-column (x top bottom width)
-  "Carve a recessed door into one exit-wall column. Because every column uses
-its own perspective-scaled TOP/BOTTOM, the lintel, the recessed panel, and the
-plank seams all bend with the wall instead of floating like a flat billboard."
-  (let* ((height    (- bottom top))
-         (lintel-y  (+ top (* height 0.17)))     ; bright header above the door
-         (panel-h   (- bottom lintel-y))
-         (plank     (max 1.0 (* height 0.014))))
-    ;; recess the panel so the door reads as set back into the bright frame
-    (draw-dream-maze-black-rect x lintel-y width panel-h 150)
-    ;; the lintel beam across the top of the opening
-    (draw-dream-maze-rect x (- lintel-y plank) width (* plank 2.0) 235)
-    ;; horizontal plank seams down the door
-    (loop for k from 1 to 3
-          for y = (+ lintel-y (* (/ k 4.0) panel-h))
-          do (draw-dream-maze-rect x y width plank 150))))
+  "Paint a black doorway into this exit-wall column. The lit wall above the
+opening is the lintel and the lit flanking cells are the jambs; the opening
+itself is solid black down to the floor. This is the original clean black
+door-frame look, but drawn per-column as part of the wall, so it bends with
+the perspective instead of floating like a billboard."
+  (let* ((height   (- bottom top))
+         (lintel-y (+ top (* height 0.18)))     ; lit wall stays above as the lintel
+         (line     (max 1.0 (* height 0.04))))
+    ;; the opening: solid black from the lintel to the floor
+    (draw-dream-maze-black-rect x lintel-y width (- bottom lintel-y) 255)
+    ;; a lit lintel line across the top of the opening
+    (draw-dream-maze-rect x (- lintel-y line) width line 240)
+    ;; a faint threshold at the floor
+    (draw-dream-maze-rect x (- bottom line) width line 120)))
 
 (-> draw-dream-maze-wall-column (integer scalar scalar scalar scalar boolean)
     t)
@@ -201,7 +200,7 @@ plank seams all bend with the wall instead of floating like a flat billboard."
 at this distance and set high on the door, with no floating backing box."
   (let* ((wall-height (dream-maze-wall-height distance))
          (size (round (dream-maze-clamp-value (* wall-height 0.30) 11.0 54.0)))
-         (sign-y (- center-y (* wall-height 0.07))))
+         (sign-y (+ center-y (* wall-height 0.08))))
     (draw-centered-text sign
                         screen-x
                         sign-y
