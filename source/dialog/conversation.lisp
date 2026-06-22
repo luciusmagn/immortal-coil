@@ -140,6 +140,21 @@
     (draw-text-at text x y size color)
     (values x y width)))
 
+(defun draw-conversation-speaker (side speaker y)
+  "The speaker name on a black plate with a white border, like the game's other
+labels. Returns (values x y width)."
+  (let* ((size +conversation-speaker-size+)
+         (w    (text-width speaker size))
+         (x    (conversation-line-x side speaker size))
+         (pad  5))
+    (claylib/ll:draw-rectangle (round (- x pad)) (round (- y 2))
+                               (round (+ w (* pad 2))) (+ size 5)
+                               (claylib::c-ptr (make-color 0 0 0 225)))
+    (draw-rectangle-outline (- x pad) (- y 2) (+ w (* pad 2)) (+ size 5)
+                            (make-color 255 255 255 175) :thickness 1)
+    (draw-text-at speaker x y size (make-color 255 255 255 235))
+    (values x y w)))
+
 (-> draw-conversation-entry
     (conversation-entry string (list-of string) scalar t)
     (values scalar scalar nonnegative-integer))
@@ -150,11 +165,7 @@
         (last-width 0))
     (when (plusp (length speaker))
       (multiple-value-setq (last-x last-y last-width)
-        (draw-conversation-line side
-                                speaker
-                                y
-                                +conversation-speaker-size+
-                                color))
+        (draw-conversation-speaker side speaker y))
       (incf y +conversation-speaker-gap+))
     (loop for line in (or lines (list ""))
           for row from 0
