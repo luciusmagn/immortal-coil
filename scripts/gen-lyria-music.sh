@@ -17,14 +17,16 @@ if [ -z "${KEY:-}" ]; then
   exit 1
 fi
 
-MODEL="google/lyria-3-clip-preview"
+# Lyria 3 Pro: longer, fuller ambient beds (~3 min). Its stream emits a text
+# score first, then the base64 MP3 — extract-lyria.py finds the audio either way.
+MODEL="google/lyria-3-pro-preview"
 
 gen_one() {
   local name="$1" prompt="$2" tmp
   tmp=$(mktemp)
   echo ">> $name"
   # prompts are plain ASCII with no double quotes, so inlining is safe
-  curl -s -N --max-time 240 https://openrouter.ai/api/v1/chat/completions \
+  curl -s -N --max-time 300 https://openrouter.ai/api/v1/chat/completions \
     -H "Authorization: Bearer $KEY" \
     -H "Content-Type: application/json" \
     -d "{\"model\":\"$MODEL\",\"messages\":[{\"role\":\"user\",\"content\":\"$prompt\"}],\"modalities\":[\"audio\"],\"stream\":true}" \
