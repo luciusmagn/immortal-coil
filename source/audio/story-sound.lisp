@@ -67,3 +67,7 @@
 (defun play-crt-power-off ()
   "The tube dying: the picture collapses, the whine falls, a static snap."
   (play-story-sound "assets/audio/sys/crt-off.wav" :volume 0.65))
+
+(defun play-system-access ()
+  "A disk seek, for loading the world off the title screen."
+  (play-story-sound "assets/audio/sys/disk-seek.wav" :volume 0.4))
