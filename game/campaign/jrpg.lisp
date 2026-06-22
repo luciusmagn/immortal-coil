@@ -439,10 +439,10 @@
              :next "jrpg/hill-overworld")
 
 (dialog-minigame "jrpg/hill-overworld"
-                 "arrows or wasd move. follow the hill road to the tower."
+                 "arrows or wasd move. follow the hill road to the lake."
                  :game :jrpg-overworld
-                 :success "jrpg/tower-hill-arrival"
-                 :failure "jrpg/tower-hill-arrival"
+                 :success "carcosa/causeway-intro"
+                 :failure "carcosa/causeway-intro"
                  :config (list :gen-width 40
                                :gen-height 24
                                :finish-glyph #\T

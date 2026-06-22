@@ -166,3 +166,49 @@
 (dialog-text "carcosa/descend"
              "you come down the shore road alone, the tower dropping behind the ridge. at the inn Mira has the ledger open, and a second book beside it you have not seen, and the look of someone who has waited to show you both."
              :next "ledger/breakfast")
+
+
+;;; The Lake of Hali crossing — the signature ordeal, grafted onto the tower
+;;; approach (after the hill road). The causeway runs into the mist to the
+;;; tower's island; a pallid courtier, one of the kept crew, waits halfway.
+
+(dialog-particles "carcosa/causeway-intro" :motes :fade-seconds 3.0)
+(dialog-sound "carcosa/courtier-combat" "audio/jrpg/sword.wav" :volume 0.32)
+
+(dialog-text "carcosa/causeway-intro"
+             "the hill road tops out at the water. a causeway runs from here into the mist toward the tower on its island, the twin suns low and doubled on the flat of the lake. the far end is not in sight."
+             :next "carcosa/causeway")
+
+(dialog-minigame "carcosa/causeway"
+                 "w/s or up/down move. a/d or left/right turn. cross the causeway through the mist to the far shore."
+                 :game :dream-maze
+                 :success "carcosa/causeway-cross"
+                 :failure "carcosa/causeway-cross"
+                 :config (list :doors '(("=" "carcosa/causeway-cross"))
+                               :size 1.0)
+                 :outcomes (list "carcosa/causeway-cross"))
+
+(dialog-text "carcosa/causeway-cross"
+             "halfway over, the mist thickens and a figure is standing in it: a pale robe, a mask, both wet. it does not move aside. it has waited on this causeway a long time, the way only the kept can wait."
+             :next "carcosa/courtier-combat")
+
+(dialog-minigame "carcosa/courtier-combat"
+                 "choose a command. arrows or wasd move. enter or space confirms."
+                 :game :jrpg-combat
+                 :success "jrpg/tower-hill-arrival"
+                 :failure "carcosa/courtier-limp"
+                 :config (list :enemy-name "PALLID COURTIER"
+                               :enemy-kind "courtier"
+                               :enemy-hp 22
+                               :enemy-attack-min 4
+                               :enemy-attack-max 7
+                               :victory-xp 8
+                               :victory-gold 6
+                               :message "the courtier lifts one hand to its mask, as if to offer it to you."))
+
+(dialog-on-enter "carcosa/courtier-limp"
+                 '(jrpg-heal 7))
+
+(dialog-text "carcosa/courtier-limp"
+             "you go down on the wet stone. when you come up the courtier is gone, and its mask lies on the causeway where it stood, pale and empty. you step over it and walk on to the far shore."
+             :next "jrpg/tower-hill-arrival")
