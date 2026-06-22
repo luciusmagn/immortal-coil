@@ -25,14 +25,17 @@
              "your command codes come back AUTHENTICATING half a second longer than they used to. then they work. half a second is nothing. it is the length of a second person saying yes."
              :next "mutiny/dane")
 
-(dialog-conversation "mutiny/dane"
-                     (dialog-left "Dane"
-                                  "routine crew physical, captain. you are due. you have been due for three rotations, so this one found you.")
-                     (dialog-right "{player-name}"
-                                   "did Voss send you?")
-                     (dialog-left "Dane"
-                                  "the schedule sent me. sit, please. this is the part where i listen to your heart and you look at the wall and we both pretend that is all i am listening to.")
-                     :next "mutiny/physical")
+(dialog-say "mutiny/dane" "Dane"
+            "routine crew physical, captain. you are due. you have been due for three rotations, so this one found you."
+            :next "mutiny/dane-2")
+
+(dialog-say "mutiny/dane-2" "you"
+            "did Voss send you?"
+            :next "mutiny/dane-3")
+
+(dialog-say "mutiny/dane-3" "Dane"
+            "the schedule sent me. sit, please. this is the part where i listen to your heart and you look at the wall and we both pretend that is all i am listening to."
+            :next "mutiny/physical")
 
 (dialog-text "mutiny/physical"
              "Dane's hands are warm and the instruments are cold. the questions are a little wrong. how long have you felt the crossings repeat, captain. not whether they do."
@@ -57,14 +60,17 @@
              "on the bridge the watch runs with its usual quiet. the helm is always crewed now, even in dock trim. the jump seat has been swung out and locked open, facing the boards. it is comfortable. it is yours."
              :next "mutiny/imari-file")
 
-(dialog-conversation "mutiny/imari-file"
-                     (dialog-left "Imari"
-                                  "captain. before this goes where it is going, you should see what i have, from me, not from the file.")
-                     (dialog-right "{player-name}"
-                                   "show me.")
-                     (dialog-left "Imari"
-                                  "forty-one crossings. no failed attempts. no aborts, no scrubs, no second passes. captain, i have served eleven years and nobody flies like that. i wrote it down because it is my job to write things down. i am sorry for what it adds up to.")
-                     :next "mutiny/file")
+(dialog-say "mutiny/imari-file" "Imari"
+            "captain. before this goes where it is going, you should see what i have, from me, not from the file."
+            :next "mutiny/imari-file-2")
+
+(dialog-say "mutiny/imari-file-2" "you"
+            "show me."
+            :next "mutiny/imari-file-3")
+
+(dialog-say "mutiny/imari-file-3" "Imari"
+            "forty-one crossings. no failed attempts. no aborts, no scrubs, no second passes. captain, i have served eleven years and nobody flies like that. i wrote it down because it is my job to write things down. i am sorry for what it adds up to."
+            :next "mutiny/file")
 
 (dialog-text "mutiny/file"
              "the file is thin. every clean crossing, dated. every right call, logged."
@@ -78,16 +84,21 @@
              "the meeting is not called a meeting. it is called a scheduling review. mess hall, end of watch. when you get there the whole crew is present and nobody is eating. two cups are set out, both for you. one water, one not."
              :next "mutiny/meeting")
 
-(dialog-conversation "mutiny/meeting"
-                     (dialog-left "Voss"
-                                  "captain. nobody here doubts you. that is the problem. we have run out of ways to believe what we see.")
-                     (dialog-left "Imari"
-                                  "the record supports relief for rest. it is the gentlest sentence the regulations contain. i looked for a gentler one. there is not one.")
-                     (dialog-right "{player-name}"
-                                   "and if i refuse?")
-                     (dialog-left "Dane"
-                                  "then nothing happens today, and we have this meeting again in a week, with the same love and one more week of file.")
-                     :next "mutiny/choice")
+(dialog-say "mutiny/meeting" "Voss"
+            "captain. nobody here doubts you. that is the problem. we have run out of ways to believe what we see."
+            :next "mutiny/meeting-2")
+
+(dialog-say "mutiny/meeting-2" "Imari"
+            "the record supports relief for rest. it is the gentlest sentence the regulations contain. i looked for a gentler one. there is not one."
+            :next "mutiny/meeting-3")
+
+(dialog-say "mutiny/meeting-3" "you"
+            "and if i refuse?"
+            :next "mutiny/meeting-4")
+
+(dialog-say "mutiny/meeting-4" "Dane"
+            "then nothing happens today, and we have this meeting again in a week, with the same love and one more week of file."
+            :next "mutiny/choice")
 
 (dialog-pick "mutiny/choice"
              "the two cups sit in front of you. the crew waits, kind and arranged."
@@ -166,14 +177,17 @@
              "you start to notice the ship the way passengers do. the hum has notes in it you never had time to hear. the corridor lights warm two points at meal hours. it is a good ship. you commanded it for years. you are only now aboard it."
              :next "mutiny/visit")
 
-(dialog-conversation "mutiny/visit"
-                     (dialog-left "Voss"
-                                  "i brought the lane tables. not for work. some people like crosswords.")
-                     (dialog-right "{player-name}"
-                                   "is that a joke, commander?")
-                     (dialog-left "Voss"
-                                  "acting captain. and yes. it was a bad one. the next ones will be better. i have a file of them now. someone keeps files on this ship, it turns out.")
-                     :next "mutiny/inspection")
+(dialog-say "mutiny/visit" "Voss"
+            "i brought the lane tables. not for work. some people like crosswords."
+            :next "mutiny/visit-2")
+
+(dialog-say "mutiny/visit-2" "you"
+            "is that a joke, commander?"
+            :next "mutiny/visit-3")
+
+(dialog-say "mutiny/visit-3" "Voss"
+            "acting captain. and yes. it was a bad one. the next ones will be better. i have a file of them now. someone keeps files on this ship, it turns out."
+            :next "mutiny/inspection")
 
 (dialog-scene "mutiny/inspection"
               "the inspection."
@@ -183,14 +197,17 @@
              "a sector inspector docks on the eleventh day. grey-tabbed, pleasant, with a list. command transfers draw lists. the crew meets her in dress order. you are on the list, fourth item, after the reactor logs and before the water figures."
              :next "mutiny/inspector-talk")
 
-(dialog-conversation "mutiny/inspector-talk"
-                     (dialog-left "the inspector"
-                                  "relief for rest, self-signed, countersigned, exemplary file. i have read it. now i would like the part that is not in it.")
-                     (dialog-right "{player-name}"
-                                   "the file is accurate.")
-                     (dialog-left "the inspector"
-                                  "files always are. that is what they are for. captain, i have done forty of these. the crews lie out of contempt or they lie out of love, and this crew has scrubbed the deck plates twice. blink if you want this ship turned over.")
-                     :next "mutiny/inspector-choice")
+(dialog-say "mutiny/inspector-talk" "the inspector"
+            "relief for rest, self-signed, countersigned, exemplary file. i have read it. now i would like the part that is not in it."
+            :next "mutiny/inspector-talk-2")
+
+(dialog-say "mutiny/inspector-talk-2" "you"
+            "the file is accurate."
+            :next "mutiny/inspector-talk-3")
+
+(dialog-say "mutiny/inspector-talk-3" "the inspector"
+            "files always are. that is what they are for. captain, i have done forty of these. the crews lie out of contempt or they lie out of love, and this crew has scrubbed the deck plates twice. blink if you want this ship turned over."
+            :next "mutiny/inspector-choice")
 
 (dialog-pick "mutiny/inspector-choice"
              "she waits with her stylus capped. through the open hatch, Imari is very carefully not listening."
@@ -281,7 +298,7 @@
              :next "mutiny/succession-2")
 
 (dialog-text "mutiny/succession-2"
-             "she is good, then better than good. the board goes green deck by deck. Imari says eighty-three seconds, cleanest of the quarter. you watch the praise land on her face. there is nothing in her face to hold."
+             "she is good, then better than good. the board goes green deck by deck. Imari says eighty-three seconds, cleanest of the quarter. you watch the praise land on her face. her face does not change."
              :next "mutiny/succession-3")
 
 (dialog-text "mutiny/succession-3"

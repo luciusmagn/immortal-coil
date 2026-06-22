@@ -233,7 +233,7 @@
              :next "winter/refuse-2")
 
 (dialog-text "winter/refuse-2"
-             "you last four days on flour and stubbornness while the plates come patient as weather, and on the fifth morning you eat, on the back step, fast, with your fingers, and the eating is a signature, and you sign, and the hill does not gloat."
+             "you last four days on flour and stubbornness while the plates come patient as weather, and on the fifth morning you eat, on the back step, fast, with your fingers. it is a kind of signing, and the hill does not gloat."
              :next "winter/refuse-2-s2")
 
 (dialog-text "winter/refuse-2-s2"
@@ -256,7 +256,7 @@
              :next "winter/plates-on-2")
 
 (dialog-text "winter/plates-on-2"
-             "you split wood for the stove and the work takes your thinking cleanly, and some evenings you catch yourself at the window with the lamp out, watching the stump the way you once watched a door, cataloguing, and the catalogue has one entry and the entry is: kept."
+             "you split wood for the stove and the work takes your thinking cleanly, and some evenings you catch yourself at the window with the lamp out, watching the stump the way you once watched a door. you are keeping it."
              :next "winter/midwinter")
 
 (dialog-scene "winter/midwinter"
@@ -287,7 +287,7 @@
              :next "winter/lantern-passes-2")
 
 (dialog-text "winter/lantern-passes-2"
-             "in the morning the only prints in the yard go around the store in a clean ring, like a thing drawn with a compass, at exactly the distance from the walls that a person walks when they are checking on a building they care for."
+             "in the morning the only prints in the yard go around the store in a clean ring, at exactly the distance a person keeps when they are checking on a building they care for."
              :next "winter/tag-post")
 
 (dialog-text "winter/lantern-window"

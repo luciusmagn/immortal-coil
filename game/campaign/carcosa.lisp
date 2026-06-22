@@ -209,7 +209,7 @@
                  '(jrpg-add-item :crown))
 
 (dialog-text "carcosa/take-crown"
-             "you take it up. it weighs nothing, the way the tatters weigh nothing. the King stops mid-word, for the first time in longer than he could count, steps down, and is one of the pale kept, eased. the crossing is yours now. the count will be wrong. you will keep it anyway. that is what keeping the watch is."
+             "you take it up. it weighs nothing, the way the tatters weigh nothing. the King stops mid-word, for the first time in longer than he could count, steps down, and is one of the pale kept, eased. the crossing is yours now. the count will be wrong. you will keep it anyway."
              :next "carcosa/king-end")
 
 (dialog-text "carcosa/king-end"

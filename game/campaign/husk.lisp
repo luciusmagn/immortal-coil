@@ -21,14 +21,17 @@
 (dialog-on-enter "husk/orders"
                  '(setf (dialog-value "husk-boarded") t))
 
-(dialog-conversation "husk/orders"
-                     (dialog-left "Voss"
-                                  "intercept burn is forty minutes. i can put the launch in her drift shadow and hold it there.")
-                     (dialog-right "{player-name}"
-                                   "two suits. you fly, i board.")
-                     (dialog-left "Imari"
-                                  "regulations want three, captain. i am not quoting them. i am saying i will be on comms the whole time.")
-                     :next "husk/approach")
+(dialog-say "husk/orders" "Voss"
+            "intercept burn is forty minutes. i can put the launch in her drift shadow and hold it there."
+            :next "husk/orders-2")
+
+(dialog-say "husk/orders-2" "you"
+            "two suits. you fly, i board."
+            :next "husk/orders-3")
+
+(dialog-say "husk/orders-3" "Imari"
+            "regulations want three, captain. i am not quoting them. i am saying i will be on comms the whole time."
+            :next "husk/approach")
 
 (dialog-scene "husk/approach"
               "the husk."
@@ -64,14 +67,17 @@
              "frost furs the corridor walls where breath froze, a long time ago. the emergency strips glow at quarter power. your suit lamp does the rest. four meters of it. the rest of the ship stands outside that circle and waits."
              :next "husk/comms-one")
 
-(dialog-conversation "husk/comms-one"
-                     (dialog-left "Imari"
-                                  "telemetry says her ring is trimmed to a tenth of a degree. captain, that is better than ours.")
-                     (dialog-right "{player-name}"
-                                   "noted. going inward. records deck first.")
-                     (dialog-left "Imari"
-                                  "copy. talk while you walk, please. it is very quiet up here when you don't.")
-                     :next "husk/decks")
+(dialog-say "husk/comms-one" "Imari"
+            "telemetry says her ring is trimmed to a tenth of a degree. captain, that is better than ours."
+            :next "husk/comms-one-2")
+
+(dialog-say "husk/comms-one-2" "you"
+            "noted. going inward. records deck first."
+            :next "husk/comms-one-3")
+
+(dialog-say "husk/comms-one-3" "Imari"
+            "copy. talk while you walk, please. it is very quiet up here when you don't."
+            :next "husk/decks")
 
 (dialog-minigame "husk/decks"
                  "wasd or arrow keys step. find the records deck."
@@ -170,14 +176,17 @@
       "husk/manifest-lost"
       "husk/mess"))
 
-(dialog-conversation "husk/comms-two"
-                     (dialog-left "Imari"
-                                  "captain, read me her registry off the manifest frame, bottom corner.")
-                     (dialog-right "{player-name}"
-                                   "kestrel-nine-nine-one.")
-                     (dialog-left "Imari"
-                                  "say again, captain.")
-                     :next #'husk-manifest-target)
+(dialog-say "husk/comms-two" "Imari"
+            "captain, read me her registry off the manifest frame, bottom corner."
+            :next "husk/comms-two-2")
+
+(dialog-say "husk/comms-two-2" "you"
+            "kestrel-nine-nine-one."
+            :next "husk/comms-two-3")
+
+(dialog-say "husk/comms-two-3" "Imari"
+            "say again, captain."
+            :next #'husk-manifest-target)
 
 (dialog-text "husk/manifest-lost"
              "you read the manifest once more. there is a thing you are not letting yourself check. then you check it. {ship-lost-name} is on her roster too, third watch. the duty column says relieved. the date column says nothing."
@@ -246,23 +255,29 @@
              "the ride home is short and very long. halfway, Imari comes on the channel, even and flat, reading the next watch rotation. it is for you. you let it be."
              :next "husk/debrief")
 
-(dialog-conversation "husk/debrief"
-                     (dialog-left "Imari"
-                                  "for the log: derelict, registry illegible, no salvage of record. that is what i have written, captain.")
-                     (dialog-right "{player-name}"
-                                   "the registry was legible.")
-                     (dialog-left "Imari"
-                                  "the record protects the living. you taught me the sentence. let it work for you once.")
-                     :next "husk/voss-after")
+(dialog-say "husk/debrief" "Imari"
+            "for the log: derelict, registry illegible, no salvage of record. that is what i have written, captain."
+            :next "husk/debrief-2")
 
-(dialog-conversation "husk/voss-after"
-                     (dialog-left "Voss"
-                                  "i will re-run the lane tables tonight. not because they are wrong.")
-                     (dialog-right "{player-name}"
-                                   "because the hands want something to do.")
-                     (dialog-left "Voss"
-                                  "because the hands want something to do. good night, captain.")
-                     :next "husk/checklist")
+(dialog-say "husk/debrief-2" "you"
+            "the registry was legible."
+            :next "husk/debrief-3")
+
+(dialog-say "husk/debrief-3" "Imari"
+            "the record protects the living. you taught me the sentence. let it work for you once."
+            :next "husk/voss-after")
+
+(dialog-say "husk/voss-after" "Voss"
+            "i will re-run the lane tables tonight. not because they are wrong."
+            :next "husk/voss-after-2")
+
+(dialog-say "husk/voss-after-2" "you"
+            "because the hands want something to do."
+            :next "husk/voss-after-3")
+
+(dialog-say "husk/voss-after-3" "Voss"
+            "because the hands want something to do. good night, captain."
+            :next "husk/checklist")
 
 (dialog-text "husk/checklist"
              "before lights-down you read the checklist taped to the console, every line. item nine says count everyone twice. tonight you read the handwriting itself, the small even hand slanted left at the ends. then you stop reading."

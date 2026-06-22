@@ -34,11 +34,11 @@
              :next "lightsout/middles")
 
 (dialog-text "lightsout/middles"
-             "you understand the lanes now. the walls have their tenants and the brackets have their feeders, and the middle of a corridor is the lane left over, walked by whatever the rota could not cover. the edges are society. the middle is weather."
+             "you understand the lanes now. the walls have their tenants and the brackets have their feeders, and the middle of a corridor is the lane left over, walked by whatever the rota could not cover. you keep to the wall."
              :next "lightsout/lamplighter-glow")
 
 (dialog-text "lightsout/lamplighter-glow"
-             "farther on, around no corner you can point to, there is almost-light: not a glow, the memory of one, the way a room holds the shape of a lamp just out. and a sound you know from somewhere upstairs: a taper, being carried with care."
+             "farther on, around no corner you can point to, there is almost-light, so faint you might be inventing it, the kind your eyes make for themselves after a lamp goes out. and a sound you know from somewhere upstairs: a taper, being carried with care."
              :next "lightsout/lamplighter")
 
 (dialog-say "lightsout/lamplighter"
@@ -213,7 +213,7 @@
              :next "lightsout/fed-after-2")
 
 (dialog-text "lightsout/fed-after-2"
-             "a fed dark has its own feel. it is the difference between being unwatched and being unbothered. you stand in it and understand why the lamplighter has held this round for a tenure. some work pays in atmosphere, and the wage is real."
+             "a fed dark has its own feel. it is the difference between being unwatched and being unbothered. you stand in it and understand why the lamplighter has held this round for a tenure. it is good to be left alone like this. that is the whole of the pay, and it is enough."
              :next "lightsout/walked-up")
 
 (dialog-text "lightsout/walked-up"
@@ -221,7 +221,7 @@
              :next "lightsout/walked-up-2")
 
 (dialog-text "lightsout/walked-up-2"
-             "there is no other way to put it. the warm wall on one side, a new warmth on the other. the corridor unrolls underfoot at exactly your stride. doors arrive when expected. the draft holds your bearing for you, like a hat handed back."
+             "there is no other way to put it. the warm wall on one side, a new warmth on the other. the corridor unrolls underfoot at exactly your stride. doors arrive when expected. the draft holds your bearing for you, steady on the same cheek the whole way."
              :next "lightsout/bracket-relit")
 
 (dialog-on-enter "lightsout/feed-nothing"
@@ -232,7 +232,7 @@
              :next "lightsout/feed-nothing-2")
 
 (dialog-text "lightsout/feed-nothing-2"
-             "it stops the way a waiter stops attending a table that is not ordering. the corridor goes from a place you are in to a distance you must cover."
+             "the dark stops attending you. the corridor goes from a place you are in to a distance you must cover."
              :next "lightsout/long-count")
 
 (dialog-text "lightsout/long-count"
@@ -240,7 +240,7 @@
              :next "lightsout/long-count-arrival")
 
 (dialog-text "lightsout/long-count-arrival"
-             "when you misstep, nothing catches you, and when you arrive, nothing congratulates you, and you stand at the row's end prouder and lonelier than any light ever left you."
+             "when you misstep, nothing catches you, and when you arrive, nothing congratulates you. you have never been this proud, or this alone."
              :next "lightsout/long-count-knock")
 
 (dialog-text "lightsout/long-count-knock"
@@ -248,7 +248,7 @@
              :next "lightsout/long-count-knock-s2")
 
 (dialog-text "lightsout/long-count-knock-s2"
-             "unfed, unobliged, the pacing held its half step the whole way, and at the last crossing it knocked once, low, level with your hand, and you knocked back, because some accounts are kept in older coin than light."
+             "unfed, unobliged, the pacing held its half step the whole way, and at the last crossing it knocked once, low, level with your hand, and you knocked back."
              :next "lightsout/bracket-relit")
 
 (dialog-text "lightsout/bracket-relit"
@@ -256,7 +256,7 @@
              :next "lightsout/bracket-relit-2")
 
 (dialog-text "lightsout/bracket-relit-2"
-             "the light reaches you at the ankles like tidewater and stops there, respectful. your eyes hurt at even this much, which is the dark's parting gift: proof of how far in you went."
+             "the light reaches you at the ankles like tidewater and stops there, respectful. your eyes hurt at even this much. that is how far in you went."
              :next "lightsout/goodbye")
 
 (dialog-text "lightsout/goodbye"
@@ -288,5 +288,5 @@
              :next "lightsout/sight-back-2")
 
 (dialog-text "lightsout/sight-back-2"
-             "the row of doors stands where your count put them, every one, and you look at the corridor you crossed blind, and it is shorter than it was, and longer than it looks, and yours now, by the oldest claim there is: you have been here in the dark."
+             "the row of doors stands where your count put them, every one, and you look at the corridor you crossed blind, and it is shorter than it was, and longer than it looks, and yours now. you have been here in the dark."
              :next "rogue/stair-hunt")

@@ -142,7 +142,7 @@
                  '(setf (dialog-value "facility-watch") "plain"))
 
 (dialog-text "facility/watch-plain"
-             "0710: subject asleep. no events. you write it. it is true. it is the first lie you have told here."
+             "0710: subject asleep. no events. you write it. it is true, and it is a lie, and you let both stand."
              :next "facility/route")
 
 (dialog-on-enter "facility/watch-report"
@@ -391,7 +391,7 @@
 
 (dialog-say "facility/appendix-ask-4"
             "M-3"
-            "here, {facility-designation}, the difference is seniority. same time."
+            "here, {facility-designation}, that is the same question with more years on it. same time."
             :next "facility/notice-board")
 
 (dialog-text "facility/notice-board"

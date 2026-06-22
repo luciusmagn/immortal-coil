@@ -120,7 +120,7 @@
              :next "tribunal/claimed-2")
 
 (dialog-text "tribunal/claimed-2"
-             "the prosecutor blinks once, the way men blink when a door they were prepared to force stands open. behind you the gallery makes no sound at all, which from sixty people is a sound."
+             "the prosecutor blinks once. he had been prepared to force the answer and did not have to. behind you the gallery makes no sound at all, which from sixty people is a sound."
              :next "tribunal/vey")
 
 (dialog-on-enter "tribunal/denied"

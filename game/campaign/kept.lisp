@@ -94,11 +94,11 @@
              :next "kept/chair-cushion")
 
 (dialog-text "kept/chair-cushion"
-             "the chair cannot visit. chairs hold their ground, that is the whole law of chairs."
+             "the chair cannot visit. a chair holds its ground. that is what a chair is for."
              :next "kept/chair-cushion-2")
 
 (dialog-text "kept/chair-cushion-2"
-             "it sends a cushion instead, embroidered with a wall and a window, and the window is rendered in thread that catches the light only from where you sit. chairs know about sitting. it is their one subject, held deeply."
+             "it sends a cushion instead, embroidered with a wall and a window, and the window is rendered in thread that catches the light only from where you sit. chairs know about sitting. it is the only thing they know."
              :next "kept/gardener-visit")
 
 (dialog-say "kept/gardener-visit"
@@ -145,7 +145,7 @@
              :next "kept/jar-after-2")
 
 (dialog-text "kept/jar-after-2"
-             "it has the furniture right and the smell wrong, the way a portrait has the face right and the breathing wrong, and you sit with that until the corridor brings you its evening sounds, and the cell, to its credit, does not pretend the jar did not happen."
+             "it has the furniture right and the smell wrong, and you sit with that until the corridor brings you its evening sounds, and the cell, to its credit, does not pretend the jar did not happen."
              :next "kept/first-appeal")
 
 (dialog-scene "kept/first-appeal"
@@ -286,7 +286,7 @@
              :next "kept/second-courtesy-2")
 
 (dialog-text "kept/second-courtesy-2"
-             "the fifth, the judge reads a short poem he has written about the case, which rhymes kept with except and apologizes for it. the denying never wavers. the court would miss you. that is the verdict under all of them."
+             "the fifth, the judge reads a short poem he has written about the case, which rhymes kept with except and apologizes for it. the denying never wavers. under every denial is the same thing: the court would miss you."
              :next "kept/tap-answer")
 
 (dialog-text "kept/tap-answer"
@@ -306,7 +306,7 @@
              :next "kept/drawer-after")
 
 (dialog-text "kept/drawer-after"
-             "you put them back in their order and add nothing, because the twelfth letter is not written with the pencil, you understand now. it is written with the years, and you are several pages in."
+             "you put them back in their order and add nothing, because the twelfth letter is not written with the pencil. it is written by staying, and you have stayed a long time."
              :next "kept/reinventory")
 
 (dialog-text "kept/reinventory"
@@ -381,7 +381,7 @@
              :next "kept/stay-3")
 
 (dialog-text "kept/stay-3"
-             "that is the spite, and the sentence, and in the end, quietly, the title."
+             "that is the spite. it is also the sentence. you keep two rooms now, and that turns out to be the title."
              :next "kept/corridor-last")
 
 (dialog-on-enter "kept/summon"

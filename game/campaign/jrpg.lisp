@@ -112,14 +112,20 @@
              "the stair smells of turpentine and cold stone. at the top, a studio: a man at an easel, a woman in a robe on the model stand, a stove gone out. the man is scraping at his own canvas with a knife."
              :next "jrpg/studio")
 
-(dialog-conversation "jrpg/studio"
-                     (dialog-left "the painter"
-                                  "i can't hold the flesh tones. they go to mud the moment i look away. you are the third person tonight to come up that stair i did not hear.")
-                     (dialog-right "{player-name}"
-                                   "who were the other two?")
-                     (dialog-left "the painter"
-                                  "i don't know. that is the trouble. Scott, by the way. the model is Tessie. sit down; mind the wet paint.")
-                     :next "jrpg/studio-questions")
+(dialog-say "jrpg/studio"
+            "the painter"
+            "i can't hold the flesh tones. they go to mud the moment i look away. you are the third person tonight to come up that stair i did not hear."
+            :next "jrpg/studio-2")
+
+(dialog-say "jrpg/studio-2"
+            "you"
+            "who were the other two?"
+            :next "jrpg/studio-3")
+
+(dialog-say "jrpg/studio-3"
+            "the painter"
+            "i don't know. that is the trouble. Scott, by the way. the model is Tessie. sit down; mind the wet paint."
+            :next "jrpg/studio-questions")
 
 (dialog-interrogation "jrpg/studio-questions"
                       "Scott wipes the knife. Tessie keeps her eyes on the window, away from the churchyard."
@@ -158,7 +164,7 @@
                  '(jrpg-lean-class :reader 2))
 
 (dialog-text "jrpg/read-second"
-             "you read a few lines of the second act before Scott takes the book from your hands - too late for you, in time for him. the words are clear as crystal, limpid and musical, and they do not let go. nothing in the room has moved, and all of it is wrong."
+             "you read a few lines of the second act before Scott takes the book from your hands - too late for you, in time for him. the words are clear as crystal, limpid and musical, and they do not let go. nothing in the room has moved. the stove has gone cold, and the air smells of turned earth."
              :next "jrpg/watchman-comes")
 
 (dialog-text "jrpg/watchman-comes"
@@ -237,14 +243,20 @@
              "he gets a coin and not the clasp, and is gone down an alley. the armourer's window is still lit ahead."
              :next "jrpg/wilde-street")
 
-(dialog-conversation "jrpg/hawberk"
-                     (dialog-left "Constance"
-                                  "father is riveting and will not look up. you want the stair. everyone who wants the stair has your look.")
-                     (dialog-right "{player-name}"
-                                   "what look is that?")
-                     (dialog-left "Constance"
-                                  "like you have read something you cannot put down. go up, then. Mr. Wilde is expecting you. he is always expecting everyone.")
-                     :next "jrpg/wilde")
+(dialog-say "jrpg/hawberk"
+            "Constance"
+            "father is riveting and will not look up. you want the stair. everyone who wants the stair has your look."
+            :next "jrpg/hawberk-2")
+
+(dialog-say "jrpg/hawberk-2"
+            "you"
+            "what look is that?"
+            :next "jrpg/hawberk-3")
+
+(dialog-say "jrpg/hawberk-3"
+            "Constance"
+            "like you have read something you cannot put down. go up, then. Mr. Wilde is expecting you. he is always expecting everyone."
+            :next "jrpg/wilde")
 
 (dialog-on-enter "jrpg/wilde" '(jrpg-lean-class :repairer 2))
 
@@ -316,17 +328,23 @@
 (dialog-on-enter "jrpg/boris" '(jrpg-lean-class :painter 1))
 
 (dialog-text "jrpg/mask-street"
-             "the streets give onto a court. one door stands open on white light, and the white is not lamplight: it is marble, far too much of it, all of it too lifelike."
+             "the streets give onto a court. one door stands open on white light, and the white is not lamplight: it is marble, far too much of it, and too lifelike."
              :next "jrpg/boris")
 
-(dialog-conversation "jrpg/boris"
-                     (dialog-left "Boris"
-                                  "mind the pool - it is clear, and it is not water. i found a fluid that turns the living to marble, every pore. i meant it for lilies.")
-                     (dialog-right "{player-name}"
-                                   "and the woman by the pool?")
-                     (dialog-left "Boris"
-                                  "Geneviève. my wife. ask, if you must; everyone who comes through asks.")
-                     :next "jrpg/boris-questions")
+(dialog-say "jrpg/boris"
+            "Boris"
+            "mind the pool - it is clear, and it is not water. i found a fluid that turns the living to marble, every pore. i meant it for lilies."
+            :next "jrpg/boris-2")
+
+(dialog-say "jrpg/boris-2"
+            "you"
+            "and the woman by the pool?"
+            :next "jrpg/boris-3")
+
+(dialog-say "jrpg/boris-3"
+            "Boris"
+            "Geneviève. my wife. ask, if you must; everyone who comes through asks."
+            :next "jrpg/boris-questions")
 
 (dialog-interrogation "jrpg/boris-questions"
                       "Boris stands between you and the pool."

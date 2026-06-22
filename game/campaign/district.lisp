@@ -183,7 +183,7 @@
              :next "district/enough-s3")
 
 (dialog-text "district/enough-s3"
-             "you will think about this later, more than the rest of it."
+             "you keep walking up the grade, and the sound does not come again."
              :next "district/walk-back")
 
 (dialog-text "district/siding"
@@ -292,7 +292,7 @@
              :next "district/canal-2")
 
 (dialog-text "district/canal-2"
-             "it is not that they do not see the lists. it is that the lists are now weather, and you do not stare at rain."
+             "it is not that they do not see the lists. it is that the lists are part of the morning now, the way the cold is, and nobody stops for either."
              :next "district/dawn")
 
 (dialog-scene "district/dawn"
@@ -410,7 +410,7 @@
              :next "district/to-ash-2")
 
 (dialog-text "district/to-ash-2"
-             "but your hands needed something to do that felt like an answer, and now they have had it."
+             "but your hands needed something to do, and now they have done it."
              :next "district/rejoin")
 
 (dialog-text "district/rejoin"

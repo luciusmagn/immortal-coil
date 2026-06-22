@@ -104,7 +104,7 @@
              :next "armistice/brandt-laugh-2")
 
 (dialog-text "armistice/brandt-laugh-2"
-             "nine years in this building and you have never once heard it, and it is terrible, honking, entirely without administrative value, and the clerks in the corridor catch it like weather, and it goes down the stairwell ahead of him, opening doors."
+             "nine years in this building and you have never once heard it, and it is terrible, honking, entirely without administrative value, and the clerks in the corridor catch it and pass it on, and it goes down the stairwell ahead of him, opening doors."
              :next "armistice/radio")
 
 (dialog-text "armistice/radio"
@@ -160,7 +160,7 @@
              :next "armistice/vey-2")
 
 (dialog-text "armistice/vey-2"
-             "Vey turns with the wind, and the wind has changed. it is a comfort to watch, and you did not expect it to be."
+             "Vey turns with the wind, and the wind has changed. it is a comfort to watch."
              :next "armistice/coat")
 
 (dialog-text "armistice/coat"
@@ -283,7 +283,7 @@
              :next "armistice/last-2")
 
 (dialog-text "armistice/last-2"
-             "somewhere below, faint, Brandt is still laughing about something, and the sound carries in the open air, because everything does now. that is what open means."
+             "somewhere below, faint, Brandt is still laughing about something, and the sound carries in the open air, because everything does now."
              :next "armistice/wake")
 
 (dialog-text "armistice/wake"

@@ -47,7 +47,7 @@
             :next "alice/garden-count")
 
 (dialog-text "alice/garden-count"
-             "you pass the painted rows without counting them. it takes more effort than it should."
+             "you pass the painted rows. your eyes keep trying to total them, and you keep not letting them."
              :next "alice/queue")
 
 (dialog-text "alice/queue"
@@ -220,7 +220,7 @@
 
 (dialog-say "alice/cross-thread-2"
             "the white thread"
-            "objection. the knot is load-bearing."
+            "objection. the figure is sealed."
             :next "alice/cross-thread-3")
 
 (dialog-say "alice/cross-thread-3"
@@ -320,7 +320,7 @@
                  '(setf (dialog-value "alice-deliberation") "counted"))
 
 (dialog-text "alice/juror-count"
-             "you count the jurors twice and get two different numbers. you stop. you have had this feeling before, somewhere with fewer chandeliers. the foreman, without turning, writes one more line."
+             "you count the jurors twice and get two different numbers. you stop. the foreman, without turning, writes one more line."
              :next "alice/verdict-rise")
 
 (dialog-text "alice/verdict-rise"

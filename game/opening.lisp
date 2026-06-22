@@ -269,14 +269,17 @@
              "on the bridge, Imari logs the crossing without looking up. Voss is plotting the next lane. someone has taped your old checklist to the console."
              :next "ship/praise")
 
-(dialog-conversation "ship/praise"
-                     (dialog-left "Imari"
-                                  "eighty-one seconds, captain. cleanest crossing on record.")
-                     (dialog-right "{player-name}"
-                                   "log it and stand down.")
-                     (dialog-left "Imari"
-                                  "you make it look rehearsed.")
-                     :next #'ship-galley-target)
+(dialog-say "ship/praise" "Imari"
+            "eighty-one seconds, captain. cleanest crossing on record."
+            :next "ship/praise-2")
+
+(dialog-say "ship/praise-2" "you"
+            "log it and stand down."
+            :next "ship/praise-3")
+
+(dialog-say "ship/praise-3" "Imari"
+            "you make it look rehearsed."
+            :next #'ship-galley-target)
 
 (dialog-text "ship/galley"
              "in the galley, Voss pours two cups and slides one across."
@@ -318,14 +321,17 @@
              "the cup is still in your hand when the second alarm starts, lower than the first. Imari's voice on the open channel: pressure fault aft, decks six and seven, spreading forward."
              :next "ship/breach-report")
 
-(dialog-conversation "ship/breach-report"
-                     (dialog-left "Imari"
-                                  "Harrow is in six at the drive trunk. Okafor and two ratings are in seven. Dane is between them with the kit.")
-                     (dialog-right "{player-name}"
-                                   "time to seal?")
-                     (dialog-left "Imari"
-                                  "one bulkhead, captain. the actuator will not cycle twice before the trunk goes. six or seven. your call.")
-                     :next "ship/breach-choice")
+(dialog-say "ship/breach-report" "Imari"
+            "Harrow is in six at the drive trunk. Okafor and two ratings are in seven. Dane is between them with the kit."
+            :next "ship/breach-report-2")
+
+(dialog-say "ship/breach-report-2" "you"
+            "time to seal?"
+            :next "ship/breach-report-3")
+
+(dialog-say "ship/breach-report-3" "Imari"
+            "one bulkhead, captain. the actuator will not cycle twice before the trunk goes. six or seven. your call."
+            :next "ship/breach-choice")
 
 (dialog-pick "ship/breach-choice"
              "the board shows both decks amber, going red."
@@ -368,14 +374,17 @@
              "you walk the green decks first. the manual says a crew steadies when it sees the captain. then you stand outside the dark ones. the manual has nothing for that. you stand there anyway."
              :next "ship/aftermath-praise")
 
-(dialog-conversation "ship/aftermath-praise"
-                     (dialog-left "Voss"
-                                  "textbook seal, captain. nobody cycles an actuator that clean under fault.")
-                     (dialog-right "{player-name}"
-                                   "log the names first.")
-                     (dialog-left "Imari"
-                                  "logged. cause of loss: crossing fault. action of record: correct and timely. that is what the record will say.")
-                     :next "ship/letters")
+(dialog-say "ship/aftermath-praise" "Voss"
+            "textbook seal, captain. nobody cycles an actuator that clean under fault."
+            :next "ship/aftermath-praise-2")
+
+(dialog-say "ship/aftermath-praise-2" "you"
+            "log the names first."
+            :next "ship/aftermath-praise-3")
+
+(dialog-say "ship/aftermath-praise-3" "Imari"
+            "logged. cause of loss: crossing fault. action of record: correct and timely. that is what the record will say."
+            :next "ship/letters")
 
 (dialog-text "ship/letters"
              "you write to {ship-lost-name}'s family. the manual gives you three sentences. you use all three. then you sit a long time over a fourth that is not in the manual."
@@ -402,14 +411,17 @@
              "the bridge runs quiet and exact. the manual is open at Voss's station. your guess about the drift is printed in it now, as procedure. she has used it twice tonight. she catches you looking at it and does not look away."
              :next "ship/log-sign")
 
-(dialog-conversation "ship/log-sign"
-                     (dialog-left "Imari"
-                                  "the watch log, captain. it needs your signature under mine.")
-                     (dialog-right "{player-name}"
-                                   "read me the loss entry.")
-                     (dialog-left "Imari"
-                                  "cause of loss: crossing fault. action of record: correct and timely. it is true, captain. i was careful that every word of it is true.")
-                     :next "ship/log-choice")
+(dialog-say "ship/log-sign" "Imari"
+            "the watch log, captain. it needs your signature under mine."
+            :next "ship/log-sign-2")
+
+(dialog-say "ship/log-sign-2" "you"
+            "read me the loss entry."
+            :next "ship/log-sign-3")
+
+(dialog-say "ship/log-sign-3" "Imari"
+            "cause of loss: crossing fault. action of record: correct and timely. it is true, captain. i was careful that every word of it is true."
+            :next "ship/log-choice")
 
 (dialog-pick "ship/log-choice"
              "the stylus is warm from Imari's hand."
@@ -434,29 +446,37 @@
 (dialog-on-enter "ship/sign-amend"
                  '(setf (dialog-value "ship-log") "amended"))
 
-(dialog-conversation "ship/sign-amend"
-                     (dialog-right "{player-name}"
-                                   "add a line. the seal order was mine, on my judgment, with time to choose.")
-                     (dialog-left "Imari"
-                                  "respectfully, captain: no. the record protects the living. your judgment is what let there be living. i will not log it as a confession.")
-                     (dialog-right "{player-name}"
-                                   "then log that i asked.")
-                     (dialog-left "Imari"
-                                  "that, i will log.")
-                     :next "ship/watch-voss")
+(dialog-say "ship/sign-amend" "you"
+            "add a line. the seal order was mine, on my judgment, with time to choose."
+            :next "ship/sign-amend-2")
+
+(dialog-say "ship/sign-amend-2" "Imari"
+            "respectfully, captain: no. the record protects the living. your judgment is what let there be living. i will not log it as a confession."
+            :next "ship/sign-amend-3")
+
+(dialog-say "ship/sign-amend-3" "you"
+            "then log that i asked."
+            :next "ship/sign-amend-4")
+
+(dialog-say "ship/sign-amend-4" "Imari"
+            "that, i will log."
+            :next "ship/watch-voss")
 
 (dialog-text "ship/watch-voss"
              "at the end of the watch Voss sets a cup at your elbow and says nothing. it is too hot to drink. she timed it that way."
              :next "husk/contact")
 
-(dialog-conversation "ship/checklist"
-                     (dialog-left "Voss"
-                                  "next crossing window is in nine hours. i can push it to eleven if you want the lane tables re-run a third time.")
-                     (dialog-right "{player-name}"
-                                   "run them a third time. not for the tables.")
-                     (dialog-left "Voss"
-                                  "understood. for the nine hours.")
-                     :next "ship/checklist-read")
+(dialog-say "ship/checklist" "Voss"
+            "next crossing window is in nine hours. i can push it to eleven if you want the lane tables re-run a third time."
+            :next "ship/checklist-2")
+
+(dialog-say "ship/checklist-2" "you"
+            "run them a third time. not for the tables."
+            :next "ship/checklist-3")
+
+(dialog-say "ship/checklist-3" "Voss"
+            "understood. for the nine hours."
+            :next "ship/checklist-read")
 
 (defun ship-intrusion-target ()
   (let ((lost (dialog-value "ship-lost-name" "")))
@@ -482,14 +502,17 @@
              "on the way to the bunk you pass medbay. for one step Dane is in the doorway with the kit on one shoulder, turning back. then the step ends. the kit hangs on its peg, sealed and signed."
              :next "ship/corridor-imari")
 
-(dialog-conversation "ship/corridor-imari"
-                     (dialog-left "Imari"
-                                  "captain. the crew knows what the record says, and the crew knows what the record is for. nobody on this ship is confused about either.")
-                     (dialog-right "{player-name}"
-                                   "that sounds rehearsed.")
-                     (dialog-left "Imari"
-                                  "it is. we rehearsed it. good night, captain.")
-                     :next "ship/bunk")
+(dialog-say "ship/corridor-imari" "Imari"
+            "captain. the crew knows what the record says, and the crew knows what the record is for. nobody on this ship is confused about either."
+            :next "ship/corridor-imari-2")
+
+(dialog-say "ship/corridor-imari-2" "you"
+            "that sounds rehearsed."
+            :next "ship/corridor-imari-3")
+
+(dialog-say "ship/corridor-imari-3" "Imari"
+            "it is. we rehearsed it. good night, captain."
+            :next "ship/bunk")
 
 (dialog-text "ship/bunk"
              "you lie down in the bunk with your name stenciled at the foot. you are asleep before the lights dim."

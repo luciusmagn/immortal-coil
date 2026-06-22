@@ -160,7 +160,7 @@
              :next "house/listening-2")
 
 (dialog-text "house/listening-2"
-             "the two notes move once through the rooms below, unhurried. then the house goes quiet. it is not an empty quiet. it is the quiet of a thing holding still around you, breathing when you breathe."
+             "the two notes move once through the rooms below, unhurried. then the house goes quiet. it is not an empty quiet. the stove has stopped ticking. the wind has stopped in the pines. everything that was making a sound has stopped at once."
              :next "house/morning")
 
 (dialog-on-enter "house/search"
@@ -179,7 +179,7 @@
              :next "house/under-stairs-2")
 
 (dialog-text "house/under-stairs-2"
-             "it is here and it is out there, the way the bedroom is here and is wherever you wake. you do not open it. some doors you only need to recognize."
+             "it is here and it is out there, the same door in two places. you do not open it. you already know what is on the second step."
              :next "house/album")
 
 (dialog-text "house/album"
@@ -274,7 +274,7 @@
              :next "house/woodpile-2")
 
 (dialog-text "house/woodpile-2"
-             "the work takes your thinking the way the soup took your hunger. clean, complete. that is the trap. naming it does not get you out of it. nothing in this house lies. that is what makes it the hill's."
+             "the work takes your thinking the way the soup took your hunger. clean, complete. that is the trap, and knowing it is a trap does not loosen it. nothing in this house lies. that is what makes it the hill's."
              :next "house/bread")
 
 (dialog-text "house/bread"

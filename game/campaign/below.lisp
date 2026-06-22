@@ -84,7 +84,7 @@
              :next "below/clay-s2")
 
 (dialog-text "below/clay-s2"
-             "you cannot read it. you do not need to. there is only one thing a building's first minute ever says: expected."
+             "you cannot read it. a building's first minute only ever says one thing: expected."
              :next "below/delve")
 
 (dialog-minigame "below/delve"
@@ -289,7 +289,7 @@
              :next "below/margin-2")
 
 (dialog-text "below/margin-2"
-             "the margin is where the clerk keeps what the totals do not see: slept well, for once. left the mark alone. asked the honorable thing. the totals run the building. the margin is for the people in it."
+             "the margin is where the clerk keeps what the totals do not see: slept well, for once. left the mark alone. asked the honorable thing."
              :next "below/receipt")
 
 (dialog-text "below/receipt"
@@ -309,7 +309,7 @@
              :next "below/escort-pace")
 
 (dialog-text "below/escort-pace"
-             "you climb between the pair, and for once it is you matching their steps, not them matching yours. one of those is being followed. the other is being seen home. you had not known until tonight that the same footfalls could be both."
+             "you climb between the pair, and for once it is you matching their steps, not them matching yours. one of those is being followed. the other is being seen home."
              :next "below/stand-closed")
 
 (dialog-text "below/stand-closed"
