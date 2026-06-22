@@ -9,7 +9,7 @@
     ("jrpg-hero-defense" . 2)
     ("jrpg-gold" . 12)
     ("jrpg-xp" . 0)
-    ;; hours: the path's soul-currency — earned from foes, spent on gear and
+    ;; hours: the path's soul-currency - earned from foes, spent on gear and
     ;; levels, scattered on death (to jrpg-lost-hours) and reclaimed on the next
     ;; victory. The King is a time-god; the Sign-touched trade in time.
     ("jrpg-hours" . 8)
@@ -100,7 +100,7 @@
                    (min (jrpg-composure-max) (+ (jrpg-composure) amount))))
 
 (defun jrpg-composed-p ()
-  "True while the player can still hold their own face — refuse the throne,
+  "True while the player can still hold their own face - refuse the throne,
 leave the masque, keep the mask on."
   (plusp (jrpg-composure)))
 

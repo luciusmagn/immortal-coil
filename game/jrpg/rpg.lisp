@@ -2,7 +2,7 @@
 
 ;;; Gear, inventory, equipment, classes, and quests for the King in Yellow path.
 ;;; Base stats live in state.lisp. Equipping an item APPLIES its modifiers to the
-;;; stored stats (and reverts on unequip), so combat needs no special-casing — it
+;;; stored stats (and reverts on unequip), so combat needs no special-casing - it
 ;;; already reads jrpg-hero-attack/defense/composure-max. The CLASS is never
 ;;; chosen: it is inferred from how the player moves through the stories (leans
 ;;; tallied at choices), so "you have always been it." A light quest log too.
@@ -120,7 +120,7 @@
 
 (defparameter *jrpg-classes*
   '((:repairer "REPAIRER OF REPUTATIONS"
-     "you trade in names — making them, unmaking them, knowing the worst of them.")
+     "you trade in names - making them, unmaking them, knowing the worst of them.")
     (:painter  "THE PALLID PAINTER"
      "you see the rot under the skin and the marble in the living, and set it down.")
     (:reader   "THE FAITHFUL READER"
@@ -161,7 +161,7 @@
 ;;; --- quests (light: a few objectives that flip inactive -> active -> done) ---
 
 (defparameter *jrpg-quests*
-  '((:sign  "the Yellow Sign"   "find what marks you — and who sent it.")
+  '((:sign  "the Yellow Sign"   "find what marks you - and who sent it.")
     (:cross "the way to Carcosa" "follow the Sign's spread to the lake of Hali.")
     (:king  "the King unmasked"  "learn what the King in Yellow was, before the crown.")))
 
@@ -197,7 +197,7 @@
 ;;; --- leveling: buy a level with Hours, on a rising curve ---
 
 (defun jrpg-level-cost (&optional (level (jrpg-number "jrpg-hero-level" 1)))
-  "Hours to buy the next level — a curve that climbs with the level you hold."
+  "Hours to buy the next level - a curve that climbs with the level you hold."
   (+ 20 (* 14 level) (* 5 level level)))
 
 (defparameter *jrpg-level-stats*
@@ -246,5 +246,5 @@ any item id (gear is one-per-customer; tonics and consumables restock freely)."
          ((eq key :tonic) (jrpg-adjust-number "jrpg-potions" 1)
           "a tonic, corked and waiting. bought.")
          ((jrpg-item key) (jrpg-add-item key)
-          (format nil "~a — bought." (jrpg-item-name key)))
+          (format nil "~a - bought." (jrpg-item-name key)))
          (t "bought.")))))

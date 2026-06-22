@@ -29,7 +29,7 @@
 (defparameter *yellow-crown-prefixes*
   '("jrpg/" "carcosa/")
   "Node id prefixes on the King-in-Yellow path. Their tree beads render as a
-yellow #ffff00 crown — the one colour in the black-and-white game — so the
+yellow #ffff00 crown - the one colour in the black-and-white game - so the
 path stands out. Game scripts and mods may push their own prefixes here.")
 
 (defun yellow-crown-node-p (id)
@@ -377,7 +377,7 @@ their children) and collect ids. DEPTH drives the centring alternation."
 the centre tallest. Drawn with rectangles so it renders reliably at any
 tree scale. Marks the King-in-Yellow path, the one colour in the game."
   ;; snap every position to whole pixels off ONE shared integer grid (left, w,
-  ;; sw), so the spikes stay flush with the band at any scale — at the big entry
+  ;; sw), so the spikes stay flush with the band at any scale - at the big entry
   ;; flash, independent rounding used to leave the prongs a pixel off.
   (let* ((w        (max 4 (round (* r 2.6))))
          (sw       (max 1 (round (/ w 5.0))))

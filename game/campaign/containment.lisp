@@ -311,7 +311,7 @@
 
 (dialog-say "facility/trolley"
             "M-3"
-            "one return today. walk it back, spine out. the shelf gap is marked. {facility-designation} — today, especially, do not read while walking."
+            "one return today. walk it back, spine out. the shelf gap is marked. {facility-designation} - today, especially, do not read while walking."
             :next "facility/file-carry")
 
 (dialog-text "facility/file-carry"

@@ -56,7 +56,7 @@
                    (lv (jrpg-level-up stat)))
               (setf (jrpg-char-leveling s) nil
                     (jrpg-char-message s)
-                    (if lv (format nil "you give up ~d Hours and grow — level ~d." cost lv)
+                    (if lv (format nil "you give up ~d Hours and grow - level ~d." cost lv)
                         "you cannot afford it after all.")))))))
       ((or (is-key-pressed-p +key-escape+) (is-key-pressed-p +key-backspace+))
        (finish-minigame-node node (node-success-target node)))
@@ -86,7 +86,7 @@
                              (claylib::c-ptr (make-color 0 0 0 236)))
   (draw-jrpg-box 170 80 940 580 235)
   (draw-jrpg-line "YOURSELF" 200 100 24)
-  ;; class — the one line in the Sign's yellow
+  ;; class - the one line in the Sign's yellow
   (draw-text-at (format nil "you are ~a" (jrpg-class-name)) 200 140 19 (yellow-sign-color 235))
   (draw-jrpg-line (jrpg-class-desc) 200 166 14 195)
   (jrpg-draw-rule 200 196 880)
@@ -121,7 +121,7 @@
         for slot in *jrpg-equip-slots*
         for id = (jrpg-equipped-in slot)
         do (draw-jrpg-line (format nil "~6a ~a" (string-downcase (symbol-name slot))
-                                   (if id (jrpg-item-name id) "—"))
+                                   (if id (jrpg-item-name id) "-"))
                            640 y 16 (if id 225 150))
            (incf y 24))
   ;; carried

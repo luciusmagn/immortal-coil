@@ -1,7 +1,7 @@
 (in-package #:immortal-coil)
 
-;;; A vendor screen. There are several across the path — a city pawnbroker, a
-;;; pallid stall in Carcosa — so the stock and the title come from the node's
+;;; A vendor screen. There are several across the path - a city pawnbroker, a
+;;; pallid stall in Carcosa - so the stock and the title come from the node's
 ;;; :config (:title "..." :stock '((item-key cost) ...)); with no config it
 ;;; falls back to the city pawnbroker's default stock. up/down select, enter
 ;;; buys if affordable, esc leaves.
@@ -16,7 +16,7 @@
 
 (defclass jrpg-shop-session (minigame-session)
   ((selected :initform 0  :accessor jrpg-shop-selected)
-   (message  :initform "what will you give an hour up for?" :accessor jrpg-shop-message)))
+   (message  :initform "what'll it be?" :accessor jrpg-shop-message)))
 
 (defmethod minigame-session-update ((s jrpg-shop-session) node dt)
   (declare (ignore dt))

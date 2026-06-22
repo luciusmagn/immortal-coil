@@ -1,6 +1,6 @@
 (in-package #:immortal-coil)
 
-;;; The in-city grid — a distinct walk from the inter-place road. A city is
+;;; The in-city grid - a distinct walk from the inter-place road. A city is
 ;;; blocks of connected houses with streets between; you enter a NAMED DOORWAY
 ;;; to reach a district, and leave by the GATE on the city's edge. It shares the
 ;;; overworld engine (movement, camera, the traveller, the trail); only
@@ -8,7 +8,7 @@
 ;;;
 ;;; The night-city HUB: pick which district to enter and in which order. A door
 ;;; whose story is finished is dropped on the next visit (its :done flag is
-;;; set), so the city is never the same twice — and the gate is always open, so
+;;; set), so the city is never the same twice - and the gate is always open, so
 ;;; a player can leave for Carcosa early and MISS the stories they skipped.
 ;;;
 ;;; A door spec is (glyph target &key name done exit). NAME is the sign over the
@@ -78,7 +78,7 @@ top rim (the way out of the city)."
             (ly (get-random-value 1 (- h 2))))
         (when (char= (aref grid ly lx) #\.)
           (setf (aref grid ly lx) #\+))))
-    ;; exit gates spread along the top rim — the way out
+    ;; exit gates spread along the top rim - the way out
     (let ((k (length exit-glyphs)))
       (loop for g in exit-glyphs
             for i from 1
@@ -145,7 +145,7 @@ top rim (the way out of the city)."
 
 (defun draw-jrpg-city-house-cell (game sx sy mx my)
   "Part of a house: a dark wall, with a lit roof eave and walls drawn only on
-sides that face the street — so a whole block reads as one building, and the
+sides that face the street - so a whole block reads as one building, and the
 inner cells just fill. A window where the wall fronts the street."
   (let* ((s +jrpg-overworld-tile-size+)
          (up (jrpg-city-building-p game mx (1- my)))
@@ -175,7 +175,7 @@ sign reads cleanly over lit roofs."
       (draw-centered-text name cx (+ top 8) 12 (make-color 255 255 255 235)))))
 
 (defun draw-jrpg-city-door (game sx sy mx my name)
-  "A doorway in a building face, or — on the city rim — a wide gate, with a
+  "A doorway in a building face, or - on the city rim - a wide gate, with a
 floating name plate. The plate sits above the door, but drops below it when the
 player stands where it would otherwise be, so it never hides the traveller."
   (let* ((s +jrpg-overworld-tile-size+)

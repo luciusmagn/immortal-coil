@@ -86,7 +86,7 @@ landmarks strung along it. Generated fresh each entry."
     (loop while (/= y fy) do (incf y (if (< y fy) 1 -1))
                              (setf (aref grid y x) #\,) (push (list x y) road))
     (setf road (nreverse road))
-    ;; 2. ranges, forests, a lake — coherent regions, all sparing the road
+    ;; 2. ranges, forests, a lake - coherent regions, all sparing the road
     (dotimes (i (max 2 (floor w 14)))
       (jrpg-gen-ridge grid w h (floor w 2) '(#\,)))
     (dotimes (i (max 3 (floor (* w h) 90)))
@@ -295,7 +295,7 @@ node changes, so a returning walk resumes (encounters do not reset it)."
     (#\T "the tower is still too far to touch.")
     (#\S "the roadside shrine is white stone and old pine.")
     (#\! "the grass shakes.")
-    (#\$ "an hour glints in the roadside grass, waiting.")
+    (#\$ "loose Hours dropped in the grass.")
     (#\o "a small corked bottle waits on a flat stone.")
     (#\~ "the water lies still and the colour of slate.")
     (#\, "the road runs on, pale through the grass.")
@@ -339,7 +339,7 @@ message and are taken only once."
              (jrpg-overworld-mark-collected game x y)
              (play-jrpg-sound "coin" :volume 0.40)
              (setf (jrpg-overworld-message game)
-                   (format nil "an hour you did not know you still had. +~d Hours." found)))))
+                   (format nil "loose Hours in the grass. +~d." found)))))
     (#\o (unless (jrpg-overworld-collected-p game x y)
            (jrpg-adjust-number "jrpg-potions" 1)
            (jrpg-overworld-mark-collected game x y)

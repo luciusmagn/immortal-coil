@@ -1,4 +1,4 @@
-;;; King in Yellow path reveal — the yellow crown flash.
+;;; King in Yellow path reveal - the yellow crown flash.
 ;;; Mirrors the rogue @ flash (game/rogue/reveal.lisp): a single large
 ;;; #ffff00 crown fades in, pulses, and fades out, then opens the city.
 ;;; This is the one colour in the otherwise black-and-white King path.
@@ -20,7 +20,7 @@
     :accessor crown-flash-struck)))
 
 (defun crown-flash-flare (elapsed)
-  "Brightness 0..1: a dim base that flares to full at each toll, then decays —
+  "Brightness 0..1: a dim base that flares to full at each toll, then decays -
 so each bell has its own visible swell."
   (let ((swell 0.0))
     (dolist (toll +crown-flash-tolls+)

@@ -1,15 +1,15 @@
 (in-package #:immortal-coil)
 
 ;;; Two small rites of the King-in-Yellow path, as minigames:
-;;;   :sign-trace  — copy the Yellow Sign stroke by stroke (watch, then trace).
-;;;   :organ-tune  — play the organist's tune; it dies in its third line.
+;;;   :sign-trace  - copy the Yellow Sign stroke by stroke (watch, then trace).
+;;;   :organ-tune  - play the organist's tune; it dies in its third line.
 ;;; Both are session minigames (state on the instance; input in -update, drawing
-;;; in -draw); both are forgiving and resolve to the success target — the point
+;;; in -draw); both are forgiving and resolve to the success target - the point
 ;;; is the doing, and (for the organ) the failing.
 
 
 ;;; ===========================================================================
-;;; THE YELLOW SIGN — trace it. A fixed sequence of axis strokes; the sign
+;;; THE YELLOW SIGN - trace it. A fixed sequence of axis strokes; the sign
 ;;; first draws itself (watch), then the player reproduces it with the arrow
 ;;; keys, in order. Completing it marks you. Wrong keys only wobble the line.
 ;;; ===========================================================================
@@ -155,7 +155,7 @@
 
 
 ;;; ===========================================================================
-;;; THE COURT OF THE DRAGON — the organist's tune. Notes fall to a strike line;
+;;; THE COURT OF THE DRAGON - the organist's tune. Notes fall to a strike line;
 ;;; SPACE plays the one crossing it. It is built to DIE in its third line: the
 ;;; staff cracks, the last notes scatter, and you are handed to the flight no
 ;;; matter how you played. The failing is canon.
@@ -244,7 +244,7 @@
      (cond (broken "the tune dies in its third line.")
            ((< e 3.6) "play the organist's tune. SPACE on the line.")
            ((< e 6.6) "the second line. SPACE on the line.")
-           (t "the third line ——"))
+           (t "the third line --"))
      cx (- ty 36) 19 (make-color 255 255 255 220))
     (draw-centered-text (format nil "played ~d" (organ-good session))
                         cx (+ sy 40) 16 (make-color 255 255 255 170))))

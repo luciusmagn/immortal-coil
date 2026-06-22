@@ -1,4 +1,4 @@
-;;; The King in Yellow path, Act I — the ordinary city.
+;;; The King in Yellow path, Act I - the ordinary city.
 ;;;
 ;;; Rebuilt from Chambers, no JRPG skeleton kept. The player begins ALONE with
 ;;; the banned Play and the Yellow Sign already half on them, and walks the
@@ -10,7 +10,7 @@
 ;;; gone. Companions, if any, are picked up later and only if they fit.
 
 (dialog-particles "jrpg/inn" :ash :fade-seconds 2.0)
-;; the music turns over the moment the crown flashes — the path has its own air
+;; the music turns over the moment the crown flashes - the path has its own air
 (dialog-music "jrpg/crown-flash" "audio/jrpg-opening.mp3" :volume 0.22)
 (dialog-music "jrpg/inn" "audio/jrpg-opening.mp3" :volume 0.22)
 (dialog-sound "jrpg/the-book" "audio/jrpg/ledger.wav" :volume 0.22)
@@ -41,7 +41,7 @@
                  '(jrpg-start-quest :sign))
 
 (dialog-text "jrpg/the-book"
-             "the book is THE KING IN YELLOW. you have read its first act — only the first; you set it down at the second, as everyone does. inside the cover a small sign is stamped in yellow, the one colour in the room."
+             "the book is THE KING IN YELLOW. you have read its first act - only the first; you set it down at the second, as everyone does. inside the cover a small sign is stamped in yellow, the one colour in the room."
              :next "jrpg/name")
 
 (dialog-string "jrpg/name"
@@ -55,7 +55,7 @@
              :next "jrpg/street")
 
 
-;;; The night city — travel and the ordinary menace of it (overworld + battle)
+;;; The night city - travel and the ordinary menace of it (overworld + battle)
 
 (dialog-text "jrpg/street"
              "the street is the ordinary kind of dangerous after dark. gas lamps far apart, a man asleep or dead in a doorway, footsteps that keep your pace and then do not."
@@ -103,7 +103,7 @@
              :next "jrpg/street-walk")
 
 
-;;; THE YELLOW SIGN — the studio
+;;; THE YELLOW SIGN - the studio
 
 (dialog-particles "jrpg/studio" :motes :fade-seconds 3.0)
 (dialog-on-enter "jrpg/studio" '(jrpg-lean-class :painter 1))
@@ -158,7 +158,7 @@
                  '(jrpg-lean-class :reader 2))
 
 (dialog-text "jrpg/read-second"
-             "you read a few lines of the second act before Scott takes the book from your hands — too late for you, in time for him. the words are clear as crystal, limpid and musical, and they do not let go. nothing in the room has moved, and all of it is wrong."
+             "you read a few lines of the second act before Scott takes the book from your hands - too late for you, in time for him. the words are clear as crystal, limpid and musical, and they do not let go. nothing in the room has moved, and all of it is wrong."
              :next "jrpg/watchman-comes")
 
 (dialog-text "jrpg/watchman-comes"
@@ -196,7 +196,7 @@
              :next "jrpg/city-hub")
 
 
-;;; THE REPAIRER OF REPUTATIONS — Hawberk's, and the room above it
+;;; THE REPAIRER OF REPUTATIONS - Hawberk's, and the room above it
 
 (dialog-minigame "jrpg/wilde-street"
                  "arrows or wasd move. reach the lit armourer's shop."
@@ -249,7 +249,7 @@
 (dialog-on-enter "jrpg/wilde" '(jrpg-lean-class :repairer 2))
 
 (dialog-text "jrpg/wilde"
-             "up the stair, a low room. a small scarred man, no higher than a child, in a chair too high for him; his ears are wax and painted shell-pink, for he has none of his own, and his left hand has no fingers. a cat in his lap, a ledger on his knee, a locked cabinet behind. he repairs reputations, he says — makes names and unmakes them, for a fee. he has been expecting you, which he says of everyone, and means."
+             "up the stair, a low room. a small scarred man, no higher than a child, in a chair too high for him; his ears are wax and painted shell-pink, for he has none of his own, and his left hand has no fingers. a cat in his lap, a ledger on his knee, a locked cabinet behind. he repairs reputations, he says - makes names and unmakes them, for a fee. he has been expecting you, which he says of everyone, and means."
              :next "jrpg/wilde-questions")
 
 (dialog-interrogation "jrpg/wilde-questions"
@@ -259,7 +259,7 @@
                       ("ask about the ledger of names"
                        :id "register"
                        :speaker "Mr. Wilde"
-                       "every man whose name is in it has received the Yellow Sign, which no living soul dares disregard. yours is here. it is here twice — the second dated after today, in a hand i would call yours, had you got round to writing it.")
+                       "every man whose name is in it has received the Yellow Sign, which no living soul dares disregard. yours is here. it is here twice - the second dated after today, in a hand i would call yours, had you got round to writing it.")
                       ("ask about the locked cabinet"
                        :id "crown"
                        :speaker "Mr. Wilde"
@@ -310,7 +310,7 @@
              :next "jrpg/city-hub")
 
 
-;;; THE MASK — Boris's studio and the marble pool
+;;; THE MASK - Boris's studio and the marble pool
 
 (dialog-particles "jrpg/boris" :motes :fade-seconds 3.0)
 (dialog-on-enter "jrpg/boris" '(jrpg-lean-class :painter 1))
@@ -321,7 +321,7 @@
 
 (dialog-conversation "jrpg/boris"
                      (dialog-left "Boris"
-                                  "mind the pool — it is clear, and it is not water. i found a fluid that turns the living to marble, every pore. i meant it for lilies.")
+                                  "mind the pool - it is clear, and it is not water. i found a fluid that turns the living to marble, every pore. i meant it for lilies.")
                      (dialog-right "{player-name}"
                                    "and the woman by the pool?")
                      (dialog-left "Boris"
@@ -335,7 +335,7 @@
                       ("ask what the fluid does to a person"
                        :id "fluid"
                        :speaker "Boris"
-                       "it keeps them — perfectly, in the pose they were in. destroyed, preserved; how can you tell? i found it by accident. it was so simple; it discovered itself.")
+                       "it keeps them - perfectly, in the pose they were in. destroyed, preserved; how can you tell? i found it by accident. it was so simple; it discovered itself.")
                       ("ask about Geneviève"
                        :id "genevieve"
                        :speaker "Boris"
@@ -376,10 +376,10 @@
              :next "jrpg/city-hub")
 
 
-;;; IN THE COURT OF THE DRAGON — the pursuit and the crossing
+;;; IN THE COURT OF THE DRAGON - the pursuit and the crossing
 
 (dialog-text "jrpg/church"
-             "inside, vespers are over. the organist comes down from behind his pipes — a slender man, his face as white as his coat is black — and as he passes he turns and sends straight into your eyes a look of hate, intense and deadly. when you leave, he leaves. when you stop, he stops, nearer."
+             "inside, vespers are over. the organist comes down from behind his pipes - a slender man, his face as white as his coat is black - and as he passes he turns and sends straight into your eyes a look of hate, intense and deadly. when you leave, he leaves. when you stop, he stops, nearer."
              :next "jrpg/organ-game")
 
 (dialog-minigame "jrpg/flight"
@@ -404,7 +404,7 @@
 
 
 ;;; ===========================================================================
-;;; Discoverable episodes — the rest of Chambers, off the spine but in depth.
+;;; Discoverable episodes - the rest of Chambers, off the spine but in depth.
 ;;; Each is an optional detour that rejoins the main road, and each turns on the
 ;;; same engine as the King: time that will not move on, people kept in a last
 ;;; gesture. THE DEMOISELLE D'YS (a fugue out of time), THE PROPHETS' PARADISE
@@ -413,14 +413,14 @@
 ;;; ===========================================================================
 
 
-;;; THE DEMOISELLE D'YS — a green lane off the thinned city drops the player
+;;; THE DEMOISELLE D'YS - a green lane off the thinned city drops the player
 ;;; five centuries back onto the Breton moor, into a love that has already
 ;;; happened and a death already on the stone. The falconer is named Hastur,
 ;;; the same name a scarred man gave a god an hour ago.
 
 ;;; THE NIGHT-CITY HUB (in-city grid). The player chooses which district to
 ;;; enter and in what order; a finished district drops its door on re-entry; the
-;;; church door is always open and is the crossing — leave by it early and you
+;;; church door is always open and is the crossing - leave by it early and you
 ;;; simply miss the stories you did not walk into. The flyleaf's "again" brings
 ;;; you back to find them. This is where the player's agency lives.
 
@@ -472,7 +472,7 @@
                        "she has waited for a stranger, she says, and prayed for one, longer than is decent to say. she colours and looks at the bird, not at you. her falconers look at the ground."))
 
 (dialog-text "jrpg/dys-hawk"
-             "she teaches you the lure — swing it, let the hawk taste the quarry, faire courtoisie a l'oiseau. the day is long and good and does not seem to spend itself. you could stay inside it."
+             "she teaches you the lure - swing it, let the hawk taste the quarry, faire courtoisie a l'oiseau. the day is long and good and does not seem to spend itself. you could stay inside it."
              :next "jrpg/dys-viper")
 
 (dialog-on-enter "jrpg/dys-viper"
@@ -480,7 +480,7 @@
                  '(jrpg-lean-class :mourner 2))
 
 (dialog-text "jrpg/dys-viper"
-             "by the stream the hawks scream. a grey snake on the warm rock, a black V on its neck. she clings to your arm — don't, i am afraid. for me? for you, she says. i love you. then a sting at the ankle, and the light in your eyes goes out."
+             "by the stream the hawks scream. a grey snake on the warm rock, a black V on its neck. she clings to your arm - don't, i am afraid. for me? for you, she says. i love you. then a sting at the ankle, and the light in your eyes goes out."
              :next "jrpg/dys-wake")
 
 (dialog-text "jrpg/dys-wake"
@@ -504,7 +504,7 @@
              :next "jrpg/city-hub")
 
 
-;;; THE FOUR PARIS STREETS — an old quarter the Sign has reached the way it
+;;; THE FOUR PARIS STREETS - an old quarter the Sign has reached the way it
 ;;; reaches everything: by keeping it. Four small human stories, each held in
 ;;; its last good minute. Discoverable, then left to its keeping.
 
@@ -514,7 +514,7 @@
                  '(jrpg-spend-composure 1))
 
 (dialog-text "jrpg/old-quarter"
-             "the old quarter, where the gas still burns warm and yellow. students, lovers, small lives — and none of it moves on. each corner is a life held in its last good minute. four streets; you walk them."
+             "the old quarter, where the gas still burns warm and yellow. students, lovers, small lives - and none of it moves on. each corner is a life held in its last good minute. four streets; you walk them."
              :next "jrpg/old-quarter-streets")
 
 (dialog-interrogation "jrpg/old-quarter-streets"
@@ -532,11 +532,11 @@
                       ("the Street of Our Lady of the Fields"
                        :id "lady"
                        :speaker "the quarter"
-                       "the quietest street. a young man calls 'a demain, Valentine' to a girl at a gate — see you tomorrow — and tomorrow never comes.")
+                       "the quietest street. a young man calls 'a demain, Valentine' to a girl at a gate - see you tomorrow - and tomorrow never comes.")
                       ("Rue Barree"
                        :id "rue"
                        :speaker "the quarter"
-                       "the students named a girl Rue Barree — street closed — because none could reach her. one, Selby, loves her and never says it. she passes with a chilling smile; he is forever one breath from speaking."))
+                       "the students named a girl Rue Barree - street closed - because none could reach her. one, Selby, loves her and never says it. she passes with a chilling smile; he is forever one breath from speaking."))
 
 (dialog-on-enter "jrpg/old-quarter-out"
                  '(setf (jrpg-value "kiy-did-quarter") t))
@@ -546,7 +546,7 @@
              :next "jrpg/city-hub")
 
 
-;;; THE PROPHETS' PARADISE — the Play's looping middle pages, between the acts.
+;;; THE PROPHETS' PARADISE - the Play's looping middle pages, between the acts.
 ;;; Eight short visions, each a snake that eats its tail; the loop is the King's
 ;;; time-shatter in miniature, and the Green Room's white mask is his.
 
@@ -558,7 +558,7 @@
                  '(jrpg-lean-class :reader 1))
 
 (dialog-interrogation "jrpg/prophets"
-                      "the middle pages — not the first act, not the second. eight short visions, each a snake that eats its tail. you read them; they read you back."
+                      "the middle pages - not the first act, not the second. eight short visions, each a snake that eats its tail. you read them; they read you back."
                       (:next "jrpg/read-choice")
                       (:continue-label "shut the middle pages")
                       ("The Studio"
@@ -576,7 +576,7 @@
                       ("Destiny"
                        :id "p-destiny"
                        :speaker "the Play"
-                       "the bridge which few may pass. pass! cries the keeper. there is time, you laugh — and he smiles and shuts the gates. young and old are refused. you laugh: there is time.")
+                       "the bridge which few may pass. pass! cries the keeper. there is time, you laugh - and he smiles and shuts the gates. young and old are refused. you laugh: there is time.")
                       ("The Throng"
                        :id "p-throng"
                        :speaker "the Play"
@@ -592,4 +592,4 @@
                       ("The Love Test"
                        :id "p-love"
                        :speaker "the Play"
-                       "if you love, wait no longer, says Love; give her these jewels that would dishonour her. she treads them down, sobbing: teach me to wait — i love you. then wait, says Love."))
+                       "if you love, wait no longer, says Love; give her these jewels that would dishonour her. she treads them down, sobbing: teach me to wait - i love you. then wait, says Love."))

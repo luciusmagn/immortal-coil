@@ -1,7 +1,7 @@
 (in-package #:immortal-coil)
 
 ;;; Yellow tatters: slow shreds of the King's mantle drifting down and swaying
-;;; like rag caught in a draught — sallow yellow, the one colour in the game.
+;;; like rag caught in a draught - sallow yellow, the one colour in the game.
 ;;; For Carcosa, the court, and the King: the air itself coming apart in tatters.
 
 (defstruct tatter-particle

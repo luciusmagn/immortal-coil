@@ -1,4 +1,4 @@
-;;; The King in Yellow path, Act II — Carcosa, unstuck in time.
+;;; The King in Yellow path, Act II - Carcosa, unstuck in time.
 ;;;
 ;;; Entered from jrpg/threshold via carcosa/cross. The King is the ship-captain
 ;;; (the captain path) gone cosmically, irretrievably insane, his power over
@@ -79,7 +79,7 @@
              :next "carcosa/court")
 
 
-;;; The court — Cassilda and Camilla, overheard, then asked
+;;; The court - Cassilda and Camilla, overheard, then asked
 
 (dialog-text "carcosa/court"
              "before the high doors, two women keep a court of their own: one at a cold harp, one at a window on the lake, both dressed for a masque, though no music plays and no one has come."
@@ -105,7 +105,7 @@
                      (dialog-left "Cassilda"
                                   "you, sir, should unmask. we have all laid aside disguise but him.")
                      (dialog-right "Camilla"
-                                   "i told him so, once. 'i wear no mask,' he said — and i saw that it was true. i have not been warm since.")
+                                   "i told him so, once. 'i wear no mask,' he said - and i saw that it was true. i have not been warm since.")
                      (dialog-left "Cassilda"
                                   "and still we dress for the masque. someone must, or it is only a lake and a man who will not stop talking.")
                      :next "carcosa/court-questions")
@@ -128,10 +128,10 @@
                        "they die in the third line, everywhere his Sign reaches. it reached your city before you left it."))
 
 
-;;; The keeper of kept things — a pallid vendor at the cloister, on the way in
+;;; The keeper of kept things - a pallid vendor at the cloister, on the way in
 
 (dialog-text "carcosa/cloister"
-             "before the high doors a stall is kept: a pallid figure with kept things laid out — a flask of the lake, a mask with no face, a shred of the King's own yellow. it deals, as all Carcosa deals, in Hours."
+             "before the high doors a stall is kept: a pallid figure with kept things laid out - a flask of the lake, a mask with no face, a shred of the King's own yellow. he takes Hours, like everyone here."
              :next "carcosa/vendor")
 
 (dialog-minigame "carcosa/vendor"
@@ -145,7 +145,7 @@
                                         (:tatter-shroud 92))))
 
 
-;;; The King — insane, time-shattered; the captain-truth only in shards
+;;; The King - insane, time-shattered; the captain-truth only in shards
 
 (dialog-text "carcosa/king-hall"
              "the throne room keeps happening. you enter it more than once, from doors you did not use. on the throne, in tatters the colour of the Sign, the King. he wears no mask, or the mask is his face; your eyes will not decide which. he is talking, and has been, to no one, longer than the room has existed."
@@ -153,12 +153,12 @@
 
 (dialog-say "carcosa/king-1"
             "the KING"
-            "again. good. you always come in again. i kept the crossing this time, did you see, clean, the whole bridge, every man, watch ——"
+            "again. good. you always come in again. i kept the crossing this time, did you see, clean, the whole bridge, every man, watch --"
             :next "carcosa/king-2")
 
 (dialog-say "carcosa/king-2"
             "the KING"
-            "—— and again, and the count is wrong, the count is always wrong by everyone, and they thanked me, with the good chair and the soft pill and their hands, and the dark put me HERE, here is not the ship, HERE ——"
+            "-- and again, and the count is wrong, the count is always wrong by everyone, and they thanked me, with the good chair and the soft pill and their hands, and the dark put me HERE, here is not the ship, HERE --"
             :next "carcosa/king-loop")
 
 (dialog-text "carcosa/king-loop"
@@ -174,7 +174,7 @@
 (dialog-on-enter "carcosa/king-3" '(jrpg-complete-quest :sign))
 (dialog-say "carcosa/king-3"
             "the KING"
-            "you have the Sign. i sent it. i keep the ones i send it to. sit in the good chair, the relieved chair, and i will show you the crossing, and you will keep it for me, and i will rest, i have not ——"
+            "you have the Sign. i sent it. i keep the ones i send it to. sit in the good chair, the relieved chair, and i will show you the crossing, and you will keep it for me, and i will rest, i have not --"
             :next "carcosa/throne-choice")
 
 (dialog-on-enter "carcosa/throne-choice" '(jrpg-complete-quest :king))
@@ -201,7 +201,7 @@
                  '(setf (jrpg-value "jrpg-vane-answer") "class"))
 
 (dialog-text "carcosa/class-end"
-             "you meet him the only way a {jrpg-class-title} can — and it is a thing the loop kept no line for. the suns hang. the room does not reset this time; it only lets you out, the Sign in your coat gone quiet at last."
+             "you meet him the only way a {jrpg-class-title} can - and it is a thing the loop kept no line for. the suns hang. the room does not reset this time; it only lets you out, the Sign in your coat gone quiet at last."
              :next "carcosa/out")
 
 (dialog-on-enter "carcosa/take-crown"
@@ -228,7 +228,7 @@
                  '(setf (jrpg-value "jrpg-vane-answer") "year"))
 
 (dialog-text "carcosa/ask-year"
-             "you ask him the year. it is the one question the loop keeps no line for. he stops. the suns hang. for one held second the tatters are a coat, the throne is a chair, and the face under the mask is a tired man's, appalled — who says a number, and a name that is not the King's, before the room resets and takes it back. you keep it. you will not forget it."
+             "you ask him the year. it is the one question the loop keeps no line for. he stops. the suns hang. for one held second the tatters are a coat, the throne is a chair, and the face under the mask is a tired man's, appalled - who says a number, and a name that is not the King's, before the room resets and takes it back. you keep it. you will not forget it."
              :next "carcosa/out")
 
 (dialog-text "carcosa/out"

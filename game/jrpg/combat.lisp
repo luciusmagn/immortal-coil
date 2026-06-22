@@ -71,7 +71,7 @@
     ".#...##...##...#...."
     ".#...##...##...#...."))
 
-;;; Carcosan creatures — the King in Yellow's world. The tatter is a feral
+;;; Carcosan creatures - the King in Yellow's world. The tatter is a feral
 ;;; shred of the King's yellow mantle; the drowned is a thing the Lake of Hali
 ;;; kept; the byakhee is a winged servant out of the Hyades; the courtier is a
 ;;; masked dead petitioner; the phantom is the play's Phantom of Truth.
@@ -230,7 +230,7 @@
 (defun jrpg-combat-skill-list ()
   "Skills the hero can reach now. The focus strike and mend are always known;
 reciting the King's lines unlocks once a scrap of the Play is on you, and it
-spends will, not focus — the words wound the speaker too."
+spends will, not focus - the words wound the speaker too."
   (let ((skills (list (list :key :focus :label "focus strike"
                             :cost-mp 1 :note "MP1  a sure, staggering blow")
                       (list :key :mend :label "mend"
@@ -530,7 +530,7 @@ choose one spec at random; nil when the node has no pool."
     (setf (jrpg-combat-message game)
           (cond ((not (jrpg-combat-enemy-alive-p game))
                  (format nil "the ~a reels from the blow." (jrpg-enemy-word game)))
-                (crit (format nil "a clean strike — ~d!" damage))
+                (crit (format nil "a clean strike - ~d!" damage))
                 (t (format nil "you hit the ~a for ~d." (jrpg-enemy-word game) damage))))
     (unless (jrpg-combat-enemy-alive-p game)
       (jrpg-combat-victory node game))))
@@ -547,7 +547,7 @@ choose one spec at random; nil when the node has no pool."
        (jrpg-combat-hit-enemy-fx game dmg :crit t)
        (setf (jrpg-combat-message game)
              (if (jrpg-combat-enemy-alive-p game)
-                 (format nil "a focused strike staggers the ~a — ~d!"
+                 (format nil "a focused strike staggers the ~a - ~d!"
                          (jrpg-enemy-word game) dmg)
                  (format nil "the ~a folds." (jrpg-enemy-word game))))
        (unless (jrpg-combat-enemy-alive-p game)
@@ -568,7 +568,7 @@ choose one spec at random; nil when the node has no pool."
        (jrpg-combat-hit-enemy-fx game dmg :crit t :yellow t)
        (setf (jrpg-combat-message game)
              (if (jrpg-combat-enemy-alive-p game)
-                 (format nil "you speak the king's lines; the ~a shudders — ~d."
+                 (format nil "you speak the king's lines; the ~a shudders - ~d."
                          (jrpg-enemy-word game) dmg)
                  (format nil "the lines undo the ~a." (jrpg-enemy-word game))))
        (unless (jrpg-combat-enemy-alive-p game)
@@ -605,7 +605,7 @@ choose one spec at random; nil when the node has no pool."
        (jrpg-combat-damage-enemy game dmg)
        (jrpg-combat-hit-enemy-fx game dmg :crit t)
        (setf (jrpg-combat-message game)
-             (format nil "you dash the phial; the ~a turns to marble — ~d."
+             (format nil "you dash the phial; the ~a turns to marble - ~d."
                      (jrpg-enemy-word game) dmg))
        (unless (jrpg-combat-enemy-alive-p game)
          (jrpg-combat-victory node game))))
@@ -633,7 +633,7 @@ choose one spec at random; nil when the node has no pool."
     (play-jrpg-sound (if heavy "slime" "hit") :volume (if heavy 0.46 0.34))
     (setf (jrpg-combat-message game)
           (cond ((not (jrpg-hero-alive-p)) "you go down in the dark.")
-                (guarded (format nil "you take it on your guard — ~d." damage))
+                (guarded (format nil "you take it on your guard - ~d." damage))
                 (heavy (format nil "the ~a strikes hard! ~d." (jrpg-enemy-word game) damage))
                 (unmasked (format nil "unmasked, you take ~d." damage))
                 (t (format nil "the ~a hits you for ~d." (jrpg-enemy-word game) damage))))
@@ -767,7 +767,7 @@ choose one spec at random; nil when the node has no pool."
            (cond
              ((and (getf skill :cost-mp)
                    (< (jrpg-number "jrpg-hero-mp") (getf skill :cost-mp)))
-              (setf (jrpg-combat-message game) "you cannot focus — no mp."))
+              (setf (jrpg-combat-message game) "you cannot focus - no mp."))
              ((and (getf skill :cost-composure)
                    (< (jrpg-composure) (getf skill :cost-composure)))
               (setf (jrpg-combat-message game)
@@ -912,7 +912,7 @@ away, then the solid fill. Yellow tints the will meter."
                        (claylib::c-ptr (make-color 255 255 255 alpha))))))
 
 (defun draw-jrpg-windup (cx cy reach elapsed)
-  "Corner brackets that pulse around a foe winding up a heavy blow — the
+  "Corner brackets that pulse around a foe winding up a heavy blow - the
 player's cue to GUARD."
   (let* ((pulse (+ 0.5 (* 0.5 (sin (* elapsed 9.0)))))
          (a (round (* 190 pulse)))
@@ -1111,7 +1111,7 @@ comes up when guarding, and the whole body flares white on a hit."
     (jrpg-draw-sparks game ox oy)
     (jrpg-draw-floaters game ox oy)))
 
-;;; A compact, read-only summary card — class, stats, Hours, worn gear. Shared:
+;;; A compact, read-only summary card - class, stats, Hours, worn gear. Shared:
 ;;; the overworld pulls it up with C; other screens can reuse it.
 
 (defun jrpg-draw-stat-card (left top)
@@ -1134,7 +1134,7 @@ comes up when guarding, and the whole body flares white on a hit."
         for slot in *jrpg-equip-slots*
         for id = (jrpg-equipped-in slot)
         do (draw-jrpg-line (format nil "~6a ~a" (string-downcase (symbol-name slot))
-                                   (if id (jrpg-item-name id) "—"))
+                                   (if id (jrpg-item-name id) "-"))
                            (+ left 20) y 15 (if id 215 150))
            (incf y 22))
   (draw-jrpg-line "C or esc: close" (+ left 20) (+ top 256) 13 150))
