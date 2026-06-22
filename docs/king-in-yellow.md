@@ -164,6 +164,23 @@ last gesture.
   Green Room's white mask is his. Reading spends composure.
 - **The four Paris streets** (The Four Winds, The First Shell, Our Lady of the
   Fields, Rue Barrée) — `jrpg/old-quarter-*`, an old quarter the Sign keeps in
-  its last good minute (fork at the Repairer's exit). Four small human stories,
-  each held one breath from moving on, framed so the realist romances belong to
-  the same time-keeping mythos.
+  its last good minute (a hub door). Four small human stories, each held one
+  breath from moving on, framed so the realist romances belong to the same
+  time-keeping mythos.
+
+## Agency — the night-city hub
+
+After the Yellow Sign (the mandatory opening that gives the Play, the Sign, and
+the composure mechanic), the player drops into **`jrpg/city-hub`**, an in-city
+grid (`:jrpg-city`). Its lettered doors lead to the districts in **any order**:
+**A** the armourer's (Repairer), **M** the marble court (Mask), **Q** the old
+quarter (the four streets), **D** the green lane (Demoiselle d'Ys), and **C**
+the church — which is the **crossing into Carcosa**. Each district sets a `done`
+flag on completion and returns to the hub; a finished door is omitted on the
+next visit, so the square is never the same twice (the city is thinning).
+
+The church door is **always open**. A player can walk straight to it and cross
+**under-levelled, having missed whole stories** — that is deliberate. The
+flyleaf's "again" (the recurrence ending) brings them back to find what they
+skipped. The stories are discoverable, not mandatory; the player has the agency
+to derail, rush, or exhaust the city.

@@ -18,6 +18,7 @@
            "jrpg/state.lisp"
            "jrpg/combat.lisp"
            "jrpg/overworld.lisp"
+           "jrpg/city.lisp"
            "jrpg/reveal.lisp"
            "opening.lisp"
            "campaign/forest.lisp"

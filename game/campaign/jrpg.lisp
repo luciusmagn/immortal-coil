@@ -170,8 +170,8 @@
              :next "jrpg/leave-studio")
 
 (dialog-text "jrpg/leave-studio"
-             "you go down into a city that has thinned, the way a held note thins. the gas lamps are the same number and in the wrong order. one shopfront is still lit: an armourer's, a suit of mail white in the window, a stair behind it going up to a light."
-             :next "jrpg/after-studio-fork")
+             "you go down into a city that has thinned, the way a held note thins. you come out in a square you do not remember entering, the gas lamps in the wrong order, lit doors set around it, none of them where you left it."
+             :next "jrpg/city-hub")
 
 
 ;;; THE REPAIRER OF REPUTATIONS — Hawberk's, and the room above it
@@ -262,16 +262,20 @@
                                :victory-gold 8
                                :message "Hildred-Rex advances, crowning himself with both empty hands as he comes."))
 
+(dialog-on-enter "jrpg/after-castaigne"
+                 '(setf (jrpg-value "kiy-did-repairer") t))
+
 (dialog-text "jrpg/after-castaigne"
              "Hildred sits down hard, the title gone out of him, and weeps that the cat has got Mr. Wilde. the cat has: the small scarred man bleeds from the throat in his high chair, the ledger fallen open at your name, twice. you go before the noise brings anyone. the cabinet you leave shut, this time."
-             :next "jrpg/repairer-fork")
+             :next "jrpg/city-hub")
 
 (dialog-on-enter "jrpg/castaigne-down"
-                 '(jrpg-heal 6))
+                 '(jrpg-heal 6)
+                 '(setf (jrpg-value "kiy-did-repairer") t))
 
 (dialog-text "jrpg/castaigne-down"
              "he has your collar and the razor at it when the cat, for its own reasons, takes Mr. Wilde's throat instead, and Hildred forgets you entirely for the man who promised him a crown. you leave them to it. the ledger lies open at your name, twice."
-             :next "jrpg/repairer-fork")
+             :next "jrpg/city-hub")
 
 
 ;;; THE MASK — Boris's studio and the marble pool
@@ -329,9 +333,12 @@
                                :victory-gold 4
                                :message "the marble by the wall finishes softening, steps down, and remembers how it died."))
 
+(dialog-on-enter "jrpg/after-marble"
+                 '(setf (jrpg-value "kiy-did-mask") t))
+
 (dialog-text "jrpg/after-marble"
-             "the marble-touched goes still again, mid-step, a better statue than before. Boris does not look up from the pool. you leave him to his keeping. outside, where there was no church, a church stands with its door open and an organ going inside."
-             :next "jrpg/church")
+             "the marble-touched goes still again, mid-step, a better statue than before. Boris does not look up from the pool. you leave him to his keeping, and the white light behind you, and find your way back to the square."
+             :next "jrpg/city-hub")
 
 
 ;;; IN THE COURT OF THE DRAGON — the pursuit and the crossing
@@ -376,10 +383,34 @@
 ;;; happened and a death already on the stone. The falconer is named Hastur,
 ;;; the same name a scarred man gave a god an hour ago.
 
-(dialog-pick "jrpg/after-studio-fork"
-             "you turn for the armourer's lit stair. between you and it opens a green lane, gorse and sea-wind, that no city has any business holding."
-             (dialog-option "take the armourer's stair" "jrpg/wilde-street")
-             (dialog-option "follow the green lane" "jrpg/dys-lane"))
+;;; THE NIGHT-CITY HUB (in-city grid). The player chooses which district to
+;;; enter and in what order; a finished district drops its door on re-entry; the
+;;; church door is always open and is the crossing — leave by it early and you
+;;; simply miss the stories you did not walk into. The flyleaf's "again" brings
+;;; you back to find them. This is where the player's agency lives.
+
+(dialog-particles "jrpg/city-hub" :snow :fade-seconds 2.5)
+
+(dialog-minigame "jrpg/city-hub"
+                 "arrows or wasd move onto a lit door."
+                 :game :jrpg-city
+                 :success "jrpg/church"
+                 :failure "jrpg/church"
+                 :config (list :gen-width 27
+                               :gen-height 13
+                               :store-prefix "kiy-hub"
+                               :doors '(("A" "jrpg/wilde-street" :done "kiy-did-repairer")
+                                        ("M" "jrpg/mask-street"  :done "kiy-did-mask")
+                                        ("Q" "jrpg/old-quarter"  :done "kiy-did-quarter")
+                                        ("D" "jrpg/dys-lane"     :done "kiy-did-dys")
+                                        ("C" "jrpg/church"))
+                               :legend "A armourer  M marble  Q old quarter  D green lane  C church (out)"
+                               :tile-messages
+                               '((#\A . "an armourer's stair, mail white in the window.")
+                                 (#\M . "a door open on white marble light.")
+                                 (#\Q . "a stair down to the old quarter, the gas warm.")
+                                 (#\D . "a green lane, gorse and sea, where no lane should be.")
+                                 (#\C . "a church, an organ already going; past it the lake-smell. the way out."))))
 
 (dialog-particles "jrpg/dys-meet" :motes :fade-seconds 3.0)
 
@@ -431,19 +462,17 @@
              "carved beneath her: PRAY FOR THE SOUL OF JEANNE D'YS, WHO DIED IN HER YOUTH FOR LOVE OF {player-name}, A STRANGER. A.D. 1573. on the icy slab a woman's glove, still warm. you know the kept now, before Carcosa ever names it."
              :next "jrpg/dys-out")
 
+(dialog-on-enter "jrpg/dys-out"
+                 '(setf (jrpg-value "kiy-did-dys") t))
+
 (dialog-text "jrpg/dys-out"
-             "you stand, and the ruins are a city corner again, the armourer's light ahead where the lane was. your foot still drags from the bite. the glove is in your coat now, warm as the Sign and just as unasked-for."
-             :next "jrpg/wilde-street")
+             "you stand, and the ruins are a city square again, the lit doors where the lane was. your foot still drags from the bite. the glove is in your coat now, warm as the Sign and just as unasked-for."
+             :next "jrpg/city-hub")
 
 
 ;;; THE FOUR PARIS STREETS — an old quarter the Sign has reached the way it
 ;;; reaches everything: by keeping it. Four small human stories, each held in
 ;;; its last good minute. Discoverable, then left to its keeping.
-
-(dialog-pick "jrpg/repairer-fork"
-             "from the armourer's the streets offer two ways down."
-             (dialog-option "on toward the white-lit court" "jrpg/mask-street")
-             (dialog-option "down into the old quarter, where the gas still burns warm" "jrpg/old-quarter"))
 
 (dialog-particles "jrpg/old-quarter" :snow :fade-seconds 3.0)
 
@@ -475,9 +504,12 @@
                        :speaker "the quarter"
                        "the students named a girl Rue Barree — street closed — because none could reach her. one, Selby, loves her and never says it. she passes with a chilling smile; he is forever one breath from speaking."))
 
+(dialog-on-enter "jrpg/old-quarter-out"
+                 '(setf (jrpg-value "kiy-did-quarter") t))
+
 (dialog-text "jrpg/old-quarter-out"
-             "you leave them their last good minute. the warm gas dims behind you, going nowhere, and you climb back toward the Sign's cold light."
-             :next "jrpg/mask-street")
+             "you leave them their last good minute. the warm gas dims behind you, going nowhere, and you climb back to the square."
+             :next "jrpg/city-hub")
 
 
 ;;; THE PROPHETS' PARADISE — the Play's looping middle pages, between the acts.
