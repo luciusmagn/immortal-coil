@@ -27,7 +27,7 @@
 (defconstant +tree-bead-current-radius+ 7.0)
 
 (defparameter *yellow-crown-prefixes*
-  '("jrpg/" "ledger/" "bellfall/" "festival/" "carcosa/")
+  '("jrpg/" "carcosa/")
   "Node id prefixes on the King-in-Yellow path. Their tree beads render as a
 yellow #ffff00 crown — the one colour in the black-and-white game — so the
 path stands out. Game scripts and mods may push their own prefixes here.")
