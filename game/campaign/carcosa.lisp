@@ -54,7 +54,7 @@
                  :outcomes (list "carcosa/causeway-cross"))
 
 (dialog-text "carcosa/causeway-cross"
-             "halfway over, a figure stands in the mist: a pale robe, a mask, both wet. one of the kept. it does not move aside. it has waited here a long time, the way only the kept can wait."
+             "halfway over, a figure stands in the mist: a pale robe, a mask, both wet. one of the kept. it does not move aside, and it has the look of having stood here a long time."
              :next "carcosa/courtier-combat")
 
 (dialog-minigame "carcosa/courtier-combat"
@@ -103,9 +103,9 @@
 
 (dialog-conversation "carcosa/court-overheard"
                      (dialog-left "Cassilda"
-                                  "they always ask him to unmask, at the end.")
+                                  "you, sir, should unmask. we have all laid aside disguise but him.")
                      (dialog-right "Camilla"
-                                   "i asked, once. he said he wore no mask. i saw that it was true. i have not been warm since.")
+                                   "i told him so, once. 'i wear no mask,' he said — and i saw that it was true. i have not been warm since.")
                      (dialog-left "Cassilda"
                                   "and still we dress for the masque. someone must, or it is only a lake and a man who will not stop talking.")
                      :next "carcosa/court-questions")
@@ -121,11 +121,11 @@
                       ("ask why the room repeats"
                        :id "repeat"
                        :speaker "Camilla"
-                       "he cannot stop arriving. every moment he ever failed is still going on, and he stands in all of them, and the room near him forgets which one is now. mind your own now while you have it.")
+                       "he cannot stop arriving. the room near him forgets which moment is now. mind your own while you still have it.")
                       ("ask about the songs"
                        :id "songs"
                        :speaker "Cassilda"
-                       "they die in the third line, everywhere his Sign reaches. it reached your city before you left it. that is why you are here. it is always why."))
+                       "they die in the third line, everywhere his Sign reaches. it reached your city before you left it."))
 
 
 ;;; The keeper of kept things — a pallid vendor at the cloister, on the way in
@@ -162,7 +162,7 @@
             :next "carcosa/king-loop")
 
 (dialog-text "carcosa/king-loop"
-             "the room slips back a half second. he says the same three words. the two suns un-set and set. for a moment you are at the door again, entering. the Sign in your coat is very warm. he is not telling you a story. he is stuck inside one, and it is the one you have been reading."
+             "the room slips back a half second. he says the same three words. the two suns un-set and set. for a moment you are at the door again, entering. the Sign in your coat is very warm."
              :next "carcosa/king-named")
 
 (dialog-on-enter "carcosa/king-named" '(jrpg-refresh-class))
@@ -213,7 +213,7 @@
              :next "carcosa/king-end")
 
 (dialog-text "carcosa/king-end"
-             "the room stops resetting. you stopped it by staying inside it. far down the shore one tune gets past its third line and into a fourth, once, because you are holding the thing that was stopping it."
+             "the room stops resetting. far down the shore one tune gets past its third line and into a fourth, once, while you hold the thing that was stopping it."
              :next "sys/reboot")
 
 (dialog-on-enter "carcosa/refuse-crown"
