@@ -37,7 +37,7 @@
                  '(jrpg-refresh-class))
 
 (dialog-text "carcosa/cross"
-             "you cross without a step in between. the night city is behind you and was never ahead of you. a still lake, two suns caught half under it, a smell of wet and old paper. the Yellow Sign in your coat is warm against you, like a hand."
+             "you cross without a step in between. the night city is behind you. a still lake, two suns caught half under it, a smell of wet and old paper. the Yellow Sign in your coat is warm against you."
              :next "carcosa/causeway-intro")
 
 (dialog-text "carcosa/causeway-intro"

@@ -65,6 +65,20 @@ settled, the consequence on the table. Spend ambiguity at the threshold; spend
 the depths on fact. If the world does not become more real as the player walks
 into it, the walk is not worth taking.
 
+## Strangeness is one concrete thing, not a fog of disorientation
+
+Do not signal that something is wrong by piling up the character's failure to
+recognise their surroundings — "the lamps fewer than they were and in the wrong
+places", "a square you do not remember", "none of them where you left it", "it
+was never ahead of you". Stacked, vague non-recognition is cheap unease with
+nothing under it, and reads as evasion.
+
+Give ONE specific, physical wrong thing and let it stand: the towers that do not
+agree on how far off they are; the order signed in your own hand, dated Tuesday,
+0200; the finger that came off in his hand; the canvas that rots under the
+brush. The "you do not remember…" device works exactly once, anchored to a real
+object you can name — never as a general wash over the whole scene.
+
 ## Conversations vs. the player speaking
 
 Two constructs, two jobs. Do not mix them up.

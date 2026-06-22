@@ -74,7 +74,7 @@
                                :encounter-target "jrpg/ruffian-combat"
                                :encounter-rate 16
                                :start-message "the square at night. arrows or wasd move."
-                               :legend "+ lamp   ! studio stair   $ Hours   block"
+                               :legend "! studio stair    $ Hours    o tonic"
                                :tile-messages
                                '((#\R . "a gas lamp, guttering low.")
                                  (#\! . "the studio's stair door stands ajar.")
@@ -192,7 +192,7 @@
 (dialog-on-enter "jrpg/leave-studio" '(jrpg-add-item :palette-knife))
 
 (dialog-text "jrpg/leave-studio"
-             "you go down into a city gone thin and quiet, the gas lamps fewer than they were and standing in the wrong places. you come out in a square you do not remember, lit doors set around it, none of them where you left it."
+             "you go down the stair and out. the night street opens on a square, the gas burning low, and a handful of doors still lit around it."
              :next "jrpg/city-hub")
 
 
@@ -210,7 +210,7 @@
                                :encounter-target "jrpg/thief-combat"
                                :encounter-rate 16
                                :start-message "the thinned streets. arrows or wasd move."
-                               :legend "+ lamp   ! the armourer's   $ Hours   block"
+                               :legend "! the armourer's    $ Hours    o tonic"
                                :tile-messages
                                '((#\! . "the armourer's lit window, the mail white in it.")
                                  (#\. . "thin cobbles, fewer than there were."))))
@@ -316,7 +316,7 @@
 (dialog-on-enter "jrpg/boris" '(jrpg-lean-class :painter 1))
 
 (dialog-text "jrpg/mask-street"
-             "the streets give out into a court you do not remember entering. one door stands open on white light, and the white is not lamplight: it is marble, far too much of it, all of it too lifelike."
+             "the streets give onto a court. one door stands open on white light, and the white is not lamplight: it is marble, far too much of it, all of it too lifelike."
              :next "jrpg/boris")
 
 (dialog-conversation "jrpg/boris"
@@ -392,7 +392,7 @@
                                :finish-glyph #\!
                                :store-prefix "kiy-flight"
                                :start-message "the streets fold back on themselves. arrows or wasd move."
-                               :legend "+ lamp   ! the way out   block"
+                               :legend "! the way out"
                                :tile-messages
                                '((#\R . "the same corner you turned from.")
                                  (#\! . "an arch you did not walk toward, and are under.")
