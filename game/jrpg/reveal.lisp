@@ -7,14 +7,36 @@
 (defparameter +crown-flash-fade-out-seconds+ 0.9)
 (defparameter +crown-flash-skip-min-seconds+ 1.6)
 (defparameter +crown-flash-radius+ 92.0)
+;; the crown flares twice; a bell tolls at each flare, so the sound matches what
+;; the eye sees instead of one toll under two pulses
+(defparameter +crown-flash-tolls+ '(0.5 2.0))
 
 (defclass crown-flash-session (minigame-session)
   ((elapsed
     :initform 0.0
-    :accessor crown-flash-elapsed)))
+    :accessor crown-flash-elapsed)
+   (struck
+    :initform nil
+    :accessor crown-flash-struck)))
+
+(defun crown-flash-flare (elapsed)
+  "Brightness 0..1: a dim base that flares to full at each toll, then decays —
+so each bell has its own visible swell."
+  (let ((swell 0.0))
+    (dolist (toll +crown-flash-tolls+)
+      (when (>= elapsed toll)
+        (setf swell (max swell (exp (* -2.4 (- elapsed toll)))))))
+    (min 1.0 (+ 0.4 (* 0.6 swell)))))
 
 (defmethod minigame-session-update ((session crown-flash-session) node dt)
   (incf (crown-flash-elapsed session) dt)
+  ;; ring the bell once at each toll
+  (dolist (toll +crown-flash-tolls+)
+    (when (and (>= (crown-flash-elapsed session) toll)
+               (< (crown-flash-elapsed session) +crown-flash-visible-seconds+)
+               (not (member toll (crown-flash-struck session))))
+      (push toll (crown-flash-struck session))
+      (play-jrpg-sound "crown" :volume 0.4)))
   (when (and (> (crown-flash-elapsed session) +crown-flash-skip-min-seconds+)
              (< (crown-flash-elapsed session) +crown-flash-visible-seconds+)
              (confirm-pressed-p))
@@ -27,15 +49,14 @@
 (defmethod minigame-session-draw ((session crown-flash-session) node color)
   (declare (ignore node color))
   (let* ((elapsed (crown-flash-elapsed session))
-         (fade-in (smoothstep (/ elapsed 1.4)))
+         (fade-in (smoothstep (/ elapsed 0.7)))
          (fade-out (if (> elapsed +crown-flash-visible-seconds+)
                        (- 1.0
                           (smoothstep (/ (- elapsed +crown-flash-visible-seconds+)
                                          +crown-flash-fade-out-seconds+)))
                        1.0))
-         (pulse (+ 0.48 (* 0.52 (sin (* elapsed 2.1)))))
-         (alpha (round (* 255 fade-in fade-out pulse)))
-         (minimum-alpha (if (< elapsed +crown-flash-visible-seconds+) 20 0)))
+         (alpha (round (* 255 fade-in fade-out (crown-flash-flare elapsed))))
+         (minimum-alpha (if (< elapsed +crown-flash-visible-seconds+) 24 0)))
     (when (plusp alpha)
       ;; tree-draw-crown sits a little high on its anchor; nudge down so the
       ;; crown's mass lands on the screen centre.

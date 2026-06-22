@@ -24,7 +24,6 @@
 (dialog-sound "jrpg/church" "audio/jrpg/organ.wav" :volume 0.32)
 (dialog-sound "jrpg/dys-viper" "audio/jrpg/viper.wav" :volume 0.40)
 (dialog-sound "jrpg/marble-fluid" "audio/jrpg/chime.wav" :volume 0.34)
-(dialog-sound "jrpg/crown-flash" "audio/jrpg/crown.wav" :volume 0.40)
 
 (dialog-on-enter "jrpg/inn"
                  '(jrpg-init-state))
