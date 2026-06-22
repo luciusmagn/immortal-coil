@@ -27,7 +27,11 @@
     (:watchman-club :name "watchman's club" :slot :weapon :mods (:attack 5)
      :desc "worn smooth by a hand that did not tire. heavier than the knife.")
     (:mourners-locket :name "mourner's locket" :slot :charm :mods (:composure-max 3)
-     :desc "someone's hair coiled inside; it keeps your face yours a little longer.")))
+     :desc "someone's hair coiled inside; it keeps your face yours a little longer.")
+    (:pallid-mask :name "pallid mask" :slot :charm :mods (:defense 2 :composure-max 2)
+     :desc "a featureless mask; what is under it is your own business now.")
+    (:tatter-shroud :name "tatter-shroud" :slot :relic :mods (:defense 3 :composure-max 1)
+     :desc "a shred of the King's own mantle, still warm with someone's last hour.")))
 
 (defun jrpg-item (id) (cdr (assoc id *jrpg-items*)))
 (defun jrpg-item-name (id) (or (getf (jrpg-item id) :name) (string-downcase (symbol-name id))))

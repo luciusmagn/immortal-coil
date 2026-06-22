@@ -98,7 +98,7 @@
 
 (dialog-interrogation "carcosa/court-questions"
                       "Cassilda sets the harp aside. Camilla does not turn from the lake."
-                      (:next "carcosa/king-hall")
+                      (:next "carcosa/cloister")
                       (:continue-label "go to the high doors")
                       ("ask what the King was"
                        :id "before"
@@ -112,6 +112,23 @@
                        :id "songs"
                        :speaker "Cassilda"
                        "they die in the third line, everywhere his Sign reaches. it reached your city before you left it. that is why you are here. it is always why."))
+
+
+;;; The keeper of kept things — a pallid vendor at the cloister, on the way in
+
+(dialog-text "carcosa/cloister"
+             "before the high doors a stall is kept: a pallid figure with kept things laid out — a flask of the lake, a mask with no face, a shred of the King's own yellow. it deals, as all Carcosa deals, in Hours."
+             :next "carcosa/vendor")
+
+(dialog-minigame "carcosa/vendor"
+                 ""
+                 :game :jrpg-shop
+                 :success "carcosa/king-hall"
+                 :failure "carcosa/king-hall"
+                 :config (list :title "THE KEEPER OF KEPT THINGS"
+                               :stock '((:hali-water 16)
+                                        (:pallid-mask 70)
+                                        (:tatter-shroud 92))))
 
 
 ;;; The King — insane, time-shattered; the captain-truth only in shards

@@ -376,21 +376,25 @@ their children) and collect ids. DEPTH drives the centring alternation."
   "A small #ffff00 crown centred at SX,SY: a base band and three spikes,
 the centre tallest. Drawn with rectangles so it renders reliably at any
 tree scale. Marks the King-in-Yellow path, the one colour in the game."
-  (let* ((w        (max 3.0 (* r 2.6)))
-         (left     (- sx (/ w 2.0)))
-         (bar-top  (+ sy (* r 0.2)))
-         (bar-h    (max 1.0 (* r 0.85)))
-         (spike    (max 1.0 (* r 1.15)))
-         (sw       (max 1.0 (/ w 5.0)))
+  ;; snap every position to whole pixels off ONE shared integer grid (left, w,
+  ;; sw), so the spikes stay flush with the band at any scale — at the big entry
+  ;; flash, independent rounding used to leave the prongs a pixel off.
+  (let* ((w        (max 4 (round (* r 2.6))))
+         (sw       (max 1 (round (/ w 5.0))))
+         (left     (round (- sx (/ w 2.0))))
+         (bar-top  (round (+ sy (* r 0.2))))
+         (bar-h    (max 1 (round (* r 0.85))))
+         (spike    (max 1 (round (* r 1.15))))
+         (tall     (max 1 (round (* spike 1.3))))
+         (cx       (+ left (floor w 2)))
          (color    (yellow-sign-color alpha)))
     (flet ((rect (x y rw rh)
-             (claylib/ll:draw-rectangle (round x) (round y)
-                                        (max 1 (round rw)) (max 1 (round rh))
+             (claylib/ll:draw-rectangle x y (max 1 rw) (max 1 rh)
                                         (claylib::c-ptr color))))
-      (rect left bar-top w bar-h)                                  ; base band
-      (rect left (- bar-top spike) sw spike)                       ; left point
-      (rect (- sx (/ sw 2.0)) (- bar-top (* spike 1.3)) sw (* spike 1.3)) ; centre
-      (rect (- (+ left w) sw) (- bar-top spike) sw spike))))        ; right point
+      (rect left bar-top w bar-h)                            ; base band
+      (rect left (- bar-top spike) sw spike)                 ; left point, flush left
+      (rect (- cx (floor sw 2)) (- bar-top tall) sw tall)    ; centre point
+      (rect (- (+ left w) sw) (- bar-top spike) sw spike)))) ; right point, flush right
 
 (defun tree-draw-beads (model)
   (let ((current (and *state* (play-state-current-id *state*)))

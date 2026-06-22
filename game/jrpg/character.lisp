@@ -68,6 +68,7 @@
   ;; class — the one line in the Sign's yellow
   (draw-text-at (format nil "you are ~a" (jrpg-class-name)) 200 140 19 (yellow-sign-color 235))
   (draw-jrpg-line (jrpg-class-desc) 200 166 14 195)
+  (jrpg-draw-rule 200 196 880)
   ;; stats
   (draw-jrpg-line "STATS" 200 208 16 200)
   (draw-jrpg-line (format nil "HP ~d/~d    MP ~d"
@@ -112,7 +113,8 @@
               for i from 0
               for sel = (= i (jrpg-char-selected s))
               for count = (jrpg-item-count id)
-              do (draw-jrpg-line
+              do (when sel (jrpg-draw-select-bar 632 y 384 22))
+                 (draw-jrpg-line
                   (format nil "~a~a~a"
                           (if sel "> " "  ")
                           (jrpg-item-name id)

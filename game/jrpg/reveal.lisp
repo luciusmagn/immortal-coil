@@ -121,4 +121,4 @@
                  :game :title-card
                  :success "jrpg/inn"
                  :failure "jrpg/inn"
-                 :config (list :title "THE KING IN YELLOW" :seconds 2.6 :accent :crown))
+                 :config (list :title "BEWARE THE SIGN" :seconds 2.6 :accent :crown))
