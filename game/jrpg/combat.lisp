@@ -5,9 +5,6 @@
 (defconstant +jrpg-combat-width+ 860)
 (defconstant +jrpg-combat-height+ 404)
 
-(defparameter *jrpg-combat-commands*
-  #("ATTACK" "MAGIC" "ITEM" "RUN"))
-
 (defparameter *jrpg-combat-sfx-volume* 0.42)
 
 (defparameter *jrpg-slime-sprite*
@@ -214,6 +211,55 @@
                   :test #'string=))
       *jrpg-slime-sprite*))
 
+;;; Carcosan foes spend the player's composure, not only their blood.
+(defparameter *jrpg-carcosan-kinds*
+  '("tatter" "drowned" "byakhee" "courtier" "phantom"))
+
+;;; --- the player's choices: five commands, and a small list of skills ---
+
+(defparameter *jrpg-combat-commands*
+  #((:key :attack :label "ATTACK")
+    (:key :skill  :label "SKILL")
+    (:key :guard  :label "GUARD")
+    (:key :item   :label "ITEM")
+    (:key :flee   :label "FLEE")))
+
+(defun jrpg-combat-command-count ()
+  (length *jrpg-combat-commands*))
+
+(defun jrpg-combat-skill-list ()
+  "Skills the hero can reach now. The focus strike and mend are always known;
+reciting the King's lines unlocks once a scrap of the Play is on you, and it
+spends will, not focus — the words wound the speaker too."
+  (let ((skills (list (list :key :focus :label "focus strike"
+                            :cost-mp 1 :note "MP1  a sure, staggering blow")
+                      (list :key :mend :label "mend"
+                            :cost-mp 1 :note "MP1  close your wounds"))))
+    (when (plusp (jrpg-number "jrpg-play-scraps"))
+      (setf skills
+            (append skills
+                    (list (list :key :recite :label "recite the play"
+                                :cost-composure 2 :note "WILL2  the lines cut deep")))))
+    skills))
+
+;;; --- one action's small animation: lunge out, land at impact, recover ---
+
+(defparameter +jrpg-act-impact+  0.17)
+(defparameter +jrpg-act-recover+ 0.46)
+(defparameter +jrpg-act-done+    0.64)
+
+(defstruct jrpg-act
+  actor             ; :hero or :enemy
+  kind              ; :attack :skill :guard :item :hit :reel
+  (skill nil)       ; skill key when kind is :skill
+  (clock 0.0)
+  (fired nil))      ; impact already applied this action?
+
+(defun jrpg-act-lunge (clock peak)
+  "How far the acting combatant has leaned into the blow at CLOCK seconds:
+out toward the foe near impact, then back to rest by the recover time."
+  (* peak (sin (* pi (min 1.0 (/ clock +jrpg-act-recover+))))))
+
 (defvar *jrpg-combat* nil)
 
 (defstruct jrpg-combat
@@ -226,58 +272,57 @@
   (enemy-attack-max 6)
   (victory-xp       4)
   (victory-gold     6)
+  (carcosan         nil)
   (selected         0)
+  (submenu          nil)
+  (skill-index      0)
   (message          "a slime draws near.")
   (elapsed          0.0)
+  (phase            :menu)             ; :menu :anim :over
+  (action           nil)
+  (guarding         nil)
+  (enemy-winding    nil)
+  (enemy-stagger    nil)
+  (shake            0.0)
+  (flash-hero       0.0)
+  (flash-enemy      0.0)
+  (hero-recoil      0.0)
+  (enemy-recoil     0.0)
+  (floaters         nil)
+  (sparks           nil)
+  (enemy-hp-shown   14.0)
+  (hero-hp-shown    18.0)
   (finish-target    nil)
   (finish-delay     0.0))
 
 (defun jrpg-combat-config-number (node key default)
   (let ((value (minigame-config-value node key default)))
-    (if (numberp value)
-        value
-        default)))
+    (if (numberp value) value default)))
 
 (defun jrpg-combat-config-string (node key default)
   (let ((value (minigame-config-value node key default)))
-    (if (stringp value)
-        value
-        default)))
+    (if (stringp value) value default)))
 
 (defun make-fresh-jrpg-combat (node)
   (jrpg-init-state)
-  (let ((enemy-hp (jrpg-combat-config-number node :enemy-hp 14)))
-    (make-jrpg-combat :node-id (node-id node)
-                      :enemy-name (jrpg-combat-config-string node
-                                                             :enemy-name
-                                                             "SLIME")
-                      :enemy-kind (jrpg-combat-config-string node
-                                                             :enemy-kind
-                                                             "slime")
-                      :enemy-hp enemy-hp
-                      :enemy-max-hp enemy-hp
-                      :enemy-attack-min (jrpg-combat-config-number
-                                         node
-                                         :enemy-attack-min
-                                         3)
-                      :enemy-attack-max (jrpg-combat-config-number
-                                         node
-                                         :enemy-attack-max
-                                         6)
-                      :victory-xp (jrpg-combat-config-number node
-                                                             :victory-xp
-                                                             4)
-                      :victory-gold (jrpg-combat-config-number node
-                                                               :victory-gold
-                                                               6)
-                      :selected 0
-                      :message (jrpg-combat-config-string
-                                node
-                                :message
-                                "a slime draws near.")
-                      :elapsed 0.0
-                      :finish-target nil
-                      :finish-delay 0.0)))
+  (let* ((enemy-hp (jrpg-combat-config-number node :enemy-hp 14))
+         (kind (jrpg-combat-config-string node :enemy-kind "slime")))
+    (make-jrpg-combat
+     :node-id (node-id node)
+     :enemy-name (jrpg-combat-config-string node :enemy-name "SLIME")
+     :enemy-kind kind
+     :enemy-hp enemy-hp
+     :enemy-max-hp enemy-hp
+     :enemy-attack-min (jrpg-combat-config-number node :enemy-attack-min 3)
+     :enemy-attack-max (jrpg-combat-config-number node :enemy-attack-max 6)
+     :victory-xp (jrpg-combat-config-number node :victory-xp 4)
+     :victory-gold (jrpg-combat-config-number node :victory-gold 6)
+     :carcosan (and (member (string-downcase kind) *jrpg-carcosan-kinds*
+                            :test #'string=)
+                    t)
+     :message (jrpg-combat-config-string node :message "a slime draws near.")
+     :enemy-hp-shown (float enemy-hp)
+     :hero-hp-shown (float (jrpg-number "jrpg-hero-hp" 18)))))
 
 (defun ensure-jrpg-combat (node)
   (unless (and *jrpg-combat*
@@ -286,9 +331,6 @@
     (setf *jrpg-combat* (make-fresh-jrpg-combat node)))
   *jrpg-combat*)
 
-(defun jrpg-combat-command-count ()
-  (length *jrpg-combat-commands*))
-
 (defun jrpg-sound-path (name)
   (format nil "assets/audio/jrpg/~a.wav" name))
 
@@ -296,59 +338,67 @@
   (handler-case
       (play-story-sound (jrpg-sound-path name) :volume volume)
     (error (condition)
-      (runtime-warn "Could not play JRPG sound ~a: ~a"
-                    name
-                    condition))))
+      (runtime-warn "Could not play JRPG sound ~a: ~a" name condition))))
 
-(defun jrpg-combat-horizontal-input-p ()
-  (or (is-key-pressed-p +key-left+)
-      (is-key-pressed-p +key-a+)
-      (is-key-pressed-p +key-right+)
-      (is-key-pressed-p +key-d+)))
+(defun jrpg-enemy-word (game)
+  (string-downcase (jrpg-combat-enemy-name game)))
 
-(defun jrpg-combat-vertical-input-p ()
-  (or (is-key-pressed-p +key-down+)
-      (is-key-pressed-p +key-s+)
-      (is-key-pressed-p +key-up+)
-      (is-key-pressed-p +key-w+)))
+;;; Where the two combatants stand. Both draw and the impact effects read
+;;; these, so sparks and damage numbers land where the bodies are.
 
-(defun jrpg-combat-selection-target (selected)
-  (cond
-    ((jrpg-combat-horizontal-input-p)
-     (if (< selected 2)
-         (+ selected 2)
-         (- selected 2)))
-    ((jrpg-combat-vertical-input-p)
-     (if (evenp selected)
-         (1+ selected)
-         (1- selected)))))
+(defun jrpg-enemy-anchor ()
+  (values (+ +jrpg-combat-left+ 568) (+ +jrpg-combat-top+ 150)))
 
-(defun jrpg-combat-move-selection (game)
-  (let ((target (jrpg-combat-selection-target
-                 (jrpg-combat-selected game))))
-    (when target
-      (setf (jrpg-combat-selected game) target)
-      (play-choice-switch))))
+(defun jrpg-hero-anchor ()
+  (values (+ +jrpg-combat-left+ 150) (+ +jrpg-combat-top+ 168)))
 
-(defun jrpg-combat-finish (game target)
-  (setf (jrpg-combat-finish-target game) target
-        (jrpg-combat-finish-delay game) 0.9))
+;;; --- feedback: floating numbers and hit sparks ---
 
-(defun jrpg-combat-hero-attack ()
-  "Returns (values damage crit-p); about one swing in six lands clean."
-  (let ((base (+ (jrpg-number "jrpg-hero-attack" 5)
-                 (get-random-value 0 2)))
-        (crit (zerop (get-random-value 0 5))))
-    (values (if crit (* 2 base) base) crit)))
+(defun jrpg-spawn-floater (game text x y &key crit yellow)
+  (push (list :text text :x (float x) :y (float y) :age 0.0
+              :ttl (if crit 1.1 0.9) :crit crit :yellow yellow)
+        (jrpg-combat-floaters game)))
 
-(defun jrpg-combat-enemy-attack (game)
-  "Returns (values damage heavy-p); about one blow in five comes hard."
-  (let* ((heavy (zerop (get-random-value 0 4)))
-         (raw (get-random-value (jrpg-combat-enemy-attack-min game)
-                                (jrpg-combat-enemy-attack-max game)))
-         (raw (if heavy (round (* raw 1.7)) raw)))
-    (values (max 1 (- raw (jrpg-number "jrpg-hero-defense" 2)))
-            heavy)))
+(defun jrpg-spawn-sparks (game x y count &key (speed 150.0) yellow)
+  (dotimes (i count)
+    (let* ((ang (* (/ (float (get-random-value 0 359)) 360.0) 2.0 pi))
+           (spd (* speed (+ 0.45 (* 0.55 (/ (float (get-random-value 0 100)) 100.0))))))
+      (push (list :x (float x) :y (float y)
+                  :vx (* spd (cos ang))
+                  :vy (- (* spd (sin ang)) 40.0)
+                  :age 0.0
+                  :ttl (+ 0.3 (* 0.004 (get-random-value 0 70)))
+                  :size (+ 2 (get-random-value 0 2))
+                  :yellow yellow)
+            (jrpg-combat-sparks game)))))
+
+(defun jrpg-update-floaters (game dt)
+  (setf (jrpg-combat-floaters game)
+        (loop for f in (jrpg-combat-floaters game)
+              do (incf (getf f :age) dt)
+                 (decf (getf f :y) (* 46.0 dt))
+              when (< (getf f :age) (getf f :ttl)) collect f)))
+
+(defun jrpg-update-sparks (game dt)
+  (setf (jrpg-combat-sparks game)
+        (loop for s in (jrpg-combat-sparks game)
+              do (incf (getf s :age) dt)
+                 (incf (getf s :x) (* (getf s :vx) dt))
+                 (incf (getf s :y) (* (getf s :vy) dt))
+                 (incf (getf s :vy) (* 240.0 dt))
+              when (< (getf s :age) (getf s :ttl)) collect s)))
+
+(defun jrpg-decay (value dt rate)
+  "Ease VALUE toward zero, snapping once it is small."
+  (let ((v (- value (* value (min 1.0 (* dt rate))))))
+    (if (< (abs v) 0.05) 0.0 v)))
+
+(defun jrpg-lerp-toward (shown actual dt)
+  "Ease a displayed bar value SHOWN toward its true value ACTUAL."
+  (let ((v (+ shown (* (- actual shown) (min 1.0 (* dt 7.0))))))
+    (if (< (abs (- v actual)) 0.05) (float actual) v)))
+
+;;; --- combat numbers ---
 
 (defun jrpg-combat-enemy-alive-p (game)
   (plusp (jrpg-combat-enemy-hp game)))
@@ -357,11 +407,55 @@
   (setf (jrpg-combat-enemy-hp game)
         (max 0 (- (jrpg-combat-enemy-hp game) amount))))
 
+(defun jrpg-combat-hero-attack ()
+  "Returns (values damage crit-p); about one swing in six lands clean."
+  (let ((base (+ (jrpg-number "jrpg-hero-attack" 5) (get-random-value 0 2)))
+        (crit (zerop (get-random-value 0 5))))
+    (values (if crit (* 2 base) base) crit)))
+
+;;; --- impact effects (called once, at the moment a blow lands) ---
+
+(defun jrpg-combat-hit-enemy-fx (game damage &key crit yellow)
+  (multiple-value-bind (ex ey) (jrpg-enemy-anchor)
+    (setf (jrpg-combat-enemy-recoil game) (if crit 30.0 20.0)
+          (jrpg-combat-flash-enemy game) 0.2
+          (jrpg-combat-shake game) (max (jrpg-combat-shake game)
+                                        (if crit 12.0 6.0)))
+    (jrpg-spawn-sparks game ex ey (if crit 16 9)
+                       :speed (if crit 200.0 150.0) :yellow yellow)
+    (jrpg-spawn-floater game (format nil "~d" damage) ex (- ey 30)
+                        :crit crit :yellow yellow)))
+
+(defun jrpg-combat-hit-hero-fx (game damage &key heavy)
+  (multiple-value-bind (hx hy) (jrpg-hero-anchor)
+    (setf (jrpg-combat-hero-recoil game) (if heavy -30.0 -20.0)
+          (jrpg-combat-flash-hero game) 0.22
+          (jrpg-combat-shake game) (max (jrpg-combat-shake game)
+                                        (if heavy 14.0 7.0)))
+    (jrpg-spawn-sparks game hx hy (if heavy 14 8)
+                       :speed (if heavy 190.0 140.0))
+    (jrpg-spawn-floater game (format nil "~d" damage) hx (- hy 26) :crit heavy)))
+
+(defun jrpg-combat-heal-hero-fx (game amount)
+  (multiple-value-bind (hx hy) (jrpg-hero-anchor)
+    (setf (jrpg-combat-flash-hero game) 0.18)
+    (jrpg-spawn-floater game (format nil "+~d" amount) hx (- hy 24))
+    (jrpg-spawn-sparks game hx hy 6 :speed 70.0)))
+
+;;; --- ending the battle ---
+
+(defun jrpg-combat-finish (game target)
+  (setf (jrpg-combat-finish-target game) target
+        (jrpg-combat-finish-delay game) 1.0
+        (jrpg-combat-phase game) :over))
+
 (defun jrpg-combat-victory (node game)
   (jrpg-award-victory :xp (jrpg-combat-victory-xp game)
                       :gold (jrpg-combat-victory-gold game))
+  (multiple-value-bind (ex ey) (jrpg-enemy-anchor)
+    (jrpg-spawn-sparks game ex ey 20 :speed 210.0))
   (let ((leveled (jrpg-value "jrpg-just-leveled"))
-        (name (string-downcase (jrpg-combat-enemy-name game))))
+        (name (jrpg-enemy-word game)))
     (if leveled
         (progn
           (play-jrpg-sound "bell" :volume 0.4)
@@ -375,115 +469,305 @@
 
 (defun jrpg-combat-defeat (node game)
   (jrpg-record-defeat)
-  (setf (jrpg-combat-message game)
-        "you fall down in the road.")
+  (setf (jrpg-combat-message game) "you fall down in the road.")
   (jrpg-combat-finish game (node-failure-target node)))
 
-(defun jrpg-combat-enemy-turn (node game)
-  (multiple-value-bind (damage heavy) (jrpg-combat-enemy-attack game)
-    (jrpg-damage-hero damage)
-    (play-jrpg-sound (if heavy "slime" "hit") :volume (if heavy 0.44 0.34))
-    (if (jrpg-hero-alive-p)
-        (setf (jrpg-combat-message game)
-              (if heavy
-                  (format nil "the ~a lunges hard! ~d damage."
-                          (string-downcase (jrpg-combat-enemy-name game))
-                          damage)
-                  (format nil "the ~a hits you for ~d."
-                          (string-downcase (jrpg-combat-enemy-name game))
-                          damage)))
-        (jrpg-combat-defeat node game))))
+;;; --- the hero's actions (resolved at impact) ---
 
-(defun jrpg-combat-attack-command (node game)
+(defun jrpg-combat-hero-strike (node game)
   (multiple-value-bind (damage crit) (jrpg-combat-hero-attack)
     (play-jrpg-sound "sword" :volume (if crit 0.52 0.42))
     (jrpg-combat-damage-enemy game damage)
-    (if (jrpg-combat-enemy-alive-p game)
-        (progn
-          (setf (jrpg-combat-message game)
-                (if crit
-                    (format nil "a clean strike! ~d damage." damage)
-                    (format nil "you hit the ~a for ~d."
-                            (string-downcase (jrpg-combat-enemy-name game))
-                            damage)))
-          (jrpg-combat-enemy-turn node game))
-        (jrpg-combat-victory node game))))
+    (jrpg-combat-hit-enemy-fx game damage :crit crit)
+    (when crit (setf (jrpg-combat-enemy-stagger game) t))
+    (setf (jrpg-combat-message game)
+          (cond ((not (jrpg-combat-enemy-alive-p game))
+                 (format nil "the ~a reels from the blow." (jrpg-enemy-word game)))
+                (crit (format nil "a clean strike — ~d!" damage))
+                (t (format nil "you hit the ~a for ~d." (jrpg-enemy-word game) damage))))
+    (unless (jrpg-combat-enemy-alive-p game)
+      (jrpg-combat-victory node game))))
 
-(defun jrpg-combat-magic-command (node game)
-  (if (plusp (jrpg-number "jrpg-hero-mp"))
-      (let ((damage (+ 6 (jrpg-number "jrpg-hero-level" 1)
-                       (get-random-value 0 3))))
-        (play-jrpg-sound "magic" :volume 0.38)
-        (jrpg-adjust-number "jrpg-hero-mp" -1)
-        (jrpg-combat-damage-enemy game damage)
-        (if (jrpg-combat-enemy-alive-p game)
-            (progn
-              (setf (jrpg-combat-message game)
-                    (format nil "the spell deals ~d." damage))
-              (jrpg-combat-enemy-turn node game))
-            (jrpg-combat-victory node game)))
-      (setf (jrpg-combat-message game)
-            "nothing happens. you have no mp.")))
+(defun jrpg-combat-hero-skill (node game key)
+  (case key
+    (:focus
+     (jrpg-adjust-number "jrpg-hero-mp" -1)
+     (let ((dmg (+ (round (* (jrpg-number "jrpg-hero-attack" 5) 1.6))
+                   (get-random-value 0 3))))
+       (play-jrpg-sound "sword" :volume 0.5)
+       (jrpg-combat-damage-enemy game dmg)
+       (setf (jrpg-combat-enemy-stagger game) t)
+       (jrpg-combat-hit-enemy-fx game dmg :crit t)
+       (setf (jrpg-combat-message game)
+             (if (jrpg-combat-enemy-alive-p game)
+                 (format nil "a focused strike staggers the ~a — ~d!"
+                         (jrpg-enemy-word game) dmg)
+                 (format nil "the ~a folds." (jrpg-enemy-word game))))
+       (unless (jrpg-combat-enemy-alive-p game)
+         (jrpg-combat-victory node game))))
+    (:mend
+     (jrpg-adjust-number "jrpg-hero-mp" -1)
+     (let ((amount (+ 9 (* 2 (jrpg-number "jrpg-hero-level" 1)))))
+       (jrpg-heal amount)
+       (play-jrpg-sound "tonic" :volume 0.4)
+       (jrpg-combat-heal-hero-fx game amount)
+       (setf (jrpg-combat-message game)
+             (format nil "you knit the wounds. +~d." amount))))
+    (:recite
+     (jrpg-spend-composure 2)
+     (let ((dmg (+ 12 (* 2 (jrpg-number "jrpg-hero-level" 1)) (get-random-value 0 5))))
+       (play-jrpg-sound "magic" :volume 0.42)
+       (jrpg-combat-damage-enemy game dmg)
+       (jrpg-combat-hit-enemy-fx game dmg :crit t :yellow t)
+       (setf (jrpg-combat-message game)
+             (if (jrpg-combat-enemy-alive-p game)
+                 (format nil "you speak the king's lines; the ~a shudders — ~d."
+                         (jrpg-enemy-word game) dmg)
+                 (format nil "the lines undo the ~a." (jrpg-enemy-word game))))
+       (unless (jrpg-combat-enemy-alive-p game)
+         (jrpg-combat-victory node game))))))
 
-(defun jrpg-combat-item-command (node game)
+(defun jrpg-combat-hero-guard (game)
+  (setf (jrpg-combat-guarding game) t)
+  (jrpg-adjust-number "jrpg-hero-mp" 1)
+  (jrpg-restore-composure 1)
+  (play-jrpg-sound "retreat" :volume 0.3)
+  (multiple-value-bind (hx hy) (jrpg-hero-anchor)
+    (jrpg-spawn-floater game "GUARD" hx (- hy 24)))
+  (setf (jrpg-combat-message game) "you set your feet and brace."))
+
+(defun jrpg-combat-hero-item (game)
   (if (jrpg-use-potion)
       (progn
-        (play-jrpg-sound "tonic" :volume 0.38)
-        (setf (jrpg-combat-message game)
-              "you drink a potion.")
-        (jrpg-combat-enemy-turn node game))
-      (setf (jrpg-combat-message game)
-            "the bag is empty.")))
+        (play-jrpg-sound "tonic" :volume 0.4)
+        (jrpg-combat-heal-hero-fx game 9)
+        (setf (jrpg-combat-message game) "you drink a tonic. +9."))
+      (setf (jrpg-combat-message game) "the bag is empty.")))
 
-(defun jrpg-combat-run-command (node game)
+;;; --- the enemy's turn (resolved at impact) ---
+
+(defun jrpg-combat-enemy-hit (node game)
+  (let* ((heavy (or (jrpg-combat-enemy-winding game)
+                    (zerop (get-random-value 0 4))))
+         (base (get-random-value (jrpg-combat-enemy-attack-min game)
+                                 (jrpg-combat-enemy-attack-max game)))
+         (raw (if heavy (round (* base 1.8)) base))
+         (defended (max 1 (- raw (jrpg-number "jrpg-hero-defense" 2))))
+         (guarded (jrpg-combat-guarding game))
+         (after-guard (if guarded (max 1 (ceiling defended 2)) defended))
+         (unmasked (not (jrpg-composed-p)))
+         (damage (if unmasked (round (* after-guard 1.33)) after-guard)))
+    (setf (jrpg-combat-enemy-winding game) nil
+          (jrpg-combat-guarding game) nil)
+    (jrpg-damage-hero damage)
+    (when (jrpg-combat-carcosan game)
+      (jrpg-spend-composure (if heavy 2 1)))
+    (jrpg-combat-hit-hero-fx game damage :heavy heavy)
+    (play-jrpg-sound (if heavy "slime" "hit") :volume (if heavy 0.46 0.34))
+    (setf (jrpg-combat-message game)
+          (cond ((not (jrpg-hero-alive-p)) "you go down in the dark.")
+                (guarded (format nil "you take it on your guard — ~d." damage))
+                (heavy (format nil "the ~a strikes hard! ~d." (jrpg-enemy-word game) damage))
+                (unmasked (format nil "unmasked, you take ~d." damage))
+                (t (format nil "the ~a hits you for ~d." (jrpg-enemy-word game) damage))))
+    (if (jrpg-hero-alive-p)
+        (when (and (not (jrpg-combat-enemy-winding game))
+                   (zerop (get-random-value 0 2)))
+          (setf (jrpg-combat-enemy-winding game) t)
+          (setf (jrpg-combat-message game)
+                (format nil "the ~a draws itself up for a heavier blow."
+                        (jrpg-enemy-word game))))
+        (jrpg-combat-defeat node game))))
+
+(defun jrpg-combat-enemy-reel (game)
+  (setf (jrpg-combat-enemy-stagger game) nil)
+  (multiple-value-bind (ex ey) (jrpg-enemy-anchor)
+    (jrpg-spawn-floater game "REELING" ex (- ey 30) :yellow t))
+  (setf (jrpg-combat-message game)
+        (format nil "the ~a is too off-balance to strike." (jrpg-enemy-word game))))
+
+;;; --- the turn machine ---
+
+(defun jrpg-combat-begin-hero-action (game act)
+  (setf (jrpg-combat-action game) act
+        (jrpg-combat-phase game) :anim))
+
+(defun jrpg-combat-flee (node game)
   (jrpg-record-retreat)
   (play-jrpg-sound "retreat" :volume 0.36)
-  (setf (jrpg-combat-message game)
-        "you run back to the road sign.")
+  (setf (jrpg-combat-message game) "you slip back the way you came.")
   (jrpg-combat-finish game (node-success-target node)))
 
-(defun jrpg-combat-confirm-command (node game)
-  (case (jrpg-combat-selected game)
-    (0 (jrpg-combat-attack-command node game))
-    (1 (jrpg-combat-magic-command node game))
-    (2 (jrpg-combat-item-command node game))
-    (3 (jrpg-combat-run-command node game))))
+(defun jrpg-combat-resolve-impact (node game act)
+  (ecase (jrpg-act-actor act)
+    (:hero (case (jrpg-act-kind act)
+             (:attack (jrpg-combat-hero-strike node game))
+             (:skill  (jrpg-combat-hero-skill node game (jrpg-act-skill act)))
+             (:guard  (jrpg-combat-hero-guard game))
+             (:item   (jrpg-combat-hero-item game))))
+    (:enemy (case (jrpg-act-kind act)
+              (:hit  (jrpg-combat-enemy-hit node game))
+              (:reel (jrpg-combat-enemy-reel game))))))
+
+(defun jrpg-combat-finish-action (node game act)
+  (declare (ignore node))
+  (setf (jrpg-combat-action game) nil)
+  (cond
+    ;; the foe just acted → control returns to the player
+    ((eq (jrpg-act-actor act) :enemy)
+     (setf (jrpg-combat-phase game) :menu))
+    ;; the hero acted and the foe still stands → the foe answers, unless a
+    ;; stagger has it reeling
+    ((jrpg-combat-enemy-alive-p game)
+     (setf (jrpg-combat-action game)
+           (if (jrpg-combat-enemy-stagger game)
+               (make-jrpg-act :actor :enemy :kind :reel)
+               (make-jrpg-act :actor :enemy :kind :hit))
+           (jrpg-combat-phase game) :anim))
+    (t (setf (jrpg-combat-phase game) :menu))))
+
+(defun jrpg-combat-advance-action (node game dt)
+  (let ((act (jrpg-combat-action game)))
+    (when act
+      (incf (jrpg-act-clock act) dt)
+      (when (and (not (jrpg-act-fired act))
+                 (>= (jrpg-act-clock act) +jrpg-act-impact+))
+        (setf (jrpg-act-fired act) t)
+        (jrpg-combat-resolve-impact node game act))
+      ;; victory or defeat at impact moves us to :over; only keep going if the
+      ;; battle is still live
+      (when (and (eq (jrpg-combat-phase game) :anim)
+                 (>= (jrpg-act-clock act) +jrpg-act-done+))
+        (jrpg-combat-finish-action node game act)))))
+
+;;; --- input ---
+
+(defun jrpg-combat-vert-step ()
+  "Returns +1 (down/next), -1 (up/prev), or 0."
+  (cond ((or (is-key-pressed-p +key-down+) (is-key-pressed-p +key-s+)
+             (is-key-pressed-p +key-right+) (is-key-pressed-p +key-d+))
+         1)
+        ((or (is-key-pressed-p +key-up+) (is-key-pressed-p +key-w+)
+             (is-key-pressed-p +key-left+) (is-key-pressed-p +key-a+))
+         -1)
+        (t 0)))
+
+(defun jrpg-combat-choose-command (node game key)
+  (case key
+    (:attack (jrpg-combat-begin-hero-action
+              game (make-jrpg-act :actor :hero :kind :attack)))
+    (:skill  (setf (jrpg-combat-submenu game) :skill
+                   (jrpg-combat-skill-index game) 0)
+             (play-choice-switch))
+    (:guard  (jrpg-combat-begin-hero-action
+              game (make-jrpg-act :actor :hero :kind :guard)))
+    (:item   (if (plusp (jrpg-number "jrpg-potions"))
+                 (jrpg-combat-begin-hero-action
+                  game (make-jrpg-act :actor :hero :kind :item))
+                 (setf (jrpg-combat-message game) "the bag is empty.")))
+    (:flee   (jrpg-combat-flee node game))))
+
+(defun jrpg-combat-handle-command-menu (node game)
+  (let ((step (jrpg-combat-vert-step))
+        (n (jrpg-combat-command-count)))
+    (unless (zerop step)
+      (setf (jrpg-combat-selected game)
+            (mod (+ (jrpg-combat-selected game) step) n))
+      (play-choice-switch))
+    (when (confirm-pressed-p)
+      (jrpg-combat-choose-command
+       node game
+       (getf (aref *jrpg-combat-commands* (jrpg-combat-selected game)) :key)))))
+
+(defun jrpg-combat-handle-skill-menu (node game)
+  (declare (ignore node))
+  (let* ((skills (jrpg-combat-skill-list))
+         (n (length skills))
+         (step (jrpg-combat-vert-step)))
+    (cond
+      ((or (is-key-pressed-p +key-escape+) (is-key-pressed-p +key-backspace+))
+       (setf (jrpg-combat-submenu game) nil)
+       (play-choice-switch))
+      (t
+       (unless (zerop step)
+         (setf (jrpg-combat-skill-index game)
+               (mod (+ (jrpg-combat-skill-index game) step) n))
+         (play-choice-switch))
+       (when (confirm-pressed-p)
+         (let* ((skill (nth (min (jrpg-combat-skill-index game) (1- n)) skills))
+                (key (getf skill :key)))
+           (cond
+             ((and (getf skill :cost-mp)
+                   (< (jrpg-number "jrpg-hero-mp") (getf skill :cost-mp)))
+              (setf (jrpg-combat-message game) "you cannot focus — no mp."))
+             ((and (getf skill :cost-composure)
+                   (< (jrpg-composure) (getf skill :cost-composure)))
+              (setf (jrpg-combat-message game)
+                    "you cannot bear to speak the lines."))
+             (t
+              (setf (jrpg-combat-submenu game) nil)
+              (jrpg-combat-begin-hero-action
+               game (make-jrpg-act :actor :hero :kind :skill :skill key))))))))))
+
+(defun jrpg-combat-handle-menu (node game)
+  (if (eq (jrpg-combat-submenu game) :skill)
+      (jrpg-combat-handle-skill-menu node game)
+      (jrpg-combat-handle-command-menu node game)))
 
 (defun update-jrpg-combat-minigame (node dt)
   (let ((game (ensure-jrpg-combat node)))
     (incf (jrpg-combat-elapsed game) dt)
-    (cond
-      ((jrpg-combat-finish-target game)
-       (decf (jrpg-combat-finish-delay game) dt)
-       (when (<= (jrpg-combat-finish-delay game) 0.0)
-         (let ((target (jrpg-combat-finish-target game)))
-           (setf *jrpg-combat* nil)
-           (jump-to-dialog-target target))))
-      (t
-       (jrpg-combat-move-selection game)
-       (when (confirm-pressed-p)
-         (jrpg-combat-confirm-command node game))))))
+    (jrpg-update-floaters game dt)
+    (jrpg-update-sparks game dt)
+    (setf (jrpg-combat-shake game) (jrpg-decay (jrpg-combat-shake game) dt 6.0)
+          (jrpg-combat-flash-hero game) (max 0.0 (- (jrpg-combat-flash-hero game) dt))
+          (jrpg-combat-flash-enemy game) (max 0.0 (- (jrpg-combat-flash-enemy game) dt))
+          (jrpg-combat-hero-recoil game) (jrpg-decay (jrpg-combat-hero-recoil game) dt 9.0)
+          (jrpg-combat-enemy-recoil game) (jrpg-decay (jrpg-combat-enemy-recoil game) dt 9.0)
+          (jrpg-combat-enemy-hp-shown game)
+          (jrpg-lerp-toward (jrpg-combat-enemy-hp-shown game)
+                            (jrpg-combat-enemy-hp game) dt)
+          (jrpg-combat-hero-hp-shown game)
+          (jrpg-lerp-toward (jrpg-combat-hero-hp-shown game)
+                            (jrpg-number "jrpg-hero-hp" 0) dt))
+    (case (jrpg-combat-phase game)
+      (:over (decf (jrpg-combat-finish-delay game) dt)
+             (when (<= (jrpg-combat-finish-delay game) 0.0)
+               (let ((target (jrpg-combat-finish-target game)))
+                 (setf *jrpg-combat* nil)
+                 (jump-to-dialog-target target))))
+      (:anim (jrpg-combat-advance-action node game dt))
+      (t (jrpg-combat-handle-menu node game)))))
+
+;;; --- drawing ---
+
+(defun jrpg-fill-rect (x y w h color)
+  (claylib/ll:draw-rectangle (round x) (round y)
+                             (max 1 (round w)) (max 1 (round h))
+                             (claylib::c-ptr color)))
 
 (defun draw-jrpg-box (left top width height &optional (alpha 235))
-  (claylib/ll:draw-rectangle (round left)
-                             (round top)
-                             (round width)
-                             (round height)
-                             (claylib::c-ptr
-                              (make-color 0 0 0 alpha)))
-  (draw-rectangle-outline left
-                          top
-                          width
-                          height
-                          (make-color 255 255 255 230)
-                          :thickness 2))
+  (claylib/ll:draw-rectangle (round left) (round top)
+                             (round width) (round height)
+                             (claylib::c-ptr (make-color 0 0 0 alpha)))
+  (draw-rectangle-outline left top width height
+                          (make-color 255 255 255 230) :thickness 2))
 
 (defun draw-jrpg-line (text x y &optional (size 18) (alpha 230))
-  (draw-text-at text
-                x
-                y
-                size
-                (make-color 255 255 255 alpha)))
+  (draw-text-at text x y size (make-color 255 255 255 alpha)))
+
+(defun draw-jrpg-bar (x y w h frac trail-frac &key yellow)
+  "A meter: faint track, a dim trailing chunk for the value still draining
+away, then the solid fill. Yellow tints the will meter."
+  (let ((frac (max 0.0 (min 1.0 frac)))
+        (trail (max 0.0 (min 1.0 trail-frac))))
+    (jrpg-fill-rect x y w h (make-color 255 255 255 38))
+    (when (> trail frac)
+      (jrpg-fill-rect (+ x (* w frac)) y (* w (- trail frac)) h
+                      (make-color 255 255 255 120)))
+    (jrpg-fill-rect x y (* w frac) h
+                    (if yellow (yellow-sign-color 235) (make-color 255 255 255 230)))
+    (draw-rectangle-outline x y w h (make-color 255 255 255 150) :thickness 1)))
 
 (defun jrpg-slime-pixel-alpha (cell)
   (case cell
@@ -493,9 +777,7 @@
     (t nil)))
 
 (defun jrpg-slime-row-offset (row elapsed)
-  (round (* 2.0
-            (sin (+ (* elapsed 2.4)
-                    (* row 0.52))))))
+  (round (* 2.0 (sin (+ (* elapsed 2.4) (* row 0.52))))))
 
 (defun draw-jrpg-slime-shadow (center-x y elapsed)
   (let* ((pulse (+ 1.0 (* 0.08 (sin (* elapsed 3.0)))))
@@ -508,8 +790,7 @@
               (round (+ y offset))
               (round (- width (* offset 3.2)))
               3
-              (claylib::c-ptr
-               (make-color 255 255 255 (- 54 (* offset 4))))))))
+              (claylib::c-ptr (make-color 255 255 255 (- 54 (* offset 4))))))))
 
 (defun draw-jrpg-enemy-sprite (sprite center-x top scale elapsed)
   (loop with sprite-width = (length (aref sprite 0))
@@ -525,75 +806,183 @@
                    do (claylib/ll:draw-rectangle
                        (round (+ left row-offset (* x scale)))
                        (round (+ top bounce (* y scale)))
-                       scale
-                       scale
-                       (claylib::c-ptr
-                        (make-color 255 255 255 alpha))))))
+                       scale scale
+                       (claylib::c-ptr (make-color 255 255 255 alpha))))))
 
-(defun draw-jrpg-combat-enemy (game)
-  (let ((x (+ +jrpg-combat-left+ 570))
-        (y (+ +jrpg-combat-top+ 72)))
-    (draw-centered-text (jrpg-combat-enemy-name game)
-                        x
-                        (- y 42)
-                        20
-                        (make-color 255 255 255 232))
-    (draw-jrpg-slime-shadow x (+ y 112) (jrpg-combat-elapsed game))
-    (draw-jrpg-enemy-sprite (jrpg-enemy-sprite (jrpg-combat-enemy-kind game))
-                            x (- y 8) 7 (jrpg-combat-elapsed game))
-    (draw-centered-text
-     (format nil "HP ~d/~d"
-             (jrpg-combat-enemy-hp game)
-             (jrpg-combat-enemy-max-hp game))
-     x
-     (+ y 134)
-     16
-     (make-color 255 255 255 210))))
+(defun draw-jrpg-windup (cx cy reach elapsed)
+  "Corner brackets that pulse around a foe winding up a heavy blow — the
+player's cue to GUARD."
+  (let* ((pulse (+ 0.5 (* 0.5 (sin (* elapsed 9.0)))))
+         (a (round (* 190 pulse)))
+         (r (+ (/ reach 2) 12))
+         (col (make-color 255 255 255 a)))
+    (jrpg-fill-rect (- cx r) (- cy r) 16 3 col)
+    (jrpg-fill-rect (- cx r) (- cy r) 3 16 col)
+    (jrpg-fill-rect (- (+ cx r) 16) (- cy r) 16 3 col)
+    (jrpg-fill-rect (- (+ cx r) 3) (- cy r) 3 16 col)
+    (jrpg-fill-rect (- cx r) (- (+ cy r) 3) 16 3 col)
+    (jrpg-fill-rect (- cx r) (- (+ cy r) 16) 3 16 col)
+    (jrpg-fill-rect (- (+ cx r) 16) (- (+ cy r) 3) 16 3 col)
+    (jrpg-fill-rect (- (+ cx r) 3) (- (+ cy r) 16) 3 16 col)))
 
-(defun draw-jrpg-combat-stats ()
-  (draw-jrpg-box 228 428 284 118)
-  (draw-jrpg-line (string-upcase (jrpg-hero-name))
-                  250
-                  448
-                  18)
-  (draw-jrpg-line (format nil "HP ~d/~d"
-                          (jrpg-number "jrpg-hero-hp")
-                          (jrpg-number "jrpg-hero-max-hp" 18))
-                  250 474 18)
-  (draw-jrpg-line (format nil "MP ~d" (jrpg-number "jrpg-hero-mp"))
-                  250 500 18)
-  (draw-jrpg-line (format nil "G ~d" (jrpg-number "jrpg-gold"))
-                  382 500 18))
+(defun jrpg-draw-combat-figure (cx cy hit guard)
+  "The traveller, larger than the overworld figure and facing the foe; an arm
+comes up when guarding, and the whole body flares white on a hit."
+  (let* ((s 5)
+         (col (make-color 255 255 255 (if hit 255 230))))
+    (flet ((rect (dx dy w h)
+             (jrpg-fill-rect (+ cx (* dx s)) (+ cy (* dy s))
+                             (* w s) (* h s) col)))
+      (rect -1.5 -8 3 3)        ; head
+      (rect -2.0 -5 4 5)        ; torso
+      (rect -2.0  0 1.6 4)      ; left leg
+      (rect  0.4  0 1.6 4)      ; right leg
+      (if guard
+          (rect 1.8 -4 2.2 1.4) ; arm braced forward
+          (rect 2.0 -4 1.4 1.4))) ; arm
+    (when hit
+      (jrpg-fill-rect (- cx (* 3 s)) (- cy (* 9 s)) (* 7 s) (* 14 s)
+                      (make-color 255 255 255 120)))))
 
-(defun draw-jrpg-combat-commands (game)
-  (draw-jrpg-box 530 428 240 118)
-  (loop for i from 0 below (jrpg-combat-command-count)
-        for label = (aref *jrpg-combat-commands* i)
-        for x = (if (< i 2) 560 660)
-        for y = (+ 452 (* (mod i 2) 34))
-        do (draw-jrpg-line (if (= i (jrpg-combat-selected game))
-                               (format nil "> ~a" label)
-                               (format nil "  ~a" label))
-                           x
-                           y
-                           18)))
+(defun draw-jrpg-combat-enemy (game ox oy)
+  (multiple-value-bind (ax ay) (jrpg-enemy-anchor)
+    (let* ((act (jrpg-combat-action game))
+           (acting (and (eq (jrpg-combat-phase game) :anim) act
+                        (eq (jrpg-act-actor act) :enemy)))
+           (lunge (if acting (- (jrpg-act-lunge (jrpg-act-clock act) 56.0)) 0.0))
+           (x (+ ax ox lunge (jrpg-combat-enemy-recoil game)))
+           (y (+ ay oy))
+           (e (jrpg-combat-elapsed game))
+           (scale 7)
+           (sprite (jrpg-enemy-sprite (jrpg-combat-enemy-kind game)))
+           (rows (length sprite))
+           (cols (length (aref sprite 0)))
+           (sw (* cols scale))
+           (sh (* rows scale))
+           (top (- y (/ sh 2))))
+      (draw-centered-text (jrpg-combat-enemy-name game) x (- y (/ sh 2) 18) 20
+                          (make-color 255 255 255 232))
+      (when (jrpg-combat-enemy-winding game)
+        (draw-jrpg-windup x y sw e))
+      (draw-jrpg-slime-shadow x (+ y (/ sh 2) 6) e)
+      (draw-jrpg-enemy-sprite sprite x top scale e)
+      (when (plusp (jrpg-combat-flash-enemy game))
+        (jrpg-fill-rect (- x (/ sw 2)) top sw sh
+                        (make-color 255 255 255
+                                    (round (* 200 (/ (jrpg-combat-flash-enemy game) 0.2))))))
+      (draw-jrpg-bar (- x 70) (+ y (/ sh 2) 18) 140 10
+                     (/ (jrpg-combat-enemy-hp game)
+                        (max 1 (jrpg-combat-enemy-max-hp game)))
+                     (/ (jrpg-combat-enemy-hp-shown game)
+                        (max 1 (jrpg-combat-enemy-max-hp game))))
+      (draw-centered-text (format nil "~d/~d"
+                                  (jrpg-combat-enemy-hp game)
+                                  (jrpg-combat-enemy-max-hp game))
+                          x (+ y (/ sh 2) 38) 15 (make-color 255 255 255 200)))))
 
-(defun draw-jrpg-combat-message (game)
-  (draw-jrpg-box 228 574 842 54)
-  (draw-jrpg-line (jrpg-combat-message game) 250 591 18))
+(defun draw-jrpg-combat-hero (game ox oy)
+  (multiple-value-bind (ax ay) (jrpg-hero-anchor)
+    (let* ((act (jrpg-combat-action game))
+           (acting (and (eq (jrpg-combat-phase game) :anim) act
+                        (eq (jrpg-act-actor act) :hero)
+                        (member (jrpg-act-kind act) '(:attack :skill))))
+           (lunge (if acting (jrpg-act-lunge (jrpg-act-clock act) 54.0) 0.0))
+           (x (+ ax ox lunge (jrpg-combat-hero-recoil game)))
+           (y (+ ay oy)))
+      (jrpg-draw-combat-figure x y
+                               (plusp (jrpg-combat-flash-hero game))
+                               (jrpg-combat-guarding game))
+      (draw-centered-text (string-upcase (jrpg-hero-name)) x (- y 58) 17
+                          (make-color 255 255 255 220)))))
+
+(defun draw-jrpg-combat-stats (game ox oy)
+  (let ((bx (+ 228 ox)) (by (+ 428 oy))
+        (max-hp (jrpg-number "jrpg-hero-max-hp" 18)))
+    (draw-jrpg-box bx by 300 118)
+    (draw-jrpg-line (string-upcase (jrpg-hero-name)) (+ bx 18) (+ by 12) 18)
+    (draw-jrpg-line "HP" (+ bx 18) (+ by 38) 15 200)
+    (draw-jrpg-bar (+ bx 52) (+ by 39) 150 12
+                   (/ (jrpg-number "jrpg-hero-hp") (max 1 max-hp))
+                   (/ (jrpg-combat-hero-hp-shown game) (max 1 max-hp)))
+    (draw-jrpg-line (format nil "~d/~d" (jrpg-number "jrpg-hero-hp") max-hp)
+                    (+ bx 210) (+ by 37) 14 200)
+    (draw-jrpg-line "WILL" (+ bx 18) (+ by 62) 15 200)
+    (draw-jrpg-bar (+ bx 52) (+ by 63) 150 12
+                   (/ (jrpg-composure) (max 1 (jrpg-composure-max)))
+                   (/ (jrpg-composure) (max 1 (jrpg-composure-max)))
+                   :yellow t)
+    (unless (jrpg-composed-p)
+      (draw-jrpg-line "UNMASKED" (+ bx 210) (+ by 61) 13 220))
+    (draw-jrpg-line (format nil "MP ~d" (jrpg-number "jrpg-hero-mp")) (+ bx 18) (+ by 88) 16)
+    (draw-jrpg-line (format nil "G ~d" (jrpg-number "jrpg-gold")) (+ bx 120) (+ by 88) 16)
+    (draw-jrpg-line (format nil "Lv ~d" (jrpg-number "jrpg-hero-level" 1)) (+ bx 214) (+ by 88) 16)))
+
+(defun draw-jrpg-combat-commands (game ox oy)
+  (let ((bx (+ 540 ox)) (by (+ 428 oy)))
+    (draw-jrpg-box bx by 232 118)
+    (loop for i from 0 below (jrpg-combat-command-count)
+          for label = (getf (aref *jrpg-combat-commands* i) :label)
+          for sel = (= i (jrpg-combat-selected game))
+          do (draw-jrpg-line (if sel (format nil "> ~a" label) (format nil "  ~a" label))
+                             (+ bx 18) (+ by 10 (* i 20)) 16 (if sel 235 165)))))
+
+(defun draw-jrpg-combat-skills (game ox oy)
+  (let* ((bx (+ 540 ox)) (by (+ 428 oy))
+         (skills (jrpg-combat-skill-list))
+         (n (length skills))
+         (idx (min (jrpg-combat-skill-index game) (1- n))))
+    (draw-jrpg-box bx by 232 118)
+    (loop for i from 0 below n
+          for sk = (nth i skills)
+          for sel = (= i idx)
+          do (draw-jrpg-line (if sel (format nil "> ~a" (getf sk :label))
+                                 (format nil "  ~a" (getf sk :label)))
+                             (+ bx 14) (+ by 8 (* i 22)) 15 (if sel 235 160)))
+    (draw-jrpg-line (or (getf (nth idx skills) :note) "") (+ bx 14) (+ by 80) 12 150)
+    (draw-jrpg-line "esc: back" (+ bx 14) (+ by 98) 12 130)))
+
+(defun draw-jrpg-combat-message (game ox oy)
+  (let ((bx (+ 228 ox)) (by (+ 574 oy)))
+    (draw-jrpg-box bx by 842 54)
+    (draw-jrpg-line (jrpg-combat-message game) (+ bx 22) (+ by 17) 18)))
+
+(defun jrpg-draw-sparks (game ox oy)
+  (dolist (s (jrpg-combat-sparks game))
+    (let* ((age (getf s :age)) (ttl (getf s :ttl))
+           (alpha (round (* 255 (max 0.0 (- 1.0 (/ age ttl))))))
+           (col (if (getf s :yellow) (yellow-sign-color alpha)
+                    (make-color 255 255 255 alpha))))
+      (jrpg-fill-rect (+ (getf s :x) ox) (+ (getf s :y) oy)
+                      (getf s :size) (getf s :size) col))))
+
+(defun jrpg-draw-floaters (game ox oy)
+  (dolist (f (jrpg-combat-floaters game))
+    (let* ((age (getf f :age)) (ttl (getf f :ttl))
+           (frac (/ age ttl))
+           (alpha (round (* 255 (if (> frac 0.6) (max 0.0 (- 1.0 (/ (- frac 0.6) 0.4))) 1.0))))
+           (size (if (getf f :crit) 30 21))
+           (col (if (getf f :yellow) (yellow-sign-color alpha)
+                    (make-color 255 255 255 alpha))))
+      (draw-centered-text (getf f :text) (+ (getf f :x) ox) (+ (getf f :y) oy) size col))))
 
 (defun draw-jrpg-combat-minigame (node color)
   (declare (ignore color))
-  (let ((game (ensure-jrpg-combat node)))
-    (draw-jrpg-box +jrpg-combat-left+
-                   +jrpg-combat-top+
-                   +jrpg-combat-width+
-                   +jrpg-combat-height+
-                   208)
-    (draw-jrpg-combat-enemy game)
-    (draw-jrpg-combat-stats)
-    (draw-jrpg-combat-commands game)
-    (draw-jrpg-combat-message game)))
+  (let* ((game (ensure-jrpg-combat node))
+         (sh (jrpg-combat-shake game))
+         (e (jrpg-combat-elapsed game))
+         (ox (if (> sh 0.4) (* sh (sin (* e 47.0))) 0.0))
+         (oy (if (> sh 0.4) (* sh 0.55 (sin (* e 59.0))) 0.0)))
+    (draw-jrpg-box (+ +jrpg-combat-left+ ox) (+ +jrpg-combat-top+ oy)
+                   +jrpg-combat-width+ +jrpg-combat-height+ 208)
+    (draw-jrpg-combat-enemy game ox oy)
+    (draw-jrpg-combat-hero game ox oy)
+    (draw-jrpg-combat-stats game ox oy)
+    (if (eq (jrpg-combat-submenu game) :skill)
+        (draw-jrpg-combat-skills game ox oy)
+        (draw-jrpg-combat-commands game ox oy))
+    (draw-jrpg-combat-message game ox oy)
+    (jrpg-draw-sparks game ox oy)
+    (jrpg-draw-floaters game ox oy)))
 
 (dialog-minigame-kind :jrpg-combat
                       :update #'update-jrpg-combat-minigame
