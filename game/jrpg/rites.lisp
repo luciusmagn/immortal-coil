@@ -57,6 +57,10 @@
   (jrpg-init-state)
   (jrpg-mark-yellow-sign)
   (jrpg-spend-composure 1)
+  ;; tracing the Sign into Wilde's register is the Reader's mark and the
+  ;; Repairer's signature both
+  (jrpg-lean-class :reader 2)
+  (jrpg-lean-class :repairer 1)
   (play-jrpg-sound "crown" :volume 0.34))
 
 (defmethod minigame-session-update ((session sign-trace-session) node dt)

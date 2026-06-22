@@ -35,7 +35,8 @@
 
 (dialog-on-enter "jrpg/the-book"
                  '(jrpg-mark-yellow-sign)
-                 '(jrpg-grant-item "jrpg-play-scraps"))
+                 '(jrpg-grant-item "jrpg-play-scraps")
+                 '(jrpg-start-quest :sign))
 
 (dialog-text "jrpg/the-book"
              "the book is THE KING IN YELLOW. you have read the first act, which is why it is still bright in you, and not the second, which waits like a held breath. inside the cover a small sign is stamped in yellow, the one colour in the room."
@@ -102,6 +103,7 @@
 ;;; THE YELLOW SIGN — the studio
 
 (dialog-particles "jrpg/studio" :motes :fade-seconds 3.0)
+(dialog-on-enter "jrpg/studio" '(jrpg-lean-class :painter 1))
 
 (dialog-text "jrpg/studio-door"
              "the stair smells of turpentine and cold stone. at the top, a studio: a man at an easel, a woman in a robe on the model stand, a stove gone out. the man is scraping at his own canvas with a knife."
@@ -134,7 +136,8 @@
                        "we read the first act last night, the three of us, and laughed. none of us opened the second. nobody who opens the second comes down to say what is in it."))
 
 (dialog-on-enter "jrpg/clasp"
-                 '(jrpg-grant-item "jrpg-mask-shard"))
+                 '(jrpg-grant-item "jrpg-mask-shard")
+                 '(jrpg-add-item :sign-clasp))
 
 (dialog-text "jrpg/clasp"
              "Tessie unpins an ornament from her robe and presses it on you: an onyx clasp, the gold worked into the Yellow Sign. it is colder than metal should be. she wants it out of the room. she does not say off her."
@@ -148,7 +151,8 @@
 
 (dialog-on-enter "jrpg/read-second"
                  '(jrpg-spend-composure 3)
-                 '(jrpg-grant-item "jrpg-second-act"))
+                 '(jrpg-grant-item "jrpg-second-act")
+                 '(jrpg-lean-class :reader 2))
 
 (dialog-text "jrpg/read-second"
              "you read three lines of the second act before Scott takes the book from your hands, too late for you, in time for him. the room is the same room. it is not the same room. somewhere a tune you know stops in its third line."
@@ -172,6 +176,8 @@
                                :victory-gold 0
                                :message "the watchman comes in soft and white, one hand out for the clasp: have you found the Yellow Sign."))
 
+(dialog-on-enter "jrpg/after-watchman" '(jrpg-lean-class :watchman 1))
+
 (dialog-text "jrpg/after-watchman"
              "it comes apart like a thing long drowned and badly kept, and what is left on the boards is a coat and a smell. Scott is down with the Play shut under his hand. Tessie holds your sleeve and will not say what she has decided. you keep the clasp; you did not mean to."
              :next "jrpg/leave-studio")
@@ -179,6 +185,8 @@
 (dialog-text "jrpg/watchman-takes"
              "it is stronger than a dead thing should be. when you can stand, the watchman is gone, and so is Tessie, and Scott will only say she went to find the Yellow Sign, in the voice of a man reading a line he did not write. you still have the clasp. it is warm now."
              :next "jrpg/leave-studio")
+
+(dialog-on-enter "jrpg/leave-studio" '(jrpg-add-item :palette-knife))
 
 (dialog-text "jrpg/leave-studio"
              "you go down into a city that has thinned, the way a held note thins. you come out in a square you do not remember entering, the gas lamps in the wrong order, lit doors set around it, none of them where you left it."
@@ -234,6 +242,8 @@
                                   "like you have read something you cannot put down. go up, then. Mr. Wilde is expecting you. he is always expecting everyone.")
                      :next "jrpg/wilde")
 
+(dialog-on-enter "jrpg/wilde" '(jrpg-lean-class :repairer 2))
+
 (dialog-text "jrpg/wilde"
              "up the stair, a low room: a small scarred man in a chair too high for him, a savage cat curled in his lap, a ledger open on his knee, a locked cabinet behind. he repairs reputations, he says, makes names and unmakes them, for a fee. he has been expecting you, which he says of everyone, and means."
              :next "jrpg/wilde-questions")
@@ -279,7 +289,8 @@
                                :message "Hildred-Rex advances, crowning himself with both empty hands as he comes."))
 
 (dialog-on-enter "jrpg/after-castaigne"
-                 '(setf (jrpg-value "kiy-did-repairer") t))
+                 '(setf (jrpg-value "kiy-did-repairer") t)
+                 '(jrpg-lean-class :watchman 1))
 
 (dialog-text "jrpg/after-castaigne"
              "Hildred sits down hard, the title gone out of him, and weeps that the cat has got Mr. Wilde. the cat has: the small scarred man bleeds from the throat in his high chair, the ledger fallen open at your name, twice. you go before the noise brings anyone. the cabinet you leave shut, this time."
@@ -287,7 +298,8 @@
 
 (dialog-on-enter "jrpg/castaigne-down"
                  '(jrpg-heal 6)
-                 '(setf (jrpg-value "kiy-did-repairer") t))
+                 '(setf (jrpg-value "kiy-did-repairer") t)
+                 '(jrpg-lean-class :watchman 1))
 
 (dialog-text "jrpg/castaigne-down"
              "he has your collar and the razor at it when the cat, for its own reasons, takes Mr. Wilde's throat instead, and Hildred forgets you entirely for the man who promised him a crown. you leave them to it. the ledger lies open at your name, twice."
@@ -297,6 +309,7 @@
 ;;; THE MASK — Boris's studio and the marble pool
 
 (dialog-particles "jrpg/boris" :motes :fade-seconds 3.0)
+(dialog-on-enter "jrpg/boris" '(jrpg-lean-class :painter 1))
 
 (dialog-text "jrpg/mask-street"
              "the streets give out into a court you do not remember entering. one door stands open on white light, and the white is not lamplight: it is marble, far too much of it, all of it too lifelike."
@@ -329,7 +342,9 @@
                        "you carry the Sign, and the Sign means you are going up to the lake, and the lake keeps people worse than my pool does. take some of the fluid. it is a kinder way to stop, if it comes to that."))
 
 (dialog-on-enter "jrpg/marble-fluid"
-                 '(jrpg-grant-item "jrpg-mask-shard"))
+                 '(jrpg-grant-item "jrpg-mask-shard")
+                 '(jrpg-add-item :marble-phial)
+                 '(jrpg-lean-class :painter 1))
 
 (dialog-text "jrpg/marble-fluid"
              "you fill a small phial from the pool, clear and heavy and faintly warm. Boris watches you do it the way a man watches someone pocket the thing he could not bring himself to use."
@@ -406,6 +421,7 @@
 ;;; you back to find them. This is where the player's agency lives.
 
 (dialog-particles "jrpg/city-hub" :snow :fade-seconds 2.5)
+(dialog-on-enter "jrpg/city-hub" '(jrpg-start-quest :cross))
 
 (dialog-minigame "jrpg/city-hub"
                  "arrows or wasd move onto a lit door."
@@ -419,13 +435,15 @@
                                         ("M" "jrpg/mask-street"  :done "kiy-did-mask")
                                         ("Q" "jrpg/old-quarter"  :done "kiy-did-quarter")
                                         ("D" "jrpg/dys-lane"     :done "kiy-did-dys")
+                                        ("S" "jrpg/character")
                                         ("C" "jrpg/church"))
-                               :legend "A armourer  M marble  Q old quarter  D green lane  C church (out)"
+                               :legend "A armourer  M marble  Q quarter  D lane  S yourself  C church (out)"
                                :tile-messages
                                '((#\A . "an armourer's stair, mail white in the window.")
                                  (#\M . "a door open on white marble light.")
                                  (#\Q . "a stair down to the old quarter, the gas warm.")
                                  (#\D . "a green lane, gorse and sea, where no lane should be.")
+                                 (#\S . "a dark window; your own reflection — your coat, your hand, your self.")
                                  (#\C . "a church, an organ already going; past it the lake-smell. the way out."))))
 
 (dialog-particles "jrpg/dys-meet" :motes :fade-seconds 3.0)
@@ -460,7 +478,8 @@
              :next "jrpg/dys-viper")
 
 (dialog-on-enter "jrpg/dys-viper"
-                 '(jrpg-spend-composure 2))
+                 '(jrpg-spend-composure 2)
+                 '(jrpg-lean-class :mourner 2))
 
 (dialog-text "jrpg/dys-viper"
              "by the stream the hawks scream. a grey snake on the warm rock, a black V on its neck. she clings to your arm — don't, i am afraid. for me? for you, she says. i love you. then a sting at the ankle, and the light in your eyes goes out."
@@ -472,7 +491,8 @@
 
 (dialog-on-enter "jrpg/dys-tomb"
                  '(jrpg-grant-item "jrpg-play-scraps")
-                 '(setf (jrpg-value "jrpg-dys-seen") t))
+                 '(setf (jrpg-value "jrpg-dys-seen") t)
+                 '(jrpg-add-item :dys-glove))
 
 (dialog-text "jrpg/dys-tomb"
              "carved beneath her: PRAY FOR THE SOUL OF JEANNE D'YS, WHO DIED IN HER YOUTH FOR LOVE OF {player-name}, A STRANGER. A.D. 1573. on the icy slab a woman's glove, still warm. you know the kept now, before Carcosa ever names it."
@@ -536,7 +556,8 @@
 
 (dialog-on-enter "jrpg/prophets"
                  '(jrpg-spend-composure 2)
-                 '(jrpg-grant-item "jrpg-play-scraps"))
+                 '(jrpg-grant-item "jrpg-play-scraps")
+                 '(jrpg-lean-class :reader 1))
 
 (dialog-interrogation "jrpg/prophets"
                       "the middle pages — not the first act, not the second. eight short visions, each a snake that eats its tail. you read them; they read you back."

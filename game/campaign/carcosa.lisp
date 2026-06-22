@@ -30,6 +30,12 @@
                                :seconds 2.8
                                :accent :crown))
 
+(dialog-on-enter "carcosa/cross"
+                 '(jrpg-complete-quest :cross)
+                 '(jrpg-start-quest :king)
+                 '(jrpg-add-item :hali-water)
+                 '(jrpg-refresh-class))
+
 (dialog-text "carcosa/cross"
              "you cross without a step in between. the night city is behind you and was never ahead of you. a still lake, two suns caught half under it, a smell of wet and old paper. the Yellow Sign in your coat is warm against you, like a hand."
              :next "carcosa/causeway-intro")
@@ -79,6 +85,8 @@
              "before the high doors, two women keep a court of their own: one at a cold harp, one at a window on the lake, both dressed for a masque that has not begun, or has not ended."
              :next "carcosa/court-overheard")
 
+(dialog-on-enter "carcosa/court-overheard" '(jrpg-lean-class :mourner 1))
+
 (dialog-conversation "carcosa/court-overheard"
                      (dialog-left "Cassilda"
                                   "they always ask him to unmask, at the end.")
@@ -124,22 +132,50 @@
 
 (dialog-text "carcosa/king-loop"
              "the room slips back a half second. he says the same three words. the two suns un-set and set. for a moment you are at the door again, entering. the Sign in your coat is very warm. he is not telling you a story. he is stuck inside one, and it is the one you have been reading."
-             :next "carcosa/king-3")
+             :next "carcosa/king-named")
 
+(dialog-on-enter "carcosa/king-named" '(jrpg-refresh-class))
+(dialog-say "carcosa/king-named"
+            "the KING"
+            "i know what you are. {jrpg-class-title}. you have always been it; every choice only told you so. it will not save you here."
+            :next "carcosa/king-3")
+
+(dialog-on-enter "carcosa/king-3" '(jrpg-complete-quest :sign))
 (dialog-say "carcosa/king-3"
             "the KING"
             "you have the Sign. i sent it. i keep the ones i send it to. sit in the good chair, the relieved chair, and i will show you the crossing, and you will keep it for me, and i will rest, i have not ——"
             :next "carcosa/throne-choice")
 
+(dialog-on-enter "carcosa/throne-choice" '(jrpg-complete-quest :king))
+
 (dialog-pick "carcosa/throne-choice"
              "the crown sits on the throne beside him, yellow, the one colour. the room is about to reset again."
+             ;; the one action only your inferred class can take
+             (dialog-option "unmake his name, as you have unmade others" "carcosa/class-end"
+                            :unless '(not (eq (jrpg-value "jrpg-class") :repairer)))
+             (dialog-option "set down his true face, as you set down the rot" "carcosa/class-end"
+                            :unless '(not (eq (jrpg-value "jrpg-class") :painter)))
+             (dialog-option "read him the last line of his own Play" "carcosa/class-end"
+                            :unless '(not (eq (jrpg-value "jrpg-class") :reader)))
+             (dialog-option "put him down, the way you put down the watchman" "carcosa/class-end"
+                            :unless '(not (eq (jrpg-value "jrpg-class") :watchman)))
+             (dialog-option "stay with him, since someone must mourn" "carcosa/class-end"
+                            :unless '(not (eq (jrpg-value "jrpg-class") :mourner)))
              (dialog-option "take the crown" "carcosa/take-crown")
              (dialog-option "refuse, and keep your own face" "carcosa/refuse-crown"
                             :unless '(not (jrpg-composed-p)))
              (dialog-option "ask him the year, to break the loop" "carcosa/ask-year"))
 
+(dialog-on-enter "carcosa/class-end"
+                 '(setf (jrpg-value "jrpg-vane-answer") "class"))
+
+(dialog-text "carcosa/class-end"
+             "you meet him the only way a {jrpg-class-title} can — and it is a thing the loop kept no line for. the suns hang. the room does not reset this time; it only lets you out, the Sign in your coat gone quiet at last."
+             :next "carcosa/out")
+
 (dialog-on-enter "carcosa/take-crown"
-                 '(setf (jrpg-value "jrpg-vane-answer") "crown"))
+                 '(setf (jrpg-value "jrpg-vane-answer") "crown")
+                 '(jrpg-add-item :crown))
 
 (dialog-text "carcosa/take-crown"
              "you take it up. it weighs nothing, the way the tatters weigh nothing. the King stops mid-word, for the first time in a length of time with no number, steps down, and is one of the pale kept, eased. the crossing is yours now. the count will be wrong. you will keep it anyway, forever, which is the whole of what a watch is."
