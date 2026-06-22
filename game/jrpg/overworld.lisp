@@ -26,76 +26,98 @@
                               collect (aref grid y x))
                         'string)))
 
+(defun jrpg-gen-blob (grid w h cx cy steps glyph avoid)
+  "Drunkard's-walk a coherent blob of GLYPH from (CX,CY), never overwriting an
+AVOID glyph. Connected and organic, not per-cell noise."
+  (let ((x cx) (y cy))
+    (dotimes (i steps)
+      (unless (member (aref grid y x) avoid :test #'char=)
+        (setf (aref grid y x) glyph))
+      (ecase (get-random-value 0 3)
+        (0 (incf x)) (1 (decf x)) (2 (incf y)) (3 (decf y)))
+      (setf x (max 1 (min (- w 2) x))
+            y (max 1 (min (- h 2) y))))))
+
+(defun jrpg-gen-ridge (grid w h len avoid)
+  "A mountain ridge: a mostly-horizontal wandering line of #\\^, thickened to
+three cells, so ranges read as ranges and not scatter."
+  (let ((x (get-random-value 1 (- w 2)))
+        (y (get-random-value 1 (- h 2)))
+        (dir (if (zerop (get-random-value 0 1)) 1 -1)))
+    (dotimes (i len)
+      (dolist (dd '(-1 0 1))
+        (let ((yy (+ y dd)))
+          (when (and (< 0 yy (1- h))
+                     (not (member (aref grid yy x) avoid :test #'char=)))
+            (setf (aref grid yy x) #\^))))
+      (if (zerop (get-random-value 0 2))
+          (incf y (if (zerop (get-random-value 0 1)) 1 -1))
+          (incf x dir))
+      (setf x (max 1 (min (- w 2) x))
+            y (max 1 (min (- h 2) y))))))
+
 (defun jrpg-gen-overworld (w h finish-glyph waypoints)
-  "Returns (values rows start-x start-y)."
+  "Returns (values rows start-x start-y). A coherent FF-style overworld: grass
+plains, a winding ROAD from the west edge to the finish (always passable),
+mountain ridges and forest patches and a lake set OFF the road, the occurrence's
+landmarks strung along it. Generated fresh each entry."
   (let* ((grid (make-array (list h w) :initial-element #\.))
-         (seen (make-hash-table :test 'equal))
          (sx 1) (sy (floor h 2))
          (fx (- w 2)) (fy (floor h 2))
-         (road nil)
-         (x sx) (y sy))
-    (flet ((keep (px py) (setf (gethash (cons px py) seen) t)))
-      (keep x y)
-      (push (list x y) road)
-      (loop repeat (* w h)
-            while (or (/= x fx) (/= y fy))
-            do (let ((choices nil))
-                 (cond ((< x fx) (push (cons 1 0) choices)
-                                 (push (cons 1 0) choices)
-                                 (push (cons 1 0) choices))
-                       ((> x fx) (push (cons -1 0) choices)))
-                 (cond ((< y fy) (push (cons 0 1) choices))
-                       ((> y fy) (push (cons 0 -1) choices)))
-                 (push (if (zerop (get-random-value 0 1))
-                           (cons 0 1) (cons 0 -1))
-                       choices)
-                 (let ((step (nth (get-random-value 0 (1- (length choices)))
-                                  choices)))
-                   (setf x (max 1 (min (- w 2) (+ x (car step))))
-                         y (max 1 (min (- h 2) (+ y (cdr step)))))
-                   (keep x y)
-                   (push (list x y) road))))
-      ;; straighten the rest of the road to the finish, guaranteeing a path
-      (loop while (/= x fx) do (incf x (if (< x fx) 1 -1))
-                               (keep x y) (push (list x y) road))
-      (loop while (/= y fy) do (incf y (if (< y fy) 1 -1))
-                               (keep x y) (push (list x y) road))
-      (setf road (nreverse road))
-      ;; obstacle clusters, never on the road
-      (dotimes (i (floor (* w h) 12))
-        (let ((cx (get-random-value 1 (- w 2)))
-              (cy (get-random-value 1 (- h 2)))
-              (glyph (if (zerop (get-random-value 0 3)) #\~ #\^)))
-          (dotimes (j (get-random-value 1 4))
-            (let ((ox (max 1 (min (- w 2) (+ cx (get-random-value -1 1)))))
-                  (oy (max 1 (min (- h 2) (+ cy (get-random-value -1 1))))))
-              (unless (gethash (cons ox oy) seen)
-                (setf (aref grid oy ox) glyph))))))
-      ;; landmarks strung along the road
-      (let ((n (length road))
-            (k (length waypoints)))
-        (loop for wp in waypoints
-              for i from 1
-              for idx = (min (1- n) (max 1 (floor (* i n) (1+ k))))
-              do (destructuring-bind (wx wy) (nth idx road)
-                   (setf (aref grid wy wx) wp)
-                   (keep wx wy))))
-      (setf (aref grid fy fx) finish-glyph
-            (aref grid sy sx) #\.)
-      ;; pickups on open cells near the road
-      (let ((placed 0))
-        (dolist (cell road)
-          (when (< placed 5)
-            (destructuring-bind (rx ry) cell
-              (let ((ox (max 1 (min (- w 2) (+ rx (get-random-value -2 2)))))
-                    (oy (max 1 (min (- h 2) (+ ry (get-random-value -1 1))))))
-                (when (and (char= (aref grid oy ox) #\.)
-                           (not (gethash (cons ox oy) seen))
-                           (zerop (get-random-value 0 6)))
-                  (setf (aref grid oy ox)
-                        (if (zerop (get-random-value 0 1)) #\$ #\o))
-                  (incf placed)))))))
-      (values (jrpg-gen-rows grid) sx sy))))
+         (road nil) (x sx) (y sy))
+    ;; 1. carve a winding road (the guaranteed path), marked #\,
+    (setf (aref grid y x) #\,)
+    (push (list x y) road)
+    (loop repeat (* w h)
+          while (or (/= x fx) (/= y fy))
+          do (let ((choices nil))
+               (cond ((< x fx) (dotimes (k 3) (push (cons 1 0) choices)))
+                     ((> x fx) (push (cons -1 0) choices)))
+               (cond ((< y fy) (push (cons 0 1) choices))
+                     ((> y fy) (push (cons 0 -1) choices)))
+               (push (if (zerop (get-random-value 0 1)) (cons 0 1) (cons 0 -1)) choices)
+               (let ((step (nth (get-random-value 0 (1- (length choices))) choices)))
+                 (setf x (max 1 (min (- w 2) (+ x (car step))))
+                       y (max 1 (min (- h 2) (+ y (cdr step)))))
+                 (setf (aref grid y x) #\,)
+                 (push (list x y) road))))
+    (loop while (/= x fx) do (incf x (if (< x fx) 1 -1))
+                             (setf (aref grid y x) #\,) (push (list x y) road))
+    (loop while (/= y fy) do (incf y (if (< y fy) 1 -1))
+                             (setf (aref grid y x) #\,) (push (list x y) road))
+    (setf road (nreverse road))
+    ;; 2. ranges, forests, a lake — coherent regions, all sparing the road
+    (dotimes (i (max 2 (floor w 14)))
+      (jrpg-gen-ridge grid w h (floor w 2) '(#\,)))
+    (dotimes (i (max 3 (floor (* w h) 90)))
+      (jrpg-gen-blob grid w h (get-random-value 2 (- w 3)) (get-random-value 2 (- h 3))
+                     (get-random-value 6 16) #\f '(#\, #\^ #\~)))
+    (dotimes (i (max 1 (floor w 22)))
+      (jrpg-gen-blob grid w h (get-random-value 2 (- w 3)) (get-random-value 2 (- h 3))
+                     (get-random-value 10 24) #\~ '(#\, #\^)))
+    ;; 3. landmarks (towns) strung along the road
+    (let ((n (length road)) (k (length waypoints)))
+      (loop for wp in waypoints
+            for i from 1
+            for idx = (min (1- n) (max 1 (floor (* i n) (1+ k))))
+            do (destructuring-bind (wx wy) (nth idx road)
+                 (setf (aref grid wy wx) wp))))
+    ;; 4. finish, and the start on the road
+    (setf (aref grid fy fx) finish-glyph
+          (aref grid sy sx) #\,)
+    ;; 5. a few pickups on open grass beside the road
+    (let ((placed 0))
+      (dolist (cell road)
+        (when (< placed 5)
+          (destructuring-bind (rx ry) cell
+            (let ((ox (max 1 (min (- w 2) (+ rx (get-random-value -2 2)))))
+                  (oy (max 1 (min (- h 2) (+ ry (get-random-value -1 1))))))
+              (when (and (char= (aref grid oy ox) #\.)
+                         (zerop (get-random-value 0 6)))
+                (setf (aref grid oy ox)
+                      (if (zerop (get-random-value 0 1)) #\$ #\o))
+                (incf placed)))))))
+    (values (jrpg-gen-rows grid) sx sy)))
 
 (defvar *jrpg-overworld* nil)
 
@@ -113,7 +135,7 @@
   ;; walk resumes where it left off (the session is not cleared on encounter).
   (encounter-target nil)
   (encounter-rate   0)
-  (encounter-cool   3)
+  (encounter-cool   6)
   (message          "arrows or wasd move.")
   ;; :city is an orthogonal street grid whose lettered doors each lead to their
   ;; own target (the DOORS alist); :road is the winding inter-place road.
@@ -274,8 +296,10 @@ node changes, so a returning walk resumes (encounters do not reset it)."
     (#\! "the grass shakes.")
     (#\$ "an hour glints in the roadside grass, waiting.")
     (#\o "a small corked bottle waits on a flat stone.")
-    (#\~ "the river runs cold and quick.")
-    (t "the road is bright and empty.")))
+    (#\~ "the water lies still and the colour of slate.")
+    (#\, "the road runs on, pale through the grass.")
+    (#\f "trees crowd close to the road.")
+    (t "open grass, and your own long shadow.")))
 
 (defun jrpg-overworld-tile-message (game cell)
   (or (rest (assoc cell
@@ -364,7 +388,7 @@ steps and the steps just after a fight safe."
       (if (plusp (jrpg-overworld-encounter-cool game))
           (decf (jrpg-overworld-encounter-cool game))
           (when (zerop (get-random-value 0 (1- rate)))
-            (setf (jrpg-overworld-encounter-cool game) 3)
+            (setf (jrpg-overworld-encounter-cool game) 6)
             (jump-to-dialog-target target))))))
 
 (defun jrpg-overworld-remember-visited (game x y)
@@ -483,19 +507,30 @@ clamped to the map edges."
               (jrpg-ow-fill (+ sx (/ s 2) -1) (+ sy (/ s 2) -1) 3 3 30))))))))
 
 (defun draw-jrpg-overworld-cell (cell screen-x screen-y)
-  "Distinct tiles over the grid: blocks are shaded solids with a lit top edge,
-water a glinting band, and landmarks/pickups bold glyphs."
+  "Coherent terrain, no grid: plains clean dark, the road a faint worn track,
+mountains peaks, forest little trees, water a glinting pool; landmarks bold."
   (let* ((s  +jrpg-overworld-tile-size+)
          (cx (+ screen-x (/ s 2)))
          (cy (+ screen-y (/ s 2))))
     (case cell
-      (#\.)                              ; open ground: the grid carries it
-      (#\^                               ; obstacle: a shaded block
-       (jrpg-ow-fill (+ screen-x 3) (+ screen-y 3) (- s 6) (- s 6) 150)
-       (jrpg-ow-fill (+ screen-x 3) (+ screen-y 3) (- s 6) 3 215))
-      (#\~                               ; water: a low band with a glint
-       (jrpg-ow-fill (+ screen-x 2) (+ cy 1) (- s 4) (- (/ s 2) 2) 70)
-       (jrpg-ow-fill (+ screen-x 2) (+ cy 1) (- s 4) 2 120))
+      (#\.)                              ; plains: clean
+      (#\,                               ; road: a faint worn track
+       (jrpg-ow-fill (+ screen-x 4) (+ screen-y 4) (- s 8) (- s 8) 24))
+      (#\^                               ; mountain: a peak (narrow up, wide down)
+       (loop for r from 0 below 5
+             for ww = (max 2 (round (* (- s 6) (/ (+ r 1) 5.0))))
+             for rh = (max 1 (round (/ (- s 8) 5.0)))
+             do (jrpg-ow-fill (- cx (/ ww 2)) (+ screen-y 4 (* r rh)) ww rh
+                              (+ 95 (* r 14)))))
+      (#\f                               ; forest: a little tree
+       (loop for r from 0 below 3
+             for ww = (+ 4 (* r 4))
+             do (jrpg-ow-fill (- cx (/ ww 2)) (+ screen-y 4 (* r 4)) ww 4 135))
+       (jrpg-ow-fill (- cx 1) (+ cy 4) 2 4 120))   ; trunk
+      (#\~                               ; water: a glinting pool
+       (jrpg-ow-fill (+ screen-x 2) (+ screen-y 2) (- s 4) (- s 4) 52)
+       (jrpg-ow-fill (+ screen-x 4) (- cy 2) (- s 9) 2 110)
+       (jrpg-ow-fill (+ screen-x 6) (+ cy 3) (- s 12) 2 90))
       (t                                 ; landmark / pickup / finish
        (draw-centered-text (jrpg-overworld-tile-label cell)
                            cx cy 20 (make-color 255 255 255 235))))))
@@ -517,7 +552,6 @@ the way they face reads at a glance."
 
 (defun draw-jrpg-overworld-map (game)
   (multiple-value-bind (cam-x cam-y) (jrpg-overworld-camera game)
-    (jrpg-overworld-draw-grid)
     (jrpg-overworld-draw-trail game cam-x cam-y)
     (loop for row below +jrpg-overworld-view-rows+
           do (loop for col below +jrpg-overworld-view-cols+

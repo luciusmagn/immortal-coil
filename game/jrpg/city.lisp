@@ -33,22 +33,43 @@
     (values (nreverse alist) (nreverse glyphs))))
 
 (defun jrpg-gen-city (w h door-glyphs)
-  "Returns (values rows start-x start-y). Streets every third cell and around
-the rim; buildings (#\\#) between; lamps (#\\+) at some interior crossings; one
-door per glyph carved into a building face that touches a street."
+  "Returns (values rows start-x start-y). An organic city: buildings (#\\#) cut by
+avenues at IRREGULAR spacing (so blocks vary in size, not a Bomberman grid) plus
+the rim, a few random alleys to break big blocks, lamps (#\\+) on the streets, and
+one door per glyph carved into a building face that touches a street."
   (let ((grid (make-array (list h w) :initial-element #\#)))
-    (dotimes (y h)
-      (dotimes (x w)
-        (when (or (zerop (mod x 3)) (zerop (mod y 3))
-                  (= x 0) (= y 0) (= x (1- w)) (= y (1- h)))
-          (setf (aref grid y x) #\.))))
-    (loop for y from 3 below (1- h) by 3
-          do (loop for x from 3 below (1- w) by 3
-                   do (when (zerop (get-random-value 0 2))
-                        (setf (aref grid y x) #\+))))
+    ;; rim street
+    (dotimes (i w) (setf (aref grid 0 i) #\. (aref grid (1- h) i) #\.))
+    (dotimes (i h) (setf (aref grid i 0) #\. (aref grid i (1- w)) #\.))
+    ;; horizontal avenues at irregular rows (blocks 2-4 tall)
+    (let ((y (+ 1 (get-random-value 1 2))))
+      (loop while (< y (1- h))
+            do (dotimes (xx w) (setf (aref grid y xx) #\.))
+               (incf y (get-random-value 3 5))))
+    ;; vertical avenues at irregular columns (blocks 2-5 wide)
+    (let ((x (+ 1 (get-random-value 1 2))))
+      (loop while (< x (1- w))
+            do (dotimes (yy h) (setf (aref grid yy x) #\.))
+               (incf x (get-random-value 3 6))))
+    ;; a few short alleys to break the larger blocks
+    (dotimes (i (max 2 (floor (* w h) 70)))
+      (let ((ax (get-random-value 1 (- w 2)))
+            (ay (get-random-value 1 (- h 2)))
+            (len (get-random-value 2 4))
+            (horiz (zerop (get-random-value 0 1))))
+        (dotimes (k len)
+          (let ((px (min (- w 2) (+ ax (if horiz k 0))))
+                (py (min (- h 2) (+ ay (if horiz 0 k)))))
+            (setf (aref grid py px) #\.)))))
+    ;; lamps on some street cells
+    (dotimes (i (max 3 (floor (* w h) 42)))
+      (let ((lx (get-random-value 1 (- w 2)))
+            (ly (get-random-value 1 (- h 2))))
+        (when (char= (aref grid ly lx) #\.)
+          (setf (aref grid ly lx) #\+))))
     (flet ((street-p (x y)
              (and (<= 0 x) (< x w) (<= 0 y) (< y h)
-                  (char= (aref grid y x) #\.))))
+                  (member (aref grid y x) '(#\. #\+) :test #'char=))))
       (dolist (g door-glyphs)
         (loop repeat 400
               do (let ((x (get-random-value 1 (- w 2)))
@@ -120,7 +141,6 @@ door per glyph carved into a building face that touches a street."
 
 (defun draw-jrpg-city-map (game)
   (multiple-value-bind (cam-x cam-y) (jrpg-overworld-camera game)
-    (jrpg-overworld-draw-grid)
     (jrpg-overworld-draw-trail game cam-x cam-y)
     (loop with s = +jrpg-overworld-tile-size+
           for row below +jrpg-overworld-view-rows+
