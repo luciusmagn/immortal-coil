@@ -6,6 +6,43 @@
 ;;; is the next watch on the Lake of Hali. Composure — the will to keep your
 ;;; own face on — decides whether the player can still walk out.
 
+;;; The court before the King's door. Reached on every approach (grafted in
+;;; front of jrpg/demon-lord). The player overhears Cassilda and Camilla — the
+;;; masque, the unmasking — then may interrogate them. Living world.
+
+(dialog-particles "carcosa/court" :motes :fade-seconds 3.0)
+(dialog-sound "carcosa/court" "audio/jrpg/bell.wav" :volume 0.2)
+
+(dialog-text "carcosa/court"
+             "before the King's door, two women keep a court of their own: one at a cold harp, one at a window on the lake. they are dressed for a masque that has not begun, or has not ended."
+             :next "carcosa/court-overheard")
+
+(dialog-conversation "carcosa/court-overheard"
+                     (dialog-left "Cassilda"
+                                  "they always ask him to unmask, at the end.")
+                     (dialog-right "Camilla"
+                                   "i asked him, once. he said he wore no mask. i saw that it was true. i have not been warm since.")
+                     (dialog-left "Cassilda"
+                                  "and still we dress for the masque. someone must, or it is only a lake and a tired man at a desk.")
+                     :next "carcosa/court-questions")
+
+(dialog-interrogation "carcosa/court-questions"
+                      "Cassilda sets the harp aside. Camilla does not turn from the lake."
+                      (:next "jrpg/demon-lord")
+                      (:continue-label "go to the King's door")
+                      ("ask who the King was before"
+                       :id "before"
+                       :speaker "Cassilda"
+                       "a man who came off the lake with the crown already on him and no memory of the hand that set it there. he answers letters now. it steadies him. do not take that from him in a hurry.")
+                      ("ask about the masque"
+                       :id "masque"
+                       :speaker "Camilla"
+                       "it never starts and never ends. we all unmask but the King. the night you understand why is the night you stop leaving. i understood on a Tuesday.")
+                      ("ask about the songs"
+                       :id "songs"
+                       :speaker "Cassilda"
+                       "they die in the third line. his sign is on every throat from here to the strand. end him and they come back, the summons says. the summons has never come up here to check."))
+
 (dialog-particles "carcosa/unmask" :motes :fade-seconds 4.0)
 (dialog-sound "carcosa/no-mask" "audio/jrpg/bell.wav" :volume 0.26)
 (dialog-sound "carcosa/crown-offer" "audio/jrpg/bell.wav" :volume 0.22)

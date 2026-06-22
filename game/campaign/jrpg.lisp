@@ -519,7 +519,7 @@
 
 (dialog-text "jrpg/demon-hall"
              "inside, a long carpet runs to a tall door. a brass plate reads W. HALE, KEEPER, the letters worn soft. a rack beside it holds three visitor swords and one mop."
-             :next "jrpg/demon-lord")
+             :next "carcosa/court")
 
 (dialog-conversation "jrpg/demon-lord"
                      (dialog-left "the King"
