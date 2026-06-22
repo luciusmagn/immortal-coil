@@ -83,7 +83,21 @@
 
 (dialog-text "carcosa/court"
              "before the high doors, two women keep a court of their own: one at a cold harp, one at a window on the lake, both dressed for a masque that has not begun, or has not ended."
-             :next "carcosa/court-overheard")
+             :next "carcosa/cassilda-song-1")
+
+;; Cassilda's Song, verbatim from Chambers (public domain), sung at the harp.
+(dialog-particles "carcosa/cassilda-song-1" :tatters :fade-seconds 3.0)
+(dialog-particles "carcosa/cassilda-song-2" :tatters :fade-seconds 3.0)
+
+(dialog-say "carcosa/cassilda-song-1"
+            "Cassilda"
+            "Along the shore the cloud waves break, the twin suns sink behind the lake, the shadows lengthen in Carcosa. Strange is the night where black stars rise, and strange moons circle through the skies, but stranger still is lost Carcosa."
+            :next "carcosa/cassilda-song-2")
+
+(dialog-say "carcosa/cassilda-song-2"
+            "Cassilda"
+            "Songs that the Hyades shall sing, where flap the tatters of the King, must die unheard in dim Carcosa. Song of my soul, my voice is dead; die thou, unsung, as tears unshed shall dry and die in lost Carcosa."
+            :next "carcosa/court-overheard")
 
 (dialog-on-enter "carcosa/court-overheard" '(jrpg-lean-class :mourner 1))
 
