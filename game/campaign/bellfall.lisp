@@ -1,7 +1,7 @@
 ;;; Bellfall: the jrpg path's second dark branch. Nine quiet years of
 ;;; terms, then the midnight bell, the funeral on the hill, and the year
 ;;; the notices have to start again. Entered through room four on the
-;;; terms answer; exits through the choice of what Oakbarrow does next.
+;;; terms answer; exits through the choice of what Demhe does next.
 
 (dialog-text "bellfall/asleep"
              "the sleep is the good kind. the winter that starts tomorrow is the first quiet one in nine years. it keeps its word. so do the eight after it."
@@ -45,7 +45,7 @@
              :next "bellfall/bell")
 
 (dialog-text "bellfall/bell"
-             "not the supper bell. not Pell's handbell. a bell from the north, deep enough to come through the ground as much as the air, one slow stroke, and then another, and Oakbarrow has never heard it before and knows it at once."
+             "not the supper bell. not Pell's handbell. a bell from the north, deep enough to come through the ground as much as the air, one slow stroke, and then another, and Demhe has never heard it before and knows it at once."
              :next "bellfall/square-night")
 
 (dialog-text "bellfall/square-night"
@@ -72,7 +72,7 @@
                      (dialog-left "Pell"
                                   "the tower door stands open. the rack of swords is out on the grass, set in rows, polished. and the bell rope is still moving, and there is nobody on it.")
                      (dialog-right "{player-name}"
-                                   "Hale.")
+                                   "the King.")
                      (dialog-left "Pell"
                                   "there is a grave dug. it was dug neat, and signed at the head, the way he did everything. it is waiting for him and he is laid beside it, waiting for us. he knew we would want to do the carrying.")
                      :next "bellfall/mira-page")
@@ -85,9 +85,9 @@
                      (dialog-left "Mira"
                                   "fifty-nine went up like all of them. he came down once, to this table, and asked me what the terms were. then he went back up and the old lord came down to this grave-yard, and the notices changed hands.")
                      (dialog-right "{player-name}"
-                                   "Hale was a sixty-seven once.")
+                                   "the King was a sixty-seven once.")
                      (dialog-left "Mira"
-                                  "Hale was a fifty-nine. the tower is not a monster's house, it is a post. it has always been held by someone's child who asked about terms. you asked about terms.")
+                                  "the King was a fifty-nine. the tower is not a monster's house, it is a post. it has always been held by someone's child who asked about terms. you asked about terms.")
                      :next "bellfall/terms-questions")
 
 (dialog-interrogation "bellfall/terms-questions"
@@ -120,7 +120,7 @@
              :next "bellfall/procession")
 
 (dialog-text "bellfall/procession"
-             "Oakbarrow walks the north road together, the whole village, the first time in anyone's memory. Oren carries the polished spear at the front, point down, finally with its use: spears are for carrying ahead of people, in the end."
+             "Demhe walks the north road together, the whole village, the first time in anyone's memory. Oren carries the polished spear at the front, point down, finally with its use: spears are for carrying ahead of people, in the end."
              :next "bellfall/toll")
 
 (dialog-text "bellfall/toll"
@@ -144,12 +144,12 @@
              :next "bellfall/grave")
 
 (dialog-text "bellfall/grave"
-             "the village buries the demon lord of the north tower with bread, barley, and the silence it saves for its own. Mira reads entry fifty-nine aloud, name first, and enters the settled date at the graveside, in ink, on a book held flat by Pell."
+             "the village buries the King of the high tower with bread, barley, and the silence it saves for its own. Mira reads entry fifty-nine aloud, name first, and enters the settled date at the graveside, in ink, on a book held flat by Pell."
              :next "bellfall/grave-words")
 
 (dialog-conversation "bellfall/grave-words"
                      (dialog-left "Mira"
-                                  "Walter Hale. settled, today, by terms, having held the post thirty-one years and kept the valley a valley. left behind: the village of Oakbarrow, in its entirety.")
+                                  "Walter the King. settled, today, by terms, having held the post thirty-one years and kept the valley a valley. left behind: the village of Demhe, in its entirety.")
                      (dialog-right "{player-name}"
                                    "the whole column?")
                      (dialog-left "Mira"
@@ -199,7 +199,7 @@
               :next "bellfall/counting")
 
 (dialog-text "bellfall/counting"
-             "the slime count climbs all winter. the chain goes up earlier each week. by midwinter the toll board is half full and Pell has stopped going down to the fair-fund jar, because the jar is now the watch fund, by unspoken vote."
+             "the tatter count climbs all winter. the chain goes up earlier each week. by midwinter the toll board is half full and Pell has stopped going down to the fair-fund jar, because the jar is now the watch fund, by unspoken vote."
              :next "bellfall/roster")
 
 (dialog-text "bellfall/roster"
@@ -279,11 +279,11 @@
              :next "bellfall/take-years")
 
 (dialog-text "bellfall/take-years"
-             "years on, a young visitor from Oakbarrow climbs the hill with a notice in their pocket and Toma's loaf in their pack."
+             "years on, a young visitor from Demhe climbs the hill with a notice in their pocket and Toma's loaf in their pack."
              :next "bellfall/take-years-2")
 
 (dialog-text "bellfall/take-years-2"
-             "you take a visitor sword down from the rack, and set it on the carpet between you, and hope, the way Hale must have hoped, that this one asks about terms."
+             "you take a visitor sword down from the rack, and set it on the carpet between you, and hope, the way the King must have hoped, that this one asks about terms."
              :next "bellfall/end")
 
 (dialog-on-enter "bellfall/hold"
@@ -302,5 +302,5 @@
              :next "bellfall/end")
 
 (dialog-text "bellfall/end"
-             "whatever Oakbarrow chose, the supper bell still rings, ordinary as weather, and sleep, when it takes you, takes you all at once, with the deep bell of the north tower somewhere under it, patient, keeping its own count."
+             "whatever Demhe chose, the supper bell still rings, ordinary as weather, and sleep, when it takes you, takes you all at once, with the deep bell of the high tower somewhere under it, patient, keeping its own count."
              :next "sys/reboot")

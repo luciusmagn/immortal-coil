@@ -1,5 +1,5 @@
 ;;; The midsummer fair: the jrpg path's bright branch. Game stalls,
-;;; prizes, the lantern launch, and Hale down from the tower in a plain
+;;; prizes, the lantern launch, and the King down from the tower in a plain
 ;;; coat. Seeded: stall order, prizes, and several beats derive from
 ;;; festival-seed, rolled once into the store on entry, so a playthrough
 ;;; keeps its fair across save and load while the next one gets its own.
@@ -260,19 +260,19 @@
              :next "festival/vane-arrives")
 
 (dialog-text "festival/vane-arrives"
-             "a little after noon, a tall man in a plain grey coat buys a travel loaf at Toma's stall, pays in old coins, and joins the ring toss line like anyone. it takes the square a moment. it is Hale."
+             "a little after noon, a tall man in a plain grey coat buys a travel loaf at Toma's stall, pays in old coins, and joins the ring toss line like anyone. it takes the square a moment. it is the King."
              :next "festival/vane-toss")
 
 (dialog-text "festival/vane-toss"
-             "the demon lord of the north tower is terrible at ring toss. all three rings go wide, the last one into the pie. he pays for the pie. nobody makes a thing of it. that is Oakbarrow's whole genius. he stays for another round."
+             "the King of the high tower is terrible at ring toss. all three rings go wide, the last one into the pie. he pays for the pie. nobody makes a thing of it. that is Demhe's whole genius. he stays for another round."
              :next "festival/vane-word")
 
 (dialog-conversation "festival/vane-word"
-                     (dialog-left "Hale"
+                     (dialog-left "the King"
                                   "your village is good at this. the tower does not have holidays. it has anniversaries. they are not the same thing.")
                      (dialog-right "{player-name}"
                                    "you could come down for the next one.")
-                     (dialog-left "Hale"
+                     (dialog-left "the King"
                                   "i believe that is now in the terms. Mira entered it while i was losing to the pie.")
                      :next "festival/afternoon")
 
@@ -305,7 +305,7 @@
              :next "festival/launch")
 
 (dialog-text "festival/launch"
-             "the lanterns go up together on a count Oren gives like a gate order. the whole sky over Oakbarrow fills with slow warm lights. nobody says anything for a while. there is nothing that needs improving."
+             "the lanterns go up together on a count Oren gives like a gate order. the whole sky over Demhe fills with slow warm lights. nobody says anything for a while. there is nothing that needs improving."
              :next #'festival-lantern-target)
 
 (dialog-text "festival/lantern-mira"
@@ -325,7 +325,7 @@
              :next "festival/embers")
 
 (dialog-text "festival/embers"
-             "the walk back down the hedge lanes is lit by lantern stubs and full of the slow traffic of people carrying sleeping children. Hale says good night at the gate, formally, to each person, and means every one."
+             "the walk back down the hedge lanes is lit by lantern stubs and full of the slow traffic of people carrying sleeping children. the King says good night at the gate, formally, to each person, and means every one."
              :next "festival/inn-night")
 
 (dialog-text "festival/inn-night"

@@ -94,10 +94,10 @@
                        :id "stop"
                        :speaker "Mira"
                        "the hill feeds anyway. it just stops being choosy. a posted notice picks who comes. an unposted hill takes who wanders. we learned that the loud way.")
-                      ("ask whether Hale knows his part"
+                      ("ask whether the King knows his part"
                        :id "vane"
                        :speaker "Mira"
-                       "Hale wrote half the terms. the post is not a punishment, it is a chair somebody sits in so the valley keeps its shape. he sits it well. that is the whole tragedy.")
+                       "the King wrote half the terms. the post is not a punishment, it is a chair somebody sits in so the valley keeps its shape. he sits it well. that is the whole tragedy.")
                       ("ask how she came to keep the book"
                        :id "keeper"
                        :speaker "Mira"
@@ -112,7 +112,7 @@
              :next "ledger/oren-count")
 
 (dialog-text "ledger/oren-count"
-             "Oren's toll board counts slimes because the slime count is how the village prices a year's notice. six last week means a cheap, kind year. the year entry sixty-six went up, the board had no room left for marks."
+             "Oren's toll board counts tatters because the tatter count is how the village prices a year's notice. six last week means a cheap, kind year. the year entry sixty-six went up, the board had no room left for marks."
              :next "ledger/back-room")
 
 (dialog-text "ledger/payouts"
@@ -247,11 +247,11 @@
              :next "ledger/spear-watch")
 
 (dialog-text "ledger/spear-watch"
-             "Oren walks the chain at dusk and touches each post once, an old soldier's inventory, and you realize the polished spear has never been about slimes. it is for the year the terms fail. there is always a year the terms fail. the book says so."
+             "Oren walks the chain at dusk and touches each post once, an old soldier's inventory, and you realize the polished spear has never been about tatters. it is for the year the terms fail. there is always a year the terms fail. the book says so."
              :next "ledger/gate-dusk")
 
 (dialog-text "ledger/square-still"
-             "and it is still Oakbarrow. the bread still steams. Oren still polishes the spear nobody throws. both things are true. the book's whole weight is that it never makes you choose between them."
+             "and it is still Demhe. the bread still steams. Oren still polishes the spear nobody throws. both things are true. the book's whole weight is that it never makes you choose between them."
              :next "ledger/oven-watch")
 
 (dialog-text "ledger/gate-dusk"
@@ -315,7 +315,7 @@
              :next "ledger/supper-watch")
 
 (dialog-text "ledger/supper-watch"
-             "the traveler sits at the long table and is fed like family: the good stew, the heel of the loaf, Oren's slime count told wrong on purpose for them too. every kindness is real. that is the part you could not have understood this morning."
+             "the traveler sits at the long table and is fed like family: the good stew, the heel of the loaf, Oren's tatter count told wrong on purpose for them too. every kindness is real. that is the part you could not have understood this morning."
              :next "ledger/supper-watch-2")
 
 (dialog-text "ledger/supper-watch-2"
