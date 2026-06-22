@@ -163,13 +163,26 @@ returns him instead to a shore under two suns, a still lake, a crown someone
 set on him as a last kindness. No title card; one or two diegetic beats. The
 JRPG deep route pays this off — the King is that captain.
 
-## Build order
+## Build order — IMPLEMENTED 2026-06-22
 
-1. plan (this doc) + narrative.md update.
-2. yellow crown marker.
-3. spine reframe (jrpg.lisp) into Carcosa.
-4. creatures/enemies + items in combat/state.
-5. King boss + mutiny origin stitch.
-6. interrogations + living NPCs.
-7. reframe the JRPG branches (ledger/bellfall/festival).
-8. docs + memory; lint and commit per slice.
+1. plan (this doc) + narrative.md update. DONE.
+2. yellow crown marker: `yellow-sign-color`, `*yellow-crown-prefixes*`,
+   `yellow-crown-node-p`, `tree-draw-crown` (source/util.lisp, tree-view.lisp). DONE.
+3. spine reframe (game/campaign/jrpg.lisp) into Carcosa: Demhe on the Lake of
+   Hali, twin suns, the King in the high tower, the Yellow Sign on the summons,
+   the songs that stop. DONE.
+4. creatures (game/jrpg/combat.lisp: tatter, drowned, byakhee, courtier,
+   phantom sprites) + composure stat and recoverable items (game/jrpg/state.lisp).
+   DONE.
+5. the throne (game/campaign/carcosa.lisp): unmask -> the captain reveal -> the
+   crown-offer -> branch (take the crown / refuse / free the songs), composure
+   gated; mutiny/shore origin on the ship path. DONE.
+6. living court: Cassilda and Camilla (eavesdropped, then interrogated) before
+   the door; the Stranger interrogation in the deep branch. DONE.
+7. branches reframed (ledger/bellfall/festival) into Carcosa. DONE.
+8. the Lake of Hali crossing (maze reuse) + a pallid courtier on the causeway.
+   DONE.
+
+Entry: matchbook -> jrpg/inn. Deep throne: jrpg/sword-choice -> carcosa/unmask.
+The crown marker tags `jrpg/ ledger/ bellfall/ festival/ carcosa/`. The ship
+seed `mutiny/shore` stays unmarked so the ship route does not foreshadow it.
