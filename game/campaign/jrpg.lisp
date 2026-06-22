@@ -132,6 +132,7 @@
 (dialog-pick "jrpg/read-choice"
              "Scott's copy of the Play lies open at the end of the first act. the second waits."
              (dialog-option "read on into the second act" "jrpg/read-second")
+             (dialog-option "read the strange middle pages first" "jrpg/prophets")
              (dialog-option "close the book" "jrpg/watchman-comes"))
 
 (dialog-on-enter "jrpg/read-second"
@@ -170,7 +171,7 @@
 
 (dialog-text "jrpg/leave-studio"
              "you go down into a city that has thinned, the way a held note thins. the gas lamps are the same number and in the wrong order. one shopfront is still lit: an armourer's, a suit of mail white in the window, a stair behind it going up to a light."
-             :next "jrpg/wilde-street")
+             :next "jrpg/after-studio-fork")
 
 
 ;;; THE REPAIRER OF REPUTATIONS — Hawberk's, and the room above it
@@ -263,14 +264,14 @@
 
 (dialog-text "jrpg/after-castaigne"
              "Hildred sits down hard, the title gone out of him, and weeps that the cat has got Mr. Wilde. the cat has: the small scarred man bleeds from the throat in his high chair, the ledger fallen open at your name, twice. you go before the noise brings anyone. the cabinet you leave shut, this time."
-             :next "jrpg/mask-street")
+             :next "jrpg/repairer-fork")
 
 (dialog-on-enter "jrpg/castaigne-down"
                  '(jrpg-heal 6))
 
 (dialog-text "jrpg/castaigne-down"
              "he has your collar and the razor at it when the cat, for its own reasons, takes Mr. Wilde's throat instead, and Hildred forgets you entirely for the man who promised him a crown. you leave them to it. the ledger lies open at your name, twice."
-             :next "jrpg/mask-street")
+             :next "jrpg/repairer-fork")
 
 
 ;;; THE MASK — Boris's studio and the marble pool
@@ -358,3 +359,170 @@
 (dialog-text "jrpg/threshold"
              "the streets run out. the organ is gone, or it is everywhere. above the last roofs the stars are wrong, black ones, and two suns are going down that never finish, and a lake you can smell from here. you have read enough of the second act to be expected."
              :next "carcosa/cross")
+
+
+;;; ===========================================================================
+;;; Discoverable episodes — the rest of Chambers, off the spine but in depth.
+;;; Each is an optional detour that rejoins the main road, and each turns on the
+;;; same engine as the King: time that will not move on, people kept in a last
+;;; gesture. THE DEMOISELLE D'YS (a fugue out of time), THE PROPHETS' PARADISE
+;;; (the Play's looping middle pages), and the four Paris street stories (an old
+;;; quarter the Sign keeps in its last good minute).
+;;; ===========================================================================
+
+
+;;; THE DEMOISELLE D'YS — a green lane off the thinned city drops the player
+;;; five centuries back onto the Breton moor, into a love that has already
+;;; happened and a death already on the stone. The falconer is named Hastur,
+;;; the same name a scarred man gave a god an hour ago.
+
+(dialog-pick "jrpg/after-studio-fork"
+             "you turn for the armourer's lit stair. between you and it opens a green lane, gorse and sea-wind, that no city has any business holding."
+             (dialog-option "take the armourer's stair" "jrpg/wilde-street")
+             (dialog-option "follow the green lane" "jrpg/dys-lane"))
+
+(dialog-particles "jrpg/dys-meet" :motes :fade-seconds 3.0)
+
+(dialog-text "jrpg/dys-lane"
+             "the lane gives out onto open moor at sundown, gorse to every horizon, the sea somewhere behind the wind. you are dressed for a hunt you never planned, a fowling-piece on your shoulder. the city is an hour and five hundred years from here."
+             :next "jrpg/dys-meet")
+
+(dialog-text "jrpg/dys-meet"
+             "out of the gorse come falconers in old dress, hooded hawks on their wrists. a girl rides at their head, gloved, grave, young. she greets you by no name and as one expected. she is the Demoiselle Jeanne d'Ys."
+             :next "jrpg/dys-questions")
+
+(dialog-interrogation "jrpg/dys-questions"
+                      "Jeanne d'Ys waits, a gloved hand on a hooded bird. her falconers hold off a little. the chief of them she calls Hastur."
+                      (:next "jrpg/dys-hawk")
+                      (:continue-label "ride on with her")
+                      ("ask what year it is"
+                       :id "year"
+                       :speaker "Jeanne"
+                       "she gives a year five centuries gone, as plainly as you would give this one, and does not understand the question. here it is the only year there is.")
+                      ("ask after the falconer Hastur"
+                       :id "hastur"
+                       :speaker "Jeanne"
+                       "her master of hawks; incomparable, she says, on the green. you heard the name once tonight from a scarred man, said of a god. she has never left this moor to hear it said so.")
+                      ("ask why she expected you"
+                       :id "expected"
+                       :speaker "Jeanne"
+                       "she has waited for a stranger, she says, and prayed for one, longer than is decent to say. she colours and looks at the bird, not at you. her falconers look at the ground."))
+
+(dialog-text "jrpg/dys-hawk"
+             "she teaches you the lure — swing it, let the hawk taste the quarry, faire courtoisie a l'oiseau. the day is long and good and does not spend itself. you could stay inside it. that is the whole danger of it."
+             :next "jrpg/dys-viper")
+
+(dialog-on-enter "jrpg/dys-viper"
+                 '(jrpg-spend-composure 2))
+
+(dialog-text "jrpg/dys-viper"
+             "by the stream the hawks scream. a grey snake on the warm rock, a black V on its neck. she clings to your arm — don't, i am afraid. for me? for you, she says. i love you. then a sting at the ankle, and the light in your eyes goes out."
+             :next "jrpg/dys-wake")
+
+(dialog-text "jrpg/dys-wake"
+             "you wake among ivied ruins, great trees grown through the floor, a falcon climbing the sky in narrowing circles until it is gone. where the manor stood, a crumbling shrine to our Lady of Sorrows."
+             :next "jrpg/dys-tomb")
+
+(dialog-on-enter "jrpg/dys-tomb"
+                 '(jrpg-grant-item "jrpg-play-scraps")
+                 '(setf (jrpg-value "jrpg-dys-seen") t))
+
+(dialog-text "jrpg/dys-tomb"
+             "carved beneath her: PRAY FOR THE SOUL OF JEANNE D'YS, WHO DIED IN HER YOUTH FOR LOVE OF {player-name}, A STRANGER. A.D. 1573. on the icy slab a woman's glove, still warm. you know the kept now, before Carcosa ever names it."
+             :next "jrpg/dys-out")
+
+(dialog-text "jrpg/dys-out"
+             "you stand, and the ruins are a city corner again, the armourer's light ahead where the lane was. your foot still drags from the bite. the glove is in your coat now, warm as the Sign and just as unasked-for."
+             :next "jrpg/wilde-street")
+
+
+;;; THE FOUR PARIS STREETS — an old quarter the Sign has reached the way it
+;;; reaches everything: by keeping it. Four small human stories, each held in
+;;; its last good minute. Discoverable, then left to its keeping.
+
+(dialog-pick "jrpg/repairer-fork"
+             "from the armourer's the streets offer two ways down."
+             (dialog-option "on toward the white-lit court" "jrpg/mask-street")
+             (dialog-option "down into the old quarter, where the gas still burns warm" "jrpg/old-quarter"))
+
+(dialog-particles "jrpg/old-quarter" :snow :fade-seconds 3.0)
+
+(dialog-on-enter "jrpg/old-quarter"
+                 '(jrpg-spend-composure 1))
+
+(dialog-text "jrpg/old-quarter"
+             "the old quarter, where the gas still burns warm and yellow. students, lovers, small lives — and none of it moves on. each corner is a life held in its last good minute, the way Carcosa keeps. four streets; you walk them."
+             :next "jrpg/old-quarter-streets")
+
+(dialog-interrogation "jrpg/old-quarter-streets"
+                      "four corners, four held moments. walk each, or leave the quarter to its keeping."
+                      (:next "jrpg/old-quarter-out")
+                      (:continue-label "leave the quarter")
+                      ("the Street of the Four Winds"
+                       :id "winds"
+                       :speaker "the quarter"
+                       "a grey cat brings a dead woman's ribbon up the stair to the painter Severn. he finds Sylvia cold, kisses her; the cat purrs on his knee toward a dawn that never comes.")
+                      ("the Street of the First Shell"
+                       :id "shell"
+                       :speaker "the quarter"
+                       "a plaque reads HERE FELL THE FIRST SHELL. the siege of '70: a girl at a window the instant before it lands. it does not land. it does not not land. the quarter's loudest moment, kept silent.")
+                      ("the Street of Our Lady of the Fields"
+                       :id "lady"
+                       :speaker "the quarter"
+                       "the quietest street. a young man calls a demain, Valentine to a girl at a gate. tomorrow is the day he means, and it is always the day he means, and tomorrow never comes to be.")
+                      ("Rue Barree"
+                       :id "rue"
+                       :speaker "the quarter"
+                       "the students named a girl Rue Barree — street closed — because none could reach her. one, Selby, loves her and never says it. she passes with a chilling smile; he is forever one breath from speaking."))
+
+(dialog-text "jrpg/old-quarter-out"
+             "you leave them their last good minute. the warm gas dims behind you, going nowhere, and you climb back toward the Sign's cold light."
+             :next "jrpg/mask-street")
+
+
+;;; THE PROPHETS' PARADISE — the Play's looping middle pages, between the acts.
+;;; Eight short visions, each a snake that eats its tail; the loop is the King's
+;;; time-shatter in miniature, and the Green Room's white mask is his.
+
+(dialog-particles "jrpg/prophets" :ash :fade-seconds 2.5)
+
+(dialog-on-enter "jrpg/prophets"
+                 '(jrpg-spend-composure 2)
+                 '(jrpg-grant-item "jrpg-play-scraps"))
+
+(dialog-interrogation "jrpg/prophets"
+                      "the middle pages — not the first act, not the second. eight short visions, each a snake that eats its tail. you read them; they read you back."
+                      (:next "jrpg/read-choice")
+                      (:continue-label "shut the middle pages")
+                      ("The Studio"
+                       :id "p-studio"
+                       :speaker "the Play"
+                       "a man waits in his studio for a woman he will know when she comes. seek her throughout the world, says Death. my world is here, he answers. the footsteps in the street below have already passed.")
+                      ("The Phantom"
+                       :id "p-phantom"
+                       :speaker "the Play"
+                       "the Phantom of the Past will go no further. if you find in me a friend, let us turn back together, she sighs. he seizes her, white with anger; she resists. she will always resist.")
+                      ("The Sacrifice"
+                       :id "p-sacrifice"
+                       :speaker "the Play"
+                       "a field of flowers whiter than snow. a woman pours blood on them from a jar marked with a thousand names. i have killed him i loved, she cries. the world's athirst; now let it drink.")
+                      ("Destiny"
+                       :id "p-destiny"
+                       :speaker "the Play"
+                       "the bridge which few may pass. pass! cries the keeper. there is time, you laugh — and he smiles and shuts the gates. young and old are refused. you laugh: there is time.")
+                      ("The Throng"
+                       :id "p-throng"
+                       :speaker "the Play"
+                       "you stand with Pierrot in the thick of the crowd; all eyes on you. he has robbed your purse! Truth holds up a mirror. arrest Truth, you cry, forgetting what it was you lost.")
+                      ("The Jester"
+                       :id "p-jester"
+                       :speaker "the Play"
+                       "was she fair? you ask. the jester only listens to his cap-bells. stabbed, he titters. she kissed him at the gate; in the hall, his brother's welcome touched his heart.")
+                      ("The Green Room"
+                       :id "p-green"
+                       :speaker "the Play"
+                       "the Clown turns his powdered face to the mirror. who can compare with me in my white mask? who can compare? you ask Death beside you. i am paler still, says Death.")
+                      ("The Love Test"
+                       :id "p-love"
+                       :speaker "the Play"
+                       "if you love, wait no longer, says Love; give her these jewels that would dishonour her. she treads them down, sobbing: teach me to wait — i love you. then wait, says Love."))

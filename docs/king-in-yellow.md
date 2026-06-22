@@ -135,4 +135,35 @@ next), or may be let go changed. The buried captain-truth sits beneath it.
 5. Carcosa rebuilt to the canonical King; the buried captain-truth kept dreadful.
 6. companions-later, items, composure tuned across both acts.
 7. retire or re-stitch the old branches (ledger/bellfall/festival) — they are
-   the demon-lord skeleton and do not belong as-is.
+   the demon-lord skeleton and do not belong as-is. DONE (deleted).
+8. cover the rest of Chambers as discoverable detours off the spine. DONE.
+
+## Story coverage (all ten of *The King in Yellow*)
+
+The four mythos stories are the spine (above). The remaining six are
+**discoverable detours** — optional, each rejoining the main road, each turned
+by the same engine as the King: time that will not move on, people kept in a
+last gesture.
+
+- **The Repairer of Reputations** — Hawberk's, Mr. Wilde, the register, the
+  crown, Hildred-Rex. (spine)
+- **The Mask** — Boris, Geneviève, the marble pool, the marble-touched. (spine)
+- **In the Court of the Dragon** — the organist, the flight, the crossing.
+  (spine)
+- **The Yellow Sign** — Scott, Tessie, the clasp, the watchman. (spine)
+- **The Demoiselle d'Ys** — `jrpg/dys-*`, a green lane off the thinned city
+  (fork at `jrpg/leave-studio`). A fugue five centuries back onto the Breton
+  moor: Jeanne d'Ys, the falconer **Hastur** (the same name Wilde gives the
+  god — the time-shatter blurring man and god), the viper, and waking to her
+  tomb dated 1573, the stranger she died for named with **the player's own
+  name**. The closed time-loop that teaches "the kept" before Carcosa names it.
+- **The Prophets' Paradise** — `jrpg/prophets`, the Play's looping middle pages
+  (option at `jrpg/read-choice`). All eight visions (The Studio, The Phantom,
+  The Sacrifice, Destiny, The Throng, The Jester, The Green Room, The Love
+  Test); each loops on itself — the King's time-shatter in miniature — and The
+  Green Room's white mask is his. Reading spends composure.
+- **The four Paris streets** (The Four Winds, The First Shell, Our Lady of the
+  Fields, Rue Barrée) — `jrpg/old-quarter-*`, an old quarter the Sign keeps in
+  its last good minute (fork at the Repairer's exit). Four small human stories,
+  each held one breath from moving on, framed so the realist romances belong to
+  the same time-keeping mythos.
