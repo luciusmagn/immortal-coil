@@ -84,19 +84,21 @@
         (setf (aref buf i) (float (* 0.5 env s) 1.0))))
     buf))
 
-;;; The crown's shimmer: a cluster of high sines beating into a bright,
-;;; slightly wrong gold, swelling and ringing out. For the flash and throne.
+;;; The crown bell: a warm low strike with harmonic partials and a long, soft
+;;; decay, plus a faint high shimmer — regal and clean, for the flash and throne.
 (defun gen-crown ()
-  (let* ((dur 1.6) (buf (make-buf dur))
-         (parts '(660.0 990.0 1320.0 1657.0 1979.0)))
+  (let* ((dur 1.9) (buf (make-buf dur)) (f0 294.0))
     (dotimes (i (length buf))
       (let* ((tt (/ i (float *sr*)))
-             (env (* (min 1.0 (/ tt 0.25)) (exp (* -1.6 tt))))
-             (shimmer (+ 1.0 (* 0.01 (tone 7.0 tt))))
-             (s 0.0))
-        (dolist (f parts)
-          (incf s (* 0.2 (tone (* f shimmer) tt))))
-        (setf (aref buf i) (float (* 0.42 env s) 1.0))))
+             (att (min 1.0 (/ tt 0.010)))
+             (env (* att (exp (* -2.1 tt))))
+             (s (+ (* 0.60 (tone f0 tt))
+                   (* 0.30 (tone (* f0 2.0) tt))
+                   (* 0.16 (tone (* f0 3.0) tt))
+                   (* 0.09 (tone (* f0 4.0) tt))
+                   ;; a faint, quickly-fading high shimmer
+                   (* 0.05 (exp (* -3.0 tt)) (tone (* f0 6.0) tt)))))
+        (setf (aref buf i) (float (* 0.5 env s) 1.0))))
     buf))
 
 ;;; The lake of Hali: slow noise surf swelling and falling, a far gull cry.
