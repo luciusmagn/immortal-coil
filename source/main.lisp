@@ -19,8 +19,11 @@
       (progn
         (load-title-logo)
         (load-audio)
-        (when (eq *mode* :menu)
-          (play-title-music)))
+        (cond
+          ((eq *mode* :menu) (play-title-music))
+          ;; a window reopen (e.g. a fullscreen toggle) reloads all audio
+          ;; mid-game; bring the story track back rather than going silent
+          ((eq *mode* :game) (apply-restored-story-music))))
     (error (condition)
       (runtime-warn "Could not set up window resources: ~a" condition))))
 
@@ -91,6 +94,10 @@
                                     (asset shader-asset)))
               (update-bgm-streams-maybe))))
       (normalize-window-state-before-close)
+      ;; carry the playing story track across the close/reopen so a fullscreen
+      ;; toggle does not leave the game silent
+      (let ((selection (active-story-music-selection)))
+        (when selection (setf *pending-restored-music* selection)))
       (teardown-window-resources)
       next-mode)))
 
