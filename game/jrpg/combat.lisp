@@ -872,10 +872,16 @@ away, then the solid fill. Yellow tints the will meter."
     (draw-rectangle-outline x y w h (make-color 255 255 255 150) :thickness 1)))
 
 (defun jrpg-slime-pixel-alpha (cell)
+  "A grey ramp for the sprite glyphs, brightest to faint. '.' / space are
+transparent. Sprites can shade their edges with the mid tones for depth."
   (case cell
-    (#\* 255)
-    (#\# 224)
-    (#\+ 124)
+    ((#\@ #\*) 255) ; specular highlight, eyes
+    (#\# 220)   ; lit body
+    (#\% 186)   ; upper mid
+    (#\= 150)   ; mid
+    (#\+ 116)   ; shadow
+    (#\: 82)    ; deep shadow
+    ((#\, #\~) 56) ; faintest: mist, water, drips
     (t nil)))
 
 (defun jrpg-slime-row-offset (row elapsed)
