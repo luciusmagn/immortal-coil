@@ -150,7 +150,7 @@
 
 (dialog-text "base/light-lantern"
              "the match lights up, you spot a lantern that you can light with the match."
-             :next "jrpg/inn")
+             :next "jrpg/crown-flash")
 
 (dialog-text "base/door-shadow"
              "close to the door, you can make out a lock plate."
