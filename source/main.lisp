@@ -19,6 +19,10 @@
       (progn
         (load-title-logo)
         (load-audio)
+        ;; the tube powers on with the first window only (warming state); a
+        ;; later window reopen is already :on and stays silent here
+        (when (eq *crt-power-state* :warming)
+          (play-crt-power-on))
         (cond
           ((eq *mode* :menu) (play-title-music))
           ;; a window reopen (e.g. a fullscreen toggle) reloads all audio
@@ -78,15 +82,23 @@
   (let ((target (load-render-texture +virtual-width+ +virtual-height+))
         (shader-asset (load-crt-shader)))
     (configure-target-texture target)
+    (cache-crt-uniform-locations (when shader-asset (asset shader-asset)))
     (setup-window-resources)
     (let ((next-mode
             (do-game-loop (:livesupport t
                            :end (or *requested-window-mode*
-                                     *quit-requested-p*)
+                                    (and *quit-requested-p*
+                                         (eq *crt-power-state* :off)))
                            :result *requested-window-mode*)
               (update-bgm-streams-maybe)
               (update-window-controls-maybe)
-              (update-world)
+              ;; a requested quit first powers the tube down; the world freezes
+              ;; under the collapse and the loop ends only once it is dark
+              (when *quit-requested-p*
+                (begin-crt-cooldown))
+              (unless (crt-cooling-down-p)
+                (update-world))
+              (update-crt-power (get-frame-time))
               (with-texture-mode (target :clear +black+)
                 (draw-world))
               (configure-target-destination target)

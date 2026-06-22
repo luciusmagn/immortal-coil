@@ -8,6 +8,7 @@
                           :text-speed "TEXT SPEED"
                           :music-volume "MUSIC"
                           :sound-volume "SOUND"
+                          :light-theme "EMBRACE THE HOLY LIGHT"
                           :back "BACK"))
 
 (defvar *options-active-p* nil)
@@ -38,6 +39,7 @@
   (setf *characters-per-second* 11.0
         *music-volume-scale* 1.0
         *sound-volume-scale* 1.0
+        *light-theme-p* nil
         *window-mode* :windowed
         *requested-window-mode* nil
         *fullscreen-monitor-index* nil))
@@ -48,6 +50,7 @@
         :characters-per-second *characters-per-second*
         :music-volume-scale *music-volume-scale*
         :sound-volume-scale *sound-volume-scale*
+        :light-theme *light-theme-p*
         :window-mode (or *requested-window-mode* *window-mode*)
         :fullscreen-monitor-index *fullscreen-monitor-index*))
 
@@ -93,6 +96,8 @@
           (options-data-scalar data :music-volume-scale 1.0 0.0 1.0)
           *sound-volume-scale*
           (options-data-scalar data :sound-volume-scale 1.0 0.0 1.0)
+          *light-theme-p*
+          (and (getf data :light-theme) t)
           *window-mode*
           (options-data-window-mode data)
           *fullscreen-monitor-index*
@@ -218,6 +223,8 @@
      (options-percent-label *music-volume-scale*))
     (:sound-volume
      (options-percent-label *sound-volume-scale*))
+    (:light-theme
+     (if *light-theme-p* "ON" "OFF"))
     (t "")))
 
 (-> option-adjustable-p (t) boolean)
@@ -227,7 +234,8 @@
                        :monitor
                        :text-speed
                        :music-volume
-                       :sound-volume)))))
+                       :sound-volume
+                       :light-theme)))))
 
 
 ;;; Actions
@@ -269,7 +277,9 @@
     (:sound-volume
      (setf *sound-volume-scale*
            (clamp01 (+ *sound-volume-scale*
-                       (* direction *options-volume-step*))))))
+                       (* direction *options-volume-step*)))))
+    (:light-theme
+     (setf *light-theme-p* (not *light-theme-p*))))
   (save-options)
   (play-choice-switch))
 

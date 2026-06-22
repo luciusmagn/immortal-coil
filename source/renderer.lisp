@@ -9,6 +9,71 @@
       (runtime-warn "Could not load CRT shader: ~a" condition)
       nil)))
 
+;;; CRT shader uniforms: uInvert (light theme) and uOff (power animation). Both
+;;; default to 0 in the shader, so if the FFI plumbing fails the picture just
+;;; renders normally.
+
+(defvar *crt-uniform-locs* nil
+  "(invert-loc . off-loc) for the loaded CRT shader, or nil if unavailable.")
+
+(defun cache-crt-uniform-locations (shader)
+  (setf *crt-uniform-locs*
+        (handler-case
+            (when shader
+              (cons (claylib/ll:get-shader-location (claylib::c-ptr shader)
+                                                    "uInvert")
+                    (claylib/ll:get-shader-location (claylib::c-ptr shader)
+                                                    "uOff")))
+          (error (condition)
+            (runtime-warn "CRT shader uniforms unavailable: ~a" condition)
+            nil))))
+
+(defun set-shader-float (shader location value)
+  (when (and location (>= location 0))
+    (cffi:with-foreign-object (pointer :float)
+      (setf (cffi:mem-aref pointer :float) (coerce value 'single-float))
+      (claylib/ll:set-shader-value (claylib::c-ptr shader)
+                                   location
+                                   pointer
+                                   +shader-uniform-float+))))
+
+(defun apply-crt-uniforms (shader)
+  (when (and shader *crt-uniform-locs*)
+    (handler-case
+        (progn
+          (set-shader-float shader (car *crt-uniform-locs*)
+                            (if *light-theme-p* 1.0 0.0))
+          (set-shader-float shader (cdr *crt-uniform-locs*)
+                            (clamp01 *crt-off-amount*)))
+      (error (condition)
+        (runtime-warn "CRT uniform update failed: ~a" condition)
+        (setf *crt-uniform-locs* nil)))))
+
+(defun update-crt-power (dt)
+  "Advance the power animation. Runs every frame, in any mode."
+  (case *crt-power-state*
+    (:warming
+     (setf *crt-off-amount* (max 0.0 (- *crt-off-amount* (/ dt *crt-warm-seconds*))))
+     (when (<= *crt-off-amount* 0.0)
+       (setf *crt-off-amount* 0.0
+             *crt-power-state* :on
+             *crt-power-booted-p* t)))
+    (:cooling
+     (setf *crt-off-amount* (min 1.0 (+ *crt-off-amount* (/ dt *crt-cool-seconds*))))
+     (when (>= *crt-off-amount* 1.0)
+       (setf *crt-off-amount* 1.0
+             *crt-power-state* :off)))
+    (t nil)))
+
+(defun crt-cooling-down-p ()
+  (member *crt-power-state* '(:cooling :off)))
+
+(defun begin-crt-cooldown ()
+  "Start the power-off collapse (called once when a quit is requested)."
+  (when (eq *crt-power-state* :on)
+    (setf *crt-power-state* :cooling)
+    (play-crt-power-off)))
+
 (defun configure-target-texture (target)
   (setf (filter (texture target)) +texture-filter-point+
         (source (texture target))
@@ -91,6 +156,7 @@
   (with-drawing (:bgcolor +black+)
     (if shader
         (progn
+          (apply-crt-uniforms shader)
           (claylib/ll:begin-shader-mode (claylib::c-ptr shader))
           (draw-object (texture target))
           (claylib/ll:end-shader-mode))

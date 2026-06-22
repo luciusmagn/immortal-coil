@@ -49,3 +49,18 @@
 (defvar *fullscreen-height* +virtual-height+)
 (defvar *fullscreen-size-ready-p* nil)
 (defvar *fullscreen-monitor-index* nil)
+
+;; Visual theme: nil = ink on black (default), t = "Embrace the Holy Light",
+;; which inverts black and white in the CRT shader while sparing the yellow
+;; crown and any other chromatic accent.
+(defvar *light-theme-p* nil)
+
+;; CRT power animation. *crt-off-amount* runs 1.0 (dark) -> 0.0 (lit). The
+;; screen boots in :warming so the very first window powers on; it never warms
+;; again (a fullscreen toggle reopens the window without re-booting). Quitting
+;; runs :cooling, and the process only exits once the tube has gone dark.
+(defparameter *crt-warm-seconds* 0.9)
+(defparameter *crt-cool-seconds* 0.55)
+(defvar *crt-off-amount* 1.0)
+(defvar *crt-power-state* :warming)
+(defvar *crt-power-booted-p* nil)

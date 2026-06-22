@@ -57,3 +57,13 @@
 (defun clear-story-sound-resources ()
   (clrhash *story-sound-assets*)
   t)
+
+;;; Hardware sounds
+
+(defun play-crt-power-on ()
+  "The tube waking: a relay thunk, a rising whine, a static burst."
+  (play-story-sound "assets/audio/sys/crt-on.wav" :volume 0.65))
+
+(defun play-crt-power-off ()
+  "The tube dying: the picture collapses, the whine falls, a static snap."
+  (play-story-sound "assets/audio/sys/crt-off.wav" :volume 0.65))
