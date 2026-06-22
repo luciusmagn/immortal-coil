@@ -1060,9 +1060,15 @@ comes up when guarding, and the whole body flares white on a hit."
     (draw-jrpg-line "esc: back" (+ bx 14) (+ by 98) 12 130)))
 
 (defun draw-jrpg-combat-message (game ox oy)
-  (let ((bx (+ 228 ox)) (by (+ 574 oy)))
-    (draw-jrpg-box bx by 842 54)
-    (draw-jrpg-line (jrpg-combat-message game) (+ bx 22) (+ by 17) 18)))
+  (let* ((bx (+ 228 ox)) (by (+ 574 oy))
+         (all (wrap-text-lines (jrpg-combat-message game) 18 796))
+         (lines (if (> (length all) 2) (subseq all 0 2) all))
+         (n (max 1 (length lines)))
+         (top (+ by (max 0 (floor (- 58 (* n 22)) 2)) 2)))
+    (draw-jrpg-box bx by 842 58)
+    (loop for line in lines
+          for i from 0
+          do (draw-jrpg-line line (+ bx 22) (+ top (* i 22)) 18))))
 
 (defun jrpg-draw-sparks (game ox oy)
   (dolist (s (jrpg-combat-sparks game))
