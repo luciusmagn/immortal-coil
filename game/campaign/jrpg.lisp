@@ -32,7 +32,7 @@
                  '(jrpg-init-state))
 
 (dialog-text "jrpg/inn"
-             "a rented room you do not remember taking: one lamp, one window on a courtyard, one chair with your coat over it. on the table, a slim book bound in pale cloth. you are alone, and have been a while."
+             "a rented room, the lamp low: one window on a courtyard, your coat over the back of the chair, and on the table a slim book in pale cloth. you have kept to it for days, and seen no one."
              :next "jrpg/the-book")
 
 (dialog-on-enter "jrpg/the-book"
