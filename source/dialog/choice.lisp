@@ -224,10 +224,15 @@
          (enabled-p (choice-enabled-p choice))
          (option-color (choice-option-color choice color)))
     (if selected-p
-        ;; invert: a filled bar behind the label, dark text on top
-        (let ((pad-x 8.0)
-              (pad-y 3.0)
-              (text-color (make-color 16 16 16 (a option-color))))
+        ;; invert: a filled bar behind the label. as the node fades in, the bar
+        ;; rises from the black background toward white while the label crosses
+        ;; the other way, white toward black, so the two fade in together
+        (let* ((pad-x 8.0)
+               (pad-y 3.0)
+               (alpha (a option-color))
+               (fade (/ alpha 255.0))
+               (ink (round (- 255 (* 239.0 fade)))) ; white at 0, near-black at full
+               (text-color (make-color ink ink ink alpha)))
           (claylib/ll:draw-rectangle (round (- x pad-x))
                                      (round (- y pad-y))
                                      (round (+ width (* 2.0 pad-x)))
