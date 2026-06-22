@@ -3,6 +3,7 @@
 (defun setup-game ()
   (load-options)
   (setf *mode* :menu
+        *disclaimer-pending-p* t
         *game-fade-elapsed* 0.0
         *quit-requested-p* nil
         *save-current-game-p* nil

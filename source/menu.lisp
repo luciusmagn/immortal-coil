@@ -24,6 +24,8 @@
 (defvar *load-menu-active-p* nil)
 (defvar *menu-pending-slot* nil)
 (defvar *load-menu-delete-pending-slot* nil)
+(defvar *disclaimer-pending-p* nil
+  "Shown once at boot, over the title screen, until the player presses OK.")
 
 (defparameter *load-menu-panel*
   (make-instance 'list-panel
@@ -759,6 +761,65 @@
                  (round (* 170 (menu-alpha-scale)))))))
 
 (-> draw-menu () t)
+;;; Boot disclaimer
+
+(defconstant +disclaimer-width+ 780)
+(defconstant +disclaimer-height+ 320)
+
+(defparameter *disclaimer-body*
+  "Immortal Coil is in early development. Much of the writing is generated with the help of AI, and with a few exceptions this is more a tech demo than a finished game.")
+
+(-> disclaimer-ok-rect () (values scalar scalar scalar scalar))
+(defun disclaimer-ok-rect ()
+  (let* ((w 132.0)
+         (h 46.0)
+         (x (- +virtual-center-x+ (/ w 2.0)))
+         (y (+ (- +virtual-center-y+ (/ +disclaimer-height+ 2.0))
+               +disclaimer-height+ -70.0)))
+    (values x y w h)))
+
+(-> draw-boot-disclaimer () t)
+(defun draw-boot-disclaimer ()
+  (let* ((w +disclaimer-width+)
+         (h +disclaimer-height+)
+         (left (- +virtual-center-x+ (/ w 2.0)))
+         (top (- +virtual-center-y+ (/ h 2.0)))
+         (ink (make-color 255 255 255 255)))
+    ;; darken the title behind the modal
+    (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
+                               (claylib::c-ptr (make-color 0 0 0 188)))
+    ;; the modal: solid black with a white border, like the rest of the game
+    (claylib/ll:draw-rectangle (round left) (round top) (round w) (round h)
+                               (claylib::c-ptr (make-color 0 0 0 255)))
+    (draw-rectangle-outline left top w h ink :thickness 2)
+    (draw-centered-text "EARLY DEVELOPMENT" +virtual-center-x+ (+ top 46) 24 ink)
+    (draw-centered-text-lines (wrap-text-lines *disclaimer-body* 20 (- w 104))
+                              +virtual-center-x+
+                              (+ top 150)
+                              20
+                              ink)
+    ;; OK: a solid white plate with dark text, the one control here
+    (multiple-value-bind (bx by bw bh) (disclaimer-ok-rect)
+      (claylib/ll:draw-rectangle (round bx) (round by) (round bw) (round bh)
+                                 (claylib::c-ptr ink))
+      (draw-centered-text "OK" +virtual-center-x+ (+ by (/ bh 2.0)) 22
+                          (make-color 16 16 16 255)))))
+
+(-> disclaimer-ok-clicked-p () boolean)
+(defun disclaimer-ok-clicked-p ()
+  (and (is-mouse-button-pressed-p +mouse-button-left+)
+       (multiple-value-bind (bx by bw bh) (disclaimer-ok-rect)
+         (options-point-in-rect-p (virtual-mouse-x) (virtual-mouse-y)
+                                  bx by bw bh))))
+
+(-> update-boot-disclaimer () t)
+(defun update-boot-disclaimer ()
+  (when (or (confirm-pressed-p)
+            (disclaimer-ok-clicked-p))
+    (setf *disclaimer-pending-p* nil)
+    (play-story-sound "assets/audio/sys/bleep.wav" :volume 0.5)))
+
+
 (defun draw-menu ()
   (draw-title-logo (menu-alpha-scale))
   (draw-particles (menu-alpha-scale))
@@ -778,7 +839,9 @@
     (t
      (draw-menu-arrows)
      (draw-menu-option)
-     (draw-menu-status))))
+     (draw-menu-status)))
+  (when *disclaimer-pending-p*
+    (draw-boot-disclaimer)))
 
 
 ;;; Updating
@@ -788,6 +851,10 @@
   (incf *menu-elapsed* dt)
   (set-title-music-volume-scale (menu-title-music-volume-scale))
   (update-particles dt)
+  ;; the boot disclaimer is modal: nothing else takes input until it is cleared
+  (when *disclaimer-pending-p*
+    (update-boot-disclaimer)
+    (return-from update-menu))
   (case *menu-start-state*
     (:idle
      (cond
