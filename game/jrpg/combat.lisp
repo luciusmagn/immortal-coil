@@ -159,11 +159,49 @@
     "...##....#....##...."
     "..#.....#.#.....#..."))
 
+;;; Ordinary human menace of the night city (Act I), before anything from
+;;; Carcosa: a street ruffian, and the churchyard watchman of THE YELLOW SIGN,
+;;; the plump white grave-worm in a man's shape.
+
+(defparameter *jrpg-ruffian-sprite*
+  #("........####........"
+    ".......######......."
+    ".......#*##*#......."
+    ".......######......."
+    "........####........"
+    "......########......"
+    ".#...##########...#."
+    "##...##########...##"
+    ".#...##########...#."
+    "......###..###......"
+    "......##....##......"
+    ".....##......##....."
+    "....##........##...."
+    "...##..........##..."))
+
+(defparameter *jrpg-watchman-sprite*
+  #(".....########......."
+    "...############....."
+    "..####++++++####...."
+    "..###*##++##*###...."
+    "..####++++++####...."
+    "..#####+##+#####...."
+    "..##############...."
+    "...############....."
+    "....##########......"
+    "...#+#+#+#+#+#+#....."
+    "..##++++++++++##...."
+    "...#++++++++++#....."
+    "....##+++++##......."
+    "......######........"))
+
 (defparameter *jrpg-enemy-sprites*
   (list (cons "slime" *jrpg-slime-sprite*)
         (cons "bat" *jrpg-bat-sprite*)
         (cons "goblin" *jrpg-goblin-sprite*)
         (cons "wolf" *jrpg-wolf-sprite*)
+        (cons "ruffian" *jrpg-ruffian-sprite*)
+        (cons "watchman" *jrpg-watchman-sprite*)
         (cons "tatter" *jrpg-tatter-sprite*)
         (cons "drowned" *jrpg-drowned-sprite*)
         (cons "byakhee" *jrpg-byakhee-sprite*)

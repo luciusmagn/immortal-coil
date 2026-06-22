@@ -1,186 +1,28 @@
-;;; Carcosa — the deep throne of the King in Yellow.
+;;; The King in Yellow path, Act II — Carcosa, unstuck in time.
 ;;;
-;;; Reached by asking the King to take the crown off (jrpg/sword-choice). Here
-;;; the bog-standard demon-lord frame gives way: the King is the ship-captain
-;;; from the mutiny branch, his death-loop broken into Lost Carcosa. The crown
-;;; is the next watch on the Lake of Hali. Composure — the will to keep your
-;;; own face on — decides whether the player can still walk out.
+;;; Entered from jrpg/threshold via carcosa/cross. The King is the ship-captain
+;;; (the captain path) gone cosmically, irretrievably insane, his power over
+;;; time swollen out of suffering into authority over moment and repetition.
+;;; Time will not hold still near him; the throne room keeps re-happening; the
+;;; captain-truth surfaces only in shards through the raving. The Yellow Sign on
+;;; the player means he may be claimed. Dreadful, never cozy.
 
-;;; The court before the King's door. Reached on every approach (grafted in
-;;; front of jrpg/demon-lord). The player overhears Cassilda and Camilla — the
-;;; masque, the unmasking — then may interrogate them. Living world.
-
-(dialog-particles "carcosa/court" :motes :fade-seconds 3.0)
-(dialog-sound "carcosa/court" "audio/jrpg/bell.wav" :volume 0.2)
-
-(dialog-text "carcosa/court"
-             "before the King's door, two women keep a court of their own: one at a cold harp, one at a window on the lake. they are dressed for a masque that has not begun, or has not ended."
-             :next "carcosa/court-overheard")
-
-(dialog-conversation "carcosa/court-overheard"
-                     (dialog-left "Cassilda"
-                                  "they always ask him to unmask, at the end.")
-                     (dialog-right "Camilla"
-                                   "i asked him, once. he said he wore no mask. i saw that it was true. i have not been warm since.")
-                     (dialog-left "Cassilda"
-                                  "and still we dress for the masque. someone must, or it is only a lake and a tired man at a desk.")
-                     :next "carcosa/court-questions")
-
-(dialog-interrogation "carcosa/court-questions"
-                      "Cassilda sets the harp aside. Camilla does not turn from the lake."
-                      (:next "jrpg/demon-lord")
-                      (:continue-label "go to the King's door")
-                      ("ask who the King was before"
-                       :id "before"
-                       :speaker "Cassilda"
-                       "a man who came off the lake with the crown already on him and no memory of the hand that set it there. he answers letters now. it steadies him. do not take that from him in a hurry.")
-                      ("ask about the masque"
-                       :id "masque"
-                       :speaker "Camilla"
-                       "it never starts and never ends. we all unmask but the King. the night you understand why is the night you stop leaving. i understood on a Tuesday.")
-                      ("ask about the songs"
-                       :id "songs"
-                       :speaker "Cassilda"
-                       "they die in the third line. his sign is on every throat from here to the strand. end him and they come back, the summons says. the summons has never come up here to check."))
-
-(dialog-particles "carcosa/unmask" :motes :fade-seconds 4.0)
-(dialog-sound "carcosa/no-mask" "audio/jrpg/bell.wav" :volume 0.26)
-(dialog-sound "carcosa/crown-offer" "audio/jrpg/bell.wav" :volume 0.22)
-(dialog-sound "carcosa/take-crown" "audio/jrpg/bell.wav" :volume 0.30)
-
-(dialog-on-enter "carcosa/unmask"
-                 '(jrpg-spend-composure 2))
-
-(dialog-conversation "carcosa/unmask"
-                     (dialog-right "{player-name}"
-                                   "take the crown off. let me see.")
-                     (dialog-left "the King"
-                                  "everyone asks, at the end. i did, once. there was nothing under it to take off.")
-                     :next "carcosa/stranger")
-
-;;; The court is alive: a figure who unmasked before you, willing to be asked.
-
-(dialog-text "carcosa/stranger"
-             "a figure stands apart from the pale ones, in a mantle the colour of the King's, a mask held in one hand. he does not put it on."
-             :next "carcosa/stranger-talk")
-
-(dialog-conversation "carcosa/stranger-talk"
-                     (dialog-left "the Stranger"
-                                  "you came up the road with the sign on you and did not turn back. that is rarer than the King thinks.")
-                     (dialog-right "{player-name}"
-                                   "who are you?")
-                     (dialog-left "the Stranger"
-                                  "ask. i have been here long enough to answer, and not so long that i have stopped wanting to.")
-                     :next "carcosa/stranger-questions")
-
-(dialog-on-enter "carcosa/stranger-questions"
-                 '(jrpg-spend-composure 1))
-
-(dialog-interrogation "carcosa/stranger-questions"
-                      "the Stranger holds his mask the way a man holds a thing he has decided not to need."
-                      (:next "carcosa/no-mask")
-                      (:continue-label "turn back to the King")
-                      ("ask about the pale figures"
-                       :id "court"
-                       :speaker "the Stranger"
-                       "the crew. from the crossings that went wrong. each kept the last thing it was doing and lost the rest. he keeps them now. it is the keeping he could not manage when it counted.")
-                      ("ask about the lake"
-                       :id "lake"
-                       :speaker "the Stranger"
-                       "Hali. every dark water there ever was, seen from the far shore. he crossed it past counting and it never let him land right. then it landed him here and called it a throne.")
-                      ("ask why the Stranger goes unmasked too"
-                       :id "mask"
-                       :speaker "the Stranger"
-                       "i unmasked early. it is easier than they say and worse. you stop being someone's and start being the room's. keep yours on while you can still feel it on your face."))
-
-(dialog-on-enter "carcosa/no-mask"
-                 '(jrpg-spend-composure 2))
-
-(dialog-text "carcosa/no-mask"
-             "the King turns his face full to the lamp. no mask, and no face under it: only the front of a man worn down to the thread, like the coat. you have watched a thing wear out this way before, and cannot place where."
-             :next "carcosa/lake-1")
-
-(dialog-say "carcosa/lake-1"
-            "the King"
-            "i was a captain. i had a crossing to make and a crew who trusted me to make it. i made it wrong, and the dark put me back at the start to make it again."
-            :next "carcosa/lake-2")
-
-(dialog-say "carcosa/lake-2"
-            "the King"
-            "again, and again. you stop counting past a number. the crew never knew. from where they stood every crossing came out clean. they buried the dead from the tries that only i remember."
-            :next "carcosa/lake-3")
-
-(dialog-say "carcosa/lake-3"
-            "the King"
-            "then they decided, kindly, that i was not the one they served, and took the bridge from me, and put me off. the dark did not bring me back to the ship that time. it brought me here, to the lake, which had always been the same lake."
-            :next "carcosa/courtiers")
-
-(dialog-text "carcosa/courtiers"
-             "you understand the pale figures now. he keeps them the way he could not keep them then. they do not blame him. that is the part he cannot bear, and the reason he answers Mira's letters in yellow: it is the one hand that still does what he means."
-             :next "carcosa/crown-offer")
-
-(dialog-on-enter "carcosa/crown-offer"
-                 '(jrpg-spend-composure 1))
-
-(dialog-say "carcosa/crown-offer"
-            "the King"
-            "the crown is not a prize, {player-name}. it is the next watch. someone holds the lake back from the strand. you came up with the sign already on you. you could set it down here, with me, and rest. most do."
-            :next "carcosa/throne-choice")
-
-(dialog-pick "carcosa/throne-choice"
-             "the crown is yellow in a room with no other colour."
-             (dialog-option "take the crown" "carcosa/take-crown")
-             (dialog-option "set it down and walk out" "carcosa/refuse-crown"
-                            :unless '(not (jrpg-composed-p)))
-             (dialog-option "ask him to let the songs go" "carcosa/terms-songs"))
-
-(dialog-on-enter "carcosa/take-crown"
-                 '(setf (jrpg-value "jrpg-vane-answer") "crown"))
-
-(dialog-text "carcosa/take-crown"
-             "you take it up. it weighs less than a crown should, the way the coat weighs less than a coat. the King steps back into the line of pale figures and becomes one of them, eased. the lake is yours to hold now."
-             :next "carcosa/king-end")
-
-(dialog-text "carcosa/king-end"
-             "you answer Mira's next letter in yellow and find you know the hand. the first grey of dawn could raise a tempest, if you let it. you keep the watch instead. no one is left to relieve you, which is the whole of what a watch is."
-             :next "sys/reboot")
-
-(dialog-on-enter "carcosa/refuse-crown"
-                 '(setf (jrpg-value "jrpg-vane-answer") "refused-crown"))
-
-(dialog-text "carcosa/refuse-crown"
-             "you set the crown on the carpet and back toward the door. he does not stop you; no one crowned stops anyone leaving. you keep your own face the whole way down the stair. it is the hardest mile of the road, and you walk it."
-             :next "carcosa/descend")
-
-(dialog-on-enter "carcosa/terms-songs"
-                 '(setf (jrpg-value "jrpg-vane-answer") "songs"))
-
-(dialog-text "carcosa/terms-songs"
-             "you ask him to let the songs finish. he considers it longer than a King should have to. then he lifts the sign off the strand, only the strand, and along the walls a few pale figures finish the gesture they were keeping, and are gone."
-             :next "carcosa/terms-songs-2")
-
-(dialog-text "carcosa/terms-songs-2"
-             "you walk out to a town that can hold a tune again by the time you reach it. it costs him. you do not ask what. the lake takes the difference, the way it always has."
-             :next "carcosa/descend")
-
-(dialog-text "carcosa/descend"
-             "you come down the shore road alone, the tower dropping behind the ridge. at the inn Mira has the ledger open, and a second book beside it you have not seen, and the look of someone who has waited to show you both."
-             :next "ledger/breakfast")
-
-
-;;; The Lake of Hali crossing — the signature ordeal, grafted onto the tower
-;;; approach (after the hill road). The causeway runs into the mist to the
-;;; tower's island; a pallid courtier, one of the kept crew, waits halfway.
-
+(dialog-particles "carcosa/cross" :motes :fade-seconds 5.0)
 (dialog-particles "carcosa/causeway-intro" :motes :fade-seconds 3.0)
+(dialog-particles "carcosa/king-hall" :ash :fade-seconds 4.0)
 (dialog-sound "carcosa/courtier-combat" "audio/jrpg/sword.wav" :volume 0.32)
+(dialog-sound "carcosa/king-loop" "audio/jrpg/bell.wav" :volume 0.24)
+
+(dialog-text "carcosa/cross"
+             "you cross without a step in between. the night city is behind you and was never ahead of you. a still lake, two suns caught half under it, a smell of wet and old paper. the Yellow Sign in your coat is warm against you, like a hand."
+             :next "carcosa/causeway-intro")
 
 (dialog-text "carcosa/causeway-intro"
-             "the hill road tops out at the water. a causeway runs from here into the mist toward the tower on its island, the twin suns low and doubled on the flat of the lake. the far end is not in sight."
+             "a causeway runs from the shore into the mist, toward towers that do not agree on how far off they are. this is Hali. you are alone on the stone, which is more than the lake usually allows."
              :next "carcosa/causeway")
 
 (dialog-minigame "carcosa/causeway"
-                 "w/s or up/down move. a/d or left/right turn. cross the causeway through the mist to the far shore."
+                 "w/s or up/down move. a/d or left/right turn. cross the causeway through the mist."
                  :game :dream-maze
                  :success "carcosa/causeway-cross"
                  :failure "carcosa/causeway-cross"
@@ -189,26 +31,122 @@
                  :outcomes (list "carcosa/causeway-cross"))
 
 (dialog-text "carcosa/causeway-cross"
-             "halfway over, the mist thickens and a figure is standing in it: a pale robe, a mask, both wet. it does not move aside. it has waited on this causeway a long time, the way only the kept can wait."
+             "halfway over, a figure stands in the mist: a pale robe, a mask, both wet. one of the kept. it does not move aside. it has waited here a long time, the way only the kept can wait."
              :next "carcosa/courtier-combat")
 
 (dialog-minigame "carcosa/courtier-combat"
                  "choose a command. arrows or wasd move. enter or space confirms."
                  :game :jrpg-combat
-                 :success "jrpg/tower-hill-arrival"
+                 :success "carcosa/court"
                  :failure "carcosa/courtier-limp"
                  :config (list :enemy-name "PALLID COURTIER"
                                :enemy-kind "courtier"
-                               :enemy-hp 22
+                               :enemy-hp 24
                                :enemy-attack-min 4
                                :enemy-attack-max 7
-                               :victory-xp 8
-                               :victory-gold 6
-                               :message "the courtier lifts one hand to its mask, as if to offer it to you."))
+                               :victory-xp 10
+                               :victory-gold 0
+                               :message "the courtier lifts a hand to its mask, as if to offer it to you."))
 
 (dialog-on-enter "carcosa/courtier-limp"
                  '(jrpg-heal 7))
 
 (dialog-text "carcosa/courtier-limp"
-             "you go down on the wet stone. when you come up the courtier is gone, and its mask lies on the causeway where it stood, pale and empty. you step over it and walk on to the far shore."
-             :next "jrpg/tower-hill-arrival")
+             "you go down on the wet stone. when you rise, the courtier is gone, and its mask lies pale and empty where it stood. you step over it to the far shore."
+             :next "carcosa/court")
+
+
+;;; The court — Cassilda and Camilla, overheard, then asked
+
+(dialog-text "carcosa/court"
+             "before the high doors, two women keep a court of their own: one at a cold harp, one at a window on the lake, both dressed for a masque that has not begun, or has not ended."
+             :next "carcosa/court-overheard")
+
+(dialog-conversation "carcosa/court-overheard"
+                     (dialog-left "Cassilda"
+                                  "they always ask him to unmask, at the end.")
+                     (dialog-right "Camilla"
+                                   "i asked, once. he said he wore no mask. i saw that it was true. i have not been warm since.")
+                     (dialog-left "Cassilda"
+                                  "and still we dress for the masque. someone must, or it is only a lake and a man who will not stop talking.")
+                     :next "carcosa/court-questions")
+
+(dialog-interrogation "carcosa/court-questions"
+                      "Cassilda sets the harp aside. Camilla does not turn from the lake."
+                      (:next "carcosa/king-hall")
+                      (:continue-label "go to the high doors")
+                      ("ask what the King was"
+                       :id "before"
+                       :speaker "Cassilda"
+                       "a man, we think, once. he came across the lake with the crown already on him and no memory of the hand that set it there. now there is too much of him, spread through too much time, to be a man.")
+                      ("ask why the room repeats"
+                       :id "repeat"
+                       :speaker "Camilla"
+                       "he cannot stop arriving. every moment he ever failed is still going on, and he stands in all of them, and the room near him forgets which one is now. mind your own now while you have it.")
+                      ("ask about the songs"
+                       :id "songs"
+                       :speaker "Cassilda"
+                       "they die in the third line, everywhere his Sign reaches. it reached your city before you left it. that is why you are here. it is always why."))
+
+
+;;; The King — insane, time-shattered; the captain-truth only in shards
+
+(dialog-text "carcosa/king-hall"
+             "the throne room keeps happening. you enter it more than once, from doors you did not use. on the throne, in tatters the colour of the Sign, the King. he wears no mask, or the mask is his face; your eyes will not decide which. he is talking, and has been, to no one, longer than the room has existed."
+             :next "carcosa/king-1")
+
+(dialog-say "carcosa/king-1"
+            "the KING"
+            "again. good. you always come in again. i kept the crossing this time, did you see, clean, the whole bridge, every man, watch ——"
+            :next "carcosa/king-2")
+
+(dialog-say "carcosa/king-2"
+            "the KING"
+            "—— and again, and the count is wrong, the count is always wrong by everyone, and they thanked me, with the good chair and the soft pill and their hands, and the dark put me HERE, here is not the ship, HERE ——"
+            :next "carcosa/king-loop")
+
+(dialog-text "carcosa/king-loop"
+             "the room slips back a half second. he says the same three words. the two suns un-set and set. for a moment you are at the door again, entering. the Sign in your coat is very warm. he is not telling you a story. he is stuck inside one, and it is the one you have been reading."
+             :next "carcosa/king-3")
+
+(dialog-say "carcosa/king-3"
+            "the KING"
+            "you have the Sign. i sent it. i keep the ones i send it to. sit in the good chair, the relieved chair, and i will show you the crossing, and you will keep it for me, and i will rest, i have not ——"
+            :next "carcosa/throne-choice")
+
+(dialog-pick "carcosa/throne-choice"
+             "the crown sits on the throne beside him, yellow, the one colour. the room is about to reset again."
+             (dialog-option "take the crown" "carcosa/take-crown")
+             (dialog-option "refuse, and keep your own face" "carcosa/refuse-crown"
+                            :unless '(not (jrpg-composed-p)))
+             (dialog-option "ask him the year, to break the loop" "carcosa/ask-year"))
+
+(dialog-on-enter "carcosa/take-crown"
+                 '(setf (jrpg-value "jrpg-vane-answer") "crown"))
+
+(dialog-text "carcosa/take-crown"
+             "you take it up. it weighs nothing, the way the tatters weigh nothing. the King stops mid-word, for the first time in a length of time with no number, steps down, and is one of the pale kept, eased. the crossing is yours now. the count will be wrong. you will keep it anyway, forever, which is the whole of what a watch is."
+             :next "carcosa/king-end")
+
+(dialog-text "carcosa/king-end"
+             "the room stops resetting. you stopped it by staying inside it. far down the shore one tune gets past its third line and into a fourth, once, because you are holding the thing that was stopping it."
+             :next "sys/reboot")
+
+(dialog-on-enter "carcosa/refuse-crown"
+                 '(setf (jrpg-value "jrpg-vane-answer") "refused"))
+
+(dialog-text "carcosa/refuse-crown"
+             "you keep your own face and back to the door. nothing crowned stops anything leaving. the room resets and you are not in it; you come out somewhere with one sun and a straight street, changed, the Sign in your coat gone cold at last."
+             :next "carcosa/out")
+
+(dialog-on-enter "carcosa/ask-year"
+                 '(jrpg-spend-composure 2)
+                 '(setf (jrpg-value "jrpg-vane-answer") "year"))
+
+(dialog-text "carcosa/ask-year"
+             "you ask him the year. it is the one question the loop keeps no line for. he stops. the suns hang. for one held second the tatters are a coat, the throne is a chair, and the face under the mask is a tired man's, appalled — who says a number, and a name that is not the King's, before the room resets and takes it back. you keep it. you will not forget it."
+             :next "carcosa/out")
+
+(dialog-text "carcosa/out"
+             "you wake. the book is shut, the lamp out, the courtyard grey. on the flyleaf, under your name, a second line has been added today in your own hand, which you do not remember writing. it reads only: again."
+             :next "sys/reboot")
