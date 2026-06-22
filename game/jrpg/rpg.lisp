@@ -200,16 +200,26 @@
   "Hours to buy the next level — a curve that climbs with the level you hold."
   (+ 20 (* 14 level) (* 5 level level)))
 
-(defun jrpg-level-up ()
-  "Spend Hours to gain a level, if you can afford the curve. Returns the new
-level, or nil. Gains: +5 max hp, +1 attack, +1 mp on even levels, full mend."
+(defparameter *jrpg-level-stats*
+  '((:hp      "VITALITY  +7 max hp")
+    (:attack  "MIGHT     +2 attack")
+    (:defense "GUARD     +2 defense")
+    (:mp      "FOCUS     +2 mp")
+    (:will    "WILL      +2 max will")))
+
+(defun jrpg-level-up (stat)
+  "Spend Hours (the curve) to gain a level, raising the chosen STAT. Returns the
+new level, or nil if unaffordable. A level always mends you fully too."
   (jrpg-init-state)
   (when (jrpg-spend-hours (jrpg-level-cost))
     (let ((level (1+ (jrpg-number "jrpg-hero-level" 1))))
       (jrpg-set-number "jrpg-hero-level" level)
-      (jrpg-adjust-number "jrpg-hero-max-hp" 5)
-      (jrpg-adjust-number "jrpg-hero-attack" 1)
-      (when (evenp level) (jrpg-adjust-number "jrpg-hero-mp" 1))
+      (ecase stat
+        (:hp      (jrpg-adjust-number "jrpg-hero-max-hp" 7))
+        (:attack  (jrpg-adjust-number "jrpg-hero-attack" 2))
+        (:defense (jrpg-adjust-number "jrpg-hero-defense" 2))
+        (:mp      (jrpg-adjust-number "jrpg-hero-mp" 2))
+        (:will    (jrpg-adjust-number "jrpg-composure-max" 2)))
       (jrpg-set-number "jrpg-hero-hp" (jrpg-number "jrpg-hero-max-hp" 18))
       (jrpg-restore-composure (jrpg-composure-max))
       level)))

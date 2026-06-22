@@ -6,8 +6,10 @@
 ;;; leaves. Equipping reapplies the item's modifiers to the stats combat reads.
 
 (defclass jrpg-character-session (minigame-session)
-  ((selected :initform 0  :accessor jrpg-char-selected)
-   (message  :initform "" :accessor jrpg-char-message)))
+  ((selected  :initform 0   :accessor jrpg-char-selected)
+   (message   :initform ""  :accessor jrpg-char-message)
+   (leveling  :initform nil :accessor jrpg-char-leveling)
+   (level-sel :initform 0   :accessor jrpg-char-level-sel)))
 
 (defun jrpg-character-items ()
   "Carried items, de-duplicated for the list (consumables show a count)."
@@ -35,16 +37,35 @@
   (declare (ignore dt))
   (let* ((items (jrpg-character-items)) (n (length items)))
     (cond
+      ;; choosing which stat to raise this level
+      ((jrpg-char-leveling s)
+       (let ((m (length *jrpg-level-stats*)))
+         (cond
+           ((or (is-key-pressed-p +key-escape+) (is-key-pressed-p +key-backspace+))
+            (setf (jrpg-char-leveling s) nil
+                  (jrpg-char-message s) "you hold off, for now."))
+           ((or (is-key-pressed-p +key-down+) (is-key-pressed-p +key-s+))
+            (setf (jrpg-char-level-sel s) (mod (1+ (jrpg-char-level-sel s)) m))
+            (play-choice-switch))
+           ((or (is-key-pressed-p +key-up+) (is-key-pressed-p +key-w+))
+            (setf (jrpg-char-level-sel s) (mod (1- (jrpg-char-level-sel s)) m))
+            (play-choice-switch))
+           ((confirm-pressed-p)
+            (let* ((stat (first (nth (jrpg-char-level-sel s) *jrpg-level-stats*)))
+                   (cost (jrpg-level-cost))
+                   (lv (jrpg-level-up stat)))
+              (setf (jrpg-char-leveling s) nil
+                    (jrpg-char-message s)
+                    (if lv (format nil "you give up ~d Hours and grow — level ~d." cost lv)
+                        "you cannot afford it after all.")))))))
       ((or (is-key-pressed-p +key-escape+) (is-key-pressed-p +key-backspace+))
        (finish-minigame-node node (node-success-target node)))
       ((is-key-pressed-p +key-l+)
-       (let ((cost (jrpg-level-cost)))
-         (if (jrpg-level-up)
-             (setf (jrpg-char-message s)
-                   (format nil "you give up ~d Hours and grow — level ~d."
-                           cost (jrpg-number "jrpg-hero-level" 1)))
-             (setf (jrpg-char-message s)
-                   (format nil "growing costs ~d Hours; you have ~d." cost (jrpg-hours))))))
+       (if (>= (jrpg-hours) (jrpg-level-cost))
+           (setf (jrpg-char-leveling s) t (jrpg-char-level-sel s) 0)
+           (setf (jrpg-char-message s)
+                 (format nil "growing costs ~d Hours; you have ~d."
+                         (jrpg-level-cost) (jrpg-hours)))))
       ((plusp n)
        (cond
          ((or (is-key-pressed-p +key-down+) (is-key-pressed-p +key-s+))
@@ -128,7 +149,20 @@
       (let ((id (nth (min (jrpg-char-selected s) (1- (length items))) items)))
         (draw-jrpg-line (jrpg-item-desc id) 200 590 14 185)))
     (draw-jrpg-line (jrpg-char-message s) 200 614 15 205)
-    (draw-jrpg-line "up/down select   enter equip/use   L grow   esc back" 640 614 13 150)))
+    (draw-jrpg-line "up/down select   enter equip/use   L grow   esc back" 640 614 13 150)
+    (when (jrpg-char-leveling s)
+      (draw-jrpg-box 250 356 420 238 242)
+      (draw-jrpg-line "RAISE WHICH?" 276 376 18)
+      (draw-jrpg-line (format nil "this level costs ~d Hours" (jrpg-level-cost)) 276 400 14 180)
+      (loop with y = 432
+            for entry in *jrpg-level-stats*
+            for i from 0
+            for sel = (= i (jrpg-char-level-sel s))
+            do (when sel (jrpg-draw-select-bar 262 y 396))
+               (draw-jrpg-line (format nil "~a~a" (if sel "> " "  ") (second entry))
+                               276 y 16 (if sel 235 180))
+               (incf y 28))
+      (draw-jrpg-line "enter: choose    esc: cancel" 276 574 13 150))))
 
 (register-minigame-session-kind :jrpg-character 'jrpg-character-session)
 
