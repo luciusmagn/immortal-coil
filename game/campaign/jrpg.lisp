@@ -70,7 +70,7 @@
                                :waypoints '(#\R)
                                :store-prefix "kiy-street"
                                :encounter-target "jrpg/ruffian-combat"
-                               :encounter-rate 8
+                               :encounter-rate 16
                                :start-message "the square at night. arrows or wasd move."
                                :legend "+ lamp   ! studio stair   $ Hours   block"
                                :tile-messages
@@ -83,7 +83,8 @@
                  :game :jrpg-combat
                  :success "jrpg/street-walk"
                  :failure "jrpg/ruffian-down"
-                 :config (list :enemy-name "RUFFIAN"
+                 :config (list :enemy-pool :city
+                               :enemy-name "RUFFIAN"
                                :enemy-kind "ruffian"
                                :enemy-hp 15
                                :enemy-attack-min 3
@@ -205,7 +206,7 @@
                                :finish-glyph #\!
                                :store-prefix "kiy-wilde"
                                :encounter-target "jrpg/thief-combat"
-                               :encounter-rate 9
+                               :encounter-rate 16
                                :start-message "the thinned streets. arrows or wasd move."
                                :legend "+ lamp   ! the armourer's   $ Hours   block"
                                :tile-messages
@@ -217,7 +218,8 @@
                  :game :jrpg-combat
                  :success "jrpg/wilde-street"
                  :failure "jrpg/thief-down"
-                 :config (list :enemy-name "THIEF"
+                 :config (list :enemy-pool :city
+                               :enemy-name "THIEF"
                                :enemy-kind "ruffian"
                                :enemy-hp 13
                                :enemy-attack-min 3
@@ -438,7 +440,7 @@
                                         ("S" "jrpg/character")
                                         ("P" "jrpg/shop")
                                         ("C" "jrpg/church"))
-                               :legend "A armourer M marble Q quarter D lane S self P shop C church(out)"
+                               :legend "doors: A M Q D S P    C is the way out"
                                :tile-messages
                                '((#\A . "an armourer's stair, mail white in the window.")
                                  (#\M . "a door open on white marble light.")

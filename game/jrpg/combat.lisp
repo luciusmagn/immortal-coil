@@ -303,24 +303,64 @@ out toward the foe near impact, then back to rest by the recover time."
   (let ((value (minigame-config-value node key default)))
     (if (stringp value) value default)))
 
+;;; Enemy variety: a node can carry an :enemy-pool (a keyword naming a pool
+;;; below, or a literal list of specs); each encounter then draws a random foe
+;;; instead of always the same one. The night city is more than ruffians.
+
+(defparameter *jrpg-enemy-pools*
+  '((:city
+     ((:name "RUFFIAN"    :kind "ruffian" :hp 15 :attack-min 3 :attack-max 6 :hours 10
+       :message "a man steps out of a doorway, hands low and open.")
+      (:name "CUTPURSE"   :kind "ruffian" :hp 11 :attack-min 2 :attack-max 5 :hours 12
+       :message "a thin hand goes for your coat before you see the rest of him.")
+      (:name "A DRUNK"    :kind "ruffian" :hp 10 :attack-min 2 :attack-max 4 :hours 6
+       :message "a drunk swings at someone who is not there. you will do.")
+      (:name "STRAY CUR"  :kind "wolf"    :hp 13 :attack-min 3 :attack-max 6 :hours 7
+       :message "a stray dog, all ribs and teeth, decides the street is its own.")
+      (:name "NIGHT BATS" :kind "bat"     :hp 9  :attack-min 2 :attack-max 4 :hours 5
+       :message "the dark over the gutter comes apart into wings.")
+      (:name "A MADMAN"   :kind "ruffian" :hp 18 :attack-min 4 :attack-max 7 :hours 14 :drains t
+       :message "a man who has read too far grins and comes at you, reciting.")))))
+
+(defun jrpg-enemy-pool (key) (second (assoc key *jrpg-enemy-pools*)))
+
+(defun jrpg-pick-enemy-spec (node)
+  "Resolve the node's :enemy-pool (a pool keyword or a literal spec list) and
+choose one spec at random; nil when the node has no pool."
+  (let* ((raw (minigame-config-value node :enemy-pool))
+         (pool (cond ((keywordp raw) (jrpg-enemy-pool raw))
+                     ((and (listp raw) raw) raw)
+                     (t nil))))
+    (when pool
+      (nth (get-random-value 0 (1- (length pool))) pool))))
+
 (defun make-fresh-jrpg-combat (node)
   (jrpg-init-state)
-  (let* ((enemy-hp (jrpg-combat-config-number node :enemy-hp 14))
-         (kind (jrpg-combat-config-string node :enemy-kind "slime")))
+  (let* ((spec (jrpg-pick-enemy-spec node))
+         (kind (or (and spec (getf spec :kind))
+                   (jrpg-combat-config-string node :enemy-kind "slime")))
+         (enemy-hp (or (and spec (getf spec :hp))
+                       (jrpg-combat-config-number node :enemy-hp 14)))
+         (hours (and spec (getf spec :hours))))
     (make-jrpg-combat
      :node-id (node-id node)
-     :enemy-name (jrpg-combat-config-string node :enemy-name "SLIME")
+     :enemy-name (or (and spec (getf spec :name))
+                     (jrpg-combat-config-string node :enemy-name "SLIME"))
      :enemy-kind kind
      :enemy-hp enemy-hp
      :enemy-max-hp enemy-hp
-     :enemy-attack-min (jrpg-combat-config-number node :enemy-attack-min 3)
-     :enemy-attack-max (jrpg-combat-config-number node :enemy-attack-max 6)
-     :victory-xp (jrpg-combat-config-number node :victory-xp 4)
-     :victory-gold (jrpg-combat-config-number node :victory-gold 6)
-     :carcosan (and (member (string-downcase kind) *jrpg-carcosan-kinds*
-                            :test #'string=)
-                    t)
-     :message (jrpg-combat-config-string node :message "a slime draws near.")
+     :enemy-attack-min (or (and spec (getf spec :attack-min))
+                           (jrpg-combat-config-number node :enemy-attack-min 3))
+     :enemy-attack-max (or (and spec (getf spec :attack-max))
+                           (jrpg-combat-config-number node :enemy-attack-max 6))
+     :victory-xp (or hours (jrpg-combat-config-number node :victory-xp 4))
+     :victory-gold (if spec 0 (jrpg-combat-config-number node :victory-gold 6))
+     :carcosan (or (and spec (getf spec :drains) t)
+                   (and (member (string-downcase kind) *jrpg-carcosan-kinds*
+                                :test #'string=)
+                        t))
+     :message (or (and spec (getf spec :message))
+                  (jrpg-combat-config-string node :message "a slime draws near."))
      :enemy-hp-shown (float enemy-hp)
      :hero-hp-shown (float (jrpg-number "jrpg-hero-hp" 18)))))
 
