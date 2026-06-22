@@ -1,42 +1,53 @@
 (in-package #:immortal-coil)
 
-;;; The in-city grid — a distinct walk from the inter-place road. Where the
-;;; overworld is one winding way to one place, a city is an orthogonal grid of
-;;; streets between building blocks, with several LETTERED DOORS, each leading
-;;; to its own target. It shares the overworld engine (movement, camera, the
-;;; traveller figure, the breadcrumb trail); only generation, the door-finish,
-;;; and the rendering differ.
+;;; The in-city grid — a distinct walk from the inter-place road. A city is
+;;; blocks of connected houses with streets between; you enter a NAMED DOORWAY
+;;; to reach a district, and leave by the GATE on the city's edge. It shares the
+;;; overworld engine (movement, camera, the traveller, the trail); only
+;;; generation, the door-finish, and the rendering differ.
 ;;;
-;;; Used as the night-city HUB: the player chooses which district to enter and
-;;; in which order. A door whose story is finished is omitted on the next visit
-;;; (its :done flag is set in the store), so the square is never the same twice
-;;; — and the crossing door is always open, so a player can leave for Carcosa
-;;; early and simply MISS the stories they did not walk into. That is the point.
+;;; The night-city HUB: pick which district to enter and in which order. A door
+;;; whose story is finished is dropped on the next visit (its :done flag is
+;;; set), so the city is never the same twice — and the gate is always open, so
+;;; a player can leave for Carcosa early and MISS the stories they skipped.
+;;;
+;;; A door spec is (glyph target &key name done exit). NAME is the sign over the
+;;; doorway; DONE is the store flag that retires it; EXIT t marks the gate, set
+;;; on the city's rim instead of a building face.
 
 (defun jrpg-city-door-glyph (spec)
   (let ((g (first spec)))
     (if (stringp g) (char g 0) g)))
 
 (defun jrpg-city-door-open-p (spec)
-  "A door (glyph target &key done) is open unless its DONE flag is set."
   (let ((done (getf (cddr spec) :done)))
     (or (null done) (not (jrpg-value done)))))
 
+(defun jrpg-city-door-name (spec)
+  (or (getf (cddr spec) :name) (string (jrpg-city-door-glyph spec))))
+
+(defun jrpg-city-door-exit-p (spec)
+  (and (getf (cddr spec) :exit) t))
+
 (defun jrpg-city-parse-doors (specs)
-  "Returns (values alist glyph-list) for the OPEN doors only."
-  (let ((alist nil) (glyphs nil))
+  "Returns (values targets names glyphs exit-glyphs) for the OPEN doors:
+TARGETS glyph->target, NAMES glyph->name, GLYPHS all open, EXIT-GLYPHS the
+rim gates."
+  (let ((targets nil) (names nil) (glyphs nil) (exits nil))
     (dolist (spec specs)
       (when (jrpg-city-door-open-p spec)
         (let ((g (jrpg-city-door-glyph spec)))
-          (push (cons g (second spec)) alist)
-          (push g glyphs))))
-    (values (nreverse alist) (nreverse glyphs))))
+          (push (cons g (second spec)) targets)
+          (push (cons g (jrpg-city-door-name spec)) names)
+          (push g glyphs)
+          (when (jrpg-city-door-exit-p spec) (push g exits)))))
+    (values (nreverse targets) (nreverse names) (nreverse glyphs) (nreverse exits))))
 
-(defun jrpg-gen-city (w h door-glyphs)
-  "Returns (values rows start-x start-y). An organic city: buildings (#\\#) cut by
-avenues at IRREGULAR spacing (so blocks vary in size, not a Bomberman grid) plus
-the rim, a few random alleys to break big blocks, lamps (#\\+) on the streets, and
-one door per glyph carved into a building face that touches a street."
+(defun jrpg-gen-city (w h interior-glyphs exit-glyphs)
+  "Returns (values rows start-x start-y). Buildings (#\\#) cut by avenues at
+irregular spacing plus the rim, alleys to break big blocks, lamps (#\\+) on the
+streets, INTERIOR doors carved into building faces, and EXIT gates set on the
+top rim (the way out of the city)."
   (let ((grid (make-array (list h w) :initial-element #\#)))
     ;; rim street
     (dotimes (i w) (setf (aref grid 0 i) #\. (aref grid (1- h) i) #\.))
@@ -67,10 +78,17 @@ one door per glyph carved into a building face that touches a street."
             (ly (get-random-value 1 (- h 2))))
         (when (char= (aref grid ly lx) #\.)
           (setf (aref grid ly lx) #\+))))
+    ;; exit gates spread along the top rim — the way out
+    (let ((k (length exit-glyphs)))
+      (loop for g in exit-glyphs
+            for i from 1
+            for ex = (max 1 (min (- w 2) (floor (* i w) (1+ k))))
+            do (setf (aref grid 0 ex) g)))
+    ;; interior doors carved into a building face that touches a street
     (flet ((street-p (x y)
              (and (<= 0 x) (< x w) (<= 0 y) (< y h)
                   (member (aref grid y x) '(#\. #\+) :test #'char=))))
-      (dolist (g door-glyphs)
+      (dolist (g interior-glyphs)
         (loop repeat 400
               do (let ((x (get-random-value 1 (- w 2)))
                        (y (get-random-value 1 (- h 2))))
@@ -79,6 +97,7 @@ one door per glyph carved into a building face that touches a street."
                                   (street-p x (1- y)) (street-p x (1+ y))))
                      (setf (aref grid y x) g)
                      (return))))))
+    ;; start: a street cell low and left
     (let ((sx 1) (sy (- h 2)))
       (block found
         (loop for y from (- h 2) downto 1
@@ -94,50 +113,75 @@ one door per glyph carved into a building face that touches a street."
          (h (jrpg-overworld-config-int node :gen-height 13))
          (specs (let ((v (minigame-config-value node :doors)))
                   (if (listp v) v nil))))
-    (multiple-value-bind (alist glyphs) (jrpg-city-parse-doors specs)
-      (multiple-value-bind (rows sx sy) (jrpg-gen-city w h glyphs)
-        (make-jrpg-overworld
-         :node-id (node-id node)
-         :map (coerce rows 'vector)
-         :mode :city
-         :doors alist
-         :finish-glyphs glyphs
-         :tile-messages (minigame-config-value node :tile-messages)
-         :legend (minigame-config-value node :legend
-                                        "walk onto a lettered door.  + lamp")
-         :store-prefix (minigame-config-value node :store-prefix "jrpg-city")
-         :x sx :y sy
-         :encounter-target (minigame-config-value node :encounter-target)
-         :encounter-rate (jrpg-overworld-config-int node :encounter-rate 0)
-         :message (minigame-config-value
-                   node :start-message
-                   "the night square. arrows or wasd move; find a lit door."))))))
+    (multiple-value-bind (targets names glyphs exits) (jrpg-city-parse-doors specs)
+      (let ((interior (remove-if (lambda (g) (member g exits)) glyphs)))
+        (multiple-value-bind (rows sx sy) (jrpg-gen-city w h interior exits)
+          (make-jrpg-overworld
+           :node-id (node-id node)
+           :map (coerce rows 'vector)
+           :mode :city
+           :doors targets
+           :door-names names
+           :finish-glyphs glyphs
+           :tile-messages (minigame-config-value node :tile-messages)
+           :legend (minigame-config-value
+                    node :legend
+                    "enter a doorway; the gate on the rim is the way on.")
+           :store-prefix (minigame-config-value node :store-prefix "jrpg-city")
+           :x sx :y sy
+           :encounter-target (minigame-config-value node :encounter-target)
+           :encounter-rate (jrpg-overworld-config-int node :encounter-rate 0)
+           :message (minigame-config-value
+                     node :start-message
+                     "the night city. arrows or wasd move; the doorways are signed.")))))))
 
 (defun ensure-jrpg-city (node)
   (ensure-jrpg-overworld-session node #'make-fresh-jrpg-city))
 
-;;; --- city rendering ---
+;;; --- city rendering: connected houses, named doorways, a rim gate ---
 
-(defun draw-jrpg-city-building (sx sy)
-  (let ((s +jrpg-overworld-tile-size+))
-    (jrpg-ow-fill (+ sx 1) (+ sy 1) (- s 1) (- s 1) 58)        ; wall
-    (jrpg-ow-fill (+ sx 1) (+ sy 1) (- s 1) 3 105)             ; lit eave
-    (jrpg-ow-fill (+ sx 6) (+ sy 9) 4 5 130)                   ; a dim window
-    (jrpg-ow-fill (+ sx (- s 9)) (+ sy 9) 4 5 130)))
+(defun jrpg-city-building-p (game x y)
+  (char= (jrpg-overworld-cell game x y) #\#))
+
+(defun draw-jrpg-city-house-cell (game sx sy mx my)
+  "Part of a house: a dark wall, with a lit roof eave and walls drawn only on
+sides that face the street — so a whole block reads as one building, and the
+inner cells just fill. A window where the wall fronts the street."
+  (let* ((s +jrpg-overworld-tile-size+)
+         (up (jrpg-city-building-p game mx (1- my)))
+         (dn (jrpg-city-building-p game mx (1+ my)))
+         (lf (jrpg-city-building-p game (1- mx) my))
+         (rt (jrpg-city-building-p game (1+ mx) my)))
+    (jrpg-ow-fill sx sy s s 58)                          ; wall fill
+    (unless up (jrpg-ow-fill sx sy s 4 168))             ; lit roof eave
+    (unless dn (jrpg-ow-fill sx (+ sy s -2) s 2 120)     ; base sill
+               (jrpg-ow-fill (+ sx (/ s 2) -3) (+ sy 8) 6 6 150)) ; a window
+    (unless lf (jrpg-ow-fill sx sy 2 s 112))             ; left wall
+    (unless rt (jrpg-ow-fill (+ sx s -2) sy 2 s 112))))  ; right wall
 
 (defun draw-jrpg-city-lamp (cx cy)
-  (jrpg-ow-fill (- cx 5) (- cy 5) 10 10 26)                    ; glow
-  (jrpg-ow-fill (- cx 2) (- cy 2) 4 4 230))                    ; flame
+  (jrpg-ow-fill (- cx 5) (- cy 5) 10 10 26)              ; glow
+  (jrpg-ow-fill (- cx 2) (- cy 2) 4 4 230))             ; flame
 
-(defun draw-jrpg-city-door (cell cx cy)
-  "A lit doorway in a building face, with its letter — the way on."
-  (let ((s +jrpg-overworld-tile-size+))
-    (jrpg-ow-fill (- cx (/ s 2) -1) (- cy (/ s 2) -1) (- s 2) (- s 2) 58)
-    (jrpg-ow-fill (- cx 5) (- cy 8) 10 16 150)                 ; the lit opening
-    (draw-rectangle-outline (- cx 6) (- cy 9) 12 18
-                            (make-color 255 255 255 235) :thickness 1)
-    (draw-centered-text (string cell) cx (+ cy 1) 16
-                        (make-color 0 0 0 255))))
+(defun draw-jrpg-city-door (game sx sy mx my name)
+  "A doorway in a building face, or — on the city rim — a wide gate. The sign
+over it names where it leads, so doors read by place, not by a letter."
+  (let* ((s +jrpg-overworld-tile-size+)
+         (cx (+ sx (/ s 2)))
+         (edge (or (= mx 0) (= my 0)
+                   (= mx (1- (jrpg-overworld-width game)))
+                   (= my (1- (jrpg-overworld-height game))))))
+    (jrpg-ow-fill sx sy s s 58)                          ; the wall it sits in
+    (jrpg-ow-fill sx sy s 4 168)                         ; lintel / roof
+    (if edge
+        (progn                                           ; a city gate (the way out)
+          (jrpg-ow-fill (- cx 9) (+ sy 4) 18 (- s 4) 210)
+          (jrpg-ow-fill (- cx 7) (+ sy 7) 14 (- s 7) 60))
+        (progn                                           ; an interior doorway
+          (jrpg-ow-fill (- cx 5) (+ sy 6) 10 (- s 6) 190)
+          (jrpg-ow-fill (- cx 3) (+ sy 9) 6 (- s 10) 55)))
+    (when (and name (plusp (length name)))
+      (draw-centered-text name cx (- sy 3) 12 (make-color 255 255 255 225)))))
 
 (defun draw-jrpg-city-map (game)
   (multiple-value-bind (cam-x cam-y) (jrpg-overworld-camera game)
@@ -155,10 +199,13 @@ one door per glyph carved into a building face that touches a street."
                                 (cx (+ sx (/ s 2)))
                                 (cy (+ sy (/ s 2))))
                             (cond
-                              ((char= cell #\#) (draw-jrpg-city-building sx sy))
+                              ((char= cell #\#) (draw-jrpg-city-house-cell game sx sy mx my))
                               ((char= cell #\+) (draw-jrpg-city-lamp cx cy))
                               ((char= cell #\.) nil)
-                              (t (draw-jrpg-city-door cell cx cy)))))))))
+                              (t (draw-jrpg-city-door
+                                  game sx sy mx my
+                                  (cdr (assoc cell (jrpg-overworld-door-names game)
+                                              :test #'char=)))))))))))
 
 (defun update-jrpg-city-minigame (node dt)
   (declare (ignore dt))

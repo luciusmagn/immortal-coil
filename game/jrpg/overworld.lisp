@@ -141,6 +141,7 @@ landmarks strung along it. Generated fresh each entry."
   ;; own target (the DOORS alist); :road is the winding inter-place road.
   (mode             :road)
   (doors            nil)
+  (door-names       nil)
   ;; facing (for the figure) and a short breadcrumb trail of recent cells
   (facing           1)
   (visited          nil)

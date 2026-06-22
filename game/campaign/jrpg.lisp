@@ -426,29 +426,21 @@
 (dialog-on-enter "jrpg/city-hub" '(jrpg-start-quest :cross))
 
 (dialog-minigame "jrpg/city-hub"
-                 "arrows or wasd move onto a lit door."
+                 "arrows or wasd move. each doorway is signed; step into one."
                  :game :jrpg-city
                  :success "jrpg/church"
                  :failure "jrpg/church"
                  :config (list :gen-width 27
                                :gen-height 13
                                :store-prefix "kiy-hub"
-                               :doors '(("A" "jrpg/wilde-street" :done "kiy-did-repairer")
-                                        ("M" "jrpg/mask-street"  :done "kiy-did-mask")
-                                        ("Q" "jrpg/old-quarter"  :done "kiy-did-quarter")
-                                        ("D" "jrpg/dys-lane"     :done "kiy-did-dys")
-                                        ("S" "jrpg/character")
-                                        ("P" "jrpg/shop")
-                                        ("C" "jrpg/church"))
-                               :legend "doors: A M Q D S P    C is the way out"
-                               :tile-messages
-                               '((#\A . "an armourer's stair, mail white in the window.")
-                                 (#\M . "a door open on white marble light.")
-                                 (#\Q . "a stair down to the old quarter, the gas warm.")
-                                 (#\D . "a green lane, gorse and sea, where no lane should be.")
-                                 (#\S . "a dark window; your own reflection — your coat, your hand, your self.")
-                                 (#\P . "a pawnbroker's lamp, still lit. he deals in Hours.")
-                                 (#\C . "a church, an organ already going; past it the lake-smell. the way out."))))
+                               :doors '(("A" "jrpg/wilde-street" :name "armoury"      :done "kiy-did-repairer")
+                                        ("M" "jrpg/mask-street"  :name "marble court" :done "kiy-did-mask")
+                                        ("Q" "jrpg/old-quarter"  :name "old quarter"  :done "kiy-did-quarter")
+                                        ("D" "jrpg/dys-lane"     :name "green lane"   :done "kiy-did-dys")
+                                        ("S" "jrpg/character"    :name "yourself")
+                                        ("P" "jrpg/shop"         :name "pawnbroker")
+                                        ("C" "jrpg/church"       :name "the church"   :exit t))
+                               :legend "the doorways are signed; the church-gate on the rim is the way on."))
 
 (dialog-particles "jrpg/dys-meet" :motes :fade-seconds 3.0)
 
