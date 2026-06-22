@@ -242,6 +242,18 @@ spends will, not focus — the words wound the speaker too."
                                 :cost-composure 2 :note "WILL2  the lines cut deep")))))
     skills))
 
+(defun jrpg-combat-item-list ()
+  "The consumables usable in battle right now: a tonic (if any potions remain),
+and any held Hali-water or marble-phial."
+  (let ((items nil))
+    (when (plusp (jrpg-number "jrpg-potions"))
+      (push (list :key :tonic :label "tonic" :note "+9 hp") items))
+    (when (jrpg-has-item-p :hali-water)
+      (push (list :key :hali-water :label "Hali-water" :note "+4 will") items))
+    (when (jrpg-has-item-p :marble-phial)
+      (push (list :key :marble-phial :label "marble-phial" :note "turn the foe to marble") items))
+    (nreverse items)))
+
 ;;; --- one action's small animation: lunge out, land at impact, recover ---
 
 (defparameter +jrpg-act-impact+  0.17)
@@ -252,6 +264,7 @@ spends will, not focus — the words wound the speaker too."
   actor             ; :hero or :enemy
   kind              ; :attack :skill :guard :item :hit :reel
   (skill nil)       ; skill key when kind is :skill
+  (item nil)        ; item key when kind is :item
   (clock 0.0)
   (fired nil))      ; impact already applied this action?
 
@@ -570,13 +583,33 @@ choose one spec at random; nil when the node has no pool."
     (jrpg-spawn-floater game "GUARD" hx (- hy 24)))
   (setf (jrpg-combat-message game) "you set your feet and brace."))
 
-(defun jrpg-combat-hero-item (game)
-  (if (jrpg-use-potion)
-      (progn
-        (play-jrpg-sound "tonic" :volume 0.4)
-        (jrpg-combat-heal-hero-fx game 9)
-        (setf (jrpg-combat-message game) "you drink a tonic. +9."))
-      (setf (jrpg-combat-message game) "the bag is empty.")))
+(defun jrpg-combat-hero-item (node game key)
+  (case key
+    (:tonic
+     (if (jrpg-use-potion)
+         (progn (play-jrpg-sound "tonic" :volume 0.4)
+                (jrpg-combat-heal-hero-fx game 9)
+                (setf (jrpg-combat-message game) "you drink a tonic. +9."))
+         (setf (jrpg-combat-message game) "the bag is empty.")))
+    (:hali-water
+     (jrpg-use-consumable :hali-water)        ; restores will, removes the flask
+     (play-jrpg-sound "tonic" :volume 0.38)
+     (multiple-value-bind (hx hy) (jrpg-hero-anchor)
+       (setf (jrpg-combat-flash-hero game) 0.18)
+       (jrpg-spawn-floater game "+will" hx (- hy 24) :yellow t))
+     (setf (jrpg-combat-message game) "you drink the lake-water; your will steadies."))
+    (:marble-phial
+     (jrpg-remove-item :marble-phial)
+     (let ((dmg (max 1 (round (* (jrpg-combat-enemy-max-hp game) 0.9)))))
+       (play-jrpg-sound "chime" :volume 0.42)
+       (jrpg-combat-damage-enemy game dmg)
+       (jrpg-combat-hit-enemy-fx game dmg :crit t)
+       (setf (jrpg-combat-message game)
+             (format nil "you dash the phial; the ~a turns to marble — ~d."
+                     (jrpg-enemy-word game) dmg))
+       (unless (jrpg-combat-enemy-alive-p game)
+         (jrpg-combat-victory node game))))
+    (t (setf (jrpg-combat-message game) "nothing happens."))))
 
 ;;; --- the enemy's turn (resolved at impact) ---
 
@@ -638,7 +671,7 @@ choose one spec at random; nil when the node has no pool."
              (:attack (jrpg-combat-hero-strike node game))
              (:skill  (jrpg-combat-hero-skill node game (jrpg-act-skill act)))
              (:guard  (jrpg-combat-hero-guard game))
-             (:item   (jrpg-combat-hero-item game))))
+             (:item   (jrpg-combat-hero-item node game (jrpg-act-item act)))))
     (:enemy (case (jrpg-act-kind act)
               (:hit  (jrpg-combat-enemy-hit node game))
               (:reel (jrpg-combat-enemy-reel game))))))
@@ -695,9 +728,10 @@ choose one spec at random; nil when the node has no pool."
              (play-choice-switch))
     (:guard  (jrpg-combat-begin-hero-action
               game (make-jrpg-act :actor :hero :kind :guard)))
-    (:item   (if (plusp (jrpg-number "jrpg-potions"))
-                 (jrpg-combat-begin-hero-action
-                  game (make-jrpg-act :actor :hero :kind :item))
+    (:item   (if (jrpg-combat-item-list)
+                 (progn (setf (jrpg-combat-submenu game) :item
+                              (jrpg-combat-skill-index game) 0)
+                        (play-choice-switch))
                  (setf (jrpg-combat-message game) "the bag is empty.")))
     (:flee   (jrpg-combat-flee node game))))
 
@@ -743,10 +777,34 @@ choose one spec at random; nil when the node has no pool."
               (jrpg-combat-begin-hero-action
                game (make-jrpg-act :actor :hero :kind :skill :skill key))))))))))
 
+(defun jrpg-combat-handle-item-menu (node game)
+  (declare (ignore node))
+  (let* ((items (jrpg-combat-item-list))
+         (n (length items))
+         (step (jrpg-combat-vert-step)))
+    (cond
+      ((or (is-key-pressed-p +key-escape+) (is-key-pressed-p +key-backspace+))
+       (setf (jrpg-combat-submenu game) nil)
+       (play-choice-switch))
+      ((zerop n)
+       (setf (jrpg-combat-submenu game) nil))
+      (t
+       (unless (zerop step)
+         (setf (jrpg-combat-skill-index game)
+               (mod (+ (jrpg-combat-skill-index game) step) n))
+         (play-choice-switch))
+       (when (confirm-pressed-p)
+         (let* ((item (nth (min (jrpg-combat-skill-index game) (1- n)) items))
+                (key (getf item :key)))
+           (setf (jrpg-combat-submenu game) nil)
+           (jrpg-combat-begin-hero-action
+            game (make-jrpg-act :actor :hero :kind :item :item key))))))))
+
 (defun jrpg-combat-handle-menu (node game)
-  (if (eq (jrpg-combat-submenu game) :skill)
-      (jrpg-combat-handle-skill-menu node game)
-      (jrpg-combat-handle-command-menu node game)))
+  (case (jrpg-combat-submenu game)
+    (:skill (jrpg-combat-handle-skill-menu node game))
+    (:item  (jrpg-combat-handle-item-menu node game))
+    (t      (jrpg-combat-handle-command-menu node game))))
 
 (defun update-jrpg-combat-minigame (node dt)
   (let ((game (ensure-jrpg-combat node)))
@@ -945,18 +1003,18 @@ comes up when guarding, and the whole body flares white on a hit."
     (draw-jrpg-box bx by 300 118)
     (draw-jrpg-line (string-upcase (jrpg-hero-name)) (+ bx 18) (+ by 12) 18)
     (draw-jrpg-line "HP" (+ bx 18) (+ by 38) 15 200)
-    (draw-jrpg-bar (+ bx 52) (+ by 39) 150 12
+    (draw-jrpg-bar (+ bx 66) (+ by 39) 132 12
                    (/ (jrpg-number "jrpg-hero-hp") (max 1 max-hp))
                    (/ (jrpg-combat-hero-hp-shown game) (max 1 max-hp)))
     (draw-jrpg-line (format nil "~d/~d" (jrpg-number "jrpg-hero-hp") max-hp)
-                    (+ bx 210) (+ by 37) 14 200)
+                    (+ bx 206) (+ by 37) 14 200)
     (draw-jrpg-line "WILL" (+ bx 18) (+ by 62) 15 200)
-    (draw-jrpg-bar (+ bx 52) (+ by 63) 150 12
+    (draw-jrpg-bar (+ bx 66) (+ by 63) 132 12
                    (/ (jrpg-composure) (max 1 (jrpg-composure-max)))
                    (/ (jrpg-composure) (max 1 (jrpg-composure-max)))
                    :yellow t)
     (unless (jrpg-composed-p)
-      (draw-jrpg-line "UNMASKED" (+ bx 210) (+ by 61) 13 220))
+      (draw-jrpg-line "UNMASKED" (+ bx 206) (+ by 61) 13 220))
     (draw-jrpg-line (format nil "MP ~d" (jrpg-number "jrpg-hero-mp")) (+ bx 18) (+ by 88) 16)
     (draw-jrpg-line (format nil "~d Hr" (jrpg-hours)) (+ bx 116) (+ by 88) 16)
     (draw-jrpg-line (format nil "Lv ~d" (jrpg-number "jrpg-hero-level" 1)) (+ bx 214) (+ by 88) 16)))
@@ -983,6 +1041,22 @@ comes up when guarding, and the whole body flares white on a hit."
                                  (format nil "  ~a" (getf sk :label)))
                              (+ bx 14) (+ by 8 (* i 22)) 15 (if sel 235 160)))
     (draw-jrpg-line (or (getf (nth idx skills) :note) "") (+ bx 14) (+ by 80) 12 150)
+    (draw-jrpg-line "esc: back" (+ bx 14) (+ by 98) 12 130)))
+
+(defun draw-jrpg-combat-items (game ox oy)
+  (let* ((bx (+ 540 ox)) (by (+ 428 oy))
+         (items (jrpg-combat-item-list))
+         (idx (min (jrpg-combat-skill-index game) (max 0 (1- (length items))))))
+    (draw-jrpg-box bx by 232 118)
+    (if (null items)
+        (draw-jrpg-line "  (nothing to use)" (+ bx 14) (+ by 8) 14 150)
+        (loop for i from 0 below (length items)
+              for it = (nth i items)
+              for sel = (= i idx)
+              do (draw-jrpg-line (if sel (format nil "> ~a" (getf it :label))
+                                     (format nil "  ~a" (getf it :label)))
+                                 (+ bx 14) (+ by 8 (* i 22)) 15 (if sel 235 160))))
+    (draw-jrpg-line (or (and items (getf (nth idx items) :note)) "") (+ bx 14) (+ by 80) 12 150)
     (draw-jrpg-line "esc: back" (+ bx 14) (+ by 98) 12 130)))
 
 (defun draw-jrpg-combat-message (game ox oy)
@@ -1023,9 +1097,10 @@ comes up when guarding, and the whole body flares white on a hit."
     (draw-jrpg-combat-enemy game ox oy)
     (draw-jrpg-combat-hero game ox oy)
     (draw-jrpg-combat-stats game ox oy)
-    (if (eq (jrpg-combat-submenu game) :skill)
-        (draw-jrpg-combat-skills game ox oy)
-        (draw-jrpg-combat-commands game ox oy))
+    (case (jrpg-combat-submenu game)
+      (:skill (draw-jrpg-combat-skills game ox oy))
+      (:item  (draw-jrpg-combat-items game ox oy))
+      (t      (draw-jrpg-combat-commands game ox oy)))
     (draw-jrpg-combat-message game ox oy)
     (jrpg-draw-sparks game ox oy)
     (jrpg-draw-floaters game ox oy)))
