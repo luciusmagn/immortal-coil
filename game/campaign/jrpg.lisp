@@ -583,7 +583,8 @@
              "the visitor sword lies on the carpet."
              (dialog-option "take it up" "jrpg/duel")
              (dialog-option "leave it where it lies" "jrpg/refuse")
-             (dialog-option "ask about the broken swords" "jrpg/swords"))
+             (dialog-option "ask about the broken swords" "jrpg/swords")
+             (dialog-option "ask him to take the crown off" "carcosa/unmask"))
 
 (dialog-on-enter "jrpg/duel"
                  '(setf (jrpg-value "jrpg-vane-answer") "duel"))

@@ -317,7 +317,7 @@
 
 (dialog-text "mutiny/sleep-signed"
              "you lie down in a bed other hands made for you. your name is on your own relief. it is the truest thing you ever signed. sleep comes scheduled and gentle. it is not yours to refuse."
-             :next "sys/reboot")
+             :next "mutiny/shore")
 
 (dialog-text "mutiny/sleep-refused"
              "you lie down. you are still captain by your own record. captain of nothing. beloved, attended, kept."
@@ -325,7 +325,7 @@
 
 (dialog-text "mutiny/sleep-refused-s2"
              "through the bulkhead the ship runs without you and runs well. that was always the cruelest thing it could do. you sleep inside the kindness of it."
-             :next "sys/reboot")
+             :next "mutiny/shore")
 
 (dialog-text "mutiny/sleep-bargained"
              "you lie down. the last crossing is still in your hands. you can feel it there."
@@ -333,4 +333,16 @@
 
 (dialog-text "mutiny/sleep-bargained-2"
              "whatever the log says of it, it was flying, and it was yours. they gave it to you because they loved you. they took everything else for the same reason. you sleep."
+             :next "mutiny/shore")
+
+;;; The loop breaks the wrong way. For once the dark does not set the captain
+;;; back at the start; it sets him down somewhere else. Seeded gently here,
+;;; paid off on another path where the King in Yellow turns out to be him.
+
+(dialog-text "mutiny/shore"
+             "sleep comes, but the alarm does not. for the first time the dark does not set you back at the start. it sets you down somewhere else: a flat lake, two suns going under it, the air gone still and a little yellow at the edges."
+             :next "mutiny/shore-2")
+
+(dialog-text "mutiny/shore-2"
+             "there is a weight on your head, lighter than it should be. before they took the bridge, the crew left you the one thing a relieved captain keeps. you do not take it off. there is no one here to see it yet, and the lake is patient, and it has always been the same lake."
              :next "sys/reboot")

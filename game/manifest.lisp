@@ -21,6 +21,7 @@
            "opening.lisp"
            "campaign/forest.lisp"
            "campaign/jrpg.lisp"
+           "campaign/carcosa.lisp"
            "campaign/dream-worlds.lisp"
            "campaign/war.lisp"
            "campaign/containment.lisp"
