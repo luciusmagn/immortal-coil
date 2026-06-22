@@ -23,6 +23,7 @@
            "jrpg/reveal.lisp"
            "jrpg/rites.lisp"
            "jrpg/character.lisp"
+           "jrpg/shop.lisp"
            "opening.lisp"
            "campaign/forest.lisp"
            "campaign/jrpg.lisp"

@@ -9,6 +9,11 @@
     ("jrpg-hero-defense" . 2)
     ("jrpg-gold" . 12)
     ("jrpg-xp" . 0)
+    ;; hours: the path's soul-currency — earned from foes, spent on gear and
+    ;; levels, scattered on death (to jrpg-lost-hours) and reclaimed on the next
+    ;; victory. The King is a time-god; the Sign-touched trade in time.
+    ("jrpg-hours" . 8)
+    ("jrpg-lost-hours" . 0)
     ("jrpg-potions" . 1)
     ("jrpg-slimes-defeated" . 0)
     ("jrpg-companion" . "Lena")
@@ -136,13 +141,27 @@ flask of Hali-water). Stored so later scenes and mods can read the haul."
     leveled))
 
 (defun jrpg-award-victory (&key (xp 3) (gold 5))
-  (jrpg-adjust-number "jrpg-xp" xp)
-  (jrpg-adjust-number "jrpg-gold" gold)
-  (jrpg-adjust-number "jrpg-slimes-defeated" 1)
-  (setf (jrpg-value "jrpg-last-battle") "victory"
-        (jrpg-value "jrpg-just-leveled") (jrpg-level-up-check)))
+  "Victory pays HOURS (the soul-currency = the old xp + gold). Getting back up
+after a fall also reclaims the hours you scattered. Leveling is now manual
+(spend hours; see jrpg-level-up), so no automatic level here."
+  (let ((gained (+ xp gold)))
+    (jrpg-adjust-number "jrpg-hours" gained)
+    (jrpg-adjust-number "jrpg-slimes-defeated" 1)
+    (let ((lost (jrpg-number "jrpg-lost-hours" 0)))
+      (when (plusp lost)
+        (jrpg-adjust-number "jrpg-hours" lost)
+        (jrpg-set-number "jrpg-lost-hours" 0)
+        (incf gained lost)))
+    (setf (jrpg-value "jrpg-last-battle") "victory"
+          (jrpg-value "jrpg-just-gained") gained)))
 
 (defun jrpg-record-defeat ()
+  "Falling scatters half your carried hours into the dark; reclaim them by
+winning your next fight. A second fall before then forfeits the old pool."
+  (let* ((carried (jrpg-number "jrpg-hours" 0))
+         (drop (floor carried 2)))
+    (jrpg-set-number "jrpg-hours" (- carried drop))
+    (jrpg-set-number "jrpg-lost-hours" drop))
   (setf (jrpg-value "jrpg-last-battle") "defeat"))
 
 (defun jrpg-record-retreat ()

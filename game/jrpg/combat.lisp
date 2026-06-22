@@ -454,22 +454,16 @@ out toward the foe near impact, then back to rest by the recover time."
                       :gold (jrpg-combat-victory-gold game))
   (multiple-value-bind (ex ey) (jrpg-enemy-anchor)
     (jrpg-spawn-sparks game ex ey 20 :speed 210.0))
-  (let ((leveled (jrpg-value "jrpg-just-leveled"))
-        (name (jrpg-enemy-word game)))
-    (if leveled
-        (progn
-          (play-jrpg-sound "bell" :volume 0.4)
-          (setf (jrpg-combat-message game)
-                (format nil "the ~a falls. you reach level ~d." name leveled)))
-        (progn
-          (play-jrpg-sound "coin" :volume 0.34)
-          (setf (jrpg-combat-message game)
-                (format nil "the ~a is defeated." name)))))
+  (play-jrpg-sound "coin" :volume 0.34)
+  (setf (jrpg-combat-message game)
+        (format nil "the ~a is defeated. +~d Hours."
+                (jrpg-enemy-word game) (jrpg-value "jrpg-just-gained" 0)))
   (jrpg-combat-finish game (node-success-target node)))
 
 (defun jrpg-combat-defeat (node game)
   (jrpg-record-defeat)
-  (setf (jrpg-combat-message game) "you fall down in the road.")
+  (setf (jrpg-combat-message game)
+        "you fall, and half your Hours scatter into the dark.")
   (jrpg-combat-finish game (node-failure-target node)))
 
 ;;; --- the hero's actions (resolved at impact) ---
@@ -756,6 +750,16 @@ out toward the foe near impact, then back to rest by the recover time."
 (defun draw-jrpg-line (text x y &optional (size 18) (alpha 230))
   (draw-text-at text x y size (make-color 255 255 255 alpha)))
 
+(defun jrpg-draw-select-bar (x y w &optional (h 24))
+  "A faint highlight behind a selected menu row."
+  (claylib/ll:draw-rectangle (round x) (round (- y 3)) (round w) h
+                             (claylib::c-ptr (make-color 255 255 255 34))))
+
+(defun jrpg-draw-rule (x y w &optional (alpha 70))
+  "A thin divider rule."
+  (claylib/ll:draw-rectangle (round x) (round y) (round w) 1
+                             (claylib::c-ptr (make-color 255 255 255 alpha))))
+
 (defun draw-jrpg-bar (x y w h frac trail-frac &key yellow)
   "A meter: faint track, a dim trailing chunk for the value still draining
 away, then the solid fill. Yellow tints the will meter."
@@ -914,7 +918,7 @@ comes up when guarding, and the whole body flares white on a hit."
     (unless (jrpg-composed-p)
       (draw-jrpg-line "UNMASKED" (+ bx 210) (+ by 61) 13 220))
     (draw-jrpg-line (format nil "MP ~d" (jrpg-number "jrpg-hero-mp")) (+ bx 18) (+ by 88) 16)
-    (draw-jrpg-line (format nil "G ~d" (jrpg-number "jrpg-gold")) (+ bx 120) (+ by 88) 16)
+    (draw-jrpg-line (format nil "~d Hr" (jrpg-hours)) (+ bx 116) (+ by 88) 16)
     (draw-jrpg-line (format nil "Lv ~d" (jrpg-number "jrpg-hero-level" 1)) (+ bx 214) (+ by 88) 16)))
 
 (defun draw-jrpg-combat-commands (game ox oy)
@@ -974,6 +978,8 @@ comes up when guarding, and the whole body flares white on a hit."
          (oy (if (> sh 0.4) (* sh 0.55 (sin (* e 59.0))) 0.0)))
     (draw-jrpg-box (+ +jrpg-combat-left+ ox) (+ +jrpg-combat-top+ oy)
                    +jrpg-combat-width+ +jrpg-combat-height+ 208)
+    (draw-centered-text (jrpg-class-name) +virtual-center-x+ 152 14
+                        (make-color 255 255 255 120))
     (draw-jrpg-combat-enemy game ox oy)
     (draw-jrpg-combat-hero game ox oy)
     (draw-jrpg-combat-stats game ox oy)
@@ -983,6 +989,34 @@ comes up when guarding, and the whole body flares white on a hit."
     (draw-jrpg-combat-message game ox oy)
     (jrpg-draw-sparks game ox oy)
     (jrpg-draw-floaters game ox oy)))
+
+;;; A compact, read-only summary card — class, stats, Hours, worn gear. Shared:
+;;; the overworld pulls it up with C; other screens can reuse it.
+
+(defun jrpg-draw-stat-card (left top)
+  (draw-jrpg-box left top 380 286 240)
+  (draw-jrpg-line (string-upcase (jrpg-hero-name)) (+ left 20) (+ top 16) 20)
+  (draw-text-at (jrpg-class-name) (+ left 20) (+ top 44) 15 (yellow-sign-color 230))
+  (draw-jrpg-line (format nil "HP ~d/~d    MP ~d"
+                          (jrpg-number "jrpg-hero-hp") (jrpg-number "jrpg-hero-max-hp" 18)
+                          (jrpg-number "jrpg-hero-mp"))
+                  (+ left 20) (+ top 74) 16)
+  (draw-jrpg-line (format nil "ATK ~d    DEF ~d    WILL ~d/~d"
+                          (jrpg-number "jrpg-hero-attack" 5) (jrpg-number "jrpg-hero-defense" 2)
+                          (jrpg-composure) (jrpg-composure-max))
+                  (+ left 20) (+ top 98) 16)
+  (draw-jrpg-line (format nil "LV ~d    ~d Hours"
+                          (jrpg-number "jrpg-hero-level" 1) (jrpg-hours))
+                  (+ left 20) (+ top 122) 16)
+  (draw-jrpg-line "WORN" (+ left 20) (+ top 154) 15 200)
+  (loop with y = (+ top 178)
+        for slot in *jrpg-equip-slots*
+        for id = (jrpg-equipped-in slot)
+        do (draw-jrpg-line (format nil "~6a ~a" (string-downcase (symbol-name slot))
+                                   (if id (jrpg-item-name id) "—"))
+                           (+ left 20) y 15 (if id 215 150))
+           (incf y 22))
+  (draw-jrpg-line "C or esc: close" (+ left 20) (+ top 256) 13 150))
 
 (dialog-minigame-kind :jrpg-combat
                       :update #'update-jrpg-combat-minigame

@@ -23,7 +23,11 @@
     (:marble-phial :name "phial of marble-fluid" :consumable t
      :desc "the fluid that turns the living to marble; a kinder way to stop.")
     (:hali-water :name "flask of Hali-water" :consumable t
-     :desc "lake-water that keeps what it touches. it steadies the will.")))
+     :desc "lake-water that keeps what it touches. it steadies the will.")
+    (:watchman-club :name "watchman's club" :slot :weapon :mods (:attack 5)
+     :desc "worn smooth by a hand that did not tire. heavier than the knife.")
+    (:mourners-locket :name "mourner's locket" :slot :charm :mods (:composure-max 3)
+     :desc "someone's hair coiled inside; it keeps your face yours a little longer.")))
 
 (defun jrpg-item (id) (cdr (assoc id *jrpg-items*)))
 (defun jrpg-item-name (id) (or (getf (jrpg-item id) :name) (string-downcase (symbol-name id))))
@@ -170,3 +174,63 @@
 (defun jrpg-complete-quest (id)
   (jrpg-init-state)
   (setf (jrpg-value (jrpg-quest-key id)) :done))
+
+
+;;; --- Hours: the soul-currency (the noun is capitalised in UI text so it does
+;;; not read as a span of time). Earned/lost in state.lisp; spent here. ---
+
+(defun jrpg-hours () (jrpg-number "jrpg-hours" 0))
+
+(defun jrpg-add-hours (n) (jrpg-adjust-number "jrpg-hours" n))
+
+(defun jrpg-spend-hours (n)
+  "Spend N Hours if affordable; returns t on success."
+  (when (>= (jrpg-hours) n)
+    (jrpg-adjust-number "jrpg-hours" (- n))
+    t))
+
+
+;;; --- leveling: buy a level with Hours, on a rising curve ---
+
+(defun jrpg-level-cost (&optional (level (jrpg-number "jrpg-hero-level" 1)))
+  "Hours to buy the next level — a curve that climbs with the level you hold."
+  (+ 20 (* 14 level) (* 5 level level)))
+
+(defun jrpg-level-up ()
+  "Spend Hours to gain a level, if you can afford the curve. Returns the new
+level, or nil. Gains: +5 max hp, +1 attack, +1 mp on even levels, full mend."
+  (jrpg-init-state)
+  (when (jrpg-spend-hours (jrpg-level-cost))
+    (let ((level (1+ (jrpg-number "jrpg-hero-level" 1))))
+      (jrpg-set-number "jrpg-hero-level" level)
+      (jrpg-adjust-number "jrpg-hero-max-hp" 5)
+      (jrpg-adjust-number "jrpg-hero-attack" 1)
+      (when (evenp level) (jrpg-adjust-number "jrpg-hero-mp" 1))
+      (jrpg-set-number "jrpg-hero-hp" (jrpg-number "jrpg-hero-max-hp" 18))
+      (jrpg-restore-composure (jrpg-composure-max))
+      level)))
+
+
+;;; --- the shop: what the Sign-touched will sell for Hours ---
+
+(defparameter *jrpg-shop-stock*
+  '((:tonic 14) (:hali-water 18) (:watchman-club 64) (:mourners-locket 58)))
+
+(defun jrpg-shop-label (key)
+  (case key
+    (:tonic "tonic (+9 hp, in battle)")
+    (t (jrpg-item-name key))))
+
+(defun jrpg-shop-buy (key cost)
+  "Buy KEY for COST Hours if affordable; returns a short message. Generic over
+any item id (gear is one-per-customer; tonics and consumables restock freely)."
+  (cond
+    ((< (jrpg-hours) cost) (format nil "you cannot spare ~d Hours." cost))
+    ((and (not (jrpg-item-consumable-p key)) (jrpg-has-item-p key)) "you already carry that.")
+    (t (jrpg-spend-hours cost)
+       (cond
+         ((eq key :tonic) (jrpg-adjust-number "jrpg-potions" 1)
+          "a tonic, corked and waiting. bought.")
+         ((jrpg-item key) (jrpg-add-item key)
+          (format nil "~a — bought." (jrpg-item-name key)))
+         (t "bought.")))))

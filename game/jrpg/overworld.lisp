@@ -104,7 +104,7 @@
   (map              *jrpg-overworld-map*)
   (finish-glyphs    '(#\!))
   (tile-messages    nil)
-  (legend           "V village  = bridge  + sign  T tower  $ gold  o tonic")
+  (legend           "V village  = bridge  + sign  T tower  $ Hours  o tonic")
   (store-prefix     "jrpg-overworld")
   (x                1)
   (y                4)
@@ -121,7 +121,9 @@
   (doors            nil)
   ;; facing (for the figure) and a short breadcrumb trail of recent cells
   (facing           1)
-  (visited          nil))
+  (visited          nil)
+  ;; the read-only stat card, toggled with C (pauses movement while up)
+  (show-card        nil))
 
 (defun jrpg-overworld-width (game)
   (length (aref (jrpg-overworld-map game) 0)))
@@ -192,7 +194,7 @@
              :tile-messages (minigame-config-value node :tile-messages)
              :legend (minigame-config-value
                       node :legend
-                      "= bridge  + sign  T tower  $ gold  o tonic  ^~ block")
+                      "= bridge  + sign  T tower  $ Hours  o tonic  ^~ block")
              :store-prefix (minigame-config-value node :store-prefix
                                                   "jrpg-overworld")
              :x start-x
@@ -213,7 +215,7 @@
            :tile-messages (minigame-config-value node :tile-messages)
            :legend (minigame-config-value
                     node :legend
-                    "V village  = bridge  + sign  T tower  $ gold  o tonic")
+                    "V village  = bridge  + sign  T tower  $ Hours  o tonic")
            :store-prefix (minigame-config-value node :store-prefix
                                                 "jrpg-overworld")
            :x start-x
@@ -270,7 +272,7 @@ node changes, so a returning walk resumes (encounters do not reset it)."
     (#\T "the tower is still too far to touch.")
     (#\S "the roadside shrine is white stone and old pine.")
     (#\! "the grass shakes.")
-    (#\$ "coins glint in the roadside grass.")
+    (#\$ "an hour glints in the roadside grass, waiting.")
     (#\o "a small corked bottle waits on a flat stone.")
     (#\~ "the river runs cold and quick.")
     (t "the road is bright and empty.")))
@@ -307,12 +309,12 @@ node changes, so a returning walk resumes (encounters do not reset it)."
 message and are taken only once."
   (case cell
     (#\$ (unless (jrpg-overworld-collected-p game x y)
-           (let ((gold (get-random-value 3 6)))
-             (jrpg-adjust-number "jrpg-gold" gold)
+           (let ((found (get-random-value 3 6)))
+             (jrpg-adjust-number "jrpg-hours" found)
              (jrpg-overworld-mark-collected game x y)
              (play-jrpg-sound "coin" :volume 0.40)
              (setf (jrpg-overworld-message game)
-                   (format nil "loose coins in the grass. ~d gold." gold)))))
+                   (format nil "an hour you did not know you still had. +~d Hours." found)))))
     (#\o (unless (jrpg-overworld-collected-p game x y)
            (jrpg-adjust-number "jrpg-potions" 1)
            (jrpg-overworld-mark-collected game x y)
@@ -404,11 +406,19 @@ steps and the steps just after a fight safe."
                   "you cannot get through that way.")))))
 
 (defun jrpg-overworld-step (node game)
-  "One frame of walking input; shared by the road and the city."
-  (let ((direction (jrpg-overworld-input-direction)))
-    (when direction
-      (destructuring-bind (dx dy) direction
-        (jrpg-overworld-move node game dx dy)))))
+  "One frame of walking input; shared by the road and the city. C toggles the
+read-only stat card, which pauses movement while it is up."
+  (cond
+    ((jrpg-overworld-show-card game)
+     (when (or (is-key-pressed-p +key-c+) (is-key-pressed-p +key-escape+))
+       (setf (jrpg-overworld-show-card game) nil)))
+    ((is-key-pressed-p +key-c+)
+     (setf (jrpg-overworld-show-card game) t))
+    (t
+     (let ((direction (jrpg-overworld-input-direction)))
+       (when direction
+         (destructuring-bind (dx dy) direction
+           (jrpg-overworld-move node game dx dy)))))))
 
 (defun update-jrpg-overworld-minigame (node dt)
   (declare (ignore dt))
@@ -542,8 +552,10 @@ the way they face reads at a glance."
                           (jrpg-number "jrpg-hero-hp")
                           (jrpg-number "jrpg-hero-max-hp" 18))
                   782 414 17)
-  (draw-jrpg-line (format nil "gold ~d" (jrpg-number "jrpg-gold"))
-                  782 444 17))
+  (draw-jrpg-line (format nil "~d Hours    C card" (jrpg-hours))
+                  782 444 15)
+  (when (jrpg-overworld-show-card game)
+    (jrpg-draw-stat-card 450 215)))
 
 (defun draw-jrpg-overworld-minigame (node color)
   (declare (ignore color))

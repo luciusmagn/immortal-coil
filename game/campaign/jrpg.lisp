@@ -72,7 +72,7 @@
                                :encounter-target "jrpg/ruffian-combat"
                                :encounter-rate 8
                                :start-message "the square at night. arrows or wasd move."
-                               :legend "+ lamp   ! studio stair   $ coin   block"
+                               :legend "+ lamp   ! studio stair   $ Hours   block"
                                :tile-messages
                                '((#\R . "a gas lamp, guttering low.")
                                  (#\! . "the studio's stair door stands ajar.")
@@ -207,7 +207,7 @@
                                :encounter-target "jrpg/thief-combat"
                                :encounter-rate 9
                                :start-message "the thinned streets. arrows or wasd move."
-                               :legend "+ lamp   ! the armourer's   $ coin   block"
+                               :legend "+ lamp   ! the armourer's   $ Hours   block"
                                :tile-messages
                                '((#\! . "the armourer's lit window, the mail white in it.")
                                  (#\. . "thin cobbles, fewer than there were."))))
@@ -436,14 +436,16 @@
                                         ("Q" "jrpg/old-quarter"  :done "kiy-did-quarter")
                                         ("D" "jrpg/dys-lane"     :done "kiy-did-dys")
                                         ("S" "jrpg/character")
+                                        ("P" "jrpg/shop")
                                         ("C" "jrpg/church"))
-                               :legend "A armourer  M marble  Q quarter  D lane  S yourself  C church (out)"
+                               :legend "A armourer M marble Q quarter D lane S self P shop C church(out)"
                                :tile-messages
                                '((#\A . "an armourer's stair, mail white in the window.")
                                  (#\M . "a door open on white marble light.")
                                  (#\Q . "a stair down to the old quarter, the gas warm.")
                                  (#\D . "a green lane, gorse and sea, where no lane should be.")
                                  (#\S . "a dark window; your own reflection — your coat, your hand, your self.")
+                                 (#\P . "a pawnbroker's lamp, still lit. he deals in Hours.")
                                  (#\C . "a church, an organ already going; past it the lake-smell. the way out."))))
 
 (dialog-particles "jrpg/dys-meet" :motes :fade-seconds 3.0)

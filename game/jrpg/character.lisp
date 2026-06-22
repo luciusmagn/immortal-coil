@@ -37,6 +37,14 @@
     (cond
       ((or (is-key-pressed-p +key-escape+) (is-key-pressed-p +key-backspace+))
        (finish-minigame-node node (node-success-target node)))
+      ((is-key-pressed-p +key-l+)
+       (let ((cost (jrpg-level-cost)))
+         (if (jrpg-level-up)
+             (setf (jrpg-char-message s)
+                   (format nil "you give up ~d Hours and grow — level ~d."
+                           cost (jrpg-number "jrpg-hero-level" 1)))
+             (setf (jrpg-char-message s)
+                   (format nil "growing costs ~d Hours; you have ~d." cost (jrpg-hours))))))
       ((plusp n)
        (cond
          ((or (is-key-pressed-p +key-down+) (is-key-pressed-p +key-s+))
@@ -70,10 +78,11 @@
                           (jrpg-number "jrpg-hero-attack" 5) (jrpg-number "jrpg-hero-defense" 2)
                           (jrpg-composure) (jrpg-composure-max))
                   200 256 16)
-  (draw-jrpg-line (format nil "LV ~d    XP ~d    GOLD ~d"
-                          (jrpg-number "jrpg-hero-level" 1) (jrpg-number "jrpg-xp" 0)
-                          (jrpg-number "jrpg-gold" 0))
+  (draw-jrpg-line (format nil "LV ~d    ~d Hours"
+                          (jrpg-number "jrpg-hero-level" 1) (jrpg-hours))
                   200 280 16)
+  (draw-jrpg-line (format nil "press L: grow for ~d Hours" (jrpg-level-cost))
+                  200 302 14 190)
   ;; quests (skip the ones not yet begun)
   (draw-jrpg-line "QUESTS" 200 322 16 200)
   (loop with y = 346
@@ -117,7 +126,7 @@
       (let ((id (nth (min (jrpg-char-selected s) (1- (length items))) items)))
         (draw-jrpg-line (jrpg-item-desc id) 200 590 14 185)))
     (draw-jrpg-line (jrpg-char-message s) 200 614 15 205)
-    (draw-jrpg-line "up/down select   enter equip/use   esc back" 640 614 13 150)))
+    (draw-jrpg-line "up/down select   enter equip/use   L grow   esc back" 640 614 13 150)))
 
 (register-minigame-session-kind :jrpg-character 'jrpg-character-session)
 
