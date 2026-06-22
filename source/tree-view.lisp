@@ -400,9 +400,8 @@ tree scale. Marks the King-in-Yellow path, the one colour in the game."
   (let ((current (and *state* (play-state-current-id *state*)))
         (scale (tree-model-scale model)))
     (dolist (id (tree-model-ids model))
-      (let ((sx      (+ (tree-node-x model id) *tree-pan-x*))
-            (sy      (+ (tree-node-y model id) *tree-pan-y*))
-            (yellowp (yellow-crown-node-p id)))
+      (let ((sx (+ (tree-node-x model id) *tree-pan-x*))
+            (sy (+ (tree-node-y model id) *tree-pan-y*)))
         (when (tree-on-screen-p sx sy)
           (cond
             ((gethash id (tree-model-questions model))
@@ -416,33 +415,20 @@ tree scale. Marks the King-in-Yellow path, the one colour in the game."
                                         +tree-bead-current-radius+
                                         +tree-bead-visited-radius+)
                                     scale))))
-               (cond
-                 (yellowp
-                  (tree-draw-crown sx sy (* radius 1.15) 255)
-                  (when current-p
-                    (claylib/ll:draw-circle-lines (round sx) (round sy)
-                                                  (max 5.0 (* 11.0 scale))
-                                                  (claylib::c-ptr
-                                                   (yellow-sign-color 235)))))
-                 (t
-                  (claylib/ll:draw-circle (round sx) (round sy) radius
-                                          (claylib::c-ptr
-                                           (make-color 255 255 255 255)))
-                  (when current-p
-                    (claylib/ll:draw-circle-lines (round sx) (round sy)
-                                                  (max 5.0 (* 11.0 scale))
-                                                  (claylib::c-ptr
-                                                   (make-color 255 255 255 235))))))))
+               (claylib/ll:draw-circle (round sx) (round sy) radius
+                                       (claylib::c-ptr
+                                        (make-color 255 255 255 255)))
+               (when current-p
+                 (claylib/ll:draw-circle-lines (round sx) (round sy)
+                                               (max 5.0 (* 11.0 scale))
+                                               (claylib::c-ptr
+                                                (make-color 255 255 255 235))))))
             (t
              ;; an off-main branch you have not taken
-             (if yellowp
-                 (tree-draw-crown sx sy
-                                  (max 2.0 (* +tree-bead-visited-radius+ scale 0.82))
-                                  120)
-                 (claylib/ll:draw-circle (round sx) (round sy)
-                                         (max 2.0 (* +tree-bead-visited-radius+ scale 0.82))
-                                         (claylib::c-ptr
-                                          (make-color 255 255 255 80)))))))))))
+             (claylib/ll:draw-circle (round sx) (round sy)
+                                     (max 2.0 (* +tree-bead-visited-radius+ scale 0.82))
+                                     (claylib::c-ptr
+                                      (make-color 255 255 255 80))))))))))
 
 (defun draw-tree-overlay ()
   (when *tree-open-p*
