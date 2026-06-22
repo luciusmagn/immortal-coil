@@ -169,7 +169,107 @@
              :next "jrpg/leave-studio")
 
 (dialog-text "jrpg/leave-studio"
-             "you go down into a city that has thinned, the way a held note thins. the gas lamps are the same number and in the wrong order. ahead, where there was no church, a church stands with its door open and an organ going inside."
+             "you go down into a city that has thinned, the way a held note thins. the gas lamps are the same number and in the wrong order. one shopfront is still lit: an armourer's, a suit of mail white in the window, a stair behind it going up to a light."
+             :next "jrpg/wilde-street")
+
+
+;;; THE REPAIRER OF REPUTATIONS — Hawberk's, and the room above it
+
+(dialog-minigame "jrpg/wilde-street"
+                 "arrows or wasd move. reach the lit armourer's shop."
+                 :game :jrpg-overworld
+                 :success "jrpg/hawberk"
+                 :failure "jrpg/hawberk"
+                 :config (list :gen-width 32
+                               :gen-height 16
+                               :finish-glyph #\!
+                               :store-prefix "kiy-wilde"
+                               :encounter-target "jrpg/thief-combat"
+                               :encounter-rate 9
+                               :start-message "the thinned streets. arrows or wasd move."
+                               :legend "+ lamp   ! the armourer's   $ coin   block"
+                               :tile-messages
+                               '((#\! . "the armourer's lit window, the mail white in it.")
+                                 (#\. . "thin cobbles, fewer than there were."))))
+
+(dialog-minigame "jrpg/thief-combat"
+                 "choose a command. arrows or wasd move. enter or space confirms."
+                 :game :jrpg-combat
+                 :success "jrpg/wilde-street"
+                 :failure "jrpg/thief-down"
+                 :config (list :enemy-name "THIEF"
+                               :enemy-kind "ruffian"
+                               :enemy-hp 13
+                               :enemy-attack-min 3
+                               :enemy-attack-max 5
+                               :victory-xp 4
+                               :victory-gold 7
+                               :message "a thin hand goes for the clasp in your coat before you see the rest of him."))
+
+(dialog-on-enter "jrpg/thief-down"
+                 '(jrpg-heal 5))
+
+(dialog-text "jrpg/thief-down"
+             "he gets a coin and not the clasp, and is gone down an alley. the armourer's window is still lit ahead."
+             :next "jrpg/wilde-street")
+
+(dialog-conversation "jrpg/hawberk"
+                     (dialog-left "Constance"
+                                  "father is riveting and will not look up. you want the stair. everyone who wants the stair has your look.")
+                     (dialog-right "{player-name}"
+                                   "what look is that?")
+                     (dialog-left "Constance"
+                                  "like you have read something you cannot put down. go up, then. Mr. Wilde is expecting you. he is always expecting everyone.")
+                     :next "jrpg/wilde")
+
+(dialog-text "jrpg/wilde"
+             "up the stair, a low room: a small scarred man in a chair too high for him, a savage cat curled in his lap, a ledger open on his knee, a locked cabinet behind. he repairs reputations, he says, makes names and unmakes them, for a fee. he has been expecting you, which he says of everyone, and means."
+             :next "jrpg/wilde-questions")
+
+(dialog-interrogation "jrpg/wilde-questions"
+                      "the cat opens one eye. Mr. Wilde keeps a finger in the ledger, at a page he would like you to ask about."
+                      (:next "jrpg/castaigne")
+                      (:continue-label "the cabinet, then")
+                      ("ask about the ledger of names"
+                       :id "register"
+                       :speaker "Mr. Wilde"
+                       "every name in it has taken the Yellow Sign, which no living soul dares disregard. yours is here. it is here twice. the second time is dated after today, in a hand i would call yours if you had got round to writing it.")
+                      ("ask about the locked cabinet"
+                       :id "crown"
+                       :speaker "Mr. Wilde"
+                       "a crown. the diadem of the Last King, who hid Yhtill forever under the tatters. you may try it on; they all do. woe to the one crowned with the crown of the King in Yellow — though that has stopped nobody yet.")
+                      ("ask who the King is"
+                       :id "king"
+                       :speaker "Mr. Wilde"
+                       "the son of Hastur, who keeps the black stars over Carcosa and the cloudy depths of Demhe and the Lake of Hali. he was a man, the manuscript holds, before he was the answer to a question no one should ask. you have been asking it for some pages now."))
+
+(dialog-text "jrpg/castaigne"
+             "a man rises from a dark corner you had not searched. he gives his name as Hildred and his title as Rex, says the crown is promised to him and a rival claimant must be exiled or die. he has read further than you. he comes for the Sign with a clean razor and a writ already signed."
+             :next "jrpg/castaigne-combat")
+
+(dialog-minigame "jrpg/castaigne-combat"
+                 "choose a command. arrows or wasd move. enter or space confirms."
+                 :game :jrpg-combat
+                 :success "jrpg/after-castaigne"
+                 :failure "jrpg/castaigne-down"
+                 :config (list :enemy-name "HILDRED-REX"
+                               :enemy-kind "ruffian"
+                               :enemy-hp 26
+                               :enemy-attack-min 4
+                               :enemy-attack-max 8
+                               :victory-xp 12
+                               :victory-gold 8
+                               :message "Hildred-Rex advances, crowning himself with both empty hands as he comes."))
+
+(dialog-text "jrpg/after-castaigne"
+             "Hildred sits down hard, the title gone out of him, and weeps that the cat has got Mr. Wilde. the cat has: the small scarred man bleeds from the throat in his high chair, the ledger fallen open at your name, twice. you go before the noise brings anyone. the cabinet you leave shut, this time."
+             :next "jrpg/church")
+
+(dialog-on-enter "jrpg/castaigne-down"
+                 '(jrpg-heal 6))
+
+(dialog-text "jrpg/castaigne-down"
+             "he has your collar and the razor at it when the cat, for its own reasons, takes Mr. Wilde's throat instead, and Hildred forgets you entirely for the man who promised him a crown. you leave them to it. the ledger lies open at your name, twice."
              :next "jrpg/church")
 
 
