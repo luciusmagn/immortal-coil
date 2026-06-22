@@ -1,188 +1,138 @@
-# The Yellow Path — the JRPG path rewritten in the world of the King in Yellow
+# The King in Yellow path — stitching Chambers into one world
 
-Author-facing narrative plan. This uproots the JRPG path's bog-standard
-demon-lord worldbuilding and resets it inside Carcosa, the lost city of
-Robert W. Chambers' *The King in Yellow* (`king-in-yellow.txt`, public domain).
-The familiar JRPG frame (a hero, a town, a companion, a road, a demon lord to
-end) is kept as the surface; the flesh is Carcosa.
+Author-facing. The JRPG path is rebuilt from the ground up out of Robert W.
+Chambers' *The King in Yellow* (`king-in-yellow.txt`). No demon-lord skeleton
+is kept. The player begins **alone** in the ordinary human world of the
+stories, travels through it on JRPG mechanics, meets the people of the stories
+and watches their narratives happen, and is drawn — by the Play and the Yellow
+Sign — across into Carcosa.
 
-## The seam (why this fits the existing design)
+## What this path is
 
-`AGENTS.md` and `docs/narrative.md` already hold the hidden idea that **the
-JRPG demon lord may turn out to be the player from another path**, never
-foreshadowed early. We make that canon, and we make it the King in Yellow.
+It is Hylics' lesson applied to Chambers: keep the JRPG **mechanics** (turn
+battles with a menu, stats and leveling, an overworld you walk, items, party
+members picked up later) and throw out the JRPG **tropes** (no inn, no quest
+board, no slimes, no demon lord, no cozy village). The worldbuilding is the
+novel's: fin-de-siècle dread, the banned Play, the Yellow Sign, Carcosa.
 
-The King in Yellow is the **maddened ship-captain from the `mutiny/` bad
-branch** — the branch where the crew, lovingly and certain, removes a captain
-they have concluded is no longer the one they serve. His time-loop was never a
-game mechanic; it was accumulated death-memory, dying and returning and
-carrying the pain forward (ship-path canon). When the crew finally put him off
-the ship, the loop broke *wrong*: it stopped returning him to the alarm and the
-crossing, and began returning him to a shore under twin suns, beside a still
-lake, under black stars. He stopped being the captain. He became the tattered
-King who **wears no mask** — because after enough deaths there is no longer a
-face under one to hide. His old gift (every visible decision correct, the crew
-saved from every crisis) curdled into the **Yellow Sign**: a mark he sends to
-those whose story he means to conclude.
+The early world is **not a utopia**. Travelling the city you fight ordinary,
+dangerous people — a ruffian, a thief, a drunk, someone the Play has already
+unhinged — before anything supernatural. The horror arrives slowly, through the
+ordinary made wrong.
 
-Recontextualizations the deep route can pay off (never early):
+## The through-line that joins the stories
 
-- the **Lake of Hali** is the crossing he kept failing — the void/water.
-- the **twin suns** are the ship's binary primary, seen from the far shore.
-- the **pallid courtiers** of Carcosa are the crew he could not save, kept,
-  looping their last gestures, masked.
-- the hero sent to end the demon lord is another loop/aspect of the same
-  person; "slaying the King" is the loop trying, again, to end itself.
+Chambers' stories share two objects, and we make them the connective tissue:
 
-Early JRPG play stays a sincere (if uncanny) fantasy quest. The captain-reveal
-is deep, gradual, diegetic — no title card.
+- **The Play, *The King in Yellow*** — a banned book. Its first act is harmless
+  and beautiful; its second act drives the reader mad and toward Carcosa. The
+  player carries a copy, or comes to. Reading deeper costs composure.
+- **The Yellow Sign** — a stylized symbol. To see or hold it marks you as the
+  King's property; ruin follows. The player is already half-marked at the
+  start, and the Sign spreads through the city ahead of them.
 
-## Visual marker — the Yellow Crown (#ffff00)
+The player follows the Sign's spread through one decadent city (Chambers'
+near-future American 1920s, with the government Lethal Chambers, carrying the
+Paris-atelier flavour the stories also have). Each story is a district and a
+set of people; the player arrives as the Sign reaches them.
 
-The game is pure black and white; `AGENTS.md` forbids palettes without an
-explicit reason. The King in Yellow IS the explicit reason. This path carries
-the single sanctioned color: a **yellow crown, `#ffff00`** — the only color in
-the game, therefore unmistakable.
+## The King (characterization — hold to this)
 
-- `+yellow-sign-color+` = (255 255 0).
-- A `yellow-path-node-p` predicate tags this path's node id prefixes.
-- The story-tree overlay draws a small yellow crown on yellow-path nodes
-  instead of the white bead.
-- The crown also appears in-scene at the King's beats (the diadem, the Sign).
-  Used sparingly: a single yellow stroke in a B&W frame should feel like a
-  wound, not decoration.
+He is the ship-captain **gone absolutely, irretrievably insane** — madness
+beyond anything human — and his power over time, the death-loop of the ship
+path, **vastly developed** until it stopped being suffering and became
+authority over moment and repetition. That is the engine of everything
+canonical about the King in Yellow: an ambiguous, god-like entity in tattered
+yellow robes and the featureless **Pallid Mask**, ruling phantom **Carcosa**
+beside the **Lake of Hali** under the **black stars** of the **Hyades**; the
+**Yellow Sign** his authority, and to hold it is to be claimed; a cosmic force
+of madness and entropy; in his one direct manifestation (*In the Court of the
+Dragon*) an inescapable living God who takes the soul.
 
-## Carcosa — the world (from the source text)
+Portray him accordingly: **not lucid, not tired, not sympathetic at a desk.**
+Raving, fragmentary, his speech sliding between times; the scene around him
+stutters and repeats because time near him will not hold still; the dead of his
+court are kept in the last gesture they made. The captain-origin is real but
+**buried** — it surfaces only in shards through the madness, and only a player
+who has walked the ship path will assemble it. The revelation is **dreadful**:
+a man's grief and failure swollen into a god. It is the floor of the path, never
+its cozy centre.
 
-- **Carcosa**: the lost lakeside city. "Along the shore the cloud waves break,
-  / the twin suns sink behind the lake, / the shadows lengthen / In Carcosa."
-  Towers, the King's palace, streets where Camilla's scream still hangs.
-- **The Lake of Hali**: dark water, wet winds, the cloudy depths of Demhe.
-  Crossing it is the deep ordeal.
-- **The sky**: black stars rise, strange moons circle, the Hyades and Aldebaran.
-- **The Yellow Sign**: a sigil. To receive it is to be written into the King's
-  story. Item / key / curse.
-- **The Pallid Mask**: the masque where all have laid aside disguise but the
-  Stranger — who answers "I wear no mask." "No mask? No mask!"
-- **The tatters of the King**: his scolloped yellow mantle.
-- **The Play, *The King in Yellow***: a script whose innocent first act lures
-  and whose second act maddens whoever reads it. Both an item and a hazard.
-- **Cassilda, Camilla**: figures of the court — interrogable NPCs.
-- **Hastur, Yhtill, the Dynasty**: names of the King's domain and line.
+Carcosa itself is therefore **unstuck in time**: the twin suns never finish
+setting, the masque never starts and never ends, a tune dies in its third line
+forever, and the player's own moments stutter the deeper in they go.
 
-Naming rule (repo): humans keep real names; Carcosa's canon figures
-(Cassilda, Camilla, the Stranger, the King) keep their canon names; places are
-exempt. The townsfolk keep their existing real names.
+## The world, stitched (Act I — the ordinary world)
 
-## The reframed spine (existing jrpg/ ids kept; prose reset)
+The player, alone, moves between these by the overworld walk (city streets,
+districts, and a rail line to a second quarter). Random encounters are human
+menace. Each location is a story; the player observes and acts.
 
-Node ids stay stable to preserve wiring and minigame hooks; only the world
-changes. The matchbook entry still lands at `jrpg/inn`.
+1. **Hawberk's armoury & the room above it** — *The Repairer of Reputations*.
+   Hawberk the armourer and his daughter Constance below; up the stair, **Mr.
+   Wilde**, the repairer of reputations — scarred, earless, a vicious cat, a
+   register of names, and in his cabinet a crown and the papers of an Imperial
+   Dynasty. He is the lore: Carcosa, Hastur, the Yellow Sign, "the Pallid Mask."
+   The player can interrogate him (the world's exposition, concrete and local).
+   **Hildred Castaigne** is here, the mad heir who has read the Play — a danger
+   (a fight, or a tragedy observed). The Lethal Chamber stands in the square.
+   Relics: a line in the register (your name, in your own hand); later the crown.
+2. **A painter's studio on the square** — *The Yellow Sign*. **Mr. Scott** the
+   painter, **Tessie** his model, the canvas that rots as you watch, and below
+   in the churchyard the **watchman** — the plump white grave-worm. Tessie's
+   dream of the hearse; the **Yellow Sign clasp** she gives. The player can warn
+   them, read the Play with them, or face the watchman when he climbs the stair
+   — a reanimated-corpse battle. Relics: the Yellow Sign clasp, a palette knife
+   (a weapon).
+3. **A sculptor's studio** — *The Mask*. **Boris** and the fluid that turns the
+   living to marble; **Geneviève**; the pool. The marble-touched can move
+   (battles against the half-statued). Relic: a marble lily; a phial of the
+   fluid (an item that petrifies — a one-use crowd-stopper).
+4. **The Church of St. Barnabé** — *In the Court of the Dragon*. The malevolent
+   **organist** fixes on the player and pursues them out and through the streets
+   — a flight/chase (reuse the hide engine, or a running battle). It does not
+   end in the city. It ends at the threshold: the King's manifestation, the
+   living God, and the player goes through into Carcosa.
 
-- `jrpg/inn` — the room is an inn at the **Hali strand**, the lakeward edge of
-  Carcosa. Twin-sun dusk through the shutter; lake-mist; a playbill on the wall.
-- `jrpg/name` — the name the player gives is the name on a summons that bears a
-  faint yellow sign in the corner.
-- the town (**Oakbarrow → the Strand under Carcosa**) — its people keep their
-  names (Mira, Toma, Oren, Pell). Errands become strand errands. The "quest"
-  is to go up to the towers and end the King whose Sign has been reaching the
-  town, stopping the songs, keeping the dead from leaving.
-- companions (Lena / Niko / Bram) — fellow travelers up the shore.
-- `jrpg/overworld` — the walk minigame becomes the **Hali shore road** toward
-  the towers; reused for the shrine detour (a roadside Yellow-Sign shrine) and
-  the tower approach.
-- combat — Carcosan creatures (see below).
-- the tower / Pell — the **palace approach**; Pell the steward → a herald of
-  the court.
-- the demon lord → **the King in Yellow**. `jrpg/demon-choice` /
-  `jrpg/sword-choice` → how the hero approaches the King: duel, terms, or ask
-  about the tatters / the Play / the masque. The "hill of broken swords"
-  becomes the **drift of pallid masks** below the throne (every petitioner who
-  unmasked and found nothing to threaten).
-- return road / ambush / inn-return → the way back down the shore; the deep
-  route may instead keep the player in Carcosa.
+The Play and the Sign accumulate across these. Reading the second act, or the
+church manifestation, is the crossing.
 
-## Creatures and enemies (KiY + FF turn-combat)
+## Carcosa (Act II — across)
 
-New ASCII sprites + `:jrpg-combat` configs. Repurpose the existing engine.
+The Lake of Hali, the twin suns, black stars, the King's towers. The
+supernatural roster (tatterdemalions, pallid courtiers, the Hali-drowned,
+byakhee, the Phantom of Truth). Cassilda and Camilla keep the masque; the
+Stranger who wears no mask. The throne: the King as the living God; the Yellow
+Sign on the player means they may be claimed, may take the crown (become the
+next), or may be let go changed. The buried captain-truth sits beneath it.
 
-- **tatterdemalion** — an animate shred of the King's yellow mantle. Fast, low
-  HP. Drops a *scrap of the Play*.
-- **pallid courtier** — a masked dead courtier. Medium. On a turn it may
-  *unmask*: if it does, it stops attacking (there is nothing under the mask)
-  and can be dismissed; if you strike the mask, it screams (the Camilla beat).
-- **the Hali-drowned** — a lake-drowned thing, slow, tanky, wet; high defense.
-- **byakhee-servant** (replaces the bat) — a winged thing of the Hyades.
-- **the Phantom of Truth** — a play-character; a mini-boss with a *no-mask*
-  gimmick.
-- **the King in Yellow** — the final confrontation. Mechanically uncanny: his
-  HP does not deplete by ordinary attack (every move you make, he has already
-  answered). The "fight" resolves through choice/interrogation/submission, not
-  damage. This is where the captain-reveal lands.
+## JRPG mechanics (kept; the point of the path)
 
-## Items (the world informs the haul)
+- **Combat** (turn menu): Act I human enemies — ruffian, thief, drunk, the
+  Play-maddened, Castaigne, the grave-worm watchman, marble-touched. Act II
+  supernatural — tatter, courtier, drowned, byakhee, phantom. Solo at first.
+- **Overworld**: travel within the city and by rail between quarters; readable
+  terrain, a figure sprite, random human encounters, no step counter (done).
+- **Stats / leveling**: hp, will, attack, defense, xp, gold; plus **composure**
+  (sanity) the Play and the King erode.
+- **Items the world gives**: the Play (act i / a leaf of act ii), the Yellow
+  Sign clasp, the palette knife, the crown, the phial of marble-fluid,
+  Hali-water, mask shards. The world informs the haul.
+- **Companions later, only if they fit**: a survivor of a story may join — e.g.
+  Tessie if warned in time, or a fellow reader of the Play — for a stretch.
+- **Interrogation**: Mr. Wilde, Scott, Tessie, the watchman, Boris, Cassilda.
+- **The yellow crown marker (#ffff00)**: the path's nodes carry the one colour
+  in the black-and-white game (story-tree crown; the Sign in scene).
 
-- **scrap of the Play (Act I)** — safe; lore + small buff.
-- **leaf of the Second Act** — risky consumable: large effect, costs composure
-  (a sanity stat); reading too much maddens.
-- **Yellow Sign token** — key/curse; marks the bearer, opens the palace, draws
-  the King's attention.
-- **Hali-water flask** — the reskinned potion: heals, but the lake remembers.
-- **pallid mask shard** — defense charm.
-- **Cassilda's locket** — a companion charm tied to the court.
-- Stats reskin: keep hp/attack/defense; **MP → "will"**; add **composure**
-  (sanity) read by the Play items and the masque.
+## Build order
 
-## Living world — interrogation
-
-`dialog-interrogation` (the dogfooded question-menu) for:
-
-- the **innkeeper** — the lake, the Sign reaching the town, the songs that stop.
-- **Cassilda** — Camilla, the masque, the King's face, "Not upon us, oh King."
-- **Camilla** — the unmasking, what she saw.
-- **the Stranger** — who wears no mask; the deepest seam (he remembers a ship,
-  a crossing, a man who could not stop). The reveal lives here and at the throne.
-- a **courtier** / the **herald** — court procedure, the drift of masks.
-
-## Minigames and branching
-
-- reuse: overworld (Hali road), turn-combat (KiY creatures), interrogation,
-  and the maze engine for **crossing the Lake of Hali** toward the palace.
-- new beat: **the masque** — hold composure as the court unmasks around you
-  (reuse the hiding/hold-still tension engine, reskinned), gating the throne.
-- the throne confrontation branches: **take the crown** (become the next King —
-  the loop continues, the cruelest ending), **refuse / unmask him** (find the
-  captain's ruined face, or no face), or **terms** (the songs are let go; the
-  dead leave Carcosa). Choices stored for later paths and the crown marker.
-
-## The ship stitch (mutiny → Carcosa)
-
-In `game/campaign/mutiny.lisp`, after the crew removes the captain, add a
-gentle, non-foreshadowing tail: the loop that always returned him to the alarm
-returns him instead to a shore under two suns, a still lake, a crown someone
-set on him as a last kindness. No title card; one or two diegetic beats. The
-JRPG deep route pays this off — the King is that captain.
-
-## Build order — IMPLEMENTED 2026-06-22
-
-1. plan (this doc) + narrative.md update. DONE.
-2. yellow crown marker: `yellow-sign-color`, `*yellow-crown-prefixes*`,
-   `yellow-crown-node-p`, `tree-draw-crown` (source/util.lisp, tree-view.lisp). DONE.
-3. spine reframe (game/campaign/jrpg.lisp) into Carcosa: Demhe on the Lake of
-   Hali, twin suns, the King in the high tower, the Yellow Sign on the summons,
-   the songs that stop. DONE.
-4. creatures (game/jrpg/combat.lisp: tatter, drowned, byakhee, courtier,
-   phantom sprites) + composure stat and recoverable items (game/jrpg/state.lisp).
-   DONE.
-5. the throne (game/campaign/carcosa.lisp): unmask -> the captain reveal -> the
-   crown-offer -> branch (take the crown / refuse / free the songs), composure
-   gated; mutiny/shore origin on the ship path. DONE.
-6. living court: Cassilda and Camilla (eavesdropped, then interrogated) before
-   the door; the Stranger interrogation in the deep branch. DONE.
-7. branches reframed (ledger/bellfall/festival) into Carcosa. DONE.
-8. the Lake of Hali crossing (maze reuse) + a pallid courtier on the causeway.
-   DONE.
-
-Entry: matchbook -> jrpg/inn. Deep throne: jrpg/sword-choice -> carcosa/unmask.
-The crown marker tags `jrpg/ ledger/ bellfall/ festival/ carcosa/`. The ship
-seed `mutiny/shore` stays unmarked so the ship route does not foreshadow it.
+1. this plan. 
+2. overworld rework (figure, terrain, encounters, no step counter). DONE.
+3. Act I rebuilt from scratch: the alone opening, the city + the four story
+   districts as navigable locations with their people, human-world combat,
+   relics, interrogation. Replaces the old spine wholesale.
+4. the crossing (the Play's second act / the church manifestation) into Carcosa.
+5. Carcosa rebuilt to the canonical King; the buried captain-truth kept dreadful.
+6. companions-later, items, composure tuned across both acts.
+7. retire or re-stitch the old branches (ledger/bellfall/festival) — they are
+   the demon-lord skeleton and do not belong as-is.
