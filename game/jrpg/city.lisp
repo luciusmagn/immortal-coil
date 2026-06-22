@@ -163,14 +163,28 @@ inner cells just fill. A window where the wall fronts the street."
   (jrpg-ow-fill (- cx 5) (- cy 5) 10 10 26)              ; glow
   (jrpg-ow-fill (- cx 2) (- cy 2) 4 4 230))             ; flame
 
+(defun jrpg-draw-door-label (name cx top)
+  "A floating name plate: white text in a black box with a white border, so the
+sign reads cleanly over lit roofs."
+  (when (and name (plusp (length name)))
+    (let* ((w (+ (text-width name 12) 12))
+           (lx (- cx (/ w 2))))
+      (claylib/ll:draw-rectangle (round lx) (round top) (round w) 16
+                                 (claylib::c-ptr (make-color 0 0 0 225)))
+      (draw-rectangle-outline lx top w 16 (make-color 255 255 255 185) :thickness 1)
+      (draw-centered-text name cx (+ top 8) 12 (make-color 255 255 255 235)))))
+
 (defun draw-jrpg-city-door (game sx sy mx my name)
-  "A doorway in a building face, or — on the city rim — a wide gate. The sign
-over it names where it leads, so doors read by place, not by a letter."
+  "A doorway in a building face, or — on the city rim — a wide gate, with a
+floating name plate. The plate sits above the door, but drops below it when the
+player stands where it would otherwise be, so it never hides the traveller."
   (let* ((s +jrpg-overworld-tile-size+)
          (cx (+ sx (/ s 2)))
          (edge (or (= mx 0) (= my 0)
                    (= mx (1- (jrpg-overworld-width game)))
-                   (= my (1- (jrpg-overworld-height game))))))
+                   (= my (1- (jrpg-overworld-height game)))))
+         (player-above (and (= (jrpg-overworld-x game) mx)
+                            (= (jrpg-overworld-y game) (1- my)))))
     (jrpg-ow-fill sx sy s s 58)                          ; the wall it sits in
     (jrpg-ow-fill sx sy s 4 168)                         ; lintel / roof
     (if edge
@@ -180,8 +194,7 @@ over it names where it leads, so doors read by place, not by a letter."
         (progn                                           ; an interior doorway
           (jrpg-ow-fill (- cx 5) (+ sy 6) 10 (- s 6) 190)
           (jrpg-ow-fill (- cx 3) (+ sy 9) 6 (- s 10) 55)))
-    (when (and name (plusp (length name)))
-      (draw-centered-text name cx (- sy 3) 12 (make-color 255 255 255 225)))))
+    (jrpg-draw-door-label name cx (if player-above (+ sy s 3) (- sy 17)))))
 
 (defun draw-jrpg-city-map (game)
   (multiple-value-bind (cam-x cam-y) (jrpg-overworld-camera game)

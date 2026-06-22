@@ -580,8 +580,12 @@ the way they face reads at a glance."
   (funcall map-fn game)
   (jrpg-overworld-draw-player game)
   (draw-jrpg-box 250 392 480 92)
-  (draw-jrpg-line (jrpg-overworld-message game) 270 414 17)
-  (draw-jrpg-line (jrpg-overworld-legend game) 270 444 15 194)
+  (draw-jrpg-line (jrpg-overworld-message game) 270 410 17)
+  ;; the legend can run long; wrap it to up to two lines inside the box
+  (loop for line in (let ((ls (wrap-text-lines (jrpg-overworld-legend game) 15 444)))
+                      (if (> (length ls) 2) (subseq ls 0 2) ls))
+        for i from 0
+        do (draw-jrpg-line line 270 (+ 438 (* i 18)) 15 194))
   (draw-jrpg-box 760 392 260 92)
   (draw-jrpg-line (format nil "hp ~d/~d"
                           (jrpg-number "jrpg-hero-hp")
