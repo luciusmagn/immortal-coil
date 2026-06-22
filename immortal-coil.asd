@@ -101,6 +101,7 @@
                    (:file "ash")
                    (:file "motes")
                    (:file "rogue-glyphs")
+                   (:file "tatters")
                    (:file "field")))
 
                  (:file "play-state")

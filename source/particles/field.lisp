@@ -353,6 +353,8 @@
    (make-instance 'mote-particle-system :id :motes :builtin-p t))
   (register-particle-field-definition
    (make-instance 'rogue-glyph-particle-system :id :rogue-glyphs :builtin-p t))
+  (register-particle-field-definition
+   (make-instance 'tatter-particle-system :id :tatters :builtin-p t))
   (dialog-particle-field-kind :title-menu
                               :reset #'reset-title-particles
                               :update #'update-title-particles
