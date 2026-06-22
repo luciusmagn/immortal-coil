@@ -7,9 +7,9 @@
 (defconstant +conversation-top-y+ 68.0)
 (defconstant +conversation-bottom-y+ 86.0)
 (defconstant +conversation-text-size+ 18)
-(defconstant +conversation-speaker-size+ 13)
+(defconstant +conversation-speaker-size+ 17)
 (defconstant +conversation-line-height+ 25.0)
-(defconstant +conversation-speaker-gap+ 18.0)
+(defconstant +conversation-speaker-gap+ 26.0)
 (defconstant +conversation-entry-gap+ 18.0)
 
 (-> conversation-entry-count (node) nonnegative-integer)
