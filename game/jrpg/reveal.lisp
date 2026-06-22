@@ -52,5 +52,73 @@
 (dialog-minigame "jrpg/crown-flash"
                  ""
                  :game :crown-flash
+                 :success "jrpg/title-open"
+                 :failure "jrpg/title-open")
+
+
+;;; --- title cards: a styled interstitial that fades a title (and optional
+;;; subtitle) in, holds, and fades out, for act/scene transitions. General;
+;;; driven entirely by node :config, so it is reusable anywhere. ---
+
+(defparameter +title-card-fade+ 0.8)
+(defparameter +title-card-hold-default+ 2.4)
+(defparameter +title-card-skip-min+ 0.7)
+
+(defclass title-card-session (minigame-session)
+  ((elapsed :initform 0.0 :accessor title-card-elapsed)))
+
+(defun title-card-hold (node)
+  (let ((v (minigame-config-value node :seconds +title-card-hold-default+)))
+    (if (numberp v) (float v) +title-card-hold-default+)))
+
+(defun title-card-total (node)
+  (+ +title-card-fade+ (title-card-hold node) +title-card-fade+))
+
+(defmethod minigame-session-update ((session title-card-session) node dt)
+  (incf (title-card-elapsed session) dt)
+  (let ((total (title-card-total node)))
+    (when (and (> (title-card-elapsed session) +title-card-skip-min+)
+               (< (title-card-elapsed session) (- total +title-card-fade+))
+               (confirm-pressed-p))
+      (setf (title-card-elapsed session) (- total +title-card-fade+)))
+    (when (>= (title-card-elapsed session) total)
+      (finish-minigame-node node (node-success-target node)))))
+
+(defmethod minigame-session-draw ((session title-card-session) node color)
+  (declare (ignore color))
+  (let* ((e (title-card-elapsed session))
+         (total (title-card-total node))
+         (alpha-f (cond ((< e +title-card-fade+) (/ e +title-card-fade+))
+                        ((> e (- total +title-card-fade+))
+                         (max 0.0 (/ (- total e) +title-card-fade+)))
+                        (t 1.0)))
+         (title (let ((v (minigame-config-value node :title ""))) (if (stringp v) v "")))
+         (subtitle (minigame-config-value node :subtitle))
+         (accent (minigame-config-value node :accent))
+         (cx +virtual-center-x+)
+         (cy +virtual-center-y+)
+         (a (round (* 255 alpha-f))))
+    ;; a clean black wash over whatever was behind, then the card
+    (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
+                               (claylib::c-ptr
+                                (make-color 0 0 0 (round (* 240 alpha-f)))))
+    (when (plusp a)
+      (claylib/ll:draw-rectangle (round (- cx 200)) (round (- cy 34)) 400 2
+                                 (claylib::c-ptr (make-color 255 255 255 (round (* a 0.7)))))
+      (claylib/ll:draw-rectangle (round (- cx 200)) (round (+ cy 30)) 400 2
+                                 (claylib::c-ptr (make-color 255 255 255 (round (* a 0.7)))))
+      (when (eq accent :crown)
+        (tree-draw-crown cx (- cy 86) 22 (round (* a 0.9))))
+      (draw-centered-text title cx cy 40 (make-color 255 255 255 a))
+      (when (and subtitle (stringp subtitle))
+        (draw-centered-text subtitle cx (+ cy 58) 19
+                            (make-color 255 255 255 (round (* a 0.78))))))))
+
+(register-minigame-session-kind :title-card 'title-card-session)
+
+(dialog-minigame "jrpg/title-open"
+                 ""
+                 :game :title-card
                  :success "jrpg/inn"
-                 :failure "jrpg/inn")
+                 :failure "jrpg/inn"
+                 :config (list :title "THE KING IN YELLOW" :seconds 2.6 :accent :crown))

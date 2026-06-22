@@ -20,6 +20,16 @@
 (dialog-sound "carcosa/causeway-intro" "audio/jrpg/lake.wav" :volume 0.30)
 (dialog-sound "carcosa/take-crown" "audio/jrpg/crown.wav" :volume 0.40)
 
+(dialog-minigame "carcosa/title"
+                 ""
+                 :game :title-card
+                 :success "carcosa/cross"
+                 :failure "carcosa/cross"
+                 :config (list :title "CARCOSA"
+                               :subtitle "where the black stars hang"
+                               :seconds 2.8
+                               :accent :crown))
+
 (dialog-text "carcosa/cross"
              "you cross without a step in between. the night city is behind you and was never ahead of you. a still lake, two suns caught half under it, a smell of wet and old paper. the Yellow Sign in your coat is warm against you, like a hand."
              :next "carcosa/causeway-intro")

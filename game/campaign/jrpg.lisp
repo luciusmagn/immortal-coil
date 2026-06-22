@@ -376,7 +376,7 @@
 
 (dialog-text "jrpg/threshold"
              "the streets run out. the organ is gone, or it is everywhere. above the last roofs the stars are wrong, black ones, and two suns are going down that never finish, and a lake you can smell from here. you have read enough of the second act to be expected."
-             :next "carcosa/cross")
+             :next "carcosa/title")
 
 
 ;;; ===========================================================================
