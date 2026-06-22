@@ -59,11 +59,11 @@
                  '(jrpg-init-state))
 
 (dialog-text "jrpg/inn"
-             "the lantern steadies. you are in an inn room: checked blanket, wooden chest, wash basin, and a quest notice nailed above the basin."
+             "the lantern steadies. an inn room above the water: checked blanket, wooden chest, wash basin, and a summons nailed over the basin. outside, two suns go down behind the lake."
              :next "jrpg/notice")
 
 (dialog-text "jrpg/notice"
-             " THE DEMON LORD WAITS IN THE NORTH TOWER. BREAKFAST INCLUDED."
+             " THE KING WAITS IN THE HIGH TOWER. END HIM, AND THE SONGS COME BACK. BREAKFAST INCLUDED. a small sign is inked in the corner, yellow, the only colour on the page."
              :next "jrpg/notice-number")
 
 (dialog-text "jrpg/notice-number"
@@ -71,7 +71,7 @@
              :next "jrpg/name")
 
 (dialog-string "jrpg/name"
-               "what name is written on the quest notice?"
+               "what name is written on the summons?"
                :response-key "player-name"
                :max-length 24
                :target "jrpg/keeper")
@@ -80,13 +80,13 @@
                      (dialog-left "Mira"
                                   "you are late, {player-name}.")
                      (dialog-right "{player-name}"
-                                   "the notice says breakfast included.")
+                                   "the summons says breakfast included.")
                      (dialog-left "Mira"
-                                  "after the tower. i already put your name in the ledger.")
+                                  "after the tower. i already put your name in the ledger, under the others.")
                      :next "jrpg/common-room")
 
 (dialog-text "jrpg/common-room"
-             "downstairs, Mira writes in the ledger. Toma stacks bread by the stove. Oren stands by the door with a polished spear."
+             "downstairs, Mira writes in the ledger. Toma stacks bread by the cold stove. Oren stands by the door with a polished spear. the lake fog is at the sill."
              :next "jrpg/party")
 
 (dialog-pick "jrpg/party"
@@ -130,11 +130,11 @@
                      :next "jrpg/square")
 
 (dialog-text "jrpg/square"
-             "Oakbarrow square has three stalls, a dry well, Mira's ledger table, and Oren's gate chain stretched between two posts."
+             "Demhe square has three stalls, a dry well, Mira's ledger table, and Oren's gate chain between two posts. the lake lies flat past the rooftops, under the low twin suns."
              :next "jrpg/village-errand")
 
 (dialog-pick "jrpg/village-errand"
-             "who do you speak to before the north road?"
+             "who do you speak to before the shore road?"
              (dialog-option "Mira at the ledger" "jrpg/errand-mira")
              (dialog-option "Toma at the oven" "jrpg/errand-toma")
              (dialog-option "Oren at the gate chain" "jrpg/errand-oren"))
@@ -146,7 +146,7 @@
                      (dialog-left "Mira"
                                   "room four, one candle, one basin, one blanket. all on credit.")
                      (dialog-right "{player-name}"
-                                   "for defeating Hale?")
+                                   "for ending the King?")
                      (dialog-left "Mira"
                                   "for leaving before breakfast.")
                      :next "jrpg/mira-questions")
@@ -162,11 +162,11 @@
                       ("ask what the tower is really like"
                        :id "tower"
                        :speaker "Mira"
-                       "a desk, a lamp, and Hale answering letters. he writes back. that unsettles people more than a monster would.")
-                      ("ask why it is all on credit"
-                       :id "credit"
+                       "a desk, a lamp, and the King answering letters. he writes back, in yellow. that unsettles people more than a monster would.")
+                      ("ask why the songs stopped"
+                       :id "songs"
                        :speaker "Mira"
-                       "heroes are bad for coin and good for stories, and a story keeps until spring. eat the bread you did not pay for."))
+                       "since his sign started reaching the strand, nobody finishes a tune. it dies in the throat by the third line. you stop noticing, which is the part i mind."))
 
 (dialog-on-enter "jrpg/errand-toma"
                  '(setf (jrpg-value "jrpg-village-errand") "toma"))
@@ -191,7 +191,7 @@
 
 (dialog-conversation "jrpg/errand-oren"
                      (dialog-left "Oren"
-                                  "north road to the bridge. bridge to the mile marker. mile marker to the tower.")
+                                  "shore road to the bridge. bridge to the mile marker. mile marker to the tower.")
                      (dialog-right "{jrpg-companion}"
                                    "and slimes?")
                      (dialog-left "Oren"
@@ -202,7 +202,7 @@
 ;;; Village gate hooks
 
 (dialog-pick "jrpg/gate"
-             "at Oakbarrow's north gate, Oren holds the chain while {jrpg-companion} checks the pack."
+             "at Demhe's lake gate, Oren holds the chain while {jrpg-companion} checks the pack."
              (dialog-option "cross the bridge" "jrpg/gate-leave")
              (dialog-option "buy Toma's travel loaf" "jrpg/gate-bread"
                             :unless '(string= (jrpg-value "jrpg-village-errand")
@@ -252,13 +252,13 @@
                                :start-message "the country opens out past the bridge. arrows or wasd move."
                                :legend "+ sign  T tower  \" mile marker  $ coin  o tonic  ^~ block"
                                :tile-messages
-                               '((#\R . "a road sign points the way to the north tower.")
-                                 (#\T . "the north tower stands far off the road.")
-                                 (#\! . "the mile marker reads OAKBARROW 1, NORTH TOWER 3.")
+                               '((#\R . "a road sign points the way to the high tower.")
+                                 (#\T . "the high tower stands far off the road.")
+                                 (#\! . "the mile marker reads DEMHE 1, HIGH TOWER 3.")
                                  (#\. . "the road runs bright and open."))))
 
 (dialog-text "jrpg/road-mile-marker"
-             "past the bridge, a mile marker reads OAKBARROW 1, NORTH TOWER 3. slime tracks shine in the ditch mud."
+             "past the bridge, a mile marker reads DEMHE 1, HIGH TOWER 3. slime tracks shine in the ditch mud."
              :next #'jrpg-companion-road-target)
 
 (dialog-conversation "jrpg/road-lena"
@@ -299,7 +299,7 @@
                  :failure "jrpg/slime-defeat")
 
 (dialog-text "jrpg/slime-retreat"
-             "you return to the mile marker. OAKBARROW 1 is carved deeper than NORTH TOWER 3."
+             "you return to the mile marker. DEMHE 1 is carved deeper than HIGH TOWER 3."
              :next "jrpg/road-rest")
 
 (dialog-on-enter "jrpg/slime-defeat"
@@ -319,7 +319,7 @@
                      :next "jrpg/road-rest")
 
 (dialog-text "jrpg/road-rest"
-             "the north road runs between low pines for another mile. a cart track breaks off toward a white roadside shrine, while the main road keeps climbing toward the tower hill."
+             "the shore road runs between low pines for another mile. a cart track breaks off toward a white roadside shrine, while the main road keeps climbing toward the tower hill."
              :next "jrpg/road-rest-choice")
 
 (dialog-pick "jrpg/road-rest-choice"
@@ -425,7 +425,7 @@
                      :next "jrpg/tower-road")
 
 (dialog-text "jrpg/tower-road"
-             "by late afternoon, the North Tower rises from a bare hill. a small toll hut stands beside the front path."
+             "by late afternoon, the high tower rises from a bare hill. a small toll hut stands beside the front path."
              :next "jrpg/hill-overworld")
 
 (dialog-minigame "jrpg/hill-overworld"
@@ -441,7 +441,7 @@
                                :start-message "the bridge is behind you. the hill road bends upward."
                                :legend "+ road sign  T tower  $ coin  o tonic  ^~ block"
                                :tile-messages
-                               '((#\R . "the road sign says NORTH TOWER, NO WAGONS.")
+                               '((#\R . "the road sign says HIGH TOWER, NO WAGONS.")
                                  (#\T . "the tower path ends at Pell's toll hut.")
                                  (#\! . "the rough grass twitches at your boots.")
                                  (#\. . "the hill road is pale with dust."))))
@@ -454,7 +454,7 @@
                      (dialog-left "Pell"
                                   "name and village.")
                      (dialog-right "{player-name}"
-                                   "{player-name}, from Oakbarrow.")
+                                   "{player-name}, from Demhe.")
                      (dialog-left "Pell"
                                   "front door is honest, side stair is faster, morning bell is safer.")
                      :next "jrpg/pell-questions")
@@ -508,35 +508,35 @@
              :next "jrpg/demon-hall")
 
 (dialog-text "jrpg/demon-hall"
-             "inside, a long carpet leads to a large door. a brass plate on it reads W. HALE, KEEPER. a rack beside it holds three visitor swords and one mop."
+             "inside, a long carpet runs to a tall door. a brass plate reads W. HALE, KEEPER, the letters worn soft. a rack beside it holds three visitor swords and one mop."
              :next "jrpg/demon-lord")
 
 (dialog-conversation "jrpg/demon-lord"
-                     (dialog-left "Hale"
-                                  "{player-name} from Oakbarrow. Mira's handwriting has improved.")
+                     (dialog-left "the King"
+                                  "{player-name} from Demhe. Mira's handwriting has improved.")
                      (dialog-right "{player-name}"
-                                   "you know Mira?")
-                     (dialog-left "Hale"
-                                  "everyone on the north road knows Mira.")
+                                   "you are the King.")
+                     (dialog-left "the King"
+                                  "i answer her letters in yellow and she calls it a crown. sit. the lake takes a while to get used to.")
                      :next "jrpg/vane-questions")
 
 (dialog-interrogation "jrpg/vane-questions"
-                      "Hale waits by the visitor sword rack with his hands open."
+                      "the King waits by the sword rack in a yellow coat gone to tatters. he wears no mask."
                       (:next "jrpg/demon-choice")
                       (:continue-label "decide what to do")
                       (:require-all t)
-                      ("ask about Oakbarrow"
-                       :id "oakbarrow"
-                       :speaker "Hale"
-                       "Oakbarrow sends notices because notices are cheaper than soldiers, and soldiers are cheaper than admitting nobody remembers who started this.")
-                      ("ask about the visitor swords"
-                       :id "visitor-swords"
-                       :speaker "Hale"
-                       "they belong to the people who carried them here. if the people cannot carry them home, the hill keeps the iron until someone asks properly.")
-                      ("ask about breakfast"
-                       :id "breakfast"
-                       :speaker "Hale"
-                       "Mira added that line after the fifth year. she said a quest notice should promise at least one thing it can keep. i did not argue."))
+                      ("ask about the yellow sign"
+                       :id "sign"
+                       :speaker "the King"
+                       "i send it to the ones whose story i mean to end kindly. yours came on the summons. you have been ended kindly for a while now, {player-name}, and not noticed.")
+                      ("ask about the drift of masks"
+                       :id "masks"
+                       :speaker "the King"
+                       "every petitioner unmasks before the throne. under the mask they find nothing left to threaten, and they set it down, and they stay. you may keep yours.")
+                      ("ask about the lake"
+                       :id "lake"
+                       :speaker "the King"
+                       "Hali. it never gives anything back. i crossed it more mornings than there are mornings, and it never once let me land where i meant to. then it landed me here, and made me this."))
 
 (dialog-pick "jrpg/demon-choice"
              "what do you do?"
@@ -548,14 +548,14 @@
                  '(setf (jrpg-value "jrpg-demon-approach") "fight"))
 
 (dialog-text "jrpg/demon-fight"
-             "you draw your sword. {jrpg-companion} steps to your left and watches Hale's hands."
+             "you draw your sword. {jrpg-companion} steps to your left and watches the King's hands."
              :next "jrpg/chapter-end")
 
 (dialog-on-enter "jrpg/demon-terms"
                  '(setf (jrpg-value "jrpg-demon-approach") "terms"))
 
 (dialog-text "jrpg/demon-terms"
-             "Hale names his terms: Oakbarrow stops posting notices, and he stops collecting broken swords from the hill."
+             "the King names his terms: Demhe stops posting notices, and he stops collecting broken swords from the hill."
              :next "jrpg/chapter-end")
 
 (dialog-on-enter "jrpg/demon-chest"
@@ -566,7 +566,7 @@
              :next "jrpg/chapter-end")
 
 (dialog-text "jrpg/chapter-end"
-             "Pell's handbell rings below. Hale takes one visitor sword from the rack and sets it on the carpet between you."
+             "Pell's handbell rings below. the King takes one visitor sword from the rack and sets it on the carpet between you."
              :next "jrpg/sword-choice")
 
 (dialog-pick "jrpg/sword-choice"
@@ -579,15 +579,15 @@
                  '(setf (jrpg-value "jrpg-vane-answer") "duel"))
 
 (dialog-text "jrpg/duel"
-             "you take it up. Hale sets his feet, and the first exchange knocks dust from the carpet. {jrpg-companion} counts the passes out loud."
+             "you take it up. the King sets his feet, and the first exchange knocks dust from the carpet. {jrpg-companion} counts the passes out loud."
              :next "jrpg/duel-end")
 
 (dialog-conversation "jrpg/duel-end"
-                     (dialog-left "Hale"
-                                  "good. Oakbarrow sends better every year.")
+                     (dialog-left "the King"
+                                  "good. Demhe sends better every year.")
                      (dialog-right "{player-name}"
                                    "is it over?")
-                     (dialog-left "Hale"
+                     (dialog-left "the King"
                                   "for this year. take the sword. it counts as a receipt.")
                      :next "jrpg/inn-return")
 
@@ -595,11 +595,11 @@
                  '(setf (jrpg-value "jrpg-vane-answer") "terms"))
 
 (dialog-conversation "jrpg/refuse"
-                     (dialog-left "Hale"
+                     (dialog-left "the King"
                                   "then we talk. talking settles it too. it just takes longer than swords.")
                      (dialog-right "{player-name}"
                                    "Mira wants the notices to stop.")
-                     (dialog-left "Hale"
+                     (dialog-left "the King"
                                   "and i want the hill to stop growing. tell her we are agreed.")
                      :next "jrpg/inn-return")
 
@@ -607,11 +607,11 @@
                  '(setf (jrpg-value "jrpg-vane-answer") "asked"))
 
 (dialog-conversation "jrpg/swords"
-                     (dialog-left "Hale"
+                     (dialog-left "the King"
                                   "one for every visitor who took the sword up and lost. i mark the rack for each.")
                      (dialog-right "{player-name}"
                                    "how many marks?")
-                     (dialog-left "Hale"
+                     (dialog-left "the King"
                                   "count them on your way out. bring the number to Mira. she keeps the other ledger.")
                      :next "jrpg/inn-return")
 
@@ -634,12 +634,12 @@
                                :waypoints '(#\T #\R #\V)
                                :store-prefix "jrpg-home-road"
                                :start-message "the tower is behind you. the bridge waits at the far side, and the rain is close."
-                               :legend "V Oakbarrow  = bridge  + sign  T tower  $ coin  o tonic"
+                               :legend "V Demhe  = bridge  + sign  T tower  $ coin  o tonic"
                                :tile-messages
                                '((#\T . "the tower is behind you.")
-                                 (#\R . "the road sign points back to Oakbarrow.")
+                                 (#\R . "the road sign points back to Demhe.")
                                  (#\B . "the bridge boards are slick.")
-                                 (#\V . "Oakbarrow's gate lanterns burn ahead."))))
+                                 (#\V . "Demhe's gate lanterns burn ahead."))))
 
 (dialog-text "jrpg/home-road-grass"
              "near the bridge, the ditch grass shakes again, and not with wind. {jrpg-companion} steps between you and the road sign."
@@ -696,7 +696,7 @@
                      (dialog-left "Mira"
                                   "a visitor sword. so it went to steel. and he gave it to you after, as a receipt.")
                      (dialog-right "{player-name}"
-                                   "he said Oakbarrow sends better every year.")
+                                   "he said Demhe sends better every year.")
                      (dialog-left "Mira"
                                   "we send what we have. i'll enter the sword under deposits. it goes back up the hill with the next one, like always.")
                      :next "jrpg/evening-table")
@@ -705,7 +705,7 @@
                      (dialog-left "Mira"
                                   "no more notices, and his hill stops growing. say it back to me exactly. the ledger doesn't take approximately.")
                      (dialog-right "{player-name}"
-                                   "Oakbarrow stops posting notices. he stops collecting broken swords.")
+                                   "Demhe stops posting notices. he stops collecting broken swords.")
                      (dialog-left "Mira"
                                   "then it's entered, and signed, and the first quiet winter in nine years can start tomorrow. you'll want the room either way.")
                      :next "jrpg/evening-table")
@@ -720,11 +720,11 @@
                      :next "ledger/breakfast")
 
 (dialog-text "jrpg/evening-table"
-             "supper is barley and the travel loaf's cousin, eaten at the long table with the stove ticking down. Oren tells the slime count wrong on purpose so Toma can correct him, which is how Oakbarrow says it is glad you are back."
+             "supper is barley and the travel loaf's cousin, eaten at the long table with the stove ticking down. Oren tells the slime count wrong on purpose so Toma can correct him, which is how Demhe says it is glad you are back."
              :next "jrpg/ledger-line")
 
 (dialog-text "jrpg/ledger-line"
-             "Mira writes one line in the ledger and hands you the room four key. on the stair, {jrpg-companion} says good night the short way, which in Oakbarrow is a whole speech."
+             "Mira writes one line in the ledger and hands you the room four key. on the stair, {jrpg-companion} says good night the short way, which in Demhe is a whole speech."
              :next "jrpg/fair-word")
 
 (dialog-conversation "jrpg/fair-word"
