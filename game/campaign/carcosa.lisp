@@ -82,7 +82,7 @@
 ;;; The court — Cassilda and Camilla, overheard, then asked
 
 (dialog-text "carcosa/court"
-             "before the high doors, two women keep a court of their own: one at a cold harp, one at a window on the lake, both dressed for a masque that has not begun, or has not ended."
+             "before the high doors, two women keep a court of their own: one at a cold harp, one at a window on the lake, both dressed for a masque, though no music plays and no one has come."
              :next "carcosa/cassilda-song-1")
 
 ;; Cassilda's Song, verbatim from Chambers (public domain), sung at the harp.
@@ -209,7 +209,7 @@
                  '(jrpg-add-item :crown))
 
 (dialog-text "carcosa/take-crown"
-             "you take it up. it weighs nothing, the way the tatters weigh nothing. the King stops mid-word, for the first time in a length of time with no number, steps down, and is one of the pale kept, eased. the crossing is yours now. the count will be wrong. you will keep it anyway, forever, which is the whole of what a watch is."
+             "you take it up. it weighs nothing, the way the tatters weigh nothing. the King stops mid-word, for the first time in longer than he could count, steps down, and is one of the pale kept, eased. the crossing is yours now. the count will be wrong. you will keep it anyway. that is what keeping the watch is."
              :next "carcosa/king-end")
 
 (dialog-text "carcosa/king-end"

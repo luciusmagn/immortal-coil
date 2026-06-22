@@ -116,7 +116,7 @@
                      (dialog-right "{player-name}"
                                    "who were the other two?")
                      (dialog-left "the painter"
-                                  "i don't know. that is the trouble. Scott, by the way. the model is Tessie. sit, if the chair is real.")
+                                  "i don't know. that is the trouble. Scott, by the way. the model is Tessie. sit down; mind the wet paint.")
                      :next "jrpg/studio-questions")
 
 (dialog-interrogation "jrpg/studio-questions"
@@ -156,7 +156,7 @@
                  '(jrpg-lean-class :reader 2))
 
 (dialog-text "jrpg/read-second"
-             "you read three lines of the second act before Scott takes the book from your hands, too late for you, in time for him. the room is the same room. it is not the same room. somewhere a tune you know stops in its third line."
+             "you read three lines of the second act before Scott takes the book from your hands, too late for you, in time for him. nothing in the room has moved, and all of it looks wrong now. somewhere a tune you know stops in its third line."
              :next "jrpg/watchman-comes")
 
 (dialog-text "jrpg/watchman-comes"
@@ -397,7 +397,7 @@
                                  (#\. . "your steps, and a half-step more."))))
 
 (dialog-text "jrpg/threshold"
-             "the streets run out. the organ is gone, or it is everywhere. above the last roofs the stars are wrong, black ones, and two suns are going down that never finish, and a lake you can smell from here. you have read enough of the second act to be expected."
+             "the streets run out. the organ has stopped, but you hear it now from every direction at once. above the last roofs the stars are wrong, black ones, and two suns are going down that never finish, and a lake you can smell from here. you have read enough of the second act to be expected."
              :next "carcosa/title")
 
 
