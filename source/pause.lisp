@@ -163,10 +163,20 @@
          (when (confirm-pressed-p)
            (execute-selected-pause-option))))))
 
+;; minigame menus (the character screen, the shop, combat submenus) use Escape
+;; as back/cancel, so the pause menu must not snatch it out from under them.
+(defparameter *escape-owning-minigames* '(:jrpg-character :jrpg-shop :jrpg-combat))
+
+(defun current-minigame-owns-escape-p ()
+  (and *state*
+       (member (node-minigame (current-node)) *escape-owning-minigames*)
+       t))
+
 (-> maybe-open-pause-menu () boolean)
 (defun maybe-open-pause-menu ()
   (when (and (eq *mode* :game)
              (not *paused-p*)
-             (is-key-pressed-p +key-escape+))
+             (is-key-pressed-p +key-escape+)
+             (not (current-minigame-owns-escape-p)))
     (open-pause-menu)
     t))

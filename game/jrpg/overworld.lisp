@@ -431,14 +431,12 @@ steps and the steps just after a fight safe."
                   "you cannot get through that way.")))))
 
 (defun jrpg-overworld-step (node game)
-  "One frame of walking input; shared by the road and the city. C toggles the
-read-only stat card, which pauses movement while it is up."
+  "One frame of walking input; shared by the road and the city. C opens the
+full character screen and returns here, like the menu key in a JRPG."
   (cond
-    ((jrpg-overworld-show-card game)
-     (when (or (is-key-pressed-p +key-c+) (is-key-pressed-p +key-escape+))
-       (setf (jrpg-overworld-show-card game) nil)))
     ((is-key-pressed-p +key-c+)
-     (setf (jrpg-overworld-show-card game) t))
+     (setf (jrpg-value "jrpg-char-return") (jrpg-overworld-node-id game))
+     (jump-to-dialog-target "jrpg/character"))
     (t
      (let ((direction (jrpg-overworld-input-direction)))
        (when direction
@@ -591,10 +589,8 @@ the way they face reads at a glance."
                           (jrpg-number "jrpg-hero-hp")
                           (jrpg-number "jrpg-hero-max-hp" 18))
                   782 414 17)
-  (draw-jrpg-line (format nil "~d Hours    C card" (jrpg-hours))
-                  782 444 15)
-  (when (jrpg-overworld-show-card game)
-    (jrpg-draw-stat-card 450 215)))
+  (draw-jrpg-line (format nil "~d Hours    C: menu" (jrpg-hours))
+                  782 444 15))
 
 (defun draw-jrpg-overworld-minigame (node color)
   (declare (ignore color))

@@ -59,7 +59,10 @@
                     (if lv (format nil "you give up ~d Hours and grow - level ~d." cost lv)
                         "you cannot afford it after all.")))))))
       ((or (is-key-pressed-p +key-escape+) (is-key-pressed-p +key-backspace+))
-       (finish-minigame-node node (node-success-target node)))
+       ;; return to wherever it was opened from (an overworld via C, or the hub)
+       (let ((target (or (jrpg-value "jrpg-char-return") (node-success-target node))))
+         (setf (jrpg-value "jrpg-char-return") nil)
+         (finish-minigame-node node target)))
       ((is-key-pressed-p +key-l+)
        (if (>= (jrpg-hours) (jrpg-level-cost))
            (setf (jrpg-char-leveling s) t (jrpg-char-level-sel s) 0)
@@ -83,86 +86,92 @@
 (defmethod minigame-session-draw ((s jrpg-character-session) node color)
   (declare (ignore node color))
   (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
-                             (claylib::c-ptr (make-color 0 0 0 236)))
+                             (claylib::c-ptr (make-color 0 0 0 238)))
   (draw-jrpg-box 170 80 940 580 235)
-  (draw-jrpg-line "YOURSELF" 200 100 24)
-  ;; class - the one line in the Sign's yellow
-  (draw-text-at (format nil "you are ~a" (jrpg-class-name)) 200 140 19 (yellow-sign-color 235))
-  (draw-jrpg-line (jrpg-class-desc) 200 166 14 195)
-  (jrpg-draw-rule 200 196 880)
-  ;; stats
-  (draw-jrpg-line "STATS" 200 208 16 200)
-  (draw-jrpg-line (format nil "HP ~d/~d    MP ~d"
-                          (jrpg-number "jrpg-hero-hp") (jrpg-number "jrpg-hero-max-hp" 18)
-                          (jrpg-number "jrpg-hero-mp"))
-                  200 232 16)
-  (draw-jrpg-line (format nil "ATK ~d    DEF ~d    WILL ~d/~d"
-                          (jrpg-number "jrpg-hero-attack" 5) (jrpg-number "jrpg-hero-defense" 2)
-                          (jrpg-composure) (jrpg-composure-max))
-                  200 256 16)
-  (draw-jrpg-line (format nil "LV ~d    ~d Hours"
-                          (jrpg-number "jrpg-hero-level" 1) (jrpg-hours))
-                  200 280 16)
-  (draw-jrpg-line (format nil "press L: grow for ~d Hours" (jrpg-level-cost))
-                  200 302 14 190)
-  ;; quests (skip the ones not yet begun)
-  (draw-jrpg-line "QUESTS" 200 322 16 200)
-  (loop with y = 346
-        for entry in *jrpg-quests*
-        for id = (first entry)
-        for state = (jrpg-quest-state id)
-        unless (eq state :inactive)
-          do (draw-jrpg-line (format nil "~a ~a" (jrpg-quest-title id) (jrpg-char-quest-tag state))
-                             200 y 15 (if (eq state :done) 150 215))
+  (let ((lx 202) (rx 624))
+    ;; header band (full width): name, class, the class line wrapped, a rule
+    (draw-jrpg-line "YOURSELF" lx 100 24)
+    (draw-text-at (format nil "you are ~a" (jrpg-class-name)) lx 134 18
+                  (yellow-sign-color 235))
+    (loop with y = 160
+          for line in (let ((ls (wrap-text-lines (jrpg-class-desc) 14 870)))
+                        (if (> (length ls) 2) (subseq ls 0 2) ls))
+          do (draw-jrpg-line line lx y 14 185) (incf y 18))
+    (jrpg-draw-rule lx 202 876)
+    ;; left column: stats, then quests
+    (draw-jrpg-line "STATS" lx 222 16 205)
+    (draw-jrpg-line (format nil "HP ~d/~d     MP ~d"
+                            (jrpg-number "jrpg-hero-hp") (jrpg-number "jrpg-hero-max-hp" 18)
+                            (jrpg-number "jrpg-hero-mp"))
+                    lx 248 17)
+    (draw-jrpg-line (format nil "ATK ~d     DEF ~d     WILL ~d/~d"
+                            (jrpg-number "jrpg-hero-attack" 5) (jrpg-number "jrpg-hero-defense" 2)
+                            (jrpg-composure) (jrpg-composure-max))
+                    lx 272 17)
+    (draw-jrpg-line (format nil "LV ~d     ~d Hours"
+                            (jrpg-number "jrpg-hero-level" 1) (jrpg-hours))
+                    lx 296 17)
+    (draw-jrpg-line (format nil "press L to grow  (~d Hours)" (jrpg-level-cost))
+                    lx 320 13 165)
+    (draw-jrpg-line "QUESTS" lx 358 16 205)
+    (loop with y = 384
+          for entry in *jrpg-quests*
+          for id = (first entry)
+          for state = (jrpg-quest-state id)
+          unless (eq state :inactive)
+            do (draw-jrpg-line (format nil "~a ~a" (jrpg-quest-title id)
+                                       (jrpg-char-quest-tag state))
+                               lx y 15 (if (eq state :done) 150 215))
+               (incf y 24))
+    ;; right column: worn, then carried
+    (draw-jrpg-line "WORN" rx 222 16 205)
+    (loop with y = 248
+          for slot in *jrpg-equip-slots*
+          for id = (jrpg-equipped-in slot)
+          do (draw-jrpg-line (format nil "~7a ~a" (string-downcase (symbol-name slot))
+                                     (if id (jrpg-item-name id) "(none)"))
+                             rx y 16 (if id 225 145))
              (incf y 24))
-  ;; equipment
-  (draw-jrpg-line "WORN" 640 140 16 200)
-  (loop with y = 164
-        for slot in *jrpg-equip-slots*
-        for id = (jrpg-equipped-in slot)
-        do (draw-jrpg-line (format nil "~6a ~a" (string-downcase (symbol-name slot))
-                                   (if id (jrpg-item-name id) "-"))
-                           640 y 16 (if id 225 150))
-           (incf y 24))
-  ;; carried
-  (draw-jrpg-line "CARRIED" 640 248 16 200)
-  (let ((items (jrpg-character-items)))
-    (if (null items)
-        (draw-jrpg-line "(nothing yet)" 640 272 15 150)
-        (loop with y = 272
-              for id in items
+    (draw-jrpg-line "CARRIED" rx 332 16 205)
+    (let ((items (jrpg-character-items)))
+      (if (null items)
+          (draw-jrpg-line "(nothing yet)" rx 358 15 150)
+          (loop with y = 358
+                for id in items
+                for i from 0
+                for sel = (= i (jrpg-char-selected s))
+                for count = (jrpg-item-count id)
+                do (when sel (jrpg-draw-select-bar (- rx 10) y 420 22))
+                   (draw-jrpg-line
+                    (format nil "~a~a~a"
+                            (if sel "> " "  ")
+                            (jrpg-item-name id)
+                            (cond ((jrpg-char-equipped-p id) "  [worn]")
+                                  ((> count 1) (format nil "  x~d" count))
+                                  (t "")))
+                    rx y 16 (if sel 235 175))
+                   (incf y 23)))
+      ;; footer: selected item description, feedback, controls
+      (jrpg-draw-rule lx 580 876)
+      (when items
+        (let ((id (nth (min (jrpg-char-selected s) (1- (length items))) items)))
+          (draw-jrpg-line (jrpg-item-desc id) lx 592 14 185)))
+      (draw-jrpg-line (jrpg-char-message s) lx 616 15 210)
+      (draw-jrpg-line "up/down: select   enter: equip/use   L: grow   esc: back"
+                      rx 618 12 150)
+      (when (jrpg-char-leveling s)
+        (draw-jrpg-box 360 296 360 250 244)
+        (draw-jrpg-line "RAISE WHICH?" 384 316 18)
+        (draw-jrpg-line (format nil "this level: ~d Hours" (jrpg-level-cost)) 384 340 13 175)
+        (loop with y = 370
+              for entry in *jrpg-level-stats*
               for i from 0
-              for sel = (= i (jrpg-char-selected s))
-              for count = (jrpg-item-count id)
-              do (when sel (jrpg-draw-select-bar 632 y 384 22))
-                 (draw-jrpg-line
-                  (format nil "~a~a~a"
-                          (if sel "> " "  ")
-                          (jrpg-item-name id)
-                          (cond ((jrpg-char-equipped-p id) "  [worn]")
-                                ((> count 1) (format nil "  x~d" count))
-                                (t "")))
-                  640 y 16 (if sel 235 175))
-                 (incf y 23)))
-    ;; description of the selected item + feedback + controls
-    (when items
-      (let ((id (nth (min (jrpg-char-selected s) (1- (length items))) items)))
-        (draw-jrpg-line (jrpg-item-desc id) 200 590 14 185)))
-    (draw-jrpg-line (jrpg-char-message s) 200 614 15 205)
-    (draw-jrpg-line "up/down select   enter equip/use   L grow   esc back" 640 614 13 150)
-    (when (jrpg-char-leveling s)
-      (draw-jrpg-box 250 356 420 238 242)
-      (draw-jrpg-line "RAISE WHICH?" 276 376 18)
-      (draw-jrpg-line (format nil "this level costs ~d Hours" (jrpg-level-cost)) 276 400 14 180)
-      (loop with y = 432
-            for entry in *jrpg-level-stats*
-            for i from 0
-            for sel = (= i (jrpg-char-level-sel s))
-            do (when sel (jrpg-draw-select-bar 262 y 396))
-               (draw-jrpg-line (format nil "~a~a" (if sel "> " "  ") (second entry))
-                               276 y 16 (if sel 235 180))
-               (incf y 28))
-      (draw-jrpg-line "enter: choose    esc: cancel" 276 574 13 150))))
+              for sel = (= i (jrpg-char-level-sel s))
+              do (when sel (jrpg-draw-select-bar 372 y 336 24))
+                 (draw-jrpg-line (format nil "~a~a" (if sel "> " "  ") (second entry))
+                                 384 y 16 (if sel 235 180))
+                 (incf y 28))
+        (draw-jrpg-line "enter: choose    esc: cancel" 384 524 12 150)))))
 
 (register-minigame-session-kind :jrpg-character 'jrpg-character-session)
 
