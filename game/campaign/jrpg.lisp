@@ -193,7 +193,7 @@
                      (dialog-left "Oren"
                                   "shore road to the bridge. bridge to the mile marker. mile marker to the tower.")
                      (dialog-right "{jrpg-companion}"
-                                   "and slimes?")
+                                   "and tatters?")
                      (dialog-left "Oren"
                                   "six last week. i counted them on the toll board.")
                      :next "jrpg/gate")
@@ -207,7 +207,7 @@
              (dialog-option "buy Toma's travel loaf" "jrpg/gate-bread"
                             :unless '(string= (jrpg-value "jrpg-village-errand")
                                                "toma"))
-             (dialog-option "ask Oren about slimes" "jrpg/gate-guard"))
+             (dialog-option "ask Oren about tatters" "jrpg/gate-guard"))
 
 (dialog-on-enter "jrpg/gate-leave"
                  '(setf (jrpg-value "jrpg-gate-choice") "leave"))
@@ -233,7 +233,7 @@
                  '(setf (jrpg-value "jrpg-gate-choice") "guard"))
 
 (dialog-text "jrpg/gate-guard"
-             "Oren points at six chalk marks on the toll board. each mark is one slime from last week."
+             "Oren points at six chalk marks on the toll board. each mark is one tatter from last week."
              :next "jrpg/overworld")
 
 
@@ -258,7 +258,7 @@
                                  (#\. . "the road runs bright and open."))))
 
 (dialog-text "jrpg/road-mile-marker"
-             "past the bridge, a mile marker reads DEMHE 1, HIGH TOWER 3. slime tracks shine in the ditch mud."
+             "past the bridge, a mile marker reads DEMHE 1, HIGH TOWER 3. thread tracks shine in the ditch mud."
              :next #'jrpg-companion-road-target)
 
 (dialog-conversation "jrpg/road-lena"
@@ -281,7 +281,7 @@
 
 (dialog-conversation "jrpg/road-bram"
                      (dialog-left "Bram"
-                                  "if the slime jumps, stand behind me.")
+                                  "if the tatter springs, stand behind me.")
                      (dialog-right "{player-name}"
                                    "without the helmet?")
                      (dialog-left "Bram"
@@ -289,14 +289,17 @@
                      :next "jrpg/slime-arrives")
 
 (dialog-text "jrpg/slime-arrives"
-             "the grass by the mile marker shakes. a round slime hops onto the road and blocks the tower path."
+             "the reeds by the lake-stone stir. a wad of yellow rag hauls itself onto the road, blind and blunt, and blocks the way up. a tatter, the town would say, scraped off the King's coat and gone feral."
              :next "jrpg/slime-combat")
 
 (dialog-minigame "jrpg/slime-combat"
                  "choose a command. arrows or wasd move. enter or space confirms."
                  :game :jrpg-combat
                  :success #'jrpg-combat-result-target
-                 :failure "jrpg/slime-defeat")
+                 :failure "jrpg/slime-defeat"
+                 :config (list :enemy-name "TATTER"
+                               :enemy-kind "tatter"
+                               :message "the tatter humps closer, trailing loose yellow thread."))
 
 (dialog-text "jrpg/slime-retreat"
              "you return to the mile marker. DEMHE 1 is carved deeper than HIGH TOWER 3."
@@ -311,7 +314,7 @@
 
 (dialog-conversation "jrpg/road-clear"
                      (dialog-left "{jrpg-companion}"
-                                  "one slime. six coins. no bite marks.")
+                                  "one tatter. six coins. no thread on you.")
                      (dialog-right "{player-name}"
                                    "is that good?")
                      (dialog-left "{jrpg-companion}"
@@ -358,7 +361,7 @@
              :next "jrpg/shrine-slime")
 
 (dialog-text "jrpg/shrine-slime"
-             "the wet grass beside the shelf gathers itself into a moss-dark slime. it has pine needles stuck all through it and one copper bit showing near the surface."
+             "the wet grass beside the shelf gathers itself into a reed-dark thing. it has pine needles stuck all through it and one copper bit showing near the surface."
              :next "jrpg/shrine-slime-combat")
 
 (dialog-minigame "jrpg/shrine-slime-combat"
@@ -366,20 +369,21 @@
                  :game :jrpg-combat
                  :success #'jrpg-shrine-combat-result-target
                  :failure "jrpg/shrine-limp"
-                 :config (list :enemy-name "MOSS SLIME"
+                 :config (list :enemy-name "REED-DROWNED"
+                               :enemy-kind "drowned"
                                :enemy-hp 18
                                :enemy-attack-min 4
                                :enemy-attack-max 7
                                :victory-xp 5
                                :victory-gold 4
-                               :message "a moss slime slides from under the shrine shelf."))
+                               :message "the reed-thing slides from under the shrine shelf, dripping."))
 
 (dialog-text "jrpg/shrine-clear"
-             "the moss slime comes apart into clean water, pine needles, and the copper bit. {jrpg-companion} rinses the coin in the cracked cup before giving it to the shelf."
+             "the reed-thing comes apart into clean water, pine needles, and the copper bit. {jrpg-companion} rinses the coin in the cracked cup before giving it to the shelf."
              :next #'jrpg-shrine-companion-target)
 
 (dialog-text "jrpg/shrine-retreat"
-             "you back out to the cart track. the moss slime stays by the shelf, slow and satisfied, as if the offering box is its proper work."
+             "you back out to the cart track. the reed-thing stays by the shelf, slow and satisfied, as if the offering box is its proper work."
              :next #'jrpg-shrine-companion-target)
 
 (dialog-on-enter "jrpg/shrine-limp"
@@ -650,14 +654,14 @@
                  :game :jrpg-combat
                  :success "jrpg/home-clear"
                  :failure "jrpg/home-limp"
-                 :config (list :enemy-kind "wolf"
-                               :enemy-name "HILL WOLF"
+                 :config (list :enemy-kind "byakhee"
+                               :enemy-name "BYAKHEE"
                                :enemy-hp 24
                                :enemy-attack-min 4
                                :enemy-attack-max 8
                                :victory-xp 9
                                :victory-gold 10
-                               :message "something comes up out of the ditch."))
+                               :message "something with wide wings drops out of the low cloud."))
 
 (dialog-conversation "jrpg/home-clear"
                      (dialog-left "{jrpg-companion}"
@@ -720,7 +724,7 @@
                      :next "ledger/breakfast")
 
 (dialog-text "jrpg/evening-table"
-             "supper is barley and the travel loaf's cousin, eaten at the long table with the stove ticking down. Oren tells the slime count wrong on purpose so Toma can correct him, which is how Demhe says it is glad you are back."
+             "supper is barley and the travel loaf's cousin, eaten at the long table with the stove ticking down. Oren tells the tatter count wrong on purpose so Toma can correct him, which is how Demhe says it is glad you are back."
              :next "jrpg/ledger-line")
 
 (dialog-text "jrpg/ledger-line"
