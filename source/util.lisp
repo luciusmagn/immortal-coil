@@ -107,6 +107,11 @@
         (a *draw-color*) alpha)
   (claylib::c-ptr *draw-color*))
 
+(defun yellow-sign-color (&optional (alpha 255))
+  "The one sanctioned colour in the black-and-white game: the King in
+Yellow's #ffff00. Used only to mark the yellow path so it stands out."
+  (make-color 255 255 0 alpha))
+
 (-> draw-rectangle-outline
     (scalar scalar scalar scalar t &key (:thickness nonnegative-integer))
     t)

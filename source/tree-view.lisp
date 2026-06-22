@@ -26,6 +26,19 @@
 (defconstant +tree-bead-visited-radius+ 5.0)
 (defconstant +tree-bead-current-radius+ 7.0)
 
+(defparameter *yellow-crown-prefixes*
+  '("jrpg/" "ledger/" "bellfall/" "festival/" "carcosa/")
+  "Node id prefixes on the King-in-Yellow path. Their tree beads render as a
+yellow #ffff00 crown — the one colour in the black-and-white game — so the
+path stands out. Game scripts and mods may push their own prefixes here.")
+
+(defun yellow-crown-node-p (id)
+  (and (stringp id)
+       (some (lambda (prefix)
+               (and (<= (length prefix) (length id))
+                    (string= id prefix :end1 (length prefix))))
+             *yellow-crown-prefixes*)))
+
 
 ;;; Model
 
@@ -359,12 +372,33 @@ their children) and collect ids. DEPTH drives the centring alternation."
                                   150
                                   60))))))))
 
+(defun tree-draw-crown (sx sy r alpha)
+  "A small #ffff00 crown centred at SX,SY: a base band and three spikes,
+the centre tallest. Drawn with rectangles so it renders reliably at any
+tree scale. Marks the King-in-Yellow path, the one colour in the game."
+  (let* ((w        (max 3.0 (* r 2.6)))
+         (left     (- sx (/ w 2.0)))
+         (bar-top  (+ sy (* r 0.2)))
+         (bar-h    (max 1.0 (* r 0.85)))
+         (spike    (max 1.0 (* r 1.15)))
+         (sw       (max 1.0 (/ w 5.0)))
+         (color    (yellow-sign-color alpha)))
+    (flet ((rect (x y rw rh)
+             (claylib/ll:draw-rectangle (round x) (round y)
+                                        (max 1 (round rw)) (max 1 (round rh))
+                                        (claylib::c-ptr color))))
+      (rect left bar-top w bar-h)                                  ; base band
+      (rect left (- bar-top spike) sw spike)                       ; left point
+      (rect (- sx (/ sw 2.0)) (- bar-top (* spike 1.3)) sw (* spike 1.3)) ; centre
+      (rect (- (+ left w) sw) (- bar-top spike) sw spike))))        ; right point
+
 (defun tree-draw-beads (model)
   (let ((current (and *state* (play-state-current-id *state*)))
         (scale (tree-model-scale model)))
     (dolist (id (tree-model-ids model))
-      (let ((sx (+ (tree-node-x model id) *tree-pan-x*))
-            (sy (+ (tree-node-y model id) *tree-pan-y*)))
+      (let ((sx      (+ (tree-node-x model id) *tree-pan-x*))
+            (sy      (+ (tree-node-y model id) *tree-pan-y*))
+            (yellowp (yellow-crown-node-p id)))
         (when (tree-on-screen-p sx sy)
           (cond
             ((gethash id (tree-model-questions model))
@@ -378,20 +412,33 @@ their children) and collect ids. DEPTH drives the centring alternation."
                                         +tree-bead-current-radius+
                                         +tree-bead-visited-radius+)
                                     scale))))
-               (claylib/ll:draw-circle (round sx) (round sy) radius
-                                       (claylib::c-ptr
-                                        (make-color 255 255 255 255)))
-               (when current-p
-                 (claylib/ll:draw-circle-lines (round sx) (round sy)
-                                               (max 5.0 (* 11.0 scale))
-                                               (claylib::c-ptr
-                                                (make-color 255 255 255 235))))))
+               (cond
+                 (yellowp
+                  (tree-draw-crown sx sy (* radius 1.15) 255)
+                  (when current-p
+                    (claylib/ll:draw-circle-lines (round sx) (round sy)
+                                                  (max 5.0 (* 11.0 scale))
+                                                  (claylib::c-ptr
+                                                   (yellow-sign-color 235)))))
+                 (t
+                  (claylib/ll:draw-circle (round sx) (round sy) radius
+                                          (claylib::c-ptr
+                                           (make-color 255 255 255 255)))
+                  (when current-p
+                    (claylib/ll:draw-circle-lines (round sx) (round sy)
+                                                  (max 5.0 (* 11.0 scale))
+                                                  (claylib::c-ptr
+                                                   (make-color 255 255 255 235))))))))
             (t
              ;; an off-main branch you have not taken
-             (claylib/ll:draw-circle (round sx) (round sy)
-                                     (max 2.0 (* +tree-bead-visited-radius+ scale 0.82))
-                                     (claylib::c-ptr
-                                      (make-color 255 255 255 80))))))))))
+             (if yellowp
+                 (tree-draw-crown sx sy
+                                  (max 2.0 (* +tree-bead-visited-radius+ scale 0.82))
+                                  120)
+                 (claylib/ll:draw-circle (round sx) (round sy)
+                                         (max 2.0 (* +tree-bead-visited-radius+ scale 0.82))
+                                         (claylib::c-ptr
+                                          (make-color 255 255 255 80)))))))))))
 
 (defun draw-tree-overlay ()
   (when *tree-open-p*
@@ -405,7 +452,7 @@ their children) and collect ids. DEPTH drives the centring alternation."
                           34.0
                           22
                           (make-color 255 255 255 235))
-      (draw-text-at "T/ESC CLOSE   WASD/ARROWS PAN   DIM = BRANCH NOT TAKEN   ? = COMPUTED NEXT"
+      (draw-text-at "T/ESC CLOSE   WASD/ARROWS PAN   DIM = BRANCH NOT TAKEN   ? = COMPUTED NEXT   CROWN = THE KING"
                     40.0
                     (- +virtual-height+ 34.0)
                     14
