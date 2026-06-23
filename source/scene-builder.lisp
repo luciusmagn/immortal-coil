@@ -339,13 +339,9 @@ multiple of 90, pivoting on the cell centre) and/or horizontally mirrored."
           for sy = (+ +sb-canvas-y+ (* vr +sb-canvas-cell+))
           when (and (< c +sb-grid-w+) (< r +sb-grid-h+))
             do (let ((cell (aref *sb-grid* r c)))
-                 (if cell
-                     ;; placed tiles butt together with no line, so you can see
-                     ;; how they match
-                     (draw-sb-cell cell sx sy +sb-canvas-cell+)
-                     ;; only empty cells get a faint guide
-                     (draw-rectangle-outline sx sy +sb-canvas-cell+ +sb-canvas-cell+
-                                             (make-color 255 255 255 12) :thickness 1))
+                 ;; no gridlines at all in the editing zone - just the tiles
+                 (when cell
+                   (draw-sb-cell cell sx sy +sb-canvas-cell+))
                  (when (and dim cell)
                    (claylib/ll:draw-rectangle sx sy +sb-canvas-cell+ +sb-canvas-cell+
                                               (claylib::c-ptr (make-color 0 0 0 130))))))))
