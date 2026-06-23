@@ -8,7 +8,13 @@
         *quit-requested-p* nil
         *save-current-game-p* nil
         *requested-window-mode* nil
-        *fullscreen-size-ready-p* nil)
+        *fullscreen-size-ready-p* nil
+        ;; power the tube on again for each fresh run; without this a second
+        ;; (main) in the same REPL keeps the post-quit :off state and the
+        ;; shader stays collapsed to black
+        *crt-power-state* :warming
+        *crt-off-amount* 1.0
+        *crt-power-booted-p* nil)
   (reset-editor-state)
   (reset-menu-state)
   (reset-pause-menu-state)

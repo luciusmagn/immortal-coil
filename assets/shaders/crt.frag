@@ -71,6 +71,7 @@ void main()
     float scanline = 0.84 + 0.16 * sin(uv.y * resolution.y * 3.14159);
     float grille = 0.92 + 0.08 * sin(uv.x * resolution.x * 2.094);
     float vignette = smoothstep(0.85, 0.24, distance(uv, vec2(0.5)));
+    vignette = mix(1.0, vignette, 0.667); // ease the corner darkening by a third
 
     vec3 phosphor = vec3(0.88, 1.0, 0.92);
     vec3 color = (base + bloom) * phosphor * scanline * grille * vignette;

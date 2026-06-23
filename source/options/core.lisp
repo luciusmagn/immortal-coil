@@ -223,9 +223,15 @@
      (options-percent-label *music-volume-scale*))
     (:sound-volume
      (options-percent-label *sound-volume-scale*))
-    (:light-theme
-     (if *light-theme-p* "ON" "OFF"))
     (t "")))
+
+(-> options-display-label (command-option) string)
+(defun options-display-label (option)
+  "Most rows show their fixed label. The light-theme row is a toggle whose label
+states what pressing it does: embrace the light, or return to the dark."
+  (if (eq (command-option-action option) :light-theme)
+      (if *light-theme-p* "RETURN TO DARKNESS" "EMBRACE THE HOLY LIGHT")
+      (command-option-label option)))
 
 (-> option-adjustable-p (t) boolean)
 (defun option-adjustable-p (action)

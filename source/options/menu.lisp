@@ -11,7 +11,7 @@
 (defconstant +options-row-width+ 560.0)
 (defconstant +options-row-height+ 36.0)
 (defconstant +options-panel-width+ 640)
-(defconstant +options-panel-height+ 440)
+(defconstant +options-panel-height+ 484)
 (defconstant +options-panel-top+ 132)
 
 (-> options-row-y (integer) scalar)
@@ -89,7 +89,7 @@
                   (t 172)))
          (color (make-color 255 255 255 alpha))
          (y (options-row-y index))
-         (label (command-option-label option))
+         (label (options-display-label option))
          (value (options-value-label action))
          (value-width (text-width value 20)))
     (when selected-p
