@@ -50,6 +50,10 @@
 (defvar *fullscreen-size-ready-p* nil)
 (defvar *fullscreen-monitor-index* nil)
 
+;; set while a tool captures keystrokes (the Scene Builder) so the global
+;; single-key window shortcuts (F = fullscreen) do not fire while typing
+(defvar *suppress-window-shortcuts-p* nil)
+
 ;; Internal render resolution. The layout is authored in 1280x720; this scales
 ;; the render texture (and a matching camera zoom) so the vector graphics - the
 ;; map, sprites, panels, bars - are rasterized at a higher resolution and read

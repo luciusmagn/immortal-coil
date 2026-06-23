@@ -362,10 +362,14 @@
        (not (eq *editor-mode* :play))))
 
 (defun fullscreen-shortcut-available-p ()
-  (not (or (current-dialog-input-active-p)
+  (not (or *suppress-window-shortcuts-p*
+           (current-dialog-input-active-p)
            (current-editor-input-active-p))))
 
 (defun update-window-controls ()
-  (when (and (fullscreen-shortcut-available-p)
-             (is-key-pressed-p +key-f+))
+  ;; F11 always toggles (it never collides with typing); F only when no text
+  ;; field is capturing keys
+  (when (or (is-key-pressed-p +key-f11+)
+            (and (fullscreen-shortcut-available-p)
+                 (is-key-pressed-p +key-f+)))
     (toggle-game-fullscreen)))
