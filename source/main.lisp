@@ -86,8 +86,12 @@
 (defun run-window-contents ()
   (when (eq *window-mode* :fullscreen)
     (sync-active-fullscreen-window-size))
-  (let ((target (load-render-texture +virtual-width+ +virtual-height+))
-        (shader-asset (load-crt-shader)))
+  (let ((target (load-render-texture (render-texture-width) (render-texture-height)))
+        (shader-asset (load-crt-shader))
+        ;; supersample: draw the 1280x720 layout into the larger texture through
+        ;; a matching zoom, so vector graphics are rasterized at full resolution
+        (render-camera (make-camera-2d 0.0 0.0 0.0 0.0
+                                       :zoom (float *render-scale* 1.0))))
     (configure-target-texture target)
     (cache-crt-uniform-locations (when shader-asset (asset shader-asset)))
     (setup-window-resources)
@@ -107,7 +111,9 @@
                 (update-world))
               (update-crt-power (get-frame-time))
               (with-texture-mode (target :clear +black+)
-                (draw-world))
+                (claylib/ll:begin-mode-2d (claylib::c-ptr render-camera))
+                (draw-world)
+                (claylib/ll:end-mode-2d))
               (configure-target-destination target)
               (draw-target target (when shader-asset
                                     (asset shader-asset)))

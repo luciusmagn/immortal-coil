@@ -50,6 +50,14 @@
 (defvar *fullscreen-size-ready-p* nil)
 (defvar *fullscreen-monitor-index* nil)
 
+;; Internal render resolution. The layout is authored in 1280x720; this scales
+;; the render texture (and a matching camera zoom) so the vector graphics - the
+;; map, sprites, panels, bars - are rasterized at a higher resolution and read
+;; crisply when the window is scaled up. 1.0 = 720p, 1.5 = Full HD (1920x1080).
+;; Bitmap text does not sharpen. Default Full HD.
+(defparameter *render-scale-choices* '(("720P" . 1.0) ("FULL HD" . 1.5)))
+(defvar *render-scale* 1.5)
+
 ;; Visual theme: nil = ink on black (default), t = "Embrace the Holy Light",
 ;; which inverts black and white in the CRT shader while sparing the yellow
 ;; crown and any other chromatic accent.

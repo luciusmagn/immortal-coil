@@ -5,6 +5,7 @@
 (defparameter *options-selection*
   (make-command-selection :fullscreen "FULLSCREEN"
                           :monitor "MONITOR"
+                          :resolution "RESOLUTION"
                           :text-speed "TEXT SPEED"
                           :music-volume "MUSIC"
                           :sound-volume "SOUND"
@@ -40,6 +41,7 @@
         *music-volume-scale* 1.0
         *sound-volume-scale* 1.0
         *light-theme-p* nil
+        *render-scale* 1.5
         *window-mode* :windowed
         *requested-window-mode* nil
         *fullscreen-monitor-index* nil))
@@ -51,6 +53,7 @@
         :music-volume-scale *music-volume-scale*
         :sound-volume-scale *sound-volume-scale*
         :light-theme *light-theme-p*
+        :render-scale *render-scale*
         :window-mode (or *requested-window-mode* *window-mode*)
         :fullscreen-monitor-index *fullscreen-monitor-index*))
 
@@ -98,6 +101,11 @@
           (options-data-scalar data :sound-volume-scale 1.0 0.0 1.0)
           *light-theme-p*
           (and (getf data :light-theme) t)
+          *render-scale*
+          (let ((v (getf data :render-scale)))
+            (if (and (realp v) (rassoc v *render-scale-choices* :test #'=))
+                v
+                1.5))
           *window-mode*
           (options-data-window-mode data)
           *fullscreen-monitor-index*
@@ -223,7 +231,21 @@
      (options-percent-label *music-volume-scale*))
     (:sound-volume
      (options-percent-label *sound-volume-scale*))
+    (:resolution
+     (render-scale-label))
     (t "")))
+
+(-> render-scale-label () string)
+(defun render-scale-label ()
+  (or (car (rassoc *render-scale* *render-scale-choices* :test #'=))
+      "FULL HD"))
+
+(-> cycle-render-scale (integer) t)
+(defun cycle-render-scale (direction)
+  (let* ((values (mapcar #'cdr *render-scale-choices*))
+         (index (or (position *render-scale* values :test #'=) 0))
+         (count (length values)))
+    (setf *render-scale* (nth (mod (+ index direction) count) values))))
 
 (-> options-display-label (command-option) string)
 (defun options-display-label (option)
@@ -238,6 +260,7 @@ states what pressing it does: embrace the light, or return to the dark."
   (not (null (member action
                      '(:fullscreen
                        :monitor
+                       :resolution
                        :text-speed
                        :music-volume
                        :sound-volume
@@ -285,7 +308,11 @@ states what pressing it does: embrace the light, or return to the dark."
            (clamp01 (+ *sound-volume-scale*
                        (* direction *options-volume-step*)))))
     (:light-theme
-     (setf *light-theme-p* (not *light-theme-p*))))
+     (setf *light-theme-p* (not *light-theme-p*)))
+    (:resolution
+     (cycle-render-scale direction)
+     ;; reopen the window so the render texture is rebuilt at the new size
+     (setf *requested-window-mode* *window-mode*)))
   (save-options)
   (play-choice-switch))
 

@@ -11,8 +11,8 @@
 (defconstant +options-row-width+ 560.0)
 (defconstant +options-row-height+ 36.0)
 (defconstant +options-panel-width+ 640)
-(defconstant +options-panel-height+ 484)
-(defconstant +options-panel-top+ 132)
+(defconstant +options-panel-height+ 524)
+(defconstant +options-panel-top+ 128)
 
 (-> options-row-y (integer) scalar)
 (defun options-row-y (index)

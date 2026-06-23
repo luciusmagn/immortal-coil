@@ -74,6 +74,12 @@
     (setf *crt-power-state* :cooling)
     (play-crt-power-off)))
 
+(defun render-texture-width ()
+  (max 1 (round (* +virtual-width+ *render-scale*))))
+
+(defun render-texture-height ()
+  (max 1 (round (* +virtual-height+ *render-scale*))))
+
 (defun configure-target-texture (target)
   (setf (filter (texture target)) +texture-filter-point+
         (source (texture target))
