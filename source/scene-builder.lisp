@@ -80,17 +80,26 @@
            (runtime-warn "Scene Builder atlas load failed: ~a" c)
            (setf *sb-atlas* :none)))))))
 
+(defparameter *sb-tile-crop* 2
+  "Pixels trimmed off each tile edge. Every tile in this atlas has a uniform 1px
+transparent + 1px black frame; trimming it lets the inner art fill the cell so
+placed tiles butt together seamlessly. Tunable if the frame turns out thicker.")
+
 (defun sb-draw-tile (col row x y size &key tint (rot 0) flip)
-  "Blit atlas tile (COL,ROW) into a SIZE cell at SX,SY, optionally rotated (a
-multiple of 90, pivoting on the cell centre) and/or horizontally mirrored."
+  "Blit atlas tile (COL,ROW) centred on the SIZE cell at SX,SY, with its border
+frame cropped so the content fills the cell, optionally rotated (a multiple of
+90, pivoting on the cell centre) and/or horizontally mirrored."
   (let ((atlas (sb-atlas)))
     (when atlas
-      (let ((src (source atlas)) (dst (dest atlas)) (half (/ size 2.0)))
-        (setf (x src) (float (* col +sb-atlas-tile+) 1.0)
-              (y src) (float (* row +sb-atlas-tile+) 1.0)
-              (width src) (if flip -16.0 16.0)
-              (height src) 16.0
-              (x dst) (float (+ x half) 1.0)
+      (let* ((src (source atlas)) (dst (dest atlas))
+             (half (/ size 2.0))
+             (k *sb-tile-crop*)
+             (inner (- +sb-atlas-tile+ (* 2 k))))
+        (setf (x src) (float (+ (* col +sb-atlas-tile+) k) 1.0)
+              (y src) (float (+ (* row +sb-atlas-tile+) k) 1.0)
+              (width src) (float (if flip (- inner) inner) 1.0)
+              (height src) (float inner 1.0)
+              (x dst) (float (+ x half) 1.0)        ; pin to the cell centre
               (y dst) (float (+ y half) 1.0)
               (width dst) (float size 1.0)
               (height dst) (float size 1.0)
