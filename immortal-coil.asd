@@ -168,6 +168,8 @@
 
                  (:file "gameplay")
 
+                 (:file "scene-builder")
+
                  (:file "menu")
 
                  (:file "pause")

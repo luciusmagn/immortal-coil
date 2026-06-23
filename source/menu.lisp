@@ -8,6 +8,7 @@
                           :load-game "LOAD GAME"
                           :options "OPTIONS"
                           :mods "MODS"
+                          :scene-builder "SCENE BUILDER"
                           :exit "EXIT"))
 
 (defparameter *mods-menu-selection*
@@ -519,6 +520,8 @@
        (setf *quit-requested-p* t))
       (:mods
        (open-mods-menu))
+      (:scene-builder
+       (open-scene-builder))
       (:load-game
        (if (menu-action-available-p :load-game)
            (open-load-menu)
@@ -823,6 +826,9 @@
 
 
 (defun draw-menu ()
+  (when *sb-active-p*
+    (draw-scene-builder)
+    (return-from draw-menu))
   (draw-title-logo (menu-alpha-scale))
   (draw-particles (menu-alpha-scale))
   (cond
@@ -856,6 +862,9 @@
   ;; the boot disclaimer is modal: nothing else takes input until it is cleared
   (when *disclaimer-pending-p*
     (update-boot-disclaimer)
+    (return-from update-menu))
+  (when *sb-active-p*
+    (update-scene-builder)
     (return-from update-menu))
   (case *menu-start-state*
     (:idle
