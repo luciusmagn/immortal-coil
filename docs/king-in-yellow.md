@@ -1,8 +1,10 @@
 # The King in Yellow path — stitching Chambers into one world
 
 Author-facing. The JRPG path is rebuilt from the ground up out of Robert W.
-Chambers' *The King in Yellow* (`king-in-yellow.txt`). No demon-lord skeleton
-is kept. The player begins **alone** in the ordinary human world of the
+Chambers' *The King in Yellow* (`king-in-yellow.txt`). The text is public
+domain; quote and adapt Chambers directly when his language is stronger than a
+fresh imitation. No demon-lord skeleton is kept. The player begins **alone** in
+the ordinary human world of the
 stories, travels through it on JRPG mechanics, meets the people of the stories
 and watches their narratives happen, and is drawn — by the Play and the Yellow
 Sign — across into Carcosa.
