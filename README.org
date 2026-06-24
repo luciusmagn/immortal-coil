@@ -80,6 +80,22 @@ ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fas
     --eval '(asdf:load-system :immortal-coil)'
 #+end_src
 
+** Lints
+
+#+begin_src sh
+ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fasl/ \
+  sbcl --noinform --non-interactive \
+    --eval '(require :asdf)' \
+    --eval '(asdf:load-system :immortal-coil)' \
+    --load scripts/graph-lint.lisp
+
+ASDF_OUTPUT_TRANSLATIONS=/root/common-lisp/immortal-coil/:/tmp/immortal-coil-fasl/ \
+  sbcl --noinform --non-interactive \
+    --eval '(require :asdf)' \
+    --eval '(asdf:load-system :immortal-coil)' \
+    --load scripts/jrpg-map-lint.lisp
+#+end_src
+
 ** Options
 
 The title menu and pause menu have an OPTIONS screen.
