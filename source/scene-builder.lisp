@@ -227,10 +227,9 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
   (cond
     ((is-key-pressed-p +key-escape+) (sb-exit-to-menu))
     (t
-     (when (or (is-key-pressed-p +key-up+) (is-key-pressed-p +key-w+))
-       (decf *sb-name-sel*))
-     (when (or (is-key-pressed-p +key-down+) (is-key-pressed-p +key-s+))
-       (incf *sb-name-sel*))
+     ;; arrows only - W/S would be eaten from the name field as typed letters
+     (when (is-key-pressed-p +key-up+) (decf *sb-name-sel*))
+     (when (is-key-pressed-p +key-down+) (incf *sb-name-sel*))
      (setf *sb-name-sel* (max -1 (min *sb-name-sel* (1- (length *sb-existing*)))))
      (when (minusp *sb-name-sel*)
        (setf *sb-name* (sb-accept-typing *sb-name*)))
