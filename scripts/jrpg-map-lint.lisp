@@ -39,6 +39,10 @@
         sum (loop for cell across row
                   count (char= cell glyph))))
 
+(defun jrpg-map-lint-cell-char= (rows x y glyph)
+  (let ((cell (jrpg-map-lint-cell rows x y)))
+    (and cell (char= cell glyph))))
+
 (defun jrpg-map-lint-require-count-at-least (rows label glyph minimum)
   (let ((count (jrpg-map-lint-count-glyph rows glyph)))
     (when (< count minimum)
@@ -106,6 +110,20 @@
     (error "~a starts on blocked cell ~s at ~d,~d"
            label (jrpg-map-lint-cell rows start-x start-y) start-x start-y)))
 
+(defun jrpg-map-lint-require-city-door-frontage (rows label glyph)
+  (dolist (position (jrpg-map-lint-find-glyphs rows glyph))
+    (destructuring-bind (x y) position
+      (let ((left  (jrpg-map-lint-cell-char= rows (1- x) y #\#))
+            (right (jrpg-map-lint-cell-char= rows (1+ x) y #\#))
+            (up    (jrpg-map-lint-cell-char= rows x (1- y) #\#))
+            (down  (jrpg-map-lint-cell-char= rows x (1+ y) #\#)))
+        (unless (or left right up down)
+          (error "~a doorway ~c at ~d,~d has no building frontage"
+                 label glyph x y))
+        (when (or (and left right) (and up down))
+          (error "~a doorway ~c at ~d,~d is embedded in a building row"
+                 label glyph x y))))))
+
 (defun jrpg-map-lint-call (name &rest arguments)
   (unless (fboundp name)
     (error "JRPG map generator ~s is not loaded" name))
@@ -130,7 +148,9 @@
       (jrpg-map-lint-require-border-count-at-least rows label #\# 60)
       (dolist (glyph '(#\A #\M #\Q #\D #\S #\P #\C))
         (jrpg-map-lint-require-count-exactly rows label glyph 1)
-        (jrpg-map-lint-require-reachable rows seen label glyph)))))
+        (jrpg-map-lint-require-reachable rows seen label glyph))
+      (dolist (glyph '(#\A #\M #\Q #\D #\S #\P))
+        (jrpg-map-lint-require-city-door-frontage rows label glyph)))))
 
 (defun jrpg-map-lint-street (sample)
   (multiple-value-bind (rows start-x start-y)
