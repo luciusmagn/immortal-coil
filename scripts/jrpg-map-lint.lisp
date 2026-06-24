@@ -2,7 +2,8 @@
 ;;;
 ;;; Loads the story through the real dialog loader, then generates many
 ;;; JRPG city, street, and overworld maps. Fails if any required door,
-;;; landmark, bridge, or finish is missing or unreachable from the start.
+;;; landmark, bridge, or finish is missing or unreachable from the start,
+;;; and if the generated layout loses its expected town/street/world shape.
 ;;;
 ;;; Run headless:
 ;;;   sbcl --eval '(require :asdf)' \
@@ -33,6 +34,45 @@
                      do (push (list x y) found)))
     found))
 
+(defun jrpg-map-lint-count-glyph (rows glyph)
+  (loop for row across rows
+        sum (loop for cell across row
+                  count (char= cell glyph))))
+
+(defun jrpg-map-lint-require-count-at-least (rows label glyph minimum)
+  (let ((count (jrpg-map-lint-count-glyph rows glyph)))
+    (when (< count minimum)
+      (error "~a has only ~d ~c cells; expected at least ~d"
+             label count glyph minimum))))
+
+(defun jrpg-map-lint-require-count-exactly (rows label glyph expected)
+  (let ((count (jrpg-map-lint-count-glyph rows glyph)))
+    (unless (= count expected)
+      (error "~a has ~d ~c cells; expected exactly ~d"
+             label count glyph expected))))
+
+(defun jrpg-map-lint-border-count (rows glyph)
+  (let* ((height (length rows))
+         (width (length (aref rows 0)))
+         (count 0))
+    (loop for x below width
+          do (when (char= (char (aref rows 0) x) glyph)
+               (incf count))
+             (when (char= (char (aref rows (1- height)) x) glyph)
+               (incf count)))
+    (loop for y from 1 below (1- height)
+          do (when (char= (char (aref rows y) 0) glyph)
+               (incf count))
+             (when (char= (char (aref rows y) (1- width)) glyph)
+               (incf count)))
+    count))
+
+(defun jrpg-map-lint-require-border-count-at-least (rows label glyph minimum)
+  (let ((count (jrpg-map-lint-border-count rows glyph)))
+    (when (< count minimum)
+      (error "~a has only ~d border ~c cells; expected at least ~d"
+             label count glyph minimum))))
+
 (defun jrpg-map-lint-reachable-cells (rows start-x start-y blockers)
   (let ((seen (make-hash-table :test #'equal))
         (queue (list (list start-x start-y))))
@@ -61,6 +101,11 @@
                   positions)
       (error "~a cannot reach any ~c" label glyph))))
 
+(defun jrpg-map-lint-require-start-passable (rows blockers start-x start-y label)
+  (unless (jrpg-map-lint-passable-p rows blockers start-x start-y)
+    (error "~a starts on blocked cell ~s at ~d,~d"
+           label (jrpg-map-lint-cell rows start-x start-y) start-x start-y)))
+
 (defun jrpg-map-lint-call (name &rest arguments)
   (unless (fboundp name)
     (error "JRPG map generator ~s is not loaded" name))
@@ -78,7 +123,13 @@
            (seen (jrpg-map-lint-reachable-cells rows start-x start-y
                                                 '(#\#)))
            (label (format nil "city seed ~d" seed)))
+      (jrpg-map-lint-require-start-passable rows '(#\#) start-x start-y label)
+      (jrpg-map-lint-require-count-at-least rows label #\# 110)
+      (jrpg-map-lint-require-count-at-least rows label #\. 170)
+      (jrpg-map-lint-require-count-at-least rows label #\+ 4)
+      (jrpg-map-lint-require-border-count-at-least rows label #\# 60)
       (dolist (glyph '(#\A #\M #\Q #\D #\S #\P #\C))
+        (jrpg-map-lint-require-count-exactly rows label glyph 1)
         (jrpg-map-lint-require-reachable rows seen label glyph)))))
 
 (defun jrpg-map-lint-street (sample)
@@ -88,7 +139,12 @@
            (seen (jrpg-map-lint-reachable-cells rows start-x start-y
                                                 '(#\#)))
            (label (format nil "street sample ~d" sample)))
+      (jrpg-map-lint-require-start-passable rows '(#\#) start-x start-y label)
+      (jrpg-map-lint-require-count-at-least rows label #\# 320)
+      (jrpg-map-lint-require-count-at-least rows label #\. 160)
+      (jrpg-map-lint-require-count-at-least rows label #\+ 4)
       (dolist (glyph '(#\! #\R))
+        (jrpg-map-lint-require-count-exactly rows label glyph 1)
         (jrpg-map-lint-require-reachable rows seen label glyph)))))
 
 (defun jrpg-map-lint-overworld (sample)
@@ -98,7 +154,14 @@
            (seen (jrpg-map-lint-reachable-cells rows start-x start-y
                                                 '(#\^ #\~ #\#)))
            (label (format nil "overworld sample ~d" sample)))
+      (jrpg-map-lint-require-start-passable rows '(#\^ #\~ #\#)
+                                            start-x start-y label)
+      (jrpg-map-lint-require-count-at-least rows label #\, 20)
+      (jrpg-map-lint-require-count-at-least rows label #\~ 20)
+      (jrpg-map-lint-require-count-at-least rows label #\^ 20)
+      (jrpg-map-lint-require-count-at-least rows label #\f 15)
       (dolist (glyph '(#\! #\R #\T #\S #\B))
+        (jrpg-map-lint-require-count-exactly rows label glyph 1)
         (jrpg-map-lint-require-reachable rows seen label glyph)))))
 
 (defun lint-jrpg-maps ()
