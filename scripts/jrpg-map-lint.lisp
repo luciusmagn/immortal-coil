@@ -77,6 +77,47 @@
       (error "~a has only ~d border ~c cells; expected at least ~d"
              label count glyph minimum))))
 
+(defun jrpg-map-lint-open-cell-p (rows blockers x y)
+  (let ((cell (jrpg-map-lint-cell rows x y)))
+    (and cell
+         (not (member cell blockers :test #'char=)))))
+
+(defun jrpg-map-lint-horizontal-open-band-count (rows blockers minimum-run)
+  (loop for y below (length rows)
+        count (loop with run = 0
+                    for x below (length (aref rows y))
+                    maximize (if (jrpg-map-lint-open-cell-p rows blockers x y)
+                                 (incf run)
+                                 (setf run 0))
+                      into longest
+                    finally (return (>= longest minimum-run)))))
+
+(defun jrpg-map-lint-vertical-open-band-count (rows blockers minimum-run)
+  (let ((width (length (aref rows 0)))
+        (height (length rows)))
+    (loop for x below width
+          count (loop with run = 0
+                      for y below height
+                      maximize (if (jrpg-map-lint-open-cell-p rows blockers x y)
+                                   (incf run)
+                                   (setf run 0))
+                        into longest
+                      finally (return (>= longest minimum-run))))))
+
+(defun jrpg-map-lint-require-open-bands (rows label blockers
+                                         horizontal-min horizontal-count
+                                         vertical-min vertical-count)
+  (let ((h-count (jrpg-map-lint-horizontal-open-band-count
+                  rows blockers horizontal-min))
+        (v-count (jrpg-map-lint-vertical-open-band-count
+                  rows blockers vertical-min)))
+    (when (< h-count horizontal-count)
+      (error "~a has only ~d broad horizontal street bands; expected at least ~d"
+             label h-count horizontal-count))
+    (when (< v-count vertical-count)
+      (error "~a has only ~d broad vertical street bands; expected at least ~d"
+             label v-count vertical-count))))
+
 (defun jrpg-map-lint-reachable-cells (rows start-x start-y blockers)
   (let ((seen (make-hash-table :test #'equal))
         (queue (list (list start-x start-y))))
@@ -152,20 +193,31 @@
       (dolist (glyph '(#\A #\M #\Q #\D #\S #\P))
         (jrpg-map-lint-require-city-door-frontage rows label glyph)))))
 
-(defun jrpg-map-lint-street (sample)
+(defun jrpg-map-lint-street-case (sample width height waypoints label-prefix)
   (multiple-value-bind (rows start-x start-y)
-      (jrpg-map-lint-call 'jrpg-gen-streets 34 18 #\! (list #\R))
+      (jrpg-map-lint-call 'jrpg-gen-streets width height #\! waypoints)
     (let* ((rows (coerce rows 'vector))
            (seen (jrpg-map-lint-reachable-cells rows start-x start-y
                                                 '(#\#)))
-           (label (format nil "street sample ~d" sample)))
+           (label (format nil "~a street sample ~d" label-prefix sample)))
       (jrpg-map-lint-require-start-passable rows '(#\#) start-x start-y label)
-      (jrpg-map-lint-require-count-at-least rows label #\# 320)
-      (jrpg-map-lint-require-count-at-least rows label #\. 160)
+      (jrpg-map-lint-require-count-at-least
+       rows label #\# (max 120 (floor (* width height 3) 10)))
+      (jrpg-map-lint-require-count-at-least
+       rows label #\. (max 180 (floor (* width height 2) 5)))
       (jrpg-map-lint-require-count-at-least rows label #\+ 4)
-      (dolist (glyph '(#\! #\R))
+      (jrpg-map-lint-require-open-bands
+       rows label '(#\#)
+       (max 16 (floor width 2)) 3
+       (max 6 (floor height 3)) 2)
+      (dolist (glyph (cons #\! waypoints))
         (jrpg-map-lint-require-count-exactly rows label glyph 1)
         (jrpg-map-lint-require-reachable rows seen label glyph)))))
+
+(defun jrpg-map-lint-street (sample)
+  (jrpg-map-lint-street-case sample 34 18 (list #\R) "studio")
+  (jrpg-map-lint-street-case sample 32 16 nil "wilde")
+  (jrpg-map-lint-street-case sample 38 20 (list #\R) "flight"))
 
 (defun jrpg-map-lint-overworld (sample)
   (multiple-value-bind (rows start-x start-y)
