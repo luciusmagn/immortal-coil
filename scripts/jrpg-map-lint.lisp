@@ -117,11 +117,11 @@
             (right (jrpg-map-lint-cell-char= rows (1+ x) y #\#))
             (up    (jrpg-map-lint-cell-char= rows x (1- y) #\#))
             (down  (jrpg-map-lint-cell-char= rows x (1+ y) #\#)))
-        (unless (or left right up down)
-          (error "~a doorway ~c at ~d,~d has no building frontage"
+        (unless up
+          (error "~a doorway ~c at ~d,~d is not below a building front"
                  label glyph x y))
-        (when (or (and left right) (and up down))
-          (error "~a doorway ~c at ~d,~d is embedded in a building row"
+        (when (or left right down)
+          (error "~a doorway ~c at ~d,~d is embedded in a roof or side wall"
                  label glyph x y))))))
 
 (defun jrpg-map-lint-call (name &rest arguments)
