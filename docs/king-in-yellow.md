@@ -41,28 +41,27 @@ set of people; the player arrives as the Sign reaches them.
 ## The King (characterization — hold to this)
 
 He is the ship-captain **gone absolutely, irretrievably insane** — madness
-beyond anything human — and his power over time, the death-loop of the ship
-path, **vastly developed** until it stopped being suffering and became
-authority over moment and repetition. That is the engine of everything
-canonical about the King in Yellow: an ambiguous, god-like entity in tattered
-yellow robes and the featureless **Pallid Mask**, ruling phantom **Carcosa**
-beside the **Lake of Hali** under the **black stars** of the **Hyades**; the
-**Yellow Sign** his authority, and to hold it is to be claimed; a cosmic force
-of madness and entropy; in his one direct manifestation (*In the Court of the
-Dragon*) an inescapable living God who takes the soul.
+beyond anything human. The private repeated failures of the ship path have
+stopped being only suffering and have become rule, demand, and authority. That
+is the engine of everything canonical about the King in Yellow: an ambiguous,
+god-like entity in tattered yellow robes and the featureless **Pallid Mask**,
+ruling phantom **Carcosa** beside the **Lake of Hali** under the **black stars**
+of the **Hyades**; the **Yellow Sign** his authority, and to hold it is to be
+claimed; a cosmic force of madness and entropy; in his one direct manifestation
+(*In the Court of the Dragon*) an inescapable living God who takes the soul.
 
 Portray him accordingly: **not lucid, not tired, not sympathetic at a desk.**
-Raving, fragmentary, his speech sliding between times; the scene around him
-stutters and repeats because time near him will not hold still; the dead of his
-court are kept in the last gesture they made. The captain-origin is real but
-**buried** — it surfaces only in shards through the madness, and only a player
-who has walked the ship path will assemble it. The revelation is **dreadful**:
-a man's grief and failure swollen into a god. It is the floor of the path, never
-its cozy centre.
+Raving, fragmentary, his speech returning to the same orders, counts, deaths,
+and praise; the dead of his court are kept in the last gesture they made. The
+captain-origin is real but **buried** — it surfaces only in shards through the
+madness, and only a player who has walked the ship path will assemble it. The
+revelation is **dreadful**: a man's grief and failure swollen into a god. It is
+the floor of the path, never its cozy centre.
 
-Carcosa itself is therefore **unstuck in time**: the twin suns never finish
-setting, the masque never starts and never ends, a tune dies in its third line
-forever, and the player's own moments stutter the deeper in they go.
+Carcosa itself is therefore trapped under his repetition: the twin suns hang at
+the edge of the lake, the masque never begins, a tune dies in its third line,
+and the player's own sense of sequence becomes less reliable the deeper in they
+go.
 
 ## The world, stitched (Act I — the ordinary world)
 
@@ -156,14 +155,14 @@ last gesture.
 - **The Demoiselle d'Ys** — `jrpg/dys-*`, a green lane off the thinned city
   (fork at `jrpg/leave-studio`). A fugue five centuries back onto the Breton
   moor: Jeanne d'Ys, the falconer **Hastur** (the same name Wilde gives the
-  god — the time-shatter blurring man and god), the viper, and waking to her
+  god, blurring man and god), the viper, and waking to her
   tomb dated 1573, the stranger she died for named with **the player's own
-  name**. The closed time-loop that teaches "the kept" before Carcosa names it.
-- **The Prophets' Paradise** — `jrpg/prophets`, the Play's looping middle pages
+  name**. The closed account teaches "the kept" before Carcosa names it.
+- **The Prophets' Paradise** — `jrpg/prophets`, the Play's repeating middle pages
   (option at `jrpg/read-choice`). All eight visions (The Studio, The Phantom,
   The Sacrifice, Destiny, The Throng, The Jester, The Green Room, The Love
-  Test); each loops on itself — the King's time-shatter in miniature — and The
-  Green Room's white mask is his. Reading spends composure.
+  Test); each returns to its own image — the King's repetition in miniature —
+  and The Green Room's white mask is his. Reading spends composure.
 - **The four Paris streets** (The Four Winds, The First Shell, Our Lady of the
   Fields, Rue Barrée) — `jrpg/old-quarter-*`, an old quarter the Sign keeps in
   its last good minute (a hub door). Four small human stories, each held one

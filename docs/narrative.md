@@ -176,11 +176,12 @@ Current surface:
 - `ship/later` opens the lonely-future interlude with a lower-third scene
   shift: dark bridge, one cup on the rack, the manual open to the player's
   procedure.
-- Failure loops back into the same alarm without explaining the loop, and
+- Failure returns to the same alarm without explaining the mechanism, and
   silently counts in the `ship-failures` store key. The crash-return sequence
   (`ship/crash-return`, `ship/crash-return-hands`,
   `ship/crash-return-alarm`) stays under the `:warp` particle field, so the
-  private loop has a white-line effect screen without prose explaining it.
+  private failure memory has a white-line effect screen without prose explaining
+  it.
 - `ship/bridge` and `ship/praise` introduce Imari (logs) and Voss (lanes);
   the crew's praise reads as a compliment and is meant to sting later.
 - `ship/galley-remembered` is the first memory intrusion: Voss's burned
@@ -220,13 +221,14 @@ Future writing should soften the branch trigger. The player should not feel that
 
 The matchbook path leads to a straight-faced fantasy adventure.
 
-REWRITE IN PROGRESS (2026-06-22): the path's worldbuilding is being reset into
+REWRITE IN PROGRESS (2026-06-22): the path's worldbuilding is being rebuilt into
 Carcosa, the world of *The King in Yellow*. The demon lord becomes the King in
-Yellow — the maddened ship-captain from the `mutiny/` bad branch, whose loop
-broke into Carcosa. The familiar JRPG frame is kept as the surface. Full design
-in `docs/king-in-yellow.md`. The path carries the one sanctioned color in the
-B&W game: a yellow (`#ffff00`) crown marker. The "Author truth" below is the
-original frame, preserved because the early route still reads that way.
+Yellow — the maddened ship-captain from the `mutiny/` bad branch, whose repeated
+failures and death-memory followed him into Carcosa. The familiar JRPG frame is
+kept as the surface. Full design in `docs/king-in-yellow.md`. The path carries
+the one sanctioned color in the B&W game: a yellow (`#ffff00`) crown marker. The
+"Author truth" below is the original frame, preserved because the early route
+still reads that way.
 
 Author truth:
 
