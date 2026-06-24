@@ -131,7 +131,7 @@
 
 (defun jrpg-map-lint-city (seed)
   (multiple-value-bind (rows start-x start-y)
-      (jrpg-map-lint-call 'jrpg-gen-city 27 13
+      (jrpg-map-lint-call 'jrpg-gen-city 35 17
                           (list #\A #\M #\Q #\D #\S #\P)
                           (list #\C)
                           seed
@@ -142,10 +142,10 @@
                                                 '(#\#)))
            (label (format nil "city seed ~d" seed)))
       (jrpg-map-lint-require-start-passable rows '(#\#) start-x start-y label)
-      (jrpg-map-lint-require-count-at-least rows label #\# 110)
-      (jrpg-map-lint-require-count-at-least rows label #\. 170)
+      (jrpg-map-lint-require-count-at-least rows label #\# 150)
+      (jrpg-map-lint-require-count-at-least rows label #\. 300)
       (jrpg-map-lint-require-count-at-least rows label #\+ 4)
-      (jrpg-map-lint-require-border-count-at-least rows label #\# 60)
+      (jrpg-map-lint-require-border-count-at-least rows label #\# 80)
       (dolist (glyph '(#\A #\M #\Q #\D #\S #\P #\C))
         (jrpg-map-lint-require-count-exactly rows label glyph 1)
         (jrpg-map-lint-require-reachable rows seen label glyph))
