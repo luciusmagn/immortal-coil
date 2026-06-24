@@ -80,7 +80,7 @@
            (runtime-warn "Scene Builder atlas load failed: ~a" c)
            (setf *sb-atlas* :none)))))))
 
-(defparameter *sb-tile-crop* 2
+(defparameter *sb-tile-crop* 1
   "Pixels trimmed off each tile edge. Every tile in this atlas has a uniform 1px
 transparent + 1px black frame; trimming it lets the inner art fill the cell so
 placed tiles butt together seamlessly. Tunable if the frame turns out thicker.")
