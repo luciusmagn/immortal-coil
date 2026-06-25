@@ -155,6 +155,48 @@
     (error ()
       t)))
 
+(-> hexany-read-label-data () (option plist))
+(defun hexany-read-label-data ()
+  "Read saved Hexany crop/label data without mutating the labeler UI state."
+  (handler-case
+      (let ((path (hex-labeler-save-path)))
+        (when (probe-file path)
+          (with-open-file (stream path)
+            (with-standard-io-syntax
+              (read stream nil nil)))))
+    (error (condition)
+      (runtime-warn "Hexany label data read failed: ~a" condition)
+      nil)))
+
+(-> hexany-label-entries () list)
+(defun hexany-label-entries ()
+  (let ((data (hexany-read-label-data)))
+    (if (listp data)
+        (copy-list (or (getf data :labels) nil))
+        nil)))
+
+(-> hexany-label-entry (string) (option plist))
+(defun hexany-label-entry (label)
+  "Return the first saved tile entry whose label matches LABEL, case-insensitively."
+  (find-if (lambda (entry)
+             (string-equal label (or (getf entry :label) "")))
+           (hexany-label-entries)))
+
+(-> hexany-label-crop () plist)
+(defun hexany-label-crop ()
+  (let ((data (hexany-read-label-data)))
+    (if (and (listp data)
+             (listp (getf data :crop)))
+        (copy-list (getf data :crop))
+        '(:left 0 :top 0 :right 0 :bottom 0))))
+
+(-> hexany-label-complete-p () boolean)
+(defun hexany-label-complete-p ()
+  (let ((data (hexany-read-label-data)))
+    (and (listp data)
+         (getf data :complete)
+         t)))
+
 
 ;;; Sheet and tile data
 
