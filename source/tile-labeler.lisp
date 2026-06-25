@@ -118,29 +118,62 @@
        (every (symbol-function 'hex-labeler-tile-handled-p)
               *hex-labeler-tiles*)))
 
-(-> hex-labeler-save-data () t)
+(-> hex-labeler-save-data-plist () plist)
+(defun hex-labeler-save-data-plist ()
+  (list :version 1
+        :tile-size +hex-tile-size+
+        :source "Hexany's Roguelike Tiles 0.3.0"
+        :crop (hex-labeler-crop-plist)
+        :complete (hex-labeler-complete-p)
+        :labels (sort (copy-list *hex-labeler-labels*)
+                      #'hex-labeler-label-entry-less-p)
+        :skipped (sort (copy-list *hex-labeler-skips*)
+                       #'hex-labeler-label-entry-less-p)))
+
+(-> hex-labeler-sidecar-path (pathname string) pathname)
+(defun hex-labeler-sidecar-path (path suffix)
+  (parse-namestring (format nil "~a~a" (namestring path) suffix)))
+
+(-> hex-labeler-write-data-file (plist pathname) t)
+(defun hex-labeler-write-data-file (data path)
+  (ensure-directories-exist path)
+  (with-open-file (stream path
+                          :direction :output
+                          :if-exists :supersede
+                          :if-does-not-exist :create)
+    (with-standard-io-syntax
+      (let ((*print-readably* t))
+        (print data stream)))))
+
+(-> hex-labeler-save-backup (pathname pathname) t)
+(defun hex-labeler-save-backup (path backup)
+  (when (probe-file path)
+    (handler-case
+        (progn
+          (when (probe-file backup)
+            (delete-file backup))
+          (uiop:copy-file path backup))
+      (error (condition)
+        (runtime-warn "Hexany label backup failed: ~a" condition)))))
+
+(-> hex-labeler-save-data () boolean)
 (defun hex-labeler-save-data ()
   (handler-case
-      (let ((path (hex-labeler-save-path)))
-        (ensure-directories-exist path)
-        (with-open-file (stream path
-                                :direction :output
-                                :if-exists :supersede
-                                :if-does-not-exist :create)
-          (with-standard-io-syntax
-            (let ((*print-readably* t))
-              (print (list :version 1
-                           :tile-size +hex-tile-size+
-                           :source "Hexany's Roguelike Tiles 0.3.0"
-                           :crop (hex-labeler-crop-plist)
-                           :complete (hex-labeler-complete-p)
-                           :labels (sort (copy-list *hex-labeler-labels*)
-                                         #'hex-labeler-label-entry-less-p)
-                           :skipped (sort (copy-list *hex-labeler-skips*)
-                                          #'hex-labeler-label-entry-less-p))
-                     stream)))))
+      (let* ((path (hex-labeler-save-path))
+             (tmp (hex-labeler-sidecar-path path ".tmp"))
+             (backup (hex-labeler-sidecar-path path ".bak"))
+             ;; Build this before touching the real save. A type error here
+             ;; must never truncate the last good label file.
+             (data (hex-labeler-save-data-plist)))
+        (hex-labeler-write-data-file data tmp)
+        (hex-labeler-save-backup path backup)
+        (uiop:rename-file-overwriting-target tmp path)
+        t)
     (error (condition)
-      (runtime-warn "Hexany label data save failed: ~a" condition))))
+      (runtime-warn "Hexany label data save failed: ~a" condition)
+      (setf *hex-labeler-message*
+            "save failed; labels still in memory")
+      nil)))
 
 (-> hex-labeler-startup-needed-p () boolean)
 (defun hex-labeler-startup-needed-p ()
@@ -323,7 +356,7 @@
 
 (-> hex-labeler-tile-handled-p (list) boolean)
 (defun hex-labeler-tile-handled-p (tile)
-  (or (hex-labeler-find-label tile)
+  (or (and (hex-labeler-find-label tile) t)
       (hex-labeler-skipped-p tile)))
 
 (-> hex-labeler-remove-keyed-entry (plist list) list)
@@ -708,13 +741,13 @@
                (cons (append key (list :label label))
                      (hex-labeler-remove-keyed-entry key *hex-labeler-labels*))
                *hex-labeler-skips*
-               (hex-labeler-remove-keyed-entry key *hex-labeler-skips*)
-               *hex-labeler-message* "saved")
-         (hex-labeler-save-data)
-         (if (< (1+ *hex-labeler-index*) (length *hex-labeler-tiles*))
-             (hex-labeler-set-label-index (1+ *hex-labeler-index*))
-             (setf *hex-labeler-phase* :done
-                   *hex-labeler-message* "all visible tiles are handled")))))))
+               (hex-labeler-remove-keyed-entry key *hex-labeler-skips*))
+         (when (hex-labeler-save-data)
+           (setf *hex-labeler-message* "saved")
+           (if (< (1+ *hex-labeler-index*) (length *hex-labeler-tiles*))
+               (hex-labeler-set-label-index (1+ *hex-labeler-index*))
+               (setf *hex-labeler-phase* :done
+                     *hex-labeler-message* "all visible tiles are handled"))))))))
 
 (-> hex-labeler-skip-current () t)
 (defun hex-labeler-skip-current ()
@@ -724,13 +757,13 @@
         (setf *hex-labeler-skips*
               (cons key (hex-labeler-remove-keyed-entry key *hex-labeler-skips*))
               *hex-labeler-labels*
-              (hex-labeler-remove-keyed-entry key *hex-labeler-labels*)
-              *hex-labeler-message* "skipped")
-        (hex-labeler-save-data)
-        (if (< (1+ *hex-labeler-index*) (length *hex-labeler-tiles*))
-            (hex-labeler-set-label-index (1+ *hex-labeler-index*))
-            (setf *hex-labeler-phase* :done
-                  *hex-labeler-message* "all visible tiles are handled"))))))
+              (hex-labeler-remove-keyed-entry key *hex-labeler-labels*))
+        (when (hex-labeler-save-data)
+          (setf *hex-labeler-message* "skipped")
+          (if (< (1+ *hex-labeler-index*) (length *hex-labeler-tiles*))
+              (hex-labeler-set-label-index (1+ *hex-labeler-index*))
+              (setf *hex-labeler-phase* :done
+                    *hex-labeler-message* "all visible tiles are handled")))))))
 
 (-> update-hex-labeler-label () t)
 (defun update-hex-labeler-label ()
