@@ -9,20 +9,22 @@
 (defvar *title-logo-mask-width* 0)
 (defvar *title-logo-mask-height* 0)
 
-(-> fallback-title-logo-path () pathname)
+(-> fallback-title-logo-path () (option pathname))
 (defun fallback-title-logo-path ()
-  (project-pathname "assets/logo/title-logo.png"))
+  (let ((path (project-pathname "assets/logo/title-logo.png")))
+    (and (probe-file path)
+         path)))
 
-(-> configured-title-logo-path () pathname)
+(-> configured-title-logo-path () (option pathname))
 (defun configured-title-logo-path ()
   (handler-case
-      (or (loop with winner = nil
-                for bundle in (configured-dialog-bundles)
-                for logo = (dialog-bundle-title-logo bundle)
-                when logo
-                  do (setf winner logo)
-                finally (return winner))
-          (fallback-title-logo-path))
+      (loop with winner = nil
+            for bundle in (configured-dialog-bundles)
+            for logo = (dialog-bundle-title-logo bundle)
+            when logo
+              do (setf winner logo)
+            finally (return (or winner
+                                (fallback-title-logo-path))))
     (error (condition)
       (runtime-warn "Could not resolve configured title logo: ~a" condition)
       (fallback-title-logo-path))))
@@ -127,8 +129,11 @@
 (defun load-title-logo ()
   (let ((path (configured-title-logo-path))
         (fallback (fallback-title-logo-path)))
-    (or (load-title-logo-from-path path)
-        (and (not (equal (namestring path) (namestring fallback)))
+    (or (and path
+             (load-title-logo-from-path path))
+        (and fallback
+             path
+             (not (equal (namestring path) (namestring fallback)))
              (load-title-logo-from-path fallback)))))
 
 (defun clear-title-logo ()
