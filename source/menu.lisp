@@ -9,6 +9,7 @@
                           :options "OPTIONS"
                           :mods "MODS"
                           :scene-builder "SCENE BUILDER"
+                          :tile-labeler "TILE LABELER"
                           :exit "EXIT"))
 
 (defparameter *mods-menu-selection*
@@ -522,6 +523,8 @@
        (open-mods-menu))
       (:scene-builder
        (open-scene-builder))
+      (:tile-labeler
+       (open-hexany-labeler))
       (:load-game
        (if (menu-action-available-p :load-game)
            (open-load-menu)
@@ -826,6 +829,9 @@
 
 
 (defun draw-menu ()
+  (when *hex-labeler-active-p*
+    (draw-hexany-labeler)
+    (return-from draw-menu))
   (when *sb-active-p*
     (draw-scene-builder)
     (return-from draw-menu))
@@ -862,6 +868,11 @@
   ;; the boot disclaimer is modal: nothing else takes input until it is cleared
   (when *disclaimer-pending-p*
     (update-boot-disclaimer)
+    (return-from update-menu))
+  (when (maybe-open-startup-hexany-labeler)
+    (return-from update-menu))
+  (when *hex-labeler-active-p*
+    (update-hexany-labeler)
     (return-from update-menu))
   (when *sb-active-p*
     (update-scene-builder)

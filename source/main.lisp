@@ -44,6 +44,7 @@
         (clear-audio-resources)
         (clear-title-logo)
         (clear-sb-atlas)
+        (clear-hexany-labeler-sheets)
         ;; closing the window destroys the GL context, so every cached texture
         ;; (tile atlas, combat sprites) is now invalid; drop the caches so they
         ;; reload against the fresh context on the next window. (Defined in the
