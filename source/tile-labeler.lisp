@@ -898,3 +898,6 @@
     (error (condition)
       (runtime-warn "Hexany labeler draw failed: ~a" condition)
       (clear-background :color +black+))))
+
+(eval-when (:load-toplevel :execute)
+  (clear-hexany-labeler-sheets))

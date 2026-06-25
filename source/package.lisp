@@ -2,4 +2,5 @@
   (:use #:cl
         #:claylib)
   (:shadowing-import-from #:serapeum #:->)
-  (:export #:main))
+  (:export #:dev-reload
+           #:main))

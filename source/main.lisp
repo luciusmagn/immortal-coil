@@ -37,22 +37,41 @@
     (error (condition)
       (runtime-warn "Could not set up window resources: ~a" condition))))
 
+(-> clear-hot-reload-resource-caches () t)
+(defun clear-hot-reload-resource-caches ()
+  "Drop cached external resources whose wrappers do not survive reloads safely."
+  (handler-case
+      (progn
+        (clear-sb-atlas)
+        (clear-hexany-labeler-sheets)
+        ;; Defined by bundled scripts; guard so the engine still loads before
+        ;; those scripts have been evaluated.
+        (when (fboundp 'clear-jrpg-tile-atlas)
+          (funcall 'clear-jrpg-tile-atlas))
+        (when (fboundp 'clear-jrpg-sprite-textures)
+          (funcall 'clear-jrpg-sprite-textures))
+        t)
+    (error (condition)
+      (runtime-warn "Could not clear reload resource caches: ~a" condition)
+      nil)))
+
 (defun teardown-window-resources ()
   (handler-case
       (progn
         (clear-audio-resources)
-        (clear-sb-atlas)
-        (clear-hexany-labeler-sheets)
-        ;; closing the window destroys the GL context, so every cached texture
-        ;; (tile atlas, combat sprites) is now invalid; drop the caches so they
-        ;; reload against the fresh context on the next window. (Defined in the
-        ;; story scripts; guard so the engine compiles without them.)
-        (when (fboundp 'clear-jrpg-tile-atlas)
-          (funcall 'clear-jrpg-tile-atlas))
-        (when (fboundp 'clear-jrpg-sprite-textures)
-          (funcall 'clear-jrpg-sprite-textures)))
+        (clear-hot-reload-resource-caches))
     (error (condition)
       (runtime-warn "Could not tear down window resources: ~a" condition))))
+
+(-> dev-reload (&key (:system-p boolean) (:graph-p boolean)) t)
+(defun dev-reload (&key (system-p t) (graph-p t))
+  "Reload engine code and dynamic dialogue scripts in one REPL call."
+  (when system-p
+    (asdf:load-system :immortal-coil))
+  (clear-hot-reload-resource-caches)
+  (when graph-p
+    (load-dialog-graph))
+  t)
 
 (defun normalize-window-state-before-close ()
   (when (and (eq *window-mode* :fullscreen)
