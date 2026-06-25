@@ -267,6 +267,11 @@
   (setf *hex-labeler-sheets*
         (remove nil (mapcar #'hex-labeler-load-sheet *hex-labeler-sheet-specs*))))
 
+(-> hex-labeler-ensure-sheets () list)
+(defun hex-labeler-ensure-sheets ()
+  (or *hex-labeler-sheets*
+      (hex-labeler-load-sheets)))
+
 (-> clear-hexany-labeler-sheets () t)
 (defun clear-hexany-labeler-sheets ()
   (setf *hex-labeler-sheets* nil
@@ -274,7 +279,11 @@
 
 (-> hex-labeler-current-sheet () (option hex-labeler-sheet))
 (defun hex-labeler-current-sheet ()
-  (nth *hex-labeler-sheet-index* *hex-labeler-sheets*))
+  (let ((sheets (hex-labeler-ensure-sheets)))
+    (when sheets
+      (setf *hex-labeler-sheet-index*
+            (mod *hex-labeler-sheet-index* (length sheets)))
+      (nth *hex-labeler-sheet-index* sheets))))
 
 (-> hex-labeler-sheet-by-id (string) (option hex-labeler-sheet))
 (defun hex-labeler-sheet-by-id (id)
@@ -596,30 +605,75 @@
 
 (-> hex-labeler-change-sheet (integer) t)
 (defun hex-labeler-change-sheet (delta)
-  (when *hex-labeler-sheets*
+  (when (hex-labeler-ensure-sheets)
     (setf *hex-labeler-sheet-index*
           (mod (+ *hex-labeler-sheet-index* delta)
                (length *hex-labeler-sheets*)))
     (hex-labeler-clamp-crop-selection)
     (play-choice-switch)))
 
+(-> hex-labeler-crop-selection-key () (option plist))
+(defun hex-labeler-crop-selection-key ()
+  (let ((sheet (hex-labeler-current-sheet)))
+    (when sheet
+      (list :sheet (hex-labeler-sheet-id sheet)
+            :col *hex-labeler-crop-col*
+            :row *hex-labeler-crop-row*))))
+
+(-> hex-labeler-crop-selection-index () (option nonnegative-integer))
+(defun hex-labeler-crop-selection-index ()
+  (let ((key (hex-labeler-crop-selection-key)))
+    (when key
+      (position-if (lambda (tile)
+                     (hex-labeler-entry-matches-key-p
+                      (hex-labeler-tile-key tile)
+                      key))
+                   *hex-labeler-tiles*))))
+
+(-> hex-labeler-sheet-index-for-id (string) (option nonnegative-integer))
+(defun hex-labeler-sheet-index-for-id (id)
+  (position id (hex-labeler-ensure-sheets)
+            :key #'hex-labeler-sheet-id
+            :test #'string=))
+
+(-> hex-labeler-focus-crop-tile ((option list)) t)
+(defun hex-labeler-focus-crop-tile (tile)
+  (when tile
+    (destructuring-bind (sheet col row) tile
+      (let ((sheet-index (hex-labeler-sheet-index-for-id
+                          (hex-labeler-sheet-id sheet))))
+        (when sheet-index
+          (setf *hex-labeler-sheet-index* sheet-index
+                *hex-labeler-crop-col* col
+                *hex-labeler-crop-row* row)
+          (hex-labeler-clamp-crop-selection))))))
+
 (-> hex-labeler-enter-label-phase () t)
 (defun hex-labeler-enter-label-phase ()
+  (hex-labeler-ensure-sheets)
   (setf *hex-labeler-tiles* (hex-labeler-build-tile-list))
-  (let ((first-unhandled (hex-labeler-first-unhandled-index)))
+  (let ((selected-index (hex-labeler-crop-selection-index))
+        (first-unhandled (hex-labeler-first-unhandled-index)))
     (cond
       ((null *hex-labeler-tiles*)
        (setf *hex-labeler-phase* :done
              *hex-labeler-message* "no visible tiles found"))
-      (first-unhandled
+      ((or selected-index first-unhandled)
        (setf *hex-labeler-phase* :label
-             *hex-labeler-index* first-unhandled
+             *hex-labeler-index* (or selected-index first-unhandled)
              *hex-labeler-message* "")
        (hex-labeler-load-current-label-input))
       (t
        (setf *hex-labeler-phase* :done
              *hex-labeler-message* "all visible tiles are handled"))))
   (hex-labeler-save-data)
+  (play-choice-switch))
+
+(-> hex-labeler-return-to-crop-phase () t)
+(defun hex-labeler-return-to-crop-phase ()
+  (hex-labeler-focus-crop-tile (hex-labeler-current-tile))
+  (setf *hex-labeler-phase* :crop
+        *hex-labeler-message* "labeling stopped")
   (play-choice-switch))
 
 (-> update-hex-labeler-crop () t)
@@ -773,7 +827,7 @@
     (unless input-p
       (cond
         ((is-key-pressed-p +key-escape+)
-         (hex-labeler-exit-to-menu))
+         (hex-labeler-return-to-crop-phase))
         ((or (is-key-pressed-p +key-enter+)
              (is-key-pressed-p +key-kp-enter+))
          (hex-labeler-commit-label))
@@ -837,7 +891,7 @@
                       20
                       *hex-labeler-white*))))
   (hex-labeler-draw-status
-   (format nil "type label   ENTER save   C-n skip   C-p/left previous   right next   ESC menu   ~a"
+   (format nil "type label   ENTER save   C-n skip   C-p/left previous   right next   ESC crop   ~a"
            *hex-labeler-message*)))
 
 
