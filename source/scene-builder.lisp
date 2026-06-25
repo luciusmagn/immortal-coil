@@ -182,8 +182,8 @@
                                     (integerp (second tile)))
                                (destructuring-bind (col row &optional (rot 0) flip)
                                    tile
-                                 ;; Legacy Kenney scene data. Keep it loadable
-                                 ;; so scratch files do not break the editor.
+                                 ;; Legacy two-coordinate scene data stays
+                                 ;; loadable so scratch files do not break.
                                  (list "general" col row rot flip)))))))))))))
     (error (c) (runtime-warn "Scene load failed: ~a" c))))
 
