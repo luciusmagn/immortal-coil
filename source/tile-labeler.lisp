@@ -243,6 +243,17 @@
 (defun hex-labeler-current-sheet ()
   (nth *hex-labeler-sheet-index* *hex-labeler-sheets*))
 
+(-> hex-labeler-sheet-by-id (string) (option hex-labeler-sheet))
+(defun hex-labeler-sheet-by-id (id)
+  (or (find id *hex-labeler-sheets*
+            :key #'hex-labeler-sheet-id
+            :test #'string=)
+      (progn
+        (hex-labeler-load-sheets)
+        (find id *hex-labeler-sheets*
+              :key #'hex-labeler-sheet-id
+              :test #'string=))))
+
 (-> hex-labeler-clamp-crop-selection () t)
 (defun hex-labeler-clamp-crop-selection ()
   (let ((sheet (hex-labeler-current-sheet)))
@@ -382,19 +393,29 @@
           (tint texture) color)
     (draw-object texture)))
 
-(-> hex-labeler-draw-tile (hex-labeler-sheet integer integer scalar scalar scalar) t)
-(defun hex-labeler-draw-tile (sheet col row x y size)
-  (hex-labeler-draw-sheet-region
-   sheet
-   (+ (* col +hex-tile-size+) *hex-labeler-crop-left*)
-   (+ (* row +hex-tile-size+) *hex-labeler-crop-top*)
-   (hex-labeler-inner-width)
-   (hex-labeler-inner-height)
-   x
-   y
-   size
-   size
-   *hex-labeler-white*))
+(-> hex-labeler-draw-tile
+    (hex-labeler-sheet integer integer scalar scalar scalar
+     &key (:tint t) (:rot scalar) (:flip boolean))
+    t)
+(defun hex-labeler-draw-tile (sheet col row x y size &key tint (rot 0) flip)
+  (let* ((texture (hex-labeler-sheet-texture sheet))
+         (source (source texture))
+         (dest (dest texture))
+         (half (/ size 2.0))
+         (inner-width (hex-labeler-inner-width))
+         (inner-height (hex-labeler-inner-height)))
+    (setf (x source) (float (+ (* col +hex-tile-size+) *hex-labeler-crop-left*) 1.0)
+          (y source) (float (+ (* row +hex-tile-size+) *hex-labeler-crop-top*) 1.0)
+          (width source) (float (if flip (- inner-width) inner-width) 1.0)
+          (height source) (float inner-height 1.0)
+          (x dest) (float (+ x half) 1.0)
+          (y dest) (float (+ y half) 1.0)
+          (width dest) (float size 1.0)
+          (height dest) (float size 1.0)
+          (origin texture) (make-vector2 half half)
+          (rot texture) (float rot 1.0)
+          (tint texture) (or tint *hex-labeler-white*))
+    (draw-object texture)))
 
 (-> hex-labeler-context-scale (hex-labeler-sheet) integer)
 (defun hex-labeler-context-scale (sheet)

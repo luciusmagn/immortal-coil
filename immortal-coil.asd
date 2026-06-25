@@ -167,8 +167,8 @@
 
                  (:file "gameplay")
 
-                 (:file "scene-builder")
                  (:file "tile-labeler")
+                 (:file "scene-builder")
 
                  (:file "menu")
 

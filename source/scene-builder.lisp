@@ -1,21 +1,19 @@
 (in-package #:immortal-coil)
 
 ;;; ----------------------------------------------------------------------------
-;;; Scene Builder: an in-menu tile editor over the Kenney 1-bit atlas. Build a
+;;; Scene Builder: an in-menu tile editor over the Hexany roguelike sheets. Build a
 ;;; scene on a grid, then label the tiles you used (one by one, with the build
 ;;; still visible). Conflicting tile names are rejected. Everything autosaves:
-;;; the scene to save/scenes/<name>.scene, the labels to save/tile-labels.lisp.
+;;; the scene to save/scenes/<name>.scene, the labels to
+;;; save/hexany-scene-labels.lisp.
 ;;;
 ;;; Build controls: left-click canvas places the brush, right-click erases;
 ;;; left-click the palette picks a tile. WASD/arrows pan the canvas, Q/E pan the
-;;; palette. R rotates the brush, M mirrors it. F starts labelling. ESC opens a
-;;; pause menu (resume / fullscreen / resolution / exit). F11 toggles fullscreen
-;;; anywhere. A cell stores (tcol trow rotation flip).
+;;; palette, TAB changes sheet. R rotates the brush, M mirrors it. F starts
+;;; labelling. ESC opens a pause menu. F11 toggles fullscreen anywhere. A cell
+;;; stores (sheet col row rotation flip).
 ;;; ----------------------------------------------------------------------------
 
-(defconstant +sb-atlas-cols+ 48)
-(defconstant +sb-atlas-rows+ 22)
-(defconstant +sb-atlas-tile+ 16)
 (defconstant +sb-grid-w+ 64)
 (defconstant +sb-grid-h+ 48)
 (defconstant +sb-canvas-x+ 16)
@@ -36,77 +34,85 @@
 (defvar *sb-name* "")
 (defvar *sb-existing* nil)
 (defvar *sb-name-sel* -1)
-(defvar *sb-grid* nil)                  ; 2D array, each cell nil or (tcol trow rot flip)
+(defvar *sb-grid* nil)                  ; 2D array, each cell nil or (sheet col row rot flip)
 (defvar *sb-cam-x* 0)
 (defvar *sb-cam-y* 0)
-(defvar *sb-sel* (cons 1 0))            ; selected palette tile (tcol . trow)
+(defvar *sb-sheet-index* 0)
+(defvar *sb-sel* (list "general" 0 0))  ; selected palette tile (sheet col row)
 (defvar *sb-rot* 0)                     ; brush rotation 0/90/180/270
 (defvar *sb-flip* nil)                  ; brush horizontal mirror
 (defvar *sb-pal-col* 0)
 (defvar *sb-label-tiles* nil)
 (defvar *sb-label-i* 0)
 (defvar *sb-label-input* "")
-(defvar *sb-labels* nil)                ; alist ((tcol trow) . "name")
+(defvar *sb-labels* nil)                ; alist ((sheet col row) . "name")
 (defvar *sb-message* "")
-(defvar *sb-atlas* nil)
 (defvar *sb-white* (make-color 255 255 255 255))
 
-;;; --- atlas ---
+;;; --- sheets ---
 
 (defun clear-sb-atlas ()
-  (setf *sb-atlas* nil))
+  (clear-hexany-labeler-sheets))
 
-(defun sb-atlas ()
-  (cond
-    ((eq *sb-atlas* :none) nil)
-    (*sb-atlas* *sb-atlas*)
-    (t
-     (let ((path (project-pathname "assets/tiles/kenney-1bit-mono.png")))
-       (handler-case
-           (if (probe-file path)
-               (let ((obj (make-texture (make-texture-asset path :load-now t)
-                                        0.0 0.0 :width 16.0 :height 16.0
-                                        :tint (make-color 255 255 255 255))))
-                 (setf (source obj) (make-instance 'rl-rectangle
-                                                   :x 0.0 :y 0.0
-                                                   :width 16.0 :height 16.0)
-                       (origin obj) (make-vector2 0.0 0.0))
-                 (ignore-errors
-                  (claylib/ll:set-texture-filter (claylib::c-asset obj)
-                                                 +texture-filter-point+))
-                 (setf *sb-atlas* obj))
-               (setf *sb-atlas* :none))
-         (error (c)
-           (runtime-warn "Scene Builder atlas load failed: ~a" c)
-           (setf *sb-atlas* :none)))))))
+(defun sb-sheets ()
+  (or *hex-labeler-sheets*
+      (hex-labeler-load-sheets)))
 
-(defparameter *sb-tile-crop* 1
-  "Pixels trimmed off each tile edge. Every tile in this atlas has a uniform 1px
-transparent + 1px black frame; trimming it lets the inner art fill the cell so
-placed tiles butt together seamlessly. Tunable if the frame turns out thicker.")
+(defun sb-current-sheet ()
+  (let ((sheets (sb-sheets)))
+    (when sheets
+      (nth (mod *sb-sheet-index* (length sheets)) sheets))))
 
-(defun sb-draw-tile (col row x y size &key tint (rot 0) flip)
-  "Blit atlas tile (COL,ROW) centred on the SIZE cell at SX,SY, with its border
-frame cropped so the content fills the cell, optionally rotated (a multiple of
-90, pivoting on the cell centre) and/or horizontally mirrored."
-  (let ((atlas (sb-atlas)))
-    (when atlas
-      (let* ((src (source atlas)) (dst (dest atlas))
-             (half (/ size 2.0))
-             (k *sb-tile-crop*)
-             (inner (- +sb-atlas-tile+ (* 2 k))))
-        (setf (x src) (float (+ (* col +sb-atlas-tile+) k) 1.0)
-              (y src) (float (+ (* row +sb-atlas-tile+) k) 1.0)
-              (width src) (float (if flip (- inner) inner) 1.0)
-              (height src) (float inner 1.0)
-              (x dst) (float (+ x half) 1.0)        ; pin to the cell centre
-              (y dst) (float (+ y half) 1.0)
-              (width dst) (float size 1.0)
-              (height dst) (float size 1.0)
-              (origin atlas) (make-vector2 half half)
-              (rot atlas) (float rot 1.0)
-              (tint atlas) (or tint *sb-white*))
-        (draw-object atlas)))))
+(defun sb-current-sheet-id ()
+  (let ((sheet (sb-current-sheet)))
+    (and sheet
+         (hex-labeler-sheet-id sheet))))
+
+(defun sb-current-sheet-cols ()
+  (let ((sheet (sb-current-sheet)))
+    (if sheet
+        (hex-labeler-sheet-cols sheet)
+        0)))
+
+(defun sb-current-sheet-rows ()
+  (let ((sheet (sb-current-sheet)))
+    (if sheet
+        (hex-labeler-sheet-rows sheet)
+        0)))
+
+(defun sb-max-palette-col ()
+  (max 0 (- (sb-current-sheet-cols) +sb-pal-cols+)))
+
+(defun sb-clamp-palette-col ()
+  (setf *sb-pal-col* (max 0 (min *sb-pal-col* (sb-max-palette-col)))))
+
+(defun sb-set-sheet-index (index)
+  (let ((sheets (sb-sheets)))
+    (when sheets
+      (setf *sb-sheet-index* (mod index (length sheets))
+            *sb-pal-col* 0
+            *sb-sel* (sb-default-selection)))))
+
+(defun sb-cycle-sheet (delta)
+  (sb-set-sheet-index (+ *sb-sheet-index* delta)))
+
+(defun sb-default-selection ()
+  (let ((sheet (or (sb-current-sheet)
+                   (first (sb-sheets)))))
+    (if sheet
+        (list (hex-labeler-sheet-id sheet) 0 0)
+        (list "general" 0 0))))
+
+(defun sb-tile-key (tile)
+  (list (first tile) (second tile) (third tile)))
+
+(defun sb-draw-tile (sheet-id col row x y size &key tint (rot 0) flip)
+  (let ((sheet (hex-labeler-sheet-by-id sheet-id)))
+    (when sheet
+      (hex-labeler-draw-tile sheet col row x y size
+                             :tint (or tint *sb-white*)
+                             :rot rot
+                             :flip flip))))
 
 ;;; --- persistence (autosave) ---
 
@@ -118,7 +124,7 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
   (merge-pathnames (format nil "scenes/~a.scene" name) (sb-save-root)))
 
 (defun sb-labels-path ()
-  (merge-pathnames "tile-labels.lisp" (sb-save-root)))
+  (merge-pathnames "hexany-scene-labels.lisp" (sb-save-root)))
 
 (defun sb-list-scenes ()
   (handler-case
@@ -138,8 +144,12 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
             (dotimes (c +sb-grid-w+)
               (let ((cell (aref *sb-grid* r c)))
                 (when cell
-                  (push (list c r (first cell) (second cell)
-                              (third cell) (and (fourth cell) t))
+                  (push (list c r
+                              (first cell)
+                              (second cell)
+                              (third cell)
+                              (fourth cell)
+                              (and (fifth cell) t))
                         cells)))))
           (ensure-directories-exist path)
           (with-open-file (s path :direction :output :if-exists :supersede
@@ -158,9 +168,23 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
             (with-standard-io-syntax
               (let ((data (read s nil nil)))
                 (dolist (cell (getf data :cells))
-                  (destructuring-bind (c r tc tr &optional (rot 0) flip) cell
+                  (destructuring-bind (c r &rest tile) cell
                     (when (and (< -1 c +sb-grid-w+) (< -1 r +sb-grid-h+))
-                      (setf (aref *sb-grid* r c) (list tc tr rot flip))))))))))
+                      (setf (aref *sb-grid* r c)
+                            (cond
+                              ((and (stringp (first tile))
+                                    (integerp (second tile))
+                                    (integerp (third tile)))
+                               (destructuring-bind (sheet col row &optional (rot 0) flip)
+                                   tile
+                                 (list sheet col row rot flip)))
+                              ((and (integerp (first tile))
+                                    (integerp (second tile)))
+                               (destructuring-bind (col row &optional (rot 0) flip)
+                                   tile
+                                 ;; Legacy Kenney scene data. Keep it loadable
+                                 ;; so scratch files do not break the editor.
+                                 (list "general" col row rot flip)))))))))))))
     (error (c) (runtime-warn "Scene load failed: ~a" c))))
 
 (defun sb-save-labels ()
@@ -196,13 +220,13 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
     s))
 
 (defun sb-distinct-tiles ()
-  "Distinct (tcol . trow) ids used in the grid (rotation/mirror ignored)."
+  "Distinct (sheet col row) ids used in the grid (rotation/mirror ignored)."
   (let ((seen (make-hash-table :test #'equal)) (out nil))
     (dotimes (r +sb-grid-h+)
       (dotimes (c +sb-grid-w+)
         (let ((cell (aref *sb-grid* r c)))
           (when cell
-            (let ((id (cons (first cell) (second cell))))
+            (let ((id (sb-tile-key cell)))
               (unless (gethash id seen)
                 (setf (gethash id seen) t)
                 (push id out)))))))
@@ -277,10 +301,13 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
 (defun sb-palette-tile-at (mx my)
   (when (and (<= +sb-pal-x+ mx (+ +sb-pal-x+ (* +sb-pal-cols+ +sb-pal-cell+)))
              (<= +sb-pal-y+ my (+ +sb-pal-y+ (* +sb-pal-rows+ +sb-pal-cell+))))
-    (let ((c (+ *sb-pal-col* (floor (- mx +sb-pal-x+) +sb-pal-cell+)))
-          (r (floor (- my +sb-pal-y+) +sb-pal-cell+)))
-      (when (and (< -1 c +sb-atlas-cols+) (< -1 r +sb-atlas-rows+))
-        (cons c r)))))
+    (let ((sheet (sb-current-sheet)))
+      (when sheet
+        (let ((c (+ *sb-pal-col* (floor (- mx +sb-pal-x+) +sb-pal-cell+)))
+              (r (floor (- my +sb-pal-y+) +sb-pal-cell+)))
+          (when (and (< -1 c (hex-labeler-sheet-cols sheet))
+                     (< -1 r (hex-labeler-sheet-rows sheet)))
+            (list (hex-labeler-sheet-id sheet) c r)))))))
 
 (defun sb-begin-label ()
   (let ((tiles (sb-distinct-tiles)))
@@ -299,6 +326,7 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
     (t
      (when (is-key-pressed-p +key-r+) (setf *sb-rot* (mod (+ *sb-rot* 90) 360)))
      (when (is-key-pressed-p +key-m+) (setf *sb-flip* (not *sb-flip*)))
+     (when (is-key-pressed-p +key-tab+) (sb-cycle-sheet 1))
      (when (or (is-key-down-p +key-d+) (is-key-down-p +key-right+))
        (setf *sb-cam-x* (min (- +sb-grid-w+ +sb-canvas-cols+) (1+ *sb-cam-x*))))
      (when (or (is-key-down-p +key-a+) (is-key-down-p +key-left+))
@@ -308,7 +336,7 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
      (when (or (is-key-down-p +key-w+) (is-key-down-p +key-up+))
        (setf *sb-cam-y* (max 0 (1- *sb-cam-y*))))
      (when (is-key-down-p +key-e+)
-       (setf *sb-pal-col* (min (- +sb-atlas-cols+ +sb-pal-cols+) (1+ *sb-pal-col*))))
+       (setf *sb-pal-col* (min (sb-max-palette-col) (1+ *sb-pal-col*))))
      (when (is-key-down-p +key-q+)
        (setf *sb-pal-col* (max 0 (1- *sb-pal-col*))))
      (let ((mx (virtual-mouse-x)) (my (virtual-mouse-y)))
@@ -319,7 +347,7 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
                (let ((cell (sb-canvas-cell-at mx my)))
                  (when cell
                    (setf (aref *sb-grid* (cdr cell) (car cell))
-                         (list (car *sb-sel*) (cdr *sb-sel*) *sb-rot* (and *sb-flip* t)))
+                         (append *sb-sel* (list *sb-rot* (and *sb-flip* t))))
                    (sb-save-scene))))))
        (when (is-mouse-button-down-p +mouse-button-right+)
          (let ((cell (sb-canvas-cell-at mx my)))
@@ -329,8 +357,8 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
 
 (defun draw-sb-cell (cell sx sy size)
   (when cell
-    (sb-draw-tile (first cell) (second cell) sx sy size
-                  :rot (third cell) :flip (fourth cell))))
+    (sb-draw-tile (first cell) (second cell) (third cell) sx sy size
+                  :rot (fourth cell) :flip (fifth cell))))
 
 (defun draw-sb-canvas (&optional dim)
   (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
@@ -359,21 +387,32 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
                              (+ (* +sb-pal-cols+ +sb-pal-cell+) 12)
                              (+ (* +sb-pal-rows+ +sb-pal-cell+) 40)
                              (claylib::c-ptr (make-color 12 12 16 255)))
-  (draw-text-at (format nil "tiles  (Q/E pan)  cols ~a-~a"
-                        *sb-pal-col* (+ *sb-pal-col* +sb-pal-cols+ -1))
-                +sb-pal-x+ (- +sb-pal-y+ 24) 15 (make-color 255 255 255 170))
-  (loop for r below +sb-pal-rows+ do
-    (loop for vc below +sb-pal-cols+
-          for c = (+ *sb-pal-col* vc)
-          for sx = (+ +sb-pal-x+ (* vc +sb-pal-cell+))
-          for sy = (+ +sb-pal-y+ (* r +sb-pal-cell+))
-          when (< c +sb-atlas-cols+)
-            do (claylib/ll:draw-rectangle sx sy +sb-pal-cell+ +sb-pal-cell+
-                                          (claylib::c-ptr (make-color 40 40 46 255)))
-               (sb-draw-tile c r sx sy +sb-pal-cell+)
-               (when (and (= c (car *sb-sel*)) (= r (cdr *sb-sel*)))
-                 (draw-rectangle-outline sx sy +sb-pal-cell+ +sb-pal-cell+
-                                         (yellow-sign-color 255) :thickness 2)))))
+  (let ((sheet (sb-current-sheet)))
+    (sb-clamp-palette-col)
+    (if sheet
+        (let ((sheet-id (hex-labeler-sheet-id sheet)))
+          (draw-text-at (format nil "~a  TAB sheet  Q/E cols ~a-~a"
+                                (string-upcase sheet-id)
+                                *sb-pal-col*
+                                (min (1- (hex-labeler-sheet-cols sheet))
+                                     (+ *sb-pal-col* +sb-pal-cols+ -1)))
+                        +sb-pal-x+ (- +sb-pal-y+ 24) 15
+                        (make-color 255 255 255 170))
+          (loop for r below +sb-pal-rows+ do
+            (loop for vc below +sb-pal-cols+
+                  for c = (+ *sb-pal-col* vc)
+                  for sx = (+ +sb-pal-x+ (* vc +sb-pal-cell+))
+                  for sy = (+ +sb-pal-y+ (* r +sb-pal-cell+))
+                  when (and (< c (hex-labeler-sheet-cols sheet))
+                            (< r (hex-labeler-sheet-rows sheet)))
+                    do (claylib/ll:draw-rectangle sx sy +sb-pal-cell+ +sb-pal-cell+
+                                                  (claylib::c-ptr (make-color 40 40 46 255)))
+                       (sb-draw-tile sheet-id c r sx sy +sb-pal-cell+)
+                       (when (equal (list sheet-id c r) *sb-sel*)
+                         (draw-rectangle-outline sx sy +sb-pal-cell+ +sb-pal-cell+
+                                                 (yellow-sign-color 255) :thickness 2)))))
+        (draw-text-at "no Hexany sheets loaded" +sb-pal-x+ (- +sb-pal-y+ 24)
+                      15 (make-color 255 255 255 170)))))
 
 (defun draw-sb-status (text)
   (claylib/ll:draw-rectangle 0 (- +virtual-height+ 30) +virtual-width+ 30
@@ -384,10 +423,12 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
   (draw-sb-canvas)
   (draw-sb-palette)
   ;; brush preview with the current rotation/mirror
-  (sb-draw-tile (car *sb-sel*) (cdr *sb-sel*) +sb-pal-x+ (- +virtual-height+ 92) 64
+  (sb-draw-tile (first *sb-sel*) (second *sb-sel*) (third *sb-sel*)
+                +sb-pal-x+ (- +virtual-height+ 92) 64
                 :rot *sb-rot* :flip *sb-flip*)
-  (draw-text-at (format nil "brush ~a,~a  rot ~a~a"
-                        (car *sb-sel*) (cdr *sb-sel*) *sb-rot*
+  (draw-text-at (format nil "brush ~a ~a,~a  rot ~a~a"
+                        (first *sb-sel*) (second *sb-sel*) (third *sb-sel*)
+                        *sb-rot*
                         (if *sb-flip* "  mirrored" ""))
                 (+ +sb-pal-x+ 74) (- +virtual-height+ 78) 16 (make-color 255 255 255 200))
   (draw-text-at (format nil "SCENE BUILDER - ~a" *sb-name*) 16 12 20 *sb-white*)
@@ -480,7 +521,7 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
       (loop for vc below +sb-canvas-cols+
             for c = (+ *sb-cam-x* vc) for r = (+ *sb-cam-y* vr)
             for cell = (and (< c +sb-grid-w+) (< r +sb-grid-h+) (aref *sb-grid* r c))
-            when (and cell (= (first cell) (car tile)) (= (second cell) (cdr tile)))
+            when (and cell (equal (sb-tile-key cell) tile))
               do (draw-rectangle-outline (+ +sb-canvas-x+ (* vc +sb-canvas-cell+))
                                          (+ +sb-canvas-y+ (* vr +sb-canvas-cell+))
                                          +sb-canvas-cell+ +sb-canvas-cell+
@@ -491,8 +532,9 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
     (draw-centered-text (format nil "LABEL TILE ~a / ~a"
                                 (1+ *sb-label-i*) (length *sb-label-tiles*))
                         1000 286 22 *sb-white*)
-    (sb-draw-tile (car tile) (cdr tile) 968 312 64)
-    (draw-text-at (format nil "tile ~a,~a" (car tile) (cdr tile))
+    (sb-draw-tile (first tile) (second tile) (third tile) 968 312 64)
+    (draw-text-at (format nil "tile ~a ~a,~a"
+                          (first tile) (second tile) (third tile))
                   900 410 15 (make-color 255 255 255 160))
     (draw-rectangle-outline 800 392 400 34 (make-color 255 255 255 200) :thickness 2)
     (draw-text-at (format nil "~a_" *sb-label-input*) 812 400 18 *sb-white*))
@@ -503,6 +545,8 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
 ;;; --- entry / dispatch ---
 
 (defun open-scene-builder ()
+  (hex-labeler-load-data)
+  (hex-labeler-load-sheets)
   (sb-load-labels)
   (setf *sb-active-p* t
         *suppress-window-shortcuts-p* t
@@ -512,6 +556,9 @@ frame cropped so the content fills the cell, optionally rotated (a multiple of
         *sb-name-sel* -1
         *sb-existing* (sb-list-scenes)
         *sb-grid* (sb-blank-grid)
+        *sb-sheet-index* 0
+        *sb-pal-col* 0
+        *sb-sel* (sb-default-selection)
         *sb-rot* 0
         *sb-flip* nil
         *sb-message* "")
