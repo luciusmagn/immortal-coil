@@ -157,9 +157,13 @@
       (let ((left  (jrpg-map-lint-cell-char= rows (1- x) y #\#))
             (right (jrpg-map-lint-cell-char= rows (1+ x) y #\#))
             (up    (jrpg-map-lint-cell-char= rows x (1- y) #\#))
+            (front (jrpg-map-lint-cell-char= rows x (- y 2) #\#))
             (down  (jrpg-map-lint-cell-char= rows x (1+ y) #\#)))
         (unless up
           (error "~a doorway ~c at ~d,~d is not below a building front"
+                 label glyph x y))
+        (unless front
+          (error "~a doorway ~c at ~d,~d is below a roof edge, not a front wall"
                  label glyph x y))
         (when (or left right down)
           (error "~a doorway ~c at ~d,~d is embedded in a roof or side wall"
