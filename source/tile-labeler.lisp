@@ -485,18 +485,26 @@
 
 ;;; Input helpers
 
-(-> hex-labeler-accept-typing (string) string)
+(-> hex-labeler-accept-typing (string) (values string boolean))
 (defun hex-labeler-accept-typing (current)
-  (let ((text current))
+  (let ((text current)
+        (input-p nil))
     (loop for code = (get-char-pressed)
           until (zerop code)
           for char = (ignore-errors (code-char code))
           when (and char (string-input-character-p char))
-            do (setf text (concatenate 'string text (string char))))
+            do (setf text (concatenate 'string text (string char))
+                     input-p t))
     (when (and (is-key-pressed-p +key-backspace+)
                (plusp (length text)))
-      (setf text (subseq text 0 (1- (length text)))))
-    text))
+      (setf text (subseq text 0 (1- (length text)))
+            input-p t))
+    (values text input-p)))
+
+(-> hex-labeler-control-down-p () boolean)
+(defun hex-labeler-control-down-p ()
+  (or (is-key-down-p +key-left-control+)
+      (is-key-down-p +key-right-control+)))
 
 (-> hex-labeler-exit-to-menu () t)
 (defun hex-labeler-exit-to-menu ()
@@ -726,24 +734,27 @@
 
 (-> update-hex-labeler-label () t)
 (defun update-hex-labeler-label ()
-  (cond
-    ((is-key-pressed-p +key-escape+)
-     (hex-labeler-exit-to-menu))
-    ((or (is-key-pressed-p +key-enter+)
-         (is-key-pressed-p +key-kp-enter+))
-     (hex-labeler-commit-label))
-    ((is-key-pressed-p +key-n+)
-     (hex-labeler-skip-current))
-    ((or (is-key-pressed-p +key-p+)
-         (is-key-pressed-p +key-left+))
-     (hex-labeler-set-label-index (1- *hex-labeler-index*))
-     (play-choice-switch))
-    ((is-key-pressed-p +key-right+)
-     (hex-labeler-set-label-index (1+ *hex-labeler-index*))
-     (play-choice-switch))
-    (t
-     (setf *hex-labeler-label-input*
-           (hex-labeler-accept-typing *hex-labeler-label-input*)))))
+  (multiple-value-bind (text input-p)
+      (hex-labeler-accept-typing *hex-labeler-label-input*)
+    (setf *hex-labeler-label-input* text)
+    (unless input-p
+      (cond
+        ((is-key-pressed-p +key-escape+)
+         (hex-labeler-exit-to-menu))
+        ((or (is-key-pressed-p +key-enter+)
+             (is-key-pressed-p +key-kp-enter+))
+         (hex-labeler-commit-label))
+        ((and (hex-labeler-control-down-p)
+              (is-key-pressed-p +key-n+))
+         (hex-labeler-skip-current))
+        ((or (and (hex-labeler-control-down-p)
+                  (is-key-pressed-p +key-p+))
+             (is-key-pressed-p +key-left+))
+         (hex-labeler-set-label-index (1- *hex-labeler-index*))
+         (play-choice-switch))
+        ((is-key-pressed-p +key-right+)
+         (hex-labeler-set-label-index (1+ *hex-labeler-index*))
+         (play-choice-switch))))))
 
 (-> draw-hex-labeler-label () t)
 (defun draw-hex-labeler-label ()
@@ -793,7 +804,7 @@
                       20
                       *hex-labeler-white*))))
   (hex-labeler-draw-status
-   (format nil "type label   ENTER save   N skip   P/left previous   right next   ESC menu   ~a"
+   (format nil "type label   ENTER save   C-n skip   C-p/left previous   right next   ESC menu   ~a"
            *hex-labeler-message*)))
 
 
