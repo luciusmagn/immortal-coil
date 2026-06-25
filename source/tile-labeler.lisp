@@ -417,6 +417,10 @@
           (tint texture) (or tint *hex-labeler-white*))
     (draw-object texture)))
 
+(-> hex-labeler-highlight-color (&optional integer) t)
+(defun hex-labeler-highlight-color (&optional (alpha 255))
+  (make-color 255 255 0 alpha))
+
 (-> hex-labeler-context-scale (hex-labeler-sheet) integer)
 (defun hex-labeler-context-scale (sheet)
   (max 1
@@ -461,14 +465,14 @@
            (tile-top (+ top (* row +hex-tile-size+ scale)))
            (tile-size (* +hex-tile-size+ scale)))
       (draw-rectangle-outline tile-left tile-top tile-size tile-size
-                              (make-color 255 255 255 255)
+                              (hex-labeler-highlight-color)
                               :thickness 3)
       (when show-crop
         (draw-rectangle-outline (+ tile-left (* *hex-labeler-crop-left* scale))
                                 (+ tile-top (* *hex-labeler-crop-top* scale))
                                 (* (hex-labeler-inner-width) scale)
                                 (* (hex-labeler-inner-height) scale)
-                                (make-color 255 255 255 165)
+                                (hex-labeler-highlight-color 170)
                                 :thickness 1)))))
 
 (-> hex-labeler-draw-status (string) t)
