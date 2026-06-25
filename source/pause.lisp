@@ -169,7 +169,9 @@
 
 (defun current-minigame-owns-escape-p ()
   (and *state*
-       (member (node-minigame (current-node)) *escape-owning-minigames*)
+       (or (member (node-minigame (current-node)) *escape-owning-minigames*)
+           (and (fboundp 'jrpg-character-overlay-active-p)
+                (funcall (symbol-function 'jrpg-character-overlay-active-p))))
        t))
 
 (-> maybe-open-pause-menu () boolean)
