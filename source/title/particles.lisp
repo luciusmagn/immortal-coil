@@ -217,7 +217,7 @@
                                    (round y)
                                    +particle-size+
                                    +particle-size+
-                                   (title-logo-particle-color-ptr x y alpha))))))
+                                   (draw-color-ptr 255 255 255 alpha))))))
 
 (defun draw-title-particles (&optional (alpha-scale 1.0))
   (loop for particle across *title-particles*

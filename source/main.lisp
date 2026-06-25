@@ -24,7 +24,6 @@
 (defun setup-window-resources ()
   (handler-case
       (progn
-        (load-title-logo)
         (load-audio)
         ;; the tube powers on with the first window only (warming state); a
         ;; later window reopen is already :on and stays silent here
@@ -42,7 +41,6 @@
   (handler-case
       (progn
         (clear-audio-resources)
-        (clear-title-logo)
         (clear-sb-atlas)
         (clear-hexany-labeler-sheets)
         ;; closing the window destroys the GL context, so every cached texture

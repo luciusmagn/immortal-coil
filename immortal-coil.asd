@@ -80,7 +80,6 @@
                   :serial t
                   :components
                   ((:file "music")
-                   (:file "logo")
                    (:file "particles")))
 
                  (:module "audio-core"

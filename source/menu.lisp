@@ -254,7 +254,6 @@
         (if (fboundp 'refresh-dialog-mod-status)
             (funcall (symbol-function 'refresh-dialog-mod-status))
             "MODS: UNAVAILABLE"))
-  (load-title-logo)
   (play-choice-switch))
 
 (-> load-menu-selected-slot () (option string))
@@ -461,7 +460,6 @@
         (if (fboundp 'refresh-dialog-mod-status)
             (funcall (symbol-function 'refresh-dialog-mod-status))
             "MODS: UNAVAILABLE"))
-  (load-title-logo)
   (play-choice-switch))
 
 (-> toggle-selected-mod-enabled () t)
@@ -835,7 +833,6 @@
   (when *sb-active-p*
     (draw-scene-builder)
     (return-from draw-menu))
-  (draw-title-logo (menu-alpha-scale))
   (draw-particles (menu-alpha-scale))
   (cond
     ((options-menu-active-p)
