@@ -22,6 +22,9 @@
   texture
   image)
 
+(deftype hex-labeler-phase ()
+  '(member :closed :loading :crop :label :done :error))
+
 (defparameter *hex-labeler-sheet-specs*
   '(("autotile" "assets/tiles/hexany/Tilesheets/Transparent/autotile_transparent.png" 384 192)
     ("creatures" "assets/tiles/hexany/Tilesheets/Transparent/creatures_transparent.png" 256 320)
@@ -29,7 +32,8 @@
     ("items" "assets/tiles/hexany/Tilesheets/Transparent/items_transparent.png" 384 128)))
 
 (defvar *hex-labeler-active-p* nil)
-(defvar *hex-labeler-phase* :crop)
+(defvar *hex-labeler-ready-p* nil)
+(defvar *hex-labeler-phase* :closed)
 (defvar *hex-labeler-sheets* nil)
 (defvar *hex-labeler-sheet-index* 0)
 (defvar *hex-labeler-crop-edge* :left)
@@ -53,7 +57,8 @@
   "Clear UI/session state. Saved labels stay on disk."
   (let ((was-active-p *hex-labeler-active-p*))
     (setf *hex-labeler-active-p* nil
-          *hex-labeler-phase* :label
+          *hex-labeler-ready-p* nil
+          *hex-labeler-phase* :closed
           *hex-labeler-sheets* nil
           *hex-labeler-sheet-index* 0
           *hex-labeler-crop-edge* :left
@@ -67,6 +72,30 @@
           *hex-labeler-message* "")
     (when was-active-p
       (setf *suppress-window-shortcuts-p* nil))))
+
+(-> hex-labeler-open-state-p () boolean)
+(defun hex-labeler-open-state-p ()
+  (and *hex-labeler-active-p*
+       (not (eq *hex-labeler-phase* :closed))))
+
+(-> hex-labeler-valid-phase-p (t) boolean)
+(defun hex-labeler-valid-phase-p (phase)
+  (and (member phase '(:closed :loading :crop :label :done :error) :test #'eq)
+       t))
+
+(-> hex-labeler-entry-value (t symbol) t)
+(defun hex-labeler-entry-value (entry indicator)
+  (when (listp entry)
+    (ignore-errors
+     (getf entry indicator))))
+
+(-> hex-labeler-set-error (string) t)
+(defun hex-labeler-set-error (message)
+  (setf *hex-labeler-active-p* t
+        *hex-labeler-ready-p* nil
+        *suppress-window-shortcuts-p* t
+        *hex-labeler-phase* :error
+        *hex-labeler-message* message))
 
 
 ;;; Persistence
@@ -102,15 +131,17 @@
 
 (-> hex-labeler-valid-key-entry-p (t) boolean)
 (defun hex-labeler-valid-key-entry-p (entry)
-  (and (listp entry)
-       (stringp (getf entry :sheet))
-       (integerp (getf entry :col))
-       (integerp (getf entry :row))))
+  (let ((sheet (hex-labeler-entry-value entry :sheet))
+        (col (hex-labeler-entry-value entry :col))
+        (row (hex-labeler-entry-value entry :row)))
+    (and (stringp sheet)
+         (integerp col)
+         (integerp row))))
 
 (-> hex-labeler-valid-label-entry-p (t) boolean)
 (defun hex-labeler-valid-label-entry-p (entry)
   (and (hex-labeler-valid-key-entry-p entry)
-       (stringp (getf entry :label))))
+       (stringp (hex-labeler-entry-value entry :label))))
 
 (-> hex-labeler-load-data () (option plist))
 (defun hex-labeler-load-data ()
@@ -301,7 +332,7 @@
 
 (-> hex-labeler-current-sheet () (option hex-labeler-sheet))
 (defun hex-labeler-current-sheet ()
-  (let ((sheets (hex-labeler-ensure-sheets)))
+  (let ((sheets *hex-labeler-sheets*))
     (when sheets
       (setf *hex-labeler-sheet-index*
             (mod *hex-labeler-sheet-index* (length sheets)))
@@ -606,6 +637,8 @@
 (-> hex-labeler-leave-tool () t)
 (defun hex-labeler-leave-tool ()
   (setf *hex-labeler-active-p* nil
+        *hex-labeler-ready-p* nil
+        *hex-labeler-phase* :closed
         *suppress-window-shortcuts-p* nil
         *hex-labeler-message* ""))
 
@@ -735,23 +768,25 @@
 
 (-> hex-labeler-enter-label-phase () t)
 (defun hex-labeler-enter-label-phase ()
-  (hex-labeler-ensure-sheets)
-  (unless *hex-labeler-tiles*
-    (setf *hex-labeler-tiles* (hex-labeler-build-tile-list)))
-  (let ((selected-index (hex-labeler-crop-selection-index))
-        (first-unhandled (hex-labeler-first-unhandled-index)))
-    (cond
-      ((null *hex-labeler-tiles*)
-       (setf *hex-labeler-phase* :done
-             *hex-labeler-message* "no visible tiles found"))
-      ((or selected-index first-unhandled)
-       (setf *hex-labeler-phase* :label
-             *hex-labeler-index* (or selected-index first-unhandled)
-             *hex-labeler-message* "")
-       (hex-labeler-load-current-label-input))
-      (t
-       (setf *hex-labeler-phase* :done
-             *hex-labeler-message* "all visible tiles are handled"))))
+  (if *hex-labeler-ready-p*
+      (progn
+        (unless *hex-labeler-tiles*
+          (setf *hex-labeler-tiles* (hex-labeler-build-tile-list)))
+        (let ((selected-index (hex-labeler-crop-selection-index))
+              (first-unhandled (hex-labeler-first-unhandled-index)))
+          (cond
+            ((null *hex-labeler-tiles*)
+             (setf *hex-labeler-phase* :done
+                   *hex-labeler-message* "no visible tiles found"))
+            ((or selected-index first-unhandled)
+             (setf *hex-labeler-phase* :label
+                   *hex-labeler-index* (or selected-index first-unhandled)
+                   *hex-labeler-message* "")
+             (hex-labeler-load-current-label-input))
+            (t
+             (setf *hex-labeler-phase* :done
+                   *hex-labeler-message* "all visible tiles are handled")))))
+      (hex-labeler-set-error "labeler is not initialized"))
   (play-choice-switch))
 
 (-> hex-labeler-advance-after-handled (string) t)
@@ -768,43 +803,48 @@
 
 (-> hex-labeler-return-to-crop-phase () t)
 (defun hex-labeler-return-to-crop-phase ()
-  (hex-labeler-focus-crop-tile (hex-labeler-current-tile))
-  (setf *hex-labeler-phase* :crop
-        *hex-labeler-message* "labeling stopped")
+  (if *hex-labeler-ready-p*
+      (progn
+        (hex-labeler-focus-crop-tile (hex-labeler-current-tile))
+        (setf *hex-labeler-phase* :crop
+              *hex-labeler-message* "labeling stopped"))
+      (hex-labeler-set-error "labeler is not initialized"))
   (play-choice-switch))
 
 (-> update-hex-labeler-crop () t)
 (defun update-hex-labeler-crop ()
-  (cond
-    ((is-key-pressed-p +key-escape+)
-     (hex-labeler-exit-to-menu))
-    ((or (is-key-pressed-p +key-enter+)
-         (is-key-pressed-p +key-kp-enter+))
-     (hex-labeler-enter-label-phase))
-    (t
-     (when (is-key-pressed-p +key-tab+)
-       (hex-labeler-cycle-crop-edge)
-       (play-choice-switch))
-     (when (or (is-key-pressed-p +key-left-bracket+)
-               (is-key-pressed-p +key-minus+))
-       (hex-labeler-adjust-crop-edge -1))
-     (when (or (is-key-pressed-p +key-right-bracket+)
-               (is-key-pressed-p +key-equal+))
-       (hex-labeler-adjust-crop-edge 1))
-     (when (or (is-key-pressed-p +key-q+)
-               (is-key-pressed-p +key-page-up+))
-       (hex-labeler-change-sheet -1))
-     (when (or (is-key-pressed-p +key-e+)
-               (is-key-pressed-p +key-page-down+))
-       (hex-labeler-change-sheet 1))
-     (when (is-key-pressed-p +key-left+)
-       (hex-labeler-move-crop-selection -1 0))
-     (when (is-key-pressed-p +key-right+)
-       (hex-labeler-move-crop-selection 1 0))
-     (when (is-key-pressed-p +key-up+)
-       (hex-labeler-move-crop-selection 0 -1))
-     (when (is-key-pressed-p +key-down+)
-       (hex-labeler-move-crop-selection 0 1)))))
+  (if *hex-labeler-ready-p*
+      (cond
+        ((is-key-pressed-p +key-escape+)
+         (hex-labeler-exit-to-menu))
+        ((or (is-key-pressed-p +key-enter+)
+             (is-key-pressed-p +key-kp-enter+))
+         (hex-labeler-enter-label-phase))
+        (t
+         (when (is-key-pressed-p +key-tab+)
+           (hex-labeler-cycle-crop-edge)
+           (play-choice-switch))
+         (when (or (is-key-pressed-p +key-left-bracket+)
+                   (is-key-pressed-p +key-minus+))
+           (hex-labeler-adjust-crop-edge -1))
+         (when (or (is-key-pressed-p +key-right-bracket+)
+                   (is-key-pressed-p +key-equal+))
+           (hex-labeler-adjust-crop-edge 1))
+         (when (or (is-key-pressed-p +key-q+)
+                   (is-key-pressed-p +key-page-up+))
+           (hex-labeler-change-sheet -1))
+         (when (or (is-key-pressed-p +key-e+)
+                   (is-key-pressed-p +key-page-down+))
+           (hex-labeler-change-sheet 1))
+         (when (is-key-pressed-p +key-left+)
+           (hex-labeler-move-crop-selection -1 0))
+         (when (is-key-pressed-p +key-right+)
+           (hex-labeler-move-crop-selection 1 0))
+         (when (is-key-pressed-p +key-up+)
+           (hex-labeler-move-crop-selection 0 -1))
+         (when (is-key-pressed-p +key-down+)
+           (hex-labeler-move-crop-selection 0 1))))
+      (hex-labeler-set-error "labeler is not initialized")))
 
 (-> hex-labeler-label-count-for-sheet (string) nonnegative-integer)
 (defun hex-labeler-label-count-for-sheet (sheet-id)
@@ -827,6 +867,10 @@
 
 (-> draw-hex-labeler-crop () t)
 (defun draw-hex-labeler-crop ()
+  (unless *hex-labeler-ready-p*
+    (hex-labeler-set-error "labeler is not initialized")
+    (return-from draw-hex-labeler-crop
+      (draw-hex-labeler-error)))
   (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
                              (claylib::c-ptr (make-color 0 0 0 255)))
   (draw-text-at "HEXANY TILE CROP" 32 28 26 *hex-labeler-white*)
@@ -934,32 +978,42 @@
 
 (-> update-hex-labeler-label () t)
 (defun update-hex-labeler-label ()
-  (multiple-value-bind (text input-p)
-      (hex-labeler-accept-typing *hex-labeler-label-input*)
-    (setf *hex-labeler-label-input* text)
-    (unless input-p
-      (cond
-        ((is-key-pressed-p +key-escape+)
-         (hex-labeler-return-to-crop-phase))
-        ((is-key-pressed-p +key-tab+)
-         (hex-labeler-return-to-crop-phase))
-        ((or (is-key-pressed-p +key-enter+)
-             (is-key-pressed-p +key-kp-enter+))
-         (hex-labeler-commit-label))
-        ((and (hex-labeler-control-down-p)
-              (is-key-pressed-p +key-n+))
-         (hex-labeler-skip-current))
-        ((or (and (hex-labeler-control-down-p)
-                  (is-key-pressed-p +key-p+))
-             (is-key-pressed-p +key-left+))
-         (hex-labeler-set-label-index (1- *hex-labeler-index*))
-         (play-choice-switch))
-        ((is-key-pressed-p +key-right+)
-         (hex-labeler-set-label-index (1+ *hex-labeler-index*))
-         (play-choice-switch))))))
+  (if (and *hex-labeler-ready-p*
+           *hex-labeler-tiles*
+           (hex-labeler-current-tile))
+      (multiple-value-bind (text input-p)
+          (hex-labeler-accept-typing *hex-labeler-label-input*)
+        (setf *hex-labeler-label-input* text)
+        (unless input-p
+          (cond
+            ((is-key-pressed-p +key-escape+)
+             (hex-labeler-return-to-crop-phase))
+            ((is-key-pressed-p +key-tab+)
+             (hex-labeler-return-to-crop-phase))
+            ((or (is-key-pressed-p +key-enter+)
+                 (is-key-pressed-p +key-kp-enter+))
+             (hex-labeler-commit-label))
+            ((and (hex-labeler-control-down-p)
+                  (is-key-pressed-p +key-n+))
+             (hex-labeler-skip-current))
+            ((or (and (hex-labeler-control-down-p)
+                      (is-key-pressed-p +key-p+))
+                 (is-key-pressed-p +key-left+))
+             (hex-labeler-set-label-index (1- *hex-labeler-index*))
+             (play-choice-switch))
+            ((is-key-pressed-p +key-right+)
+             (hex-labeler-set-label-index (1+ *hex-labeler-index*))
+             (play-choice-switch)))))
+      (hex-labeler-set-error "labeler has no current tile")))
 
 (-> draw-hex-labeler-label () t)
 (defun draw-hex-labeler-label ()
+  (unless (and *hex-labeler-ready-p*
+               *hex-labeler-tiles*
+               (hex-labeler-current-tile))
+    (hex-labeler-set-error "labeler has no current tile")
+    (return-from draw-hex-labeler-label
+      (draw-hex-labeler-error)))
   (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
                              (claylib::c-ptr (make-color 0 0 0 255)))
   (draw-text-at "HEXANY TILE LABELS" 32 28 26 *hex-labeler-white*)
@@ -1023,6 +1077,60 @@
 
 ;;; Done phase and entry points
 
+(-> update-hex-labeler-loading () t)
+(defun update-hex-labeler-loading ()
+  nil)
+
+(-> draw-hex-labeler-loading () t)
+(defun draw-hex-labeler-loading ()
+  (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
+                             (claylib::c-ptr (make-color 0 0 0 255)))
+  (draw-centered-text "HEXANY TILE LABELS"
+                      +virtual-center-x+
+                      260
+                      30
+                      *hex-labeler-white*)
+  (draw-centered-text "loading sheets"
+                      +virtual-center-x+
+                      314
+                      18
+                      (make-color 255 255 255 200)))
+
+(-> update-hex-labeler-error () t)
+(defun update-hex-labeler-error ()
+  (cond
+    ((or (is-key-pressed-p +key-escape+)
+         (is-key-pressed-p +key-enter+)
+         (is-key-pressed-p +key-kp-enter+))
+     (hex-labeler-exit-to-menu))
+    ((is-key-pressed-p +key-r+)
+     (hex-labeler-enter-tool))))
+
+(-> draw-hex-labeler-error () t)
+(defun draw-hex-labeler-error ()
+  (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
+                             (claylib::c-ptr (make-color 0 0 0 255)))
+  (draw-centered-text "HEXANY TILE LABELS"
+                      +virtual-center-x+
+                      220
+                      30
+                      *hex-labeler-white*)
+  (draw-centered-text "labeler did not initialize"
+                      +virtual-center-x+
+                      278
+                      20
+                      *hex-labeler-white*)
+  (draw-centered-text (or *hex-labeler-message* "unknown error")
+                      +virtual-center-x+
+                      320
+                      16
+                      (make-color 255 255 255 210))
+  (draw-centered-text "R RETRY   ENTER/ESC MENU"
+                      +virtual-center-x+
+                      390
+                      16
+                      (make-color 255 255 255 170)))
+
 (-> update-hex-labeler-done () t)
 (defun update-hex-labeler-done ()
   (cond
@@ -1067,14 +1175,24 @@
 (-> hex-labeler-enter-tool () t)
 (defun hex-labeler-enter-tool ()
   (reset-hexany-labeler-state)
-  (hex-labeler-load-data)
-  (hex-labeler-load-sheets)
   (setf *hex-labeler-active-p* t
+        *hex-labeler-phase* :loading
         *suppress-window-shortcuts-p* t
-        *hex-labeler-tiles* (hex-labeler-build-tile-list)
-        *hex-labeler-message* "")
-  (hex-labeler-start-resume-flow)
-  (hex-labeler-clamp-crop-selection)
+        *hex-labeler-message* "loading sheets")
+  (handler-case
+      (progn
+        (hex-labeler-load-data)
+        (if (hex-labeler-load-sheets)
+            (let ((tiles (hex-labeler-build-tile-list)))
+              (setf *hex-labeler-ready-p* t
+                    *hex-labeler-tiles* tiles
+                    *hex-labeler-message* "")
+              (hex-labeler-start-resume-flow)
+              (hex-labeler-clamp-crop-selection))
+            (hex-labeler-set-error "Hexany sheets did not load")))
+    (error (condition)
+      (runtime-warn "Hexany labeler initialization failed: ~a" condition)
+      (hex-labeler-set-error "Hexany labeler initialization failed")))
   (play-choice-switch))
 
 (-> open-hexany-labeler (&key (:auto-p boolean)) t)
@@ -1085,22 +1203,39 @@
 (-> update-hexany-labeler () t)
 (defun update-hexany-labeler ()
   (handler-case
-      (case *hex-labeler-phase*
-        (:crop (update-hex-labeler-crop))
-        (:label (update-hex-labeler-label))
-        (:done (update-hex-labeler-done))
-        (t (setf *hex-labeler-phase* :crop)))
+      (cond
+        ((not (hex-labeler-open-state-p))
+         (close-menu-tool :hexany-labeler))
+        ((not (hex-labeler-valid-phase-p *hex-labeler-phase*))
+         (hex-labeler-set-error "invalid labeler phase"))
+        (t
+         (case *hex-labeler-phase*
+           (:loading (update-hex-labeler-loading))
+           (:crop (update-hex-labeler-crop))
+           (:label (update-hex-labeler-label))
+           (:done (update-hex-labeler-done))
+           (:error (update-hex-labeler-error))
+           (:closed (close-menu-tool :hexany-labeler)))))
     (error (condition)
       (runtime-warn "Hexany labeler update failed: ~a" condition))))
 
 (-> draw-hexany-labeler () t)
 (defun draw-hexany-labeler ()
   (handler-case
-      (case *hex-labeler-phase*
-        (:crop (draw-hex-labeler-crop))
-        (:label (draw-hex-labeler-label))
-        (:done (draw-hex-labeler-done))
-        (t (draw-hex-labeler-crop)))
+      (cond
+        ((not (hex-labeler-open-state-p))
+         (clear-background :color +black+))
+        ((not (hex-labeler-valid-phase-p *hex-labeler-phase*))
+         (hex-labeler-set-error "invalid labeler phase")
+         (draw-hex-labeler-error))
+        (t
+         (case *hex-labeler-phase*
+           (:loading (draw-hex-labeler-loading))
+           (:crop (draw-hex-labeler-crop))
+           (:label (draw-hex-labeler-label))
+           (:done (draw-hex-labeler-done))
+           (:error (draw-hex-labeler-error))
+           (:closed (clear-background :color +black+)))))
     (error (condition)
       (runtime-warn "Hexany labeler draw failed: ~a" condition)
       (clear-background :color +black+))))

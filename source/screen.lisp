@@ -38,7 +38,12 @@
 
 (-> register-menu-tool (app-screen) app-screen)
 (defun register-menu-tool (tool)
-  (setf (gethash (app-screen-id tool) *menu-tool-registry*) tool)
+  (let* ((id (app-screen-id tool))
+         (old-tool (gethash id *menu-tool-registry*)))
+    (when (and old-tool
+               (eq old-tool *active-menu-tool*))
+      (close-menu-tool old-tool))
+    (setf (gethash id *menu-tool-registry*) tool))
   tool)
 
 (-> menu-tool (keyword) (or app-screen null))
