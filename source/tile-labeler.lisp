@@ -348,19 +348,21 @@
        (= (getf entry :col) (getf key :col))
        (= (getf entry :row) (getf key :row))))
 
+(-> hex-labeler-find-keyed-entry (plist list) (option plist))
+(defun hex-labeler-find-keyed-entry (key entries)
+  (find-if (lambda (entry)
+             (hex-labeler-entry-matches-key-p entry key))
+           entries))
+
 (-> hex-labeler-find-label (list) (option plist))
 (defun hex-labeler-find-label (tile)
   (let ((key (hex-labeler-tile-key tile)))
-    (find-if (lambda (entry)
-               (hex-labeler-entry-matches-key-p entry key))
-             *hex-labeler-labels*)))
+    (hex-labeler-find-keyed-entry key *hex-labeler-labels*)))
 
 (-> hex-labeler-skipped-p (list) boolean)
 (defun hex-labeler-skipped-p (tile)
   (let ((key (hex-labeler-tile-key tile)))
-    (and (find-if (lambda (entry)
-                    (hex-labeler-entry-matches-key-p entry key))
-                  *hex-labeler-skips*)
+    (and (hex-labeler-find-keyed-entry key *hex-labeler-skips*)
          t)))
 
 (-> hex-labeler-tile-handled-p (list) boolean)
@@ -648,6 +650,21 @@
                 *hex-labeler-crop-row* row)
           (hex-labeler-clamp-crop-selection))))))
 
+(-> hex-labeler-focus-label-entry (plist) boolean)
+(defun hex-labeler-focus-label-entry (entry)
+  (let ((sheet-index (hex-labeler-sheet-index-for-id (getf entry :sheet))))
+    (when sheet-index
+      (setf *hex-labeler-sheet-index* sheet-index
+            *hex-labeler-crop-col* (getf entry :col)
+            *hex-labeler-crop-row* (getf entry :row))
+      (hex-labeler-clamp-crop-selection)
+      t)))
+
+(-> hex-labeler-focus-first-saved-label () boolean)
+(defun hex-labeler-focus-first-saved-label ()
+  (loop for entry in *hex-labeler-labels*
+        thereis (hex-labeler-focus-label-entry entry)))
+
 (-> hex-labeler-enter-label-phase () t)
 (defun hex-labeler-enter-label-phase ()
   (hex-labeler-ensure-sheets)
@@ -709,6 +726,25 @@
      (when (is-key-pressed-p +key-down+)
        (hex-labeler-move-crop-selection 0 1)))))
 
+(-> hex-labeler-label-count-for-sheet (string) nonnegative-integer)
+(defun hex-labeler-label-count-for-sheet (sheet-id)
+  (count sheet-id *hex-labeler-labels*
+         :key (lambda (entry)
+                (getf entry :sheet))
+         :test #'string=))
+
+(-> hex-labeler-current-crop-status-text () string)
+(defun hex-labeler-current-crop-status-text ()
+  (let* ((key (hex-labeler-crop-selection-key))
+         (entry (and key
+                     (hex-labeler-find-keyed-entry key *hex-labeler-labels*)))
+         (skip (and key
+                    (hex-labeler-find-keyed-entry key *hex-labeler-skips*))))
+    (cond
+      (entry (format nil "saved as ~s" (getf entry :label)))
+      (skip "skipped")
+      (t "unlabeled"))))
+
 (-> draw-hex-labeler-crop () t)
 (defun draw-hex-labeler-crop ()
   (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
@@ -742,19 +778,24 @@
                         (+ +hex-labeler-preview-y+ +hex-labeler-preview-size+ 18)
                         16
                         (make-color 255 255 255 180))
+          (draw-text-at (hex-labeler-current-crop-status-text)
+                        +hex-labeler-preview-x+
+                        (+ +hex-labeler-preview-y+ +hex-labeler-preview-size+ 44)
+                        16
+                        (make-color 255 255 255 220))
           (draw-text-at (format nil "crop L~d T~d R~d B~d"
                                 *hex-labeler-crop-left*
                                 *hex-labeler-crop-top*
                                 *hex-labeler-crop-right*
                                 *hex-labeler-crop-bottom*)
                         +hex-labeler-preview-x+
-                        (+ +hex-labeler-preview-y+ +hex-labeler-preview-size+ 46)
+                        (+ +hex-labeler-preview-y+ +hex-labeler-preview-size+ 72)
                         18
                         *hex-labeler-white*)
           (draw-text-at (format nil "selected edge: ~a"
                                 (string-upcase (symbol-name *hex-labeler-crop-edge*)))
                         +hex-labeler-preview-x+
-                        (+ +hex-labeler-preview-y+ +hex-labeler-preview-size+ 76)
+                        (+ +hex-labeler-preview-y+ +hex-labeler-preview-size+ 102)
                         18
                         (make-color 255 255 255 220)))
         (draw-centered-text "Hexany sheets did not load"
@@ -762,6 +803,16 @@
                             +virtual-center-y+
                             24
                             *hex-labeler-white*)))
+  (let ((sheet (hex-labeler-current-sheet)))
+    (when sheet
+      (draw-text-at (format nil "labels: ~d this sheet, ~d total"
+                            (hex-labeler-label-count-for-sheet
+                             (hex-labeler-sheet-id sheet))
+                            (length *hex-labeler-labels*))
+                    32
+                    (- +virtual-height+ 58)
+                    15
+                    (make-color 255 255 255 210))))
   (hex-labeler-draw-status
    "arrows tile   Q/E sheet   TAB edge   [/]/-/= crop   ENTER label tiles   ESC menu"))
 
@@ -953,6 +1004,7 @@
         *hex-labeler-index* 0
         *hex-labeler-label-input* ""
         *hex-labeler-message* "")
+  (hex-labeler-focus-first-saved-label)
   (hex-labeler-clamp-crop-selection)
   (play-choice-switch))
 
