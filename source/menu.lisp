@@ -827,11 +827,7 @@
 
 
 (defun draw-menu ()
-  (when *hex-labeler-active-p*
-    (draw-hexany-labeler)
-    (return-from draw-menu))
-  (when *sb-active-p*
-    (draw-scene-builder)
+  (when (draw-active-menu-tool)
     (return-from draw-menu))
   (draw-particles (menu-alpha-scale))
   (cond
@@ -866,13 +862,7 @@
   (when *disclaimer-pending-p*
     (update-boot-disclaimer)
     (return-from update-menu))
-  (when (maybe-open-startup-hexany-labeler)
-    (return-from update-menu))
-  (when *hex-labeler-active-p*
-    (update-hexany-labeler)
-    (return-from update-menu))
-  (when *sb-active-p*
-    (update-scene-builder)
+  (when (update-active-menu-tool)
     (return-from update-menu))
   (case *menu-start-state*
     (:idle

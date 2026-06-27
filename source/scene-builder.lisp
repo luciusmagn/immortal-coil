@@ -49,6 +49,31 @@
 (defvar *sb-message* "")
 (defvar *sb-white* (make-color 255 255 255 255))
 
+(defun reset-scene-builder-state ()
+  (let ((was-active-p *sb-active-p*))
+    (setf *sb-active-p* nil
+          *sb-phase* :name
+          *sb-paused-p* nil
+          *sb-pause-sel* 0
+          *sb-name* ""
+          *sb-existing* nil
+          *sb-name-sel* -1
+          *sb-grid* nil
+          *sb-cam-x* 0
+          *sb-cam-y* 0
+          *sb-sheet-index* 0
+          *sb-sel* (list "general" 0 0)
+          *sb-rot* 0
+          *sb-flip* nil
+          *sb-pal-col* 0
+          *sb-label-tiles* nil
+          *sb-label-i* 0
+          *sb-label-input* ""
+          *sb-labels* nil
+          *sb-message* "")
+    (when was-active-p
+      (setf *suppress-window-shortcuts-p* nil))))
+
 ;;; --- sheets ---
 
 (defun clear-sb-atlas ()
@@ -232,12 +257,15 @@
                 (push id out)))))))
     (nreverse out)))
 
-(defun sb-exit-to-menu ()
+(defun scene-builder-leave-tool ()
   (sb-save-scene)
   (setf *sb-active-p* nil
         *sb-paused-p* nil
         *suppress-window-shortcuts-p* nil
         *sb-message* ""))
+
+(defun sb-exit-to-menu ()
+  (close-menu-tool :scene-builder))
 
 ;;; --- name phase ---
 
@@ -544,7 +572,8 @@
 
 ;;; --- entry / dispatch ---
 
-(defun open-scene-builder ()
+(defun scene-builder-enter-tool ()
+  (reset-scene-builder-state)
   (hex-labeler-load-data)
   (hex-labeler-load-sheets)
   (sb-load-labels)
@@ -563,6 +592,9 @@
         *sb-flip* nil
         *sb-message* "")
   (play-choice-switch))
+
+(defun open-scene-builder ()
+  (open-menu-tool :scene-builder))
 
 (defun update-scene-builder ()
   (handler-case
@@ -585,3 +617,28 @@
     (error (c)
       (runtime-warn "Scene Builder draw failed: ~a" c)
       (clear-background :color +black+))))
+
+(defclass scene-builder-tool (app-screen) ())
+
+(defmethod app-screen-enter ((tool scene-builder-tool))
+  (scene-builder-enter-tool)
+  (call-next-method))
+
+(defmethod app-screen-leave ((tool scene-builder-tool))
+  (scene-builder-leave-tool)
+  (call-next-method))
+
+(defmethod app-screen-reset ((tool scene-builder-tool))
+  (reset-scene-builder-state)
+  (call-next-method))
+
+(defmethod app-screen-update ((tool scene-builder-tool))
+  (update-scene-builder))
+
+(defmethod app-screen-draw ((tool scene-builder-tool))
+  (draw-scene-builder))
+
+(eval-when (:load-toplevel :execute)
+  (register-menu-tool (make-instance 'scene-builder-tool
+                                     :id :scene-builder))
+  (reset-scene-builder-state))

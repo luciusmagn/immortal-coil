@@ -167,6 +167,7 @@
 
                  (:file "gameplay")
 
+                 (:file "screen")
                  (:file "tile-labeler")
                  (:file "scene-builder")
 

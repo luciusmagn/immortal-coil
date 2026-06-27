@@ -600,10 +600,14 @@
 
 (-> hex-labeler-exit-to-menu () t)
 (defun hex-labeler-exit-to-menu ()
+  (close-menu-tool :hexany-labeler)
+  (play-choice-switch))
+
+(-> hex-labeler-leave-tool () t)
+(defun hex-labeler-leave-tool ()
   (setf *hex-labeler-active-p* nil
         *suppress-window-shortcuts-p* nil
-        *hex-labeler-message* "")
-  (play-choice-switch))
+        *hex-labeler-message* ""))
 
 
 ;;; Crop phase
@@ -1060,9 +1064,8 @@
                       16
                       (make-color 255 255 255 160)))
 
-(-> open-hexany-labeler (&key (:auto-p boolean)) t)
-(defun open-hexany-labeler (&key auto-p)
-  (declare (ignore auto-p))
+(-> hex-labeler-enter-tool () t)
+(defun hex-labeler-enter-tool ()
   (reset-hexany-labeler-state)
   (hex-labeler-load-data)
   (hex-labeler-load-sheets)
@@ -1074,9 +1077,10 @@
   (hex-labeler-clamp-crop-selection)
   (play-choice-switch))
 
-(-> maybe-open-startup-hexany-labeler () boolean)
-(defun maybe-open-startup-hexany-labeler ()
-  nil)
+(-> open-hexany-labeler (&key (:auto-p boolean)) t)
+(defun open-hexany-labeler (&key auto-p)
+  (declare (ignore auto-p))
+  (open-menu-tool :hexany-labeler))
 
 (-> update-hexany-labeler () t)
 (defun update-hexany-labeler ()
@@ -1101,5 +1105,27 @@
       (runtime-warn "Hexany labeler draw failed: ~a" condition)
       (clear-background :color +black+))))
 
+(defclass hexany-labeler-tool (app-screen) ())
+
+(defmethod app-screen-enter ((tool hexany-labeler-tool))
+  (hex-labeler-enter-tool)
+  (call-next-method))
+
+(defmethod app-screen-leave ((tool hexany-labeler-tool))
+  (hex-labeler-leave-tool)
+  (call-next-method))
+
+(defmethod app-screen-reset ((tool hexany-labeler-tool))
+  (reset-hexany-labeler-state)
+  (call-next-method))
+
+(defmethod app-screen-update ((tool hexany-labeler-tool))
+  (update-hexany-labeler))
+
+(defmethod app-screen-draw ((tool hexany-labeler-tool))
+  (draw-hexany-labeler))
+
 (eval-when (:load-toplevel :execute)
+  (register-menu-tool (make-instance 'hexany-labeler-tool
+                                     :id :hexany-labeler))
   (reset-hexany-labeler-state))
