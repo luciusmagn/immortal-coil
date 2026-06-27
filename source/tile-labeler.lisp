@@ -1,8 +1,8 @@
 (in-package #:immortal-coil)
 
-;;; Hexany Tile Labeler: startup/menu tool for identifying the new 16x16
-;;; roguelike sheets. It saves crop calibration, labels, and skips to the normal
-;;; save directory so the data can later drive autotiling and scene work.
+;;; Hexany Tile Labeler: menu tool for identifying the new 16x16 roguelike
+;;; sheets. It saves crop calibration, labels, and skips to the normal save
+;;; directory so the data can later drive autotiling and scene work.
 
 (defconstant +hex-tile-size+ 16)
 (defconstant +hex-labeler-preview-size+ 224)
@@ -29,7 +29,6 @@
     ("items" "assets/tiles/hexany/Tilesheets/Transparent/items_transparent.png" 384 128)))
 
 (defvar *hex-labeler-active-p* nil)
-(defvar *hex-labeler-auto-shown-p* nil)
 (defvar *hex-labeler-phase* :crop)
 (defvar *hex-labeler-sheets* nil)
 (defvar *hex-labeler-sheet-index* 0)
@@ -48,6 +47,26 @@
 (defvar *hex-labeler-message* "")
 (defvar *hex-labeler-sample-color* (make-color 0 0 0 0))
 (defvar *hex-labeler-white* (make-color 255 255 255 255))
+
+(-> reset-hexany-labeler-state () t)
+(defun reset-hexany-labeler-state ()
+  "Clear UI/session state. Saved labels stay on disk."
+  (let ((was-active-p *hex-labeler-active-p*))
+    (setf *hex-labeler-active-p* nil
+          *hex-labeler-phase* :label
+          *hex-labeler-sheets* nil
+          *hex-labeler-sheet-index* 0
+          *hex-labeler-crop-edge* :left
+          *hex-labeler-crop-col* 0
+          *hex-labeler-crop-row* 0
+          *hex-labeler-tiles* nil
+          *hex-labeler-index* 0
+          *hex-labeler-label-input* ""
+          *hex-labeler-labels* nil
+          *hex-labeler-skips* nil
+          *hex-labeler-message* "")
+    (when was-active-p
+      (setf *suppress-window-shortcuts-p* nil))))
 
 
 ;;; Persistence
@@ -81,6 +100,18 @@
         *hex-labeler-crop-bottom* (max 0 (min +hex-labeler-edge-max+
                                               (or (getf crop :bottom) 0)))))
 
+(-> hex-labeler-valid-key-entry-p (t) boolean)
+(defun hex-labeler-valid-key-entry-p (entry)
+  (and (listp entry)
+       (stringp (getf entry :sheet))
+       (integerp (getf entry :col))
+       (integerp (getf entry :row))))
+
+(-> hex-labeler-valid-label-entry-p (t) boolean)
+(defun hex-labeler-valid-label-entry-p (entry)
+  (and (hex-labeler-valid-key-entry-p entry)
+       (stringp (getf entry :label))))
+
 (-> hex-labeler-load-data () (option plist))
 (defun hex-labeler-load-data ()
   (setf *hex-labeler-labels* nil
@@ -96,8 +127,12 @@
                   nil))))
     (when (listp data)
       (hex-labeler-set-crop-from-plist (getf data :crop))
-      (setf *hex-labeler-labels* (copy-list (or (getf data :labels) nil))
-            *hex-labeler-skips* (copy-list (or (getf data :skipped) nil))))
+      (setf *hex-labeler-labels*
+            (remove-if-not #'hex-labeler-valid-label-entry-p
+                           (copy-list (or (getf data :labels) nil)))
+            *hex-labeler-skips*
+            (remove-if-not #'hex-labeler-valid-key-entry-p
+                           (copy-list (or (getf data :skipped) nil)))))
     data))
 
 (-> hex-labeler-label-entry-less-p (plist plist) boolean)
@@ -174,19 +209,6 @@
       (setf *hex-labeler-message*
             "save failed; labels still in memory")
       nil)))
-
-(-> hex-labeler-startup-needed-p () boolean)
-(defun hex-labeler-startup-needed-p ()
-  (handler-case
-      (let* ((path (hex-labeler-save-path))
-             (data (and (probe-file path)
-                        (with-open-file (stream path)
-                          (with-standard-io-syntax
-                            (read stream nil nil))))))
-        (not (and (listp data)
-                  (getf data :complete))))
-    (error ()
-      t)))
 
 (-> hexany-read-label-data () (option plist))
 (defun hexany-read-label-data ()
@@ -344,7 +366,9 @@
 
 (-> hex-labeler-entry-matches-key-p (plist plist) boolean)
 (defun hex-labeler-entry-matches-key-p (entry key)
-  (and (string= (getf entry :sheet) (getf key :sheet))
+  (and (hex-labeler-valid-key-entry-p entry)
+       (hex-labeler-valid-key-entry-p key)
+       (string= (getf entry :sheet) (getf key :sheet))
        (= (getf entry :col) (getf key :col))
        (= (getf entry :row) (getf key :row))))
 
@@ -393,6 +417,30 @@
         for index from 0
         unless (hex-labeler-tile-handled-p tile)
           do (return index)))
+
+(-> hex-labeler-next-unhandled-index-after (integer)
+    (option nonnegative-integer))
+(defun hex-labeler-next-unhandled-index-after (index)
+  (loop for tile in (nthcdr (1+ index) *hex-labeler-tiles*)
+        for tile-index from (1+ index)
+        unless (hex-labeler-tile-handled-p tile)
+          do (return tile-index)))
+
+(-> hex-labeler-last-handled-index () (option nonnegative-integer))
+(defun hex-labeler-last-handled-index ()
+  (loop with last-index = nil
+        for tile in *hex-labeler-tiles*
+        for index from 0
+        when (hex-labeler-tile-handled-p tile)
+          do (setf last-index index)
+        finally (return last-index)))
+
+(-> hex-labeler-resume-index () (option nonnegative-integer))
+(defun hex-labeler-resume-index ()
+  (let ((last-handled-index (hex-labeler-last-handled-index)))
+    (or (and last-handled-index
+             (hex-labeler-next-unhandled-index-after last-handled-index))
+        (hex-labeler-first-unhandled-index))))
 
 (-> hex-labeler-set-label-index (integer) t)
 (defun hex-labeler-set-label-index (index)
@@ -660,15 +708,32 @@
       (hex-labeler-clamp-crop-selection)
       t)))
 
-(-> hex-labeler-focus-first-saved-label () boolean)
-(defun hex-labeler-focus-first-saved-label ()
-  (loop for entry in *hex-labeler-labels*
-        thereis (hex-labeler-focus-label-entry entry)))
+(-> hex-labeler-start-labeling-at (integer) t)
+(defun hex-labeler-start-labeling-at (index)
+  (setf *hex-labeler-phase* :label
+        *hex-labeler-message* "")
+  (hex-labeler-set-label-index index)
+  (hex-labeler-focus-crop-tile (hex-labeler-current-tile)))
+
+(-> hex-labeler-start-resume-flow () t)
+(defun hex-labeler-start-resume-flow ()
+  (let ((resume-index (hex-labeler-resume-index)))
+    (cond
+      ((null *hex-labeler-tiles*)
+       (setf *hex-labeler-phase* :done
+             *hex-labeler-message* "no visible tiles found"))
+      (resume-index
+       (hex-labeler-start-labeling-at resume-index)
+       (setf *hex-labeler-message* "resumed next unlabeled tile"))
+      (t
+       (setf *hex-labeler-phase* :done
+             *hex-labeler-message* "all visible tiles are handled")))))
 
 (-> hex-labeler-enter-label-phase () t)
 (defun hex-labeler-enter-label-phase ()
   (hex-labeler-ensure-sheets)
-  (setf *hex-labeler-tiles* (hex-labeler-build-tile-list))
+  (unless *hex-labeler-tiles*
+    (setf *hex-labeler-tiles* (hex-labeler-build-tile-list)))
   (let ((selected-index (hex-labeler-crop-selection-index))
         (first-unhandled (hex-labeler-first-unhandled-index)))
     (cond
@@ -683,8 +748,19 @@
       (t
        (setf *hex-labeler-phase* :done
              *hex-labeler-message* "all visible tiles are handled"))))
-  (hex-labeler-save-data)
   (play-choice-switch))
+
+(-> hex-labeler-advance-after-handled (string) t)
+(defun hex-labeler-advance-after-handled (message)
+  (let ((next-index (hex-labeler-next-unhandled-index-after
+                     *hex-labeler-index*)))
+    (if next-index
+        (progn
+          (setf *hex-labeler-message* message)
+          (hex-labeler-set-label-index next-index)
+          (hex-labeler-focus-crop-tile (hex-labeler-current-tile)))
+        (setf *hex-labeler-phase* :done
+              *hex-labeler-message* "all visible tiles are handled"))))
 
 (-> hex-labeler-return-to-crop-phase () t)
 (defun hex-labeler-return-to-crop-phase ()
@@ -750,7 +826,7 @@
   (claylib/ll:draw-rectangle 0 0 +virtual-width+ +virtual-height+
                              (claylib::c-ptr (make-color 0 0 0 255)))
   (draw-text-at "HEXANY TILE CROP" 32 28 26 *hex-labeler-white*)
-  (draw-text-at "adjust one edge, inspect the enlarged tile, then press ENTER"
+  (draw-text-at "adjust crop, then ENTER returns to labeling"
                 32 64 16 (make-color 255 255 255 180))
   (let ((sheet (hex-labeler-current-sheet)))
     (if sheet
@@ -803,18 +879,8 @@
                             +virtual-center-y+
                             24
                             *hex-labeler-white*)))
-  (let ((sheet (hex-labeler-current-sheet)))
-    (when sheet
-      (draw-text-at (format nil "labels: ~d this sheet, ~d total"
-                            (hex-labeler-label-count-for-sheet
-                             (hex-labeler-sheet-id sheet))
-                            (length *hex-labeler-labels*))
-                    32
-                    (- +virtual-height+ 58)
-                    15
-                    (make-color 255 255 255 210))))
   (hex-labeler-draw-status
-   "arrows tile   Q/E sheet   TAB edge   [/]/-/= crop   ENTER label tiles   ESC menu"))
+   "arrows tile   Q/E sheet   TAB edge   [/]/-/= crop   ENTER label   ESC menu"))
 
 
 ;;; Label phase
@@ -848,11 +914,7 @@
                *hex-labeler-skips*
                (hex-labeler-remove-keyed-entry key *hex-labeler-skips*))
          (when (hex-labeler-save-data)
-           (setf *hex-labeler-message* "saved")
-           (if (< (1+ *hex-labeler-index*) (length *hex-labeler-tiles*))
-               (hex-labeler-set-label-index (1+ *hex-labeler-index*))
-               (setf *hex-labeler-phase* :done
-                     *hex-labeler-message* "all visible tiles are handled"))))))))
+           (hex-labeler-advance-after-handled "saved")))))))
 
 (-> hex-labeler-skip-current () t)
 (defun hex-labeler-skip-current ()
@@ -864,11 +926,7 @@
               *hex-labeler-labels*
               (hex-labeler-remove-keyed-entry key *hex-labeler-labels*))
         (when (hex-labeler-save-data)
-          (setf *hex-labeler-message* "skipped")
-          (if (< (1+ *hex-labeler-index*) (length *hex-labeler-tiles*))
-              (hex-labeler-set-label-index (1+ *hex-labeler-index*))
-              (setf *hex-labeler-phase* :done
-                    *hex-labeler-message* "all visible tiles are handled")))))))
+          (hex-labeler-advance-after-handled "skipped"))))))
 
 (-> update-hex-labeler-label () t)
 (defun update-hex-labeler-label ()
@@ -878,6 +936,8 @@
     (unless input-p
       (cond
         ((is-key-pressed-p +key-escape+)
+         (hex-labeler-return-to-crop-phase))
+        ((is-key-pressed-p +key-tab+)
          (hex-labeler-return-to-crop-phase))
         ((or (is-key-pressed-p +key-enter+)
              (is-key-pressed-p +key-kp-enter+))
@@ -901,6 +961,17 @@
   (draw-text-at "HEXANY TILE LABELS" 32 28 26 *hex-labeler-white*)
   (draw-text-at (format nil "visible tile ~a" (hex-labeler-current-progress-text))
                 32 64 16 (make-color 255 255 255 180))
+  (let ((sheet (hex-labeler-current-sheet)))
+    (when sheet
+      (draw-text-at (format nil "~d labels on ~a, ~d total"
+                            (hex-labeler-label-count-for-sheet
+                             (hex-labeler-sheet-id sheet))
+                            (hex-labeler-sheet-id sheet)
+                            (length *hex-labeler-labels*))
+                    32
+                    86
+                    15
+                    (make-color 255 255 255 190))))
   (let ((tile (hex-labeler-current-tile)))
     (when tile
       (destructuring-bind (sheet col row) tile
@@ -942,7 +1013,7 @@
                       20
                       *hex-labeler-white*))))
   (hex-labeler-draw-status
-   (format nil "type label   ENTER save   C-n skip   C-p/left previous   right next   ESC crop   ~a"
+   (format nil "type label   ENTER save   C-n skip   left/right inspect   TAB/ESC crop   ~a"
            *hex-labeler-message*)))
 
 
@@ -991,29 +1062,21 @@
 
 (-> open-hexany-labeler (&key (:auto-p boolean)) t)
 (defun open-hexany-labeler (&key auto-p)
-  (when auto-p
-    (setf *hex-labeler-auto-shown-p* t))
+  (declare (ignore auto-p))
+  (reset-hexany-labeler-state)
   (hex-labeler-load-data)
   (hex-labeler-load-sheets)
   (setf *hex-labeler-active-p* t
         *suppress-window-shortcuts-p* t
-        *hex-labeler-phase* :crop
-        *hex-labeler-sheet-index* 0
-        *hex-labeler-crop-col* 0
-        *hex-labeler-crop-row* 0
-        *hex-labeler-index* 0
-        *hex-labeler-label-input* ""
+        *hex-labeler-tiles* (hex-labeler-build-tile-list)
         *hex-labeler-message* "")
-  (hex-labeler-focus-first-saved-label)
+  (hex-labeler-start-resume-flow)
   (hex-labeler-clamp-crop-selection)
   (play-choice-switch))
 
 (-> maybe-open-startup-hexany-labeler () boolean)
 (defun maybe-open-startup-hexany-labeler ()
-  (when (and (not *hex-labeler-auto-shown-p*)
-             (hex-labeler-startup-needed-p))
-    (open-hexany-labeler :auto-p t)
-    t))
+  nil)
 
 (-> update-hexany-labeler () t)
 (defun update-hexany-labeler ()
@@ -1039,4 +1102,4 @@
       (clear-background :color +black+))))
 
 (eval-when (:load-toplevel :execute)
-  (clear-hexany-labeler-sheets))
+  (reset-hexany-labeler-state))

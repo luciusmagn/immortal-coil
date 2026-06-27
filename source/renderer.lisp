@@ -148,7 +148,9 @@
         ;; editor chrome
         (when (and (eq *mode* :game) (not (editor-active-p)))
           (draw-hud))
-        (when (eq *mode* :menu)
+        (when (and (eq *mode* :menu)
+                   (not *hex-labeler-active-p*)
+                   (not *sb-active-p*))
           (draw-company-label))
         (draw-screen-fade)
         (when (and (eq *mode* :game)

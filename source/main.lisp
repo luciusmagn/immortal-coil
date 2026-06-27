@@ -19,6 +19,7 @@
   (reset-menu-state)
   (reset-pause-menu-state)
   (reset-options-menu-state)
+  (reset-hexany-labeler-state)
   (reset-particles :title-menu))
 
 (defun setup-window-resources ()
@@ -43,7 +44,7 @@
   (handler-case
       (progn
         (clear-sb-atlas)
-        (clear-hexany-labeler-sheets)
+        (reset-hexany-labeler-state)
         ;; Defined by bundled scripts; guard so the engine still loads before
         ;; those scripts have been evaluated.
         (when (fboundp 'clear-jrpg-tile-atlas)
