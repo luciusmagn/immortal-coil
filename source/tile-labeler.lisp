@@ -49,6 +49,7 @@
 (defvar *hex-labeler-labels* nil)
 (defvar *hex-labeler-skips* nil)
 (defvar *hex-labeler-message* "")
+(defvar *hex-labeler-save-root-override* nil)
 (defvar *hex-labeler-sample-color* (make-color 0 0 0 0))
 (defvar *hex-labeler-white* (make-color 255 255 255 255))
 
@@ -97,15 +98,31 @@
         *hex-labeler-phase* :error
         *hex-labeler-message* message))
 
+(-> hex-labeler-normalized-list (t function) list)
+(defun hex-labeler-normalized-list (value predicate)
+  (remove-if-not predicate
+                 (copy-list (if (listp value) value nil))))
+
+(-> hex-labeler-normalized-labels () list)
+(defun hex-labeler-normalized-labels ()
+  (hex-labeler-normalized-list *hex-labeler-labels*
+                               #'hex-labeler-valid-label-entry-p))
+
+(-> hex-labeler-normalized-skips () list)
+(defun hex-labeler-normalized-skips ()
+  (hex-labeler-normalized-list *hex-labeler-skips*
+                               #'hex-labeler-valid-key-entry-p))
+
 
 ;;; Persistence
 
 (-> hex-labeler-save-root () pathname)
 (defun hex-labeler-save-root ()
-  (let ((directory (uiop:getenv "IMMORTAL_COIL_SAVE_DIR")))
-    (if directory
-        (uiop:ensure-directory-pathname directory)
-        (project-pathname "save/"))))
+  (or *hex-labeler-save-root-override*
+      (let ((directory (uiop:getenv "IMMORTAL_COIL_SAVE_DIR")))
+        (if directory
+            (uiop:ensure-directory-pathname directory)
+            (project-pathname "save/")))))
 
 (-> hex-labeler-save-path () pathname)
 (defun hex-labeler-save-path ()
@@ -118,16 +135,17 @@
         :right *hex-labeler-crop-right*
         :bottom *hex-labeler-crop-bottom*))
 
-(-> hex-labeler-set-crop-from-plist ((option plist)) t)
+(-> hex-labeler-set-crop-from-plist (t) t)
 (defun hex-labeler-set-crop-from-plist (crop)
-  (setf *hex-labeler-crop-left* (max 0 (min +hex-labeler-edge-max+
-                                            (or (getf crop :left) 0)))
-        *hex-labeler-crop-top* (max 0 (min +hex-labeler-edge-max+
-                                           (or (getf crop :top) 0)))
-        *hex-labeler-crop-right* (max 0 (min +hex-labeler-edge-max+
-                                             (or (getf crop :right) 0)))
-        *hex-labeler-crop-bottom* (max 0 (min +hex-labeler-edge-max+
-                                              (or (getf crop :bottom) 0)))))
+  (flet ((edge (indicator)
+           (let ((value (hex-labeler-entry-value crop indicator)))
+             (max 0
+                  (min +hex-labeler-edge-max+
+                       (if (integerp value) value 0))))))
+    (setf *hex-labeler-crop-left* (edge :left)
+          *hex-labeler-crop-top* (edge :top)
+          *hex-labeler-crop-right* (edge :right)
+          *hex-labeler-crop-bottom* (edge :bottom))))
 
 (-> hex-labeler-valid-key-entry-p (t) boolean)
 (defun hex-labeler-valid-key-entry-p (entry)
@@ -157,13 +175,15 @@
                   (runtime-warn "Hexany label data load failed: ~a" condition)
                   nil))))
     (when (listp data)
-      (hex-labeler-set-crop-from-plist (getf data :crop))
+      (hex-labeler-set-crop-from-plist (hex-labeler-entry-value data :crop))
       (setf *hex-labeler-labels*
-            (remove-if-not #'hex-labeler-valid-label-entry-p
-                           (copy-list (or (getf data :labels) nil)))
+            (hex-labeler-normalized-list
+             (hex-labeler-entry-value data :labels)
+             #'hex-labeler-valid-label-entry-p)
             *hex-labeler-skips*
-            (remove-if-not #'hex-labeler-valid-key-entry-p
-                           (copy-list (or (getf data :skipped) nil)))))
+            (hex-labeler-normalized-list
+             (hex-labeler-entry-value data :skipped)
+             #'hex-labeler-valid-key-entry-p)))
     data))
 
 (-> hex-labeler-label-entry-less-p (plist plist) boolean)
@@ -191,9 +211,9 @@
         :source "Hexany's Roguelike Tiles 0.3.0"
         :crop (hex-labeler-crop-plist)
         :complete (hex-labeler-complete-p)
-        :labels (sort (copy-list *hex-labeler-labels*)
+        :labels (sort (hex-labeler-normalized-labels)
                       #'hex-labeler-label-entry-less-p)
-        :skipped (sort (copy-list *hex-labeler-skips*)
+        :skipped (sort (hex-labeler-normalized-skips)
                        #'hex-labeler-label-entry-less-p)))
 
 (-> hex-labeler-sidecar-path (pathname string) pathname)
@@ -395,7 +415,7 @@
           :col col
           :row row)))
 
-(-> hex-labeler-entry-matches-key-p (plist plist) boolean)
+(-> hex-labeler-entry-matches-key-p (t t) boolean)
 (defun hex-labeler-entry-matches-key-p (entry key)
   (and (hex-labeler-valid-key-entry-p entry)
        (hex-labeler-valid-key-entry-p key)
@@ -403,7 +423,7 @@
        (= (getf entry :col) (getf key :col))
        (= (getf entry :row) (getf key :row))))
 
-(-> hex-labeler-find-keyed-entry (plist list) (option plist))
+(-> hex-labeler-find-keyed-entry (t list) (option plist))
 (defun hex-labeler-find-keyed-entry (key entries)
   (find-if (lambda (entry)
              (hex-labeler-entry-matches-key-p entry key))
@@ -425,7 +445,7 @@
   (or (and (hex-labeler-find-label tile) t)
       (hex-labeler-skipped-p tile)))
 
-(-> hex-labeler-remove-keyed-entry (plist list) list)
+(-> hex-labeler-remove-keyed-entry (t list) list)
 (defun hex-labeler-remove-keyed-entry (key entries)
   (remove-if (lambda (entry)
                (hex-labeler-entry-matches-key-p entry key))
